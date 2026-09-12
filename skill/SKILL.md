@@ -1,0 +1,211 @@
+---
+name: schedule-integrity
+description: Audit a construction or infrastructure schedule and the progress/earned-value figures derived from it, hunting the failures that produce a plausible wrong number instead of an error. Use when reviewing a delivered contractor schedule, doing schedule critical analysis, computing or reconciling earned value (BCWS/BCWP/SPI/CPI), building or debugging an S-curve, comparing planned against actual physical progress, reading a .mpp or MPXJ-parsed schedule programmatically, reconciling two schedule versions, or explaining why a control indicator disagrees with its source tool.
+user-invocable: true
+---
+
+# Schedule integrity review
+
+A method for auditing a schedule and the indicators derived from it. It targets one
+failure class specifically: **the calculation is arithmetically correct, every input is
+correct in its own source, the result is plausible, nothing raises an error, and the
+number is meaningless.** Textbooks cover how to compute earned value. This covers what
+goes wrong silently when you compute it on a real delivered file.
+
+## Read this first: the datum question
+
+Before auditing any indicator, ask the question that finds this failure class:
+
+> **Are all the inputs to this calculation measured against the same reference?**
+
+Not *"is the arithmetic right?"* — it is. In surveying, a **datum** is the reference
+surface every elevation is measured from. Two elevations can each be perfectly measured
+and their difference still be entirely false, if each was surveyed against a different
+datum. Nobody miscalculates. The subtraction is correct. The result means nothing.
+
+Four references, in practice: **which baseline · which instant · which population ·
+which unit.** Two inputs disagreeing on any one of them produce a meaningless result
+with an impeccable appearance.
+
+The signature, so you recognise a new instance:
+
+- the arithmetic is correct — no formula, sign or unit error
+- each input is correct in its own source — checking one at a time finds nothing
+- the result is plausible — right order of magnitude, right type, nothing absurd
+- nothing accuses — no exception, no log, no empty cell, no red test
+- **and the blame migrates**: it surfaces as poor performance, as delay, as low
+  progress. The victim is usually the works or the crew, not the calculation.
+
+That last one is why the defect survives. A number that accuses somebody is rarely
+questioned by anyone except the accused.
+
+**Where to look:** calculations with **two sources** — a plan value against an execution
+value, an external reading against an internal accumulation, a numerator from one system
+and a denominator from another. Most construction control indicators are exactly this
+shape. **Where not to look:** single-source calculations. Summing columns of one table at
+one instant cannot have this defect, and spending review effort there is what makes
+review look expensive.
+
+**Do not filter by size.** The same mechanism measured across fronts produced an error
+worth a fraction of a percent of the budget in one and a third of an entire phase in
+another. The size of the deviation depends on the file, not on the defect. **The check is
+about whether the condition exists, not about whether the deviation hurts.**
+
+Full case family: `references/datum.md`.
+
+## Order of operations — the order is part of the method
+
+### 1. Network integrity, before any discussion of dates
+
+Nothing about dates is worth discussing until the logic holds. When the scheduling tool
+recalculates over a violated network, **every trend date in the file is computed from
+logic the works does not follow.** Arguing about a forecast date before this is arguing
+about a figure derived from a false premise.
+
+There is a misleading side effect: delay on stalled predecessors **stops propagating** to
+the milestones, because the successors were already delivered. The schedule looks healthy
+at the end precisely because it is broken in the middle.
+
+### 2. Date adherence
+
+### 3. Reporting consistency
+
+The check catalogue, with stable codes and the exact criterion for each, is in
+`references/checks.md`. Codes are **stable identifiers**: a finding keeps its code when
+the implementation changes. Without that you cannot discuss a problem across weeks. Two
+numberings exist in the wild for these same findings and **A1/A2 mean different things in
+each** — `references/checks.md` says which set is canonical and maps between them. Never
+quote a bare code across the two.
+
+**One transversal rule, and it is the finest judgement in the whole set:** a predecessor
+that is 100% physically complete with no actual finish is a **reporting** defect, not a
+network breach. It migrates out of the network findings. Without that rule a
+record-keeping problem is counted as an execution problem, and the conversation with the
+people doing the work starts by accusing the wrong thing.
+
+## Before writing the first comparison: units
+
+Measured in MS Project, and it generalises to any scheduling tool: **duration, variance
+and link lag are stored in minutes of work, not days** — and not 1440-minute days either,
+but the working day configured in the file. Read the working day from the file rather than
+assuming it; works run 8, 9, 10-hour days and shifts.
+
+Converting lag by the working day yields **working days**. Using those as calendar days
+errs by roughly 7/5 plus holidays, and **the error accumulates along the chain**.
+
+The generalisable form: **every scheduling tool has an internal unit that is not the one
+on screen.** Ask "what unit is this field stored in?" before writing the first
+comparison, because the failure mode here is a plausible list, not an exception.
+
+Mechanics, with the measured cases: `references/reading-schedules.md`.
+
+## Earned value must be computed, not read
+
+Measured across several real files: **the calculated earned-value fields are not in the
+file.** The tool does not persist calculated fields; it recalculates on open. A library
+reading the file finds them null in 100% of rows, including in files where baseline cost
+is populated — the reader is reading fine, the field is not there.
+
+    earned value = baseline cost x physical % complete
+
+And **which baseline** feeds it is a file setting, not a constant. A schedule that began
+as one phase and grew can hold baselines in different slots, with the current one not in
+the default slot. Getting this wrong is datum case #1: it moves a progress figure by more
+than half its value while looking entirely normal.
+
+Worse, the accessor for that setting returns **0, not null** — so the natural guard
+(`if (v != null) use(v)`) **passes**, the code adopts the default slot on every file, and
+the wrong number arrives with the sentence *"the file declares slot 0"* attached. False,
+and convincing. **A plausible default returned instead of null disarms the check that
+would otherwise exist.** Null shouts; zero passes.
+
+S-curve and sampling rules, including why a costed milestone legitimately vanishes from a
+phased S-curve while both figures stay correct: `references/earned-value.md`.
+
+## Counting convention is part of the finding
+
+"How many activities have the problem" depends on how you count. One set of violated
+links yields three defensible answers depending on whether you count successors,
+predecessors, or distinct activities involved in either role.
+
+What decides is not the mathematics: **diverging from the counting convention of the tool
+the other party uses is handing them the argument.** Align the count with what their tool
+shows. Being right by another criterion is worth less than being checkable.
+
+## Aggregates need their weight distribution
+
+A healthy aggregate can be the average of two pathologies. A positive aggregate progress
+figure can be out-of-sequence activities covering activities that should be complete and
+sit at zero. **Every aggregate figure must travel with the distribution of its weight** —
+otherwise the apparent advance shows up where the money is not.
+
+## The report
+
+The deliverable is not the list of flagged activities. It is a report where **every
+finding closes with where it came from**: which columns were used, which filter reproduces
+it, which identifiers to check.
+
+That turns the document from *"trust me"* into *"check it yourself"*, and it is the
+difference between a report that carries a meeting and one that starts an argument.
+
+Two consequences worth respecting:
+
+- **Run where the data already is.** A check that needs an export, a conversion or a
+  pipeline does not get run weekly. One that is a keystroke inside the scheduling tool
+  does. This is not a limitation; it is what makes the check get used.
+- **Flag and filter rather than producing a separate list.** The result should be
+  navigable inside the schedule itself, with the activity in its context — that is what
+  lets you check it together with the other party in the meeting.
+- **Change nothing, and know how to undo.** Write only a marker field and the display,
+  never schedule data, and ship a routine that clears the markers. A tool that dirties
+  somebody else's file must know how to clean up. Run on a copy regardless.
+
+## Carry provenance with every claim
+
+This is not decoration, and dropping it is the one way to make this skill worse than its
+source. Label every factual claim you make from this method:
+
+| Label | Means |
+|---|---|
+| `measured` | somebody ran it, saw it, and the figure is here |
+| `inferred` | plausible reasoning, **not reproduced** |
+| `reported` | came from another party and **was not re-checked here** |
+
+The reason is that half the value of accumulated knowledge is **not having to re-measure**,
+and that promise only holds if it is clear what was actually measured. A third-party
+report stamped as a measurement destroys the whole basis, because nobody knows what to
+trust any more.
+
+Two corollaries that earn their place:
+
+- **Prove the probe can pass before trusting a negative result.** A search that finds
+  nothing may mean the thing is absent or that the instrument is blind. Validate with a
+  control you know is present.
+- **A concrete, falsifiable recommendation beats a vague, irrefutable one.**
+
+## Scope, honestly
+
+- The mechanics here were measured on **MS Project** files, read both through in-tool
+  macros and through a JVM parsing library.
+- **Primavera P6 is not covered.** The method transfers; the field-level mechanics were
+  not measured there. Do not assert P6 behaviour from this skill.
+- Forensic delay analysis and the DCMA 14-point assessment are **adjacent and not
+  included**. Say so rather than improvising them.
+
+## Before anything from a review leaves the machine
+
+Schedule review material carries third-party identity. Scrub before the first commit or
+publish, not after — git history does not erase without a force push.
+
+Never carries over: employer or contractor names, contract numbers, chainages or
+stationing, person names, contract and works values, local paths that reveal an
+employer's folder structure.
+
+**The figure stays, the identity goes.** *"Validated on a road-concession programme, 6,483
+tasks, reproducing the source tool to the cent"* has the same probative force as the named
+version and none of the consequences. The evidence is the measurement and the date, not
+the client.
+
+One less obvious consequence: **an organisation's standard does not belong in the generic
+method.** A specific field mapping is that organisation's asset. What is yours is the idea
+that the mapping can be declared rather than coded.
