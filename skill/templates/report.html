@@ -112,8 +112,13 @@ footer{margin-top:38px;padding-top:13px;border-top:1px solid var(--line);
 <script>
 const DATA = /*DATA*/ null;
 
+// The template holds no prose of its own: every word a person reads arrives in
+// DATA.labels, chosen for the schedule's own language. Adding a language means
+// adding a block to scripts/i18n.py and nothing here.
 const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const n = (v,d=0) => v==null?"&mdash;":(typeof v==="number"?v.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}):esc(v));
+const n = (v,d=0) => v==null?"&mdash;":(typeof v==="number"?v.toLocaleString(DATA&&DATA.lang==="pt"?"pt-BR":undefined,{minimumFractionDigits:d,maximumFractionDigits:d}):esc(v));
+let L = {};
+const fill = (s,vals) => String(s).replace(/\{(\w+)\}/g,(_,k)=>vals[k]==null?"":vals[k]);
 
 function theme(t){
   if(!t) return;
@@ -131,8 +136,13 @@ function metaGrid(pairs){
     `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</div>`;
 }
 
+function bar(){
+  return `<div class="bar"><button id="pdf">${esc(L.print)}</button>
+    <button id="th">${esc(L.toggle_theme)}</button></div>`;
+}
+
 function chart(series,{cls="",fmt=v=>n(v)}={}){
-  if(!series||!series.length) return `<p class="sub">No data for this chart.</p>`;
+  if(!series||!series.length) return `<p class="sub">${esc(L.no_data)}</p>`;
   const max=Math.max(...series.map(s=>Math.abs(s.value)))||1;
   return `<div class="chart">${series.map(s=>`<div class="row">
     <div class="rot" title="${esc(s.label)}">${esc(s.label)}</div>
@@ -141,244 +151,202 @@ function chart(series,{cls="",fmt=v=>n(v)}={}){
 }
 
 function table(cols,rows,limit=400){
-  if(!rows||!rows.length) return `<p class="sub">No activities in this finding.</p>`;
+  if(!rows||!rows.length) return `<p class="sub">${esc(L.no_activities)}</p>`;
   const head=cols.map(c=>`<th>${esc(c.label)}</th>`).join("");
   const body=rows.slice(0,limit).map(r=>"<tr>"+cols.map(c=>{
     const v=r[c.key];
     const cls=c.key==="name"?"name":(typeof v==="number"?"num":"");
     return `<td class="${cls}">${typeof v==="number"?n(v,Number.isInteger(v)?0:1):esc(v)}</td>`;
   }).join("")+"</tr>").join("");
-  const more=rows.length>limit?`<p class="sub">Showing ${limit} of ${rows.length} rows; the full set is in the JSON beside this file.</p>`:"";
+  const more=rows.length>limit
+    ? `<p class="sub">${esc(fill(L.showing,{n:limit,total:rows.length}))}</p>` : "";
   return `<div class="scroll"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>${more}`;
 }
 
+const C = k => ({label:L[k]});
+
 function renderReview(d){
   const m=d.meta, c=d.conventions;
-  const net=d.findings.filter(f=>f.layer==="Network integrity").reduce((a,f)=>a+f.count,0);
-  const total=d.findings.reduce((a,f)=>a+f.count,0);
+  const net=d.findings.filter(f=>["A1","A2"].includes(f.code)).reduce((a,f)=>a+f.count,0);
   const out=[];
 
   out.push(`<h1>${esc(m.title)}</h1>
-    <p class="sub">Schedule integrity review &middot; status date ${esc(m.status_date||"not set")}
-    &middot; ${n(m.leaves)} activities reviewed &middot; generated ${esc(m.generated)}</p>
-    <div class="bar"><button id="pdf">Print / save as PDF</button>
-    <button id="th">Toggle theme</button></div>`);
+    <p class="sub">${esc(L.review_title)} &middot; ${esc(L.status_date)} ${esc(m.status_date||L.not_set)}
+    &middot; ${n(m.leaves)} ${esc(L.activities_reviewed)} &middot; ${esc(L.generated)} ${esc(m.generated)}</p>
+    ${bar()}`);
 
   out.push(metaGrid([
-    ["Source file",m.file],["Baseline slot used",m.baseline_slot],
-    ["Budget at completion",n(m.budget,2)],
-    ["Weighted progress",m.percent_earned==null?null:n(m.percent_earned,2)+"%"],
-    ["Threshold",c.threshold_days+" calendar days"],
-    ["Physical % populated",`${n(m.with_physical_percent)} of ${n(m.tasks)}`],
+    [L.source_file,m.file],[L.baseline_slot,m.baseline_slot],
+    [L.budget,n(m.budget,2)],
+    [L.weighted_progress,m.percent_earned==null?null:n(m.percent_earned,2)+"%"],
+    [L.threshold,c.threshold_days+" "+L.calendar_days],
+    [L.physical_populated,`${n(m.with_physical_percent)} ${L.of} ${n(m.tasks)}`],
   ]));
 
-  (d.blocking||[]).forEach(b=>out.push(`<div class="note bad"><b>Blocking.</b> ${esc(b)}</div>`));
+  (d.blocking||[]).forEach(b=>out.push(`<div class="note bad"><b>${esc(L.blocking)}</b> ${esc(b)}</div>`));
 
-  out.push(`<div class="read"><div class="eyebrow">How to read these numbers</div>
-    <p>Progress is <b>weighted by baseline cost</b>: each activity counts for its value, not
-    for being one row. A positive overall figure sitting next to high network findings usually
-    means work executed out of the planned order, which adds progress without meeting the plan.
-    That is not performance.</p>
-    <p><b>The network findings gate everything else.</b> When the scheduling tool recalculates
-    over logic the works does not follow, every forecast date in the file is derived from a
-    false premise, so a date discussion held before settling them is a discussion about
-    numbers with no basis.</p>
-    <p>Each finding below states its <b>criterion</b>, <b>where it came from</b> and <b>how to
-    reproduce it</b> in the scheduling tool, so nothing here has to be taken on trust. Counts
-    are distinct activities; a table can hold more rows than its count when an activity is
-    marked in two roles.</p></div>`);
+  out.push(`<div class="read"><div class="eyebrow">${esc(L.how_to_read)}</div>
+    <p>${L.read_p1}</p><p>${L.read_p2}</p><p>${L.read_p3}</p></div>`);
 
-  out.push(`<h2>Index</h2><ol class="idx">${d.findings.map(f=>
+  out.push(`<h2>${esc(L.index)}</h2><ol class="idx">${d.findings.map(f=>
     `<li><span class="c">${esc(f.code)}</span><a href="#f-${esc(f.code)}">${esc(f.title)}</a>
      <span class="n">${n(f.count)}</span></li>`).join("")}</ol>`);
 
   out.push(net
-    ? `<div class="note bad"><b>Read this before any date below.</b> ${n(net)} activities are
-       involved in violated logic. Settle the network findings before discussing a single date.</div>`
-    : `<div class="note good"><b>Network integrity holds.</b> No out-of-sequence execution was
-       found, so the forecast dates below rest on logic the works is actually following.</div>`);
+    ? `<div class="note bad">${L.net_bad_1} ${n(net)} ${esc(L.net_bad_2)}</div>`
+    : `<div class="note good">${L.net_good}</div>`);
 
-  out.push(`<h2>Findings</h2><div class="cards">${d.findings.map(f=>
+  out.push(`<h2>${esc(L.findings)}</h2><div class="cards">${d.findings.map(f=>
     `<div class="card ${esc(f.severity)}"><div class="c">${esc(f.code)}</div>
      <div class="v${f.count?"":" zero"}">${n(f.count)}</div>
      <div class="t">${esc(f.title)}</div></div>`).join("")}</div>`);
 
-  out.push(`<h2>Where the weight sits</h2>
-    <p class="sub">Grouped by ${esc(m.grouping==="wbs"?"top WBS branch":m.grouping)}, ordered by
-    share of budget. An aggregate figure means little without this: the question is always
-    whether the progress happened where the money is.</p>`);
+  out.push(`<p class="how" style="margin-top:14px">${L.counting_convention}
+    ${esc(c.network_counting)} ${esc(L.counting_tail)}</p>`);
+
+  const groupName = m.grouping==="wbs" ? L.wbs_branch : m.grouping;
+  out.push(`<h2>${esc(L.weight_sits)}</h2>
+    <p class="sub">${esc(fill(L.weight_sub,{group:groupName}))}</p>`);
   const g=d.charts.by_group;
   out.push(chart(g.map(r=>({label:r.label,value:r.weight_pct})),{fmt:v=>n(v,1)+"%"}));
   out.push(`<div class="legend"><span><i class="sw" style="background:var(--accent)"></i>
-    share of budget at completion</span></div>`);
-  out.push(table([
-    {label:"Branch",key:"label"},{label:"Activities",key:"activities"},
-    {label:"Budget",key:"budget"},{label:"Weight %",key:"weight_pct"},
-    {label:"Earned %",key:"earned_pct"},{label:"Findings",key:"finding_total"},
-  ],g));
+    ${esc(L.legend_budget)}</span></div>`);
+  out.push(table([C("col_branch"),C("col_activities"),C("col_budget"),
+    C("col_weight"),C("col_earned"),C("col_findings")].map((c,i)=>
+      ({...c,key:["label","activities","budget","weight_pct","earned_pct","finding_total"][i]})),g));
 
   if(d.calendars&&d.calendars.length){
-    out.push(`<h2>Calendars carrying the work</h2>
-      <p class="sub">Every duration, variance and span in this report is counted on the
-      calendar of its own activity, including that calendar's exceptions. This table is here
-      because it is where a construction schedule keeps its holidays and its weather reserve,
-      and because a calendar registered against the wrong year embeds optimism that nothing
-      else in the file announces. Read it: if the shift length or the working week is not what
-      the works actually does, every date below inherits the error.</p>`);
+    out.push(`<h2>${esc(L.calendars_title)}</h2><p class="sub">${esc(L.calendars_sub)}</p>`);
     out.push(table([
-      {label:"Calendar",key:"name"},{label:"Activities",key:"tasks"},
-      {label:"Hours per day",key:"hours_per_day"},
-      {label:"Working days per week",key:"working_days_per_week"},
-      {label:"Exceptions",key:"exceptions"},
-      {label:"Non-working exceptions",key:"non_working_exceptions"},
+      {label:L.col_calendar,key:"name"},{label:L.col_activities,key:"tasks"},
+      {label:L.col_hours_day,key:"hours_per_day"},
+      {label:L.col_days_week,key:"working_days_per_week"},
+      {label:L.col_exceptions,key:"exceptions"},
+      {label:L.col_nonworking,key:"non_working_exceptions"},
     ],d.calendars));
     out.push(chart(d.calendars.map(r=>({label:r.name,value:r.tasks})),{fmt:v=>n(v)}));
   }
 
-  out.push(`<h2>Distributions</h2>`);
-  out.push(`<h3>Finish variance against baseline</h3>
-    <p class="sub">Bands of 30 days. The shape matters more than any single row: a mass to the
-    right is slippage, a mass to the left is a forecast pulled earlier, and both tails at once
-    is reprogramming rather than progress.</p>`);
+  out.push(`<h2>${esc(L.distributions)}</h2>`);
+  out.push(`<h3>${esc(L.variance_title)}</h3><p class="sub">${esc(L.variance_sub)}</p>`);
   out.push(chart(d.charts.variance_histogram,{cls:"medium"}));
-  out.push(`<h3>Total float</h3>
-    <p class="sub">Bands of 10 days. A large population at high float, with a contractual
-    milestone elapsed, usually means the milestones are not constrained in the file.</p>`);
+  out.push(`<h3>${esc(L.float_title)}</h3><p class="sub">${esc(L.float_sub)}</p>`);
   out.push(chart(d.charts.float_bands,{cls:"low"}));
-  out.push(`<h3>Activity starts per month</h3>
-    <p class="sub">From the current schedule. A cliff of starts in one month is a plan nobody
-    intends to execute that way.</p>`);
+  out.push(`<h3>${esc(L.starts_title)}</h3><p class="sub">${esc(L.starts_sub)}</p>`);
   out.push(chart(d.charts.starts_per_month));
 
   d.findings.forEach(f=>{
     let extra="";
     if(f.as_successors!=null){
-      extra=` Counted three defensible ways: ${n(f.count)} distinct activities,
-        ${n(f.as_successors)} as successors, ${n(f.as_predecessors)} as predecessors.
-        Align with whatever convention the other party's tool shows.`;
+      extra=" "+fill(L.counted_three,{d:n(f.count),s:n(f.as_successors),p:n(f.as_predecessors)});
     }
     out.push(`<div class="blk ${esc(f.severity)}" id="f-${esc(f.code)}">
       <div class="blk-top"><span class="c">${esc(f.code)}</span>
-        <span class="badge ${esc(f.severity)}">${esc(f.severity)}</span>
+        <span class="badge ${esc(f.severity)}">${esc(f.severity_word||f.severity)}</span>
         <span class="eyebrow">${esc(f.layer)}</span>
         <span class="q">${n(f.count)}</span></div>
       <h3>${esc(f.title)}</h3>
       <p class="desc">${esc(f.subtitle)}</p>
-      ${f.code==="G"?`<div class="note"><b>Thermometer, not a finding.</b> G says something was
-        edited inconsistently, not what. Use it to choose what to inspect; never report it
-        alone.</div>`:""}
-      ${f.code==="P"&&f.count?`<div class="note"><b>A record defect, not an execution
-        defect.</b> These activities are held out of the network findings above. Without that
-        rule a reporting problem gets reported as an execution problem, and the conversation
-        with the people doing the work starts by accusing the wrong thing.</div>`:""}
+      ${f.code==="G"?`<div class="note">${L.g_note}</div>`:""}
+      ${f.code==="P"&&f.count?`<div class="note">${L.p_note}</div>`:""}
       <div class="fonte">
-        <div><b>Criterion.</b> ${esc(f.criterion)}${esc(extra)}</div>
-        <div><b>Where it came from.</b> ${esc(f.source)}</div>
-        <div><b>How to reproduce it.</b> ${esc(f.reproduce)}</div>
+        <div><b>${esc(L.criterion)}</b> ${esc(f.criterion)}${esc(extra)}</div>
+        <div><b>${esc(L.came_from)}</b> ${esc(f.source)}</div>
+        <div><b>${esc(L.reproduce)}</b> ${esc(f.reproduce)}</div>
       </div>
       ${table(f.columns,f.items)}
     </div>`);
   });
 
-  out.push(`<h2>Conventions this report used</h2>${metaGrid([
-    ["Baseline slot",c.baseline_slot],["Chosen by",c.baseline_slot_basis],
-    ["Threshold",c.threshold_days+" "+c.threshold_unit],
-    ["Tolerance",c.tolerance_days+" days"],["Population",c.population],
-    ["Network counting",c.network_counting],["Working days",c.working_days],
-    ["Percent source",c.percent_source],
+  const lg=d.language||{};
+  out.push(`<h2>${esc(L.conventions_title)}</h2>${metaGrid([
+    [L.conv_slot,c.baseline_slot],[L.conv_chosen,c.baseline_slot_basis],
+    [L.conv_threshold,c.threshold_days+" "+c.threshold_unit],
+    [L.conv_tolerance,c.tolerance_text||c.tolerance_days],[L.conv_population,c.population],
+    [L.conv_counting,c.network_counting],[L.conv_working,c.working_days],
+    [L.conv_percent,c.percent_source],
+    [L.conv_language,`${d.lang} (${lg.confidence||""})`],
+    [L.conv_lang_basis,lg.basis],
   ])}`);
   return out.join("");
 }
 
 function renderCycle(d){
   const m=d.meta, out=[];
-  out.push(`<h1>Cycle comparison</h1>
-    <p class="sub">${esc(m.previous_source||"previous")} &rarr; ${esc(m.current_source||"current")}
-    &middot; generated ${esc(m.generated)}</p>
-    <div class="bar"><button id="pdf">Print / save as PDF</button>
-    <button id="th">Toggle theme</button></div>`);
+  out.push(`<h1>${esc(L.cycle_title)}</h1>
+    <p class="sub">${esc(m.previous_source||"")} &rarr; ${esc(m.current_source||"")}
+    &middot; ${esc(L.generated)} ${esc(m.generated)}</p>${bar()}`);
 
   out.push(metaGrid([
-    ["Previous status date",m.previous_status_date],["Current status date",m.current_status_date],
-    ["Baseline slot",m.current_baseline_slot],
-    ["Budget at completion",n(m.current_budget_at_completion,2)],
+    [L.prev_status,m.previous_status_date],[L.curr_status,m.current_status_date],
+    [L.baseline_slot,m.current_baseline_slot],
+    [L.budget,n(m.current_budget_at_completion,2)],
   ]));
 
-  out.push(`<div class="read"><div class="eyebrow">How to read these numbers</div>
-    <p>The headline movement is <b>not necessarily progress</b>. It is the difference between
-    two weighted figures, and anything that changes the basis moves it too: activities inserted
-    or removed change the denominator, and a rebased baseline changes the reference itself.</p>
-    <p>So the movement is split in two: the part <b>explained</b> by per-activity progress, and
-    the <b>residue</b>. A residue that is not named is where a plausible wrong number lives.</p></div>`);
+  out.push(`<div class="read"><div class="eyebrow">${esc(L.how_to_read)}</div>
+    <p>${L.cycle_read_p1}</p><p>${L.cycle_read_p2}</p></div>`);
 
   out.push(`<div class="cards">
-    <div class="card"><div class="c">PREVIOUS</div><div class="v">${n(m.previous_percent_earned,2)}%</div><div class="t">weighted progress</div></div>
-    <div class="card"><div class="c">CURRENT</div><div class="v">${n(m.current_percent_earned,2)}%</div><div class="t">weighted progress</div></div>
-    <div class="card"><div class="c">MOVEMENT</div><div class="v">${n(m.movement_points,3)}</div><div class="t">percentage points, headline</div></div>
-    <div class="card low"><div class="c">EXPLAINED</div><div class="v">${n(m.explained_points,3)}</div><div class="t">by activity progress</div></div>
-    <div class="card high"><div class="c">RESIDUE</div><div class="v">${n(m.unexplained_points,3)}</div><div class="t">not work done</div></div>
+    <div class="card"><div class="c">${esc(L.card_previous)}</div><div class="v">${n(m.previous_percent_earned,2)}%</div><div class="t">${esc(L.weighted_progress)}</div></div>
+    <div class="card"><div class="c">${esc(L.card_current)}</div><div class="v">${n(m.current_percent_earned,2)}%</div><div class="t">${esc(L.weighted_progress)}</div></div>
+    <div class="card"><div class="c">${esc(L.card_movement)}</div><div class="v">${n(m.movement_points,3)}</div><div class="t">${esc(L.pp_headline)}</div></div>
+    <div class="card low"><div class="c">${esc(L.card_explained)}</div><div class="v">${n(m.explained_points,3)}</div><div class="t">${esc(L.by_progress)}</div></div>
+    <div class="card high"><div class="c">${esc(L.card_residue)}</div><div class="v">${n(m.unexplained_points,3)}</div><div class="t">${esc(L.not_work)}</div></div>
   </div>`);
 
-  (d.warnings||[]).forEach(w=>out.push(`<div class="note"><b>Warning.</b> ${esc(w)}</div>`));
+  (d.warnings||[]).forEach(w=>out.push(`<div class="note"><b>${esc(L.warning)}</b> ${esc(w)}</div>`));
 
   const r=d.readings;
-  out.push(`<h2>Was it execution, or was it the plan?</h2>
-    <p class="sub">Three signals, read together. A forecast rewritten with no execution behind it
-    is legitimate, but it has to be visible as a plan change, or the next cycle starts from a
-    baseline nobody agreed to.</p>
+  out.push(`<h2>${esc(L.exec_or_plan)}</h2><p class="sub">${esc(L.exec_or_plan_sub)}</p>
     <div class="cards">
-      <div class="card low"><div class="c">EXECUTION</div><div class="v">${n(r.execution.length)}</div>
-        <div class="t">dates moved, actuals behind them</div></div>
-      <div class="card medium"><div class="c">REPLAN</div><div class="v">${n(r.replan.length)}</div>
-        <div class="t">dates moved, no actuals</div></div>
-      <div class="card high"><div class="c">REFERENCE</div><div class="v">${n(r.reference.length)}</div>
-        <div class="t">the baseline itself moved</div></div>
+      <div class="card low"><div class="c">${esc(L.card_execution)}</div><div class="v">${n(r.execution.length)}</div>
+        <div class="t">${esc(L.exec_sub)}</div></div>
+      <div class="card medium"><div class="c">${esc(L.card_replan)}</div><div class="v">${n(r.replan.length)}</div>
+        <div class="t">${esc(L.replan_sub)}</div></div>
+      <div class="card high"><div class="c">${esc(L.card_reference)}</div><div class="v">${n(r.reference.length)}</div>
+        <div class="t">${esc(L.reference_sub)}</div></div>
     </div>`);
 
   if(r.reference.length){
-    out.push(`<h2>The baseline moved &mdash; a finding about the report</h2>
-      <p class="sub">Every deviation straddling these changes is measured against two different
-      references. Two figures can each be perfectly measured and their difference still be
-      entirely false.</p>`);
-    out.push(table([{label:"Row",key:"id"},{label:"UID",key:"uid"},{label:"Activity",key:"name"},
-      {label:"BL start moved",key:"baseline_start_moved_days"},
-      {label:"BL finish moved",key:"baseline_finish_moved_days"}],r.reference));
+    out.push(`<h2>${esc(L.baseline_moved_title)}</h2><p class="sub">${esc(L.baseline_moved_sub)}</p>`);
+    out.push(table([{label:L.col_row,key:"id"},{label:L.col_uid,key:"uid"},
+      {label:L.col_activity,key:"name"},{label:L.col_bl_start,key:"baseline_start_moved_days"},
+      {label:L.col_bl_finish,key:"baseline_finish_moved_days"}],r.reference));
   }
 
-  out.push(`<h2>Where the movement came from</h2>
-    <p class="sub">Weight-relative contributions that sum to the movement. Denominator:
-    ${esc(d.conventions.denominator)}.</p>`);
+  out.push(`<h2>${esc(L.movement_from)}</h2>
+    <p class="sub">${esc(fill(L.movement_from_sub,{denom:d.conventions.denominator}))}</p>`);
   out.push(chart(d.decomposition.slice(0,25).map(x=>({label:`${x.id} ${x.name}`,value:x.contribution_points})),
     {fmt:v=>n(v,3)+" pp"}));
-  out.push(table([{label:"Row",key:"id"},{label:"Activity",key:"name"},{label:"WBS",key:"wbs"},
-    {label:"% previous",key:"percent_previous"},{label:"% current",key:"percent_current"},
-    {label:"Baseline cost",key:"baseline_cost"},{label:"Contribution pp",key:"contribution_points"}],
-    d.decomposition));
+  out.push(table([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},
+    {label:L.col_wbs,key:"wbs"},{label:L.col_pct_prev,key:"percent_previous"},
+    {label:L.col_pct_curr,key:"percent_current"},{label:L.col_bl_cost,key:"baseline_cost"},
+    {label:L.col_contribution,key:"contribution_points"}],d.decomposition));
 
-  out.push(`<h2>Dates that moved</h2>`);
-  out.push(table([{label:"Row",key:"id"},{label:"Activity",key:"name"},{label:"Matched by",key:"matched_by"},
-    {label:"Start moved",key:"start_moved_days"},{label:"Finish moved",key:"finish_moved_days"},
-    {label:"Reading",key:"reading"}],r.execution.concat(r.replan)));
+  out.push(`<h2>${esc(L.dates_moved)}</h2>`);
+  out.push(table([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},
+    {label:L.col_matched,key:"matched_by"},{label:L.col_start_moved,key:"start_moved_days"},
+    {label:L.col_finish_moved,key:"finish_moved_days"},{label:L.col_reading,key:"reading"}],
+    r.execution.concat(r.replan)));
 
-  out.push(`<h2>Scope changes</h2>
-    <p class="sub">Two classes only. A renamed activity that also moved branch is
-    indistinguishable from a removal plus an insertion, so these are numbers to judge rather
-    than a classification to trust.</p>
-    <h3>Inserted (${n(d.unmatched.inserted.length)})</h3>`);
-  out.push(table([{label:"Row",key:"id"},{label:"UID",key:"uid"},{label:"Activity",key:"name"}],d.unmatched.inserted));
-  out.push(`<h3>Removed (${n(d.unmatched.removed.length)})</h3>`);
-  out.push(table([{label:"Row",key:"id"},{label:"UID",key:"uid"},{label:"Activity",key:"name"}],d.unmatched.removed));
+  out.push(`<h2>${esc(L.scope_changes)}</h2><p class="sub">${esc(L.scope_sub)}</p>
+    <h3>${esc(L.inserted)} (${n(d.unmatched.inserted.length)})</h3>`);
+  out.push(table([{label:L.col_row,key:"id"},{label:L.col_uid,key:"uid"},
+    {label:L.col_activity,key:"name"}],d.unmatched.inserted));
+  out.push(`<h3>${esc(L.removed)} (${n(d.unmatched.removed.length)})</h3>`);
+  out.push(table([{label:L.col_row,key:"id"},{label:L.col_uid,key:"uid"},
+    {label:L.col_activity,key:"name"}],d.unmatched.removed));
   return out.join("");
 }
 
 (function(){
   const app=document.getElementById("app");
   if(!DATA){app.innerHTML="<h1>No data</h1><p>This template was opened directly. It is filled in when a report is generated.</p>";return;}
+  L=DATA.labels||{};
   theme(DATA.theme);
+  if(DATA.lang) document.documentElement.setAttribute("lang",DATA.lang);
   app.innerHTML=(DATA.kind==="cycle"?renderCycle(DATA):renderReview(DATA))+
-    `<footer>Generated by the <b>schedule-integrity</b> skill from the schedule's own XML export.
-     Every finding states the filter that reproduces it, so any number here can be checked in the
-     source file without trusting this report. No data left this machine.</footer>`;
+    `<footer>${L.footer||""}</footer>`;
   const pdf=document.getElementById("pdf"), th=document.getElementById("th");
   if(pdf) pdf.onclick=()=>window.print();
   if(th) th.onclick=()=>{

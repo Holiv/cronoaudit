@@ -59,6 +59,11 @@ REVIEW_SECTIONS = [
     "Finish variance against baseline", "Total float", "Activity starts per month",
     "How to reproduce it", "Conventions this report used",
 ]
+PT_SECTIONS = [
+    "Como ler estes n\u00fameros", "\u00cdndice", "Onde est\u00e1 o peso",
+    "Term\u00f4metro", "Conven\u00e7\u00f5es que este relat\u00f3rio usou",
+    "Calend\u00e1rios que carregam o trabalho",
+]
 CYCLE_SECTIONS = [
     "Was it execution, or was it the plan", "RESIDUE", "the baseline itself moved",
     "Where the movement came from", "Scope changes",
@@ -86,6 +91,16 @@ def render_checks() -> dict:
             ("cycle_curr-review.html", REVIEW_SECTIONS),
             ("cycle_prev--to--cycle_curr-cycle.html", CYCLE_SECTIONS),
         ]
+        # And again in Portuguese, so a missing label is a failing test rather than
+        # an English heading appearing in the middle of a Portuguese report.
+        pt_dir = os.path.join(tmp, "pt")
+        subprocess.run(
+            [sys.executable, os.path.join(HERE, "review.py"),
+             os.path.join(ROOT, "fixtures", "cycle_curr.xml"),
+             "--outdir", pt_dir, "--quiet", "--lang", "pt"],
+            check=True, capture_output=True,
+        )
+        pairs.append((os.path.join("pt", "cycle_curr-review.html"), PT_SECTIONS))
         for name, sections in pairs:
             path = os.path.join(tmp, name)
             if not os.path.exists(path):
@@ -206,6 +221,54 @@ def main() -> int:
     if 8 not in g_uids:
         failures.append("calendars: the genuinely inconsistent duration stopped firing")
 
+    # ---- language. The report follows the schedule, not a flag: the person running
+    # the review is often not the person who wrote the file.
+    import i18n
+    pt_model = {
+        "project": {"title": "Duplicação de pista"},
+        "calendars": {"in_use": [{"name": "Terraplenagem"}, {"name": "Obras civis"}]},
+        "tasks": [
+            {"name": "Execução de terraplenagem no trecho sul"},
+            {"name": "Implantação de drenagem profunda"},
+            {"name": "Concreto para as obras de arte especiais"},
+            {"name": "Sinalização horizontal e vertical da faixa"},
+        ],
+    }
+    en_model = {
+        "project": {"title": "Highway widening"},
+        "calendars": {"in_use": [{"name": "Earthworks"}]},
+        "tasks": [
+            {"name": "Execution of the earthworks on the southern section"},
+            {"name": "Installation of the deep drainage system"},
+            {"name": "Concrete for the bridges and structures"},
+            {"name": "Signage and lane marking for the works"},
+        ],
+    }
+    got_pt = i18n.detect(pt_model)
+    got_en = i18n.detect(en_model)
+    if got_pt["lang"] != "pt":
+        failures.append(f"language: Portuguese schedule detected as {got_pt['lang']}")
+    if got_en["lang"] != "en":
+        failures.append(f"language: English schedule detected as {got_en['lang']}")
+    thin = i18n.detect({"project": {}, "tasks": [{"name": "X"}]})
+    if thin["confidence"] != "low":
+        failures.append(
+            "language: a file with almost no text did not report low confidence, so a "
+            "guess from noise would look like a decision"
+        )
+    # Every interface string must exist in both languages, or a report silently
+    # falls back to English mid-page.
+    en_ui = i18n.UI["en"]
+    for lang in i18n.UI:
+        missing = [k for k in en_ui if k not in i18n.UI[lang]]
+        if missing:
+            failures.append(f"language: {lang} is missing {len(missing)} labels: {missing[:5]}")
+    for lang in i18n.FINDINGS:
+        for code in CODES:
+            entry = i18n.FINDINGS[lang].get(code)
+            if not entry or len(entry) != 5:
+                failures.append(f"language: {lang} has no complete text for finding {code}")
+
     # ---- the report must actually render. A valid file that runs to a blank page
     # is the failure mode this guards; see scripts/test_render.js for the real bug.
     rendered = render_checks()
@@ -228,6 +291,7 @@ def main() -> int:
     else:
         print("  report render: both reports executed and produced every expected section")
     print("  calendars: 9h six-day week and its holiday applied; consistent task not flagged")
+    print("  language: pt and en detected from content; every label present in both")
     return 0
 
 

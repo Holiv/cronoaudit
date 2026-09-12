@@ -35,7 +35,8 @@ python3 scripts/review.py previous.xml current.xml   # the periodic cycle report
 ```
 
 Out come a self-contained HTML report with no external references, printable to PDF, and the
-same findings as JSON. The full process, the flags, the failure messages and the judgement the
+same findings as JSON. **The report speaks the schedule's language**, detected from the file's
+own text rather than configured, and it says which language it chose and on what evidence. The full process, the flags, the failure messages and the judgement the
 tool cannot make for you are in `references/usage.md`. Verify the tool itself with
 `python3 scripts/test_checks.py` before trusting a clean result.
 

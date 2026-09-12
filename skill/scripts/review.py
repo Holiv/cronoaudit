@@ -106,15 +106,18 @@ def stem(path: str) -> str:
 
 
 def do_review(model, path, outdir, threshold, tolerance, quiet,
-              theme=None, grouping="wbs", template=None) -> dict:
+              theme=None, grouping="wbs", template=None, lang=None) -> dict:
     res = run_checks.run(model, threshold, tolerance)
     base = os.path.join(outdir, f"{stem(path)}-review")
     with open(base + ".json", "w", encoding="utf-8") as fh:
         json.dump(res, fh, indent=2, ensure_ascii=False)
-    payload = report_data.build_review(model, res, theme=theme, grouping=grouping)
+    import i18n
+    effective_lang = lang or i18n.detect(model)["lang"]
+    payload = report_data.build_review(model, res, theme=theme, grouping=grouping,
+                                       lang=effective_lang)
     report_html.write(payload, base + ".html", template)
     if not quiet:
-        print(run_checks.report(res))
+        print(run_checks.report(res, effective_lang))
         print()
     print(f"  report   {base}.html")
     print(f"  data     {base}.json")
@@ -138,6 +141,8 @@ def main() -> None:
                     help="field the report groups weight by (default: the top WBS branch)")
     ap.add_argument("--template", help="a customised report template to use instead of the default")
     ap.add_argument("--profile", help="JSON profile with theme and field mappings")
+    ap.add_argument("--lang", choices=["en", "pt"],
+                    help="force the report language; by default it follows the schedule's own")
     args = ap.parse_args()
 
     if len(args.files) > 2:
@@ -157,12 +162,13 @@ def main() -> None:
     theme = profile.get("theme")
     grouping = profile.get("grouping", args.group_by)
     template = args.template or profile.get("template")
+    lang = args.lang or profile.get("lang")
 
     models = [load(f) for f in args.files]
 
     if len(models) == 1:
         do_review(models[0], args.files[0], outdir, args.threshold_days,
-                  args.tolerance_days, args.quiet, theme, grouping, template)
+                  args.tolerance_days, args.quiet, theme, grouping, template, lang)
         return
 
     prev_path, curr_path = args.files
@@ -174,13 +180,18 @@ def main() -> None:
     if not args.quiet:
         print("=== Review of the current delivery ===\n")
     do_review(curr, curr_path, outdir, args.threshold_days, args.tolerance_days,
-              args.quiet, theme, grouping, template)
+              args.quiet, theme, grouping, template, lang)
 
     res = compare_snapshots.compare(prev, curr)
     base = os.path.join(outdir, f"{stem(prev_path)}--to--{stem(curr_path)}-cycle")
     with open(base + ".json", "w", encoding="utf-8") as fh:
         json.dump(res, fh, indent=2, ensure_ascii=False)
-    report_html.write(report_data.build_cycle(res, theme=theme), base + ".html", template)
+    import i18n
+    detected = i18n.detect(curr)
+    report_html.write(
+        report_data.build_cycle(res, theme=theme, lang=lang, detected=detected),
+        base + ".html", template,
+    )
     if not args.quiet:
         print("\n=== Cycle comparison ===\n")
         print(compare_snapshots.report(res))

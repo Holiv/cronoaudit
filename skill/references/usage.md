@@ -75,6 +75,18 @@ to a meeting record is a PDF, and a report that cannot become one gets screensho
    then reporting consistency.
 4. **Each finding's table**, which states the filter that reproduces it.
 
+## Language
+
+**The report follows the schedule.** The language is detected from the file's own text —
+activity names, calendar names, the project title — using a function-word and diacritic score,
+and the report states which language it chose and how strong the evidence was. A Portuguese
+schedule produces a Portuguese report, console summary included, with no flag to set.
+
+Nobody should have to configure this, and a setting would be wrong as often as right: the
+person running the review is frequently not the person who wrote the file. Pass `--lang en` or
+`--lang pt` to override. English and Portuguese ship today; adding a language means adding one
+block to `scripts/i18n.py` and nothing else, because the template holds no prose of its own.
+
 ## What each output answers
 
 | Code | Finding | Layer |

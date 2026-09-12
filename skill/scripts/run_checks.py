@@ -279,26 +279,16 @@ def run(model: dict, threshold_days: int, tolerance_days: float) -> dict:
     return {
         "source": model.get("source"),
         "blocking": blocking,
+        # Numbers and flags here; the sentences a person reads are localised at
+        # render time from scripts/i18n.py, so the JSON stays stable and the report
+        # stays in the schedule's language.
         "conventions": {
             "threshold_days": threshold_days,
-            "threshold_unit": "calendar days between baseline finish and current finish",
             "tolerance_days": tolerance_days,
             "baseline_slot": slot,
-            "baseline_slot_basis": (model.get("prevailing_baseline") or {}).get("basis"),
-            "network_counting": (
-                "both ends of each violated link are marked, to agree with the "
-                "scheduling tool's own routines"
-            ),
-            "population": "leaf, active, non-external tasks only",
-            "working_days": (
-                "counted on each task's own calendar, including its exceptions"
-                if cals else
-                "NO CALENDARS IN FILE: fell back to a Monday-Friday approximation, "
-                "which is not a measurement"
-            ),
             "calendars_in_file": cal_blob.get("count", 0),
+            "calendars_from_file": bool(cals),
             "calendars_in_use": cal_blob.get("in_use", []),
-            "percent_source": "physical percent complete when present, else percent complete",
         },
         "counts": summarise(out),
         "findings": out,
@@ -319,33 +309,56 @@ def summarise(out: dict) -> dict:
     return counts
 
 
-LABELS = {
-    "A1": "Successor started without the predecessor complete",
-    "A2": "Total inversion: successor complete, predecessor not started",
-    "H": "Trend date elapsed with no actual progress",
-    "E": "Pulled forward beyond threshold and never started",
-    "C": "Delayed beyond threshold",
-    "G": "Duration disagrees with the start-to-finish window (thermometer)",
-    "B": "Milestone with no deadline set",
-    "F": "In progress with percent complete at zero",
-    "P": "Pending record: declared complete with no actual finish",
-}
 ORDER = ["A1", "A2", "H", "E", "C", "G", "B", "F", "P"]
 
+CONSOLE = {
+    "en": {
+        "title": "Schedule integrity review",
+        "blocking": "BLOCKING -- the review cannot be trusted until these are fixed:",
+        "slot": "Baseline slot used", "threshold": "Threshold",
+        "population": "Population", "counting": "Counting",
+        "heading": "Findings, in the order the method runs them:",
+        "activities": "activities", "as_succ": "as successors", "as_pred": "as predecessors",
+        "gate": ["Network findings (A1, A2) gate everything below them. If they are non-zero,",
+                 "every forecast date in this file is computed over logic the works does not follow."],
+    },
+    "pt": {
+        "title": "Análise crítica de cronograma",
+        "blocking": "IMPEDIMENTO -- a análise não é confiável até isto ser resolvido:",
+        "slot": "Gaveta de linha de base usada", "threshold": "Limiar",
+        "population": "População", "counting": "Contagem",
+        "heading": "Achados, na ordem em que o método os roda:",
+        "activities": "atividades", "as_succ": "como sucessoras", "as_pred": "como predecessoras",
+        "gate": ["Os achados de rede (A1, A2) condicionam todo o resto. Se não forem zero,",
+                 "toda data de tendência deste arquivo é calculada sobre lógica que a obra não segue."],
+    },
+}
 
-def report(res: dict) -> str:
-    lines = [f"Schedule integrity review -- {res['source']}", ""]
+
+def report(res: dict, lang: str = "en") -> str:
+    """The console summary, in the same language as the report.
+
+    A report in Portuguese next to a terminal in English is the kind of seam that
+    makes a tool feel borrowed.
+    """
+    import i18n
+
+    C = CONSOLE.get(lang, CONSOLE["en"])
+    labels = {code: i18n.findings_text(lang)[code][0] for code in ORDER}
+
+    lines = [f"{C['title']} -- {res['source']}", ""]
     if res["blocking"]:
-        lines.append("BLOCKING -- the review cannot be trusted until these are fixed:")
+        lines.append(C["blocking"])
         lines += [f"  * {b}" for b in res["blocking"]] + [""]
     conv = res["conventions"]
+    CV = i18n.conventions(lang)
     lines += [
-        f"Baseline slot used: {conv['baseline_slot']} ({conv['baseline_slot_basis']})",
-        f"Threshold: {conv['threshold_days']} {conv['threshold_unit']}",
-        f"Population: {conv['population']}",
-        f"Counting: {conv['network_counting']}",
+        f"{C['slot']}: {conv['baseline_slot']} ({CV['slot_basis']})",
+        f"{C['threshold']}: {conv['threshold_days']} {CV['threshold_unit']}",
+        f"{C['population']}: {CV['population']}",
+        f"{C['counting']}: {CV['network_counting']}",
         "",
-        "Findings, in the order the method runs them:",
+        C["heading"],
         "",
     ]
     for code in ORDER:
@@ -353,12 +366,13 @@ def report(res: dict) -> str:
         extra = ""
         if code in ("A1", "A2") and c["marked_rows"]:
             extra = (
-                f"  [as successors {c['as_successors']}, "
-                f"as predecessors {c['as_predecessors']}]"
+                f"  [{C['as_succ']} {c['as_successors']}, "
+                f"{C['as_pred']} {c['as_predecessors']}]"
             )
-        lines.append(f"  {code:<3} {c['distinct_activities']:>6} activities  {LABELS[code]}{extra}")
-    lines += ["", "Network findings (A1, A2) gate everything below them. If they are non-zero,",
-              "every forecast date in this file is computed over logic the works does not follow."]
+        lines.append(
+            f"  {code:<3} {c['distinct_activities']:>6} {C['activities']}  {labels[code]}{extra}"
+        )
+    lines += [""] + C["gate"]
     return "\n".join(lines)
 
 
@@ -368,16 +382,20 @@ def main() -> None:
     ap.add_argument("--threshold-days", type=int, default=DEFAULT_THRESHOLD_DAYS)
     ap.add_argument("--tolerance-days", type=float, default=DEFAULT_TOLERANCE_DAYS)
     ap.add_argument("--json", help="write the full findings here")
+    ap.add_argument("--lang", choices=["en", "pt"],
+                    help="force the summary language; by default it follows the schedule")
     args = ap.parse_args()
 
     with open(args.model, encoding="utf-8") as fh:
         model = json.load(fh)
     res = run(model, args.threshold_days, args.tolerance_days)
+    import i18n
+    lang = args.lang or i18n.detect(model)["lang"]
     if args.json:
         with open(args.json, "w", encoding="utf-8") as fh:
             json.dump(res, fh, indent=2, ensure_ascii=False)
         print(f"findings -> {args.json}", file=sys.stderr)
-    print(report(res))
+    print(report(res, lang))
 
 
 if __name__ == "__main__":
