@@ -153,6 +153,12 @@ the result against the trend, baseline and late finish: reprogram, baseline dela
 float, or entering the critical path on a date. A fourth file, `<name>-review-productivity.json`,
 carries the rates by resource and by activity. Method: `references/productivity.md`.
 
+**Network quality runs the fourteen mechanical metrics** of the DCMA schedule assessment
+with quoted thresholds, plus the qualitative parameters a planner asks of any schedule,
+labelled as an implementation rather than a certification and honest about the two that a
+file cannot answer. A fifth file, `<name>-review-quality.json`, carries every metric with its
+items. Method: `references/network-quality.md`.
+
 ### Read it in this order, and the report is laid out to enforce it
 
 1. **The blocking notices, if any.** No status date means every adherence check is measured

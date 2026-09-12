@@ -154,7 +154,7 @@ def discovered_columns(model, grouping: dict, L: dict) -> list:
 
 
 def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None,
-                 productivity=None) -> dict:
+                 productivity=None, quality=None) -> dict:
     detected = i18n.detect(model)
     lang = lang or detected["lang"]
     L = i18n.ui(lang)
@@ -407,7 +407,19 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
         "calendars": (model.get("calendars") or {}).get("in_use", []),
         "scurve": phasing,
         "productivity": productivity,
+        "quality": localize_quality(quality, lang) if quality else None,
     }
+
+
+def localize_quality(q: dict, lang: str) -> dict:
+    QT = i18n.quality_text(lang)
+    out = dict(q)
+    out["metrics"] = [
+        {**m, "title": QT.get(m["code"], (m["code"], ""))[0],
+         "description": QT.get(m["code"], (m["code"], ""))[1]}
+        for m in q.get("metrics", [])
+    ]
+    return out
 
 
 def build_cycle(cmp_res, theme=None, lang=None, detected=None) -> dict:

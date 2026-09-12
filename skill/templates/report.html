@@ -306,6 +306,7 @@ function renderReview(d){
   );
   if(d.calendars&&d.calendars.length) views.push({cod:"V5",tt:L.calendars_title,sub:"",id:"v5"});
   if(d.productivity) views.push({cod:"V6",tt:L.prod_title,sub:"",id:"v6"});
+  if(d.quality) views.push({cod:"V7",tt:L.quality_title,sub:"",id:"v7"});
   out.push(`<section id="indice"><div class="sec-h"><span class="eyebrow">${esc(L.roteiro)}</span><h2>${esc(L.index)}</h2></div>
     <p class="sec-d">${esc(L.index_sub)}</p><nav class="indice">
     ${views.map(v=>`<a href="#${v.id}"><span class="cod">${v.cod}</span><span class="tt">${esc(v.tt)}${v.sub?`<small>${esc(v.sub)}</small>`:""}</span><span class="qtd"></span><span class="sev vs">${esc(d.labels.severity_view||"")}</span></a>`).join("")}
@@ -387,6 +388,31 @@ function renderReview(d){
         {label:L.col_fin_trend,key:"finish_trend"},{label:L.col_fin_baseline,key:"finish_baseline"},{label:L.col_fin_late,key:"finish_late"},
         {label:L.col_proj_own,key:"projected_own"},{label:L.col_proj_global,key:"projected_global"},{label:L.col_proj_recent,key:"projected_recent"},
         {label:L.col_verdict,key:"verdict_global_t"},{label:L.col_float_left,key:"days_of_float_left_global"},{label:L.col_evidence,key:"evidence_t"}],acts,acts.length)}
+    </section>`);
+  }
+
+  if(d.quality){
+    const Q=d.quality, I=Q.indices||{}, QL=Q.qualitative||{};
+    const st = m => m.status==="pass"?L.q_pass:(m.status==="fail"?L.q_fail:(m.threshold_pct==null&&m.population===0?L.q_na:L.q_info));
+    const q1=(Q.metrics||[]).find(x=>x.code==="Q1")||{};
+    out.push(`<section id="v7"><div class="sec-h"><span class="eyebrow">V7</span><h2>${esc(L.quality_title)}</h2></div>
+      <p class="sec-d">${esc(L.quality_sub)}</p>
+      <div class="tiles">
+        <div class="tile ${I.bei!=null&&I.bei<0.95?"al":"vs"}"><div class="c">${esc(L.tile_bei)}</div><div class="v">${I.bei==null?"&mdash;":n(I.bei,3)}</div><div class="t">${I.bei_due?esc(fill(L.bei_cap,{a:n(I.bei_on_time),d:n(I.bei_due)})):""}</div></div>
+        <div class="tile vf"><div class="c">${esc(L.tile_cpli)}</div><div class="v">${I.cpli_meaningful&&I.cpli!=null?n(I.cpli,3):"&mdash;"}</div><div class="t">${I.cpli_meaningful?esc(fill(L.cpli_cap,{d:n(I.cpl_days)})):esc(L.cpli_cap_na)}</div></div>
+        <div class="tile cr"><div class="c">${esc(L.tile_critical_n)}</div><div class="v">${n(I.critical_activities)}</div><div class="t">${I.critical_reaches_final_milestone?esc(L.crit_reaches):esc(L.crit_not_reaches)}</div></div>
+        <div class="tile al"><div class="c">${esc(L.tile_open_ends)}</div><div class="v${q1.count?"":" zero"}">${n(q1.count||0)}</div><div class="t">${q1.share_pct!=null?n(q1.share_pct,1)+"%":""}</div></div>
+      </div>
+      ${Q.soft_constraints&&Q.soft_constraints.count?`<p class="sec-d">${esc(fill(L.soft_constraints,{n:n(Q.soft_constraints.count)}))}</p>`:""}
+      ${QL.summaries_with_links_count?`<div class="note"><b>${esc(L.warning)}</b> ${esc(fill(L.summaries_links,{n:n(QL.summaries_with_links_count)}))}</div>`:""}
+      ${(Q.metrics||[]).map(mt=>`<div class="achado ${mt.status==="fail"?"al":(mt.status==="pass"?"":"vf")}" id="q-${mt.code}"><div class="barra"></div><div class="achado-in">
+        <div class="achado-top"><span class="cod">${mt.code}</span><h3 style="font-size:16px">${esc(mt.title)}</h3>
+          <span class="sev ${mt.status==="fail"?"al":(mt.status==="pass"?"vs":"vf")}">${esc(st(mt))}</span>
+          <span class="badge" style="font-size:20px">${mt.population?n(mt.count):"&mdash;"}</span></div>
+        <p class="sub">${esc(mt.description)}</p>
+        <div class="fonte">${mt.population?`${esc(L.col_count)} ${n(mt.count)} ${esc(L.col_population).toLowerCase()} ${n(mt.population)} · ${esc(L.col_share)} ${mt.share_pct==null?"&mdash;":n(mt.share_pct,2)+"%"}`:""}${mt.threshold_pct!=null?` · ${esc(L.col_threshold)} ${mt.direction==="min"?"\u2265":"\u2264"} ${n(mt.threshold_pct,1)}%`:""}</div>
+        ${mt.items&&mt.items.length?`<details><summary>${esc(fill(L.show_items,{n:n(mt.items.length)}))}</summary>${table(Object.keys(mt.items[0]).filter(k=>k!=="uid").map(k=>({label:k,key:k})),mt.items)}</details>`:""}
+      </div></div>`).join("")}
     </section>`);
   }
 

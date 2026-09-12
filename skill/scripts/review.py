@@ -28,6 +28,7 @@ import compare_snapshots  # noqa: E402
 import parse_mspdi  # noqa: E402
 import phasing as phasing_mod  # noqa: E402
 import resources as resources_mod  # noqa: E402
+import network_quality as quality_mod  # noqa: E402
 import report_data  # noqa: E402
 import report_html  # noqa: E402
 import run_checks  # noqa: E402
@@ -116,11 +117,14 @@ def do_review(model, path, outdir, threshold, tolerance, quiet,
     # some other way has no phasing to read.
     curve = None
     prod = None
+    quality = None
     src = model.get("source")
     if src and src.lower().endswith(".xml") and os.path.exists(src):
         grp = report_data.resolve_grouping(model, grouping)
         curve = phasing_mod.build(src, grp.get("field_id"))
         prod = resources_mod.build(src, model)
+    quality = quality_mod.build(model, src if (src and src.lower().endswith(".xml")
+                                              and os.path.exists(src)) else None)
     base = os.path.join(outdir, f"{stem(path)}-review")
     with open(base + ".json", "w", encoding="utf-8") as fh:
         json.dump(res, fh, indent=2, ensure_ascii=False)
@@ -128,7 +132,9 @@ def do_review(model, path, outdir, threshold, tolerance, quiet,
     effective_lang = lang or i18n.detect(model)["lang"]
     payload = report_data.build_review(model, res, theme=theme, grouping=grouping,
                                        lang=effective_lang, phasing=curve,
-                                       productivity=prod)
+                                       productivity=prod, quality=quality)
+    with open(base + "-quality.json", "w", encoding="utf-8") as fh:
+        json.dump(quality, fh, indent=2, ensure_ascii=False)
     if curve is not None:
         with open(base + "-scurve.json", "w", encoding="utf-8") as fh:
             json.dump(curve, fh, indent=2, ensure_ascii=False)

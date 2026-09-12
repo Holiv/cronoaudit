@@ -64,6 +64,7 @@ def compare_cycle():
 REVIEW_SECTIONS = [
     "How to read these numbers", "Index", "Progress by", "Starts per month",
     "S-curve from the file", "<polyline", "Productivity and trend by resource",
+    "Network quality", "Baseline execution index",
     "Finish variance against baseline", "Total float", "Problem",
     "To reproduce in the scheduling tool", "Conventions this report used",
 ]
@@ -456,6 +457,42 @@ def main() -> int:
     if prod["summary"]["assignments_unassigned"] < 1:
         failures.append("productivity: the unassigned (-1) assignment was not counted")
 
+    # ---- network quality: the fourteen metrics as an implementation, each with a
+    # control in the fixture, and honesty about what a file cannot answer.
+    import network_quality as quality_mod
+    qres = quality_mod.build(pm, os.path.join(ROOT, "fixtures", "positive.xml"))
+    qm = {m["code"]: m for m in qres["metrics"]}
+    if qm["Q1"]["count"] < 1:
+        failures.append("quality: open ends were not counted")
+    if not any(i["id"] == 15 for i in qm["Q2"]["items"]):
+        failures.append("quality: the lead on link 14->15 was not counted as Q2")
+    if not any(i["id"] == 27 for i in qm["Q3"]["items"]):
+        failures.append("quality: the 3-day lag on link 26->27 was not counted as Q3")
+    if not any(i["id"] == 19 for i in qm["Q4"]["items"]):
+        failures.append("quality: the start-to-start link was not counted as a non-FS type")
+    if not any(i["id"] == 26 for i in qm["Q5"]["items"]):
+        failures.append("quality: the must-finish-on constraint was not counted as hard")
+    if qm["Q7"]["count"] != 0:
+        failures.append("quality: negative float reported where the fixture has none")
+    if qm["Q9"]["count"] != 0:
+        failures.append("quality: actual dates after the status date reported where there are none")
+    if not any(i["id"] == 25 for i in qm["Q10"]["items"]):
+        failures.append("quality: an activity with duration and no resource was not counted as Q10")
+    if qm["Q11"]["population"] < 1 or qm["Q11"]["count"] < 1:
+        failures.append("quality: missed activities (due by status, not finished on time) not counted")
+    if qm["Q12"]["population"] != 0 or qm["Q13"]["population"] != 0:
+        failures.append("quality: Q12 or Q13 were computed from a file, which they cannot be")
+    I = qres["indices"]
+    if I["bei"] is None or not (0 <= I["bei"] <= 1):
+        failures.append("quality: the baseline execution index was not computed")
+    if I["cpli_meaningful"]:
+        failures.append("quality: CPLI reported as meaningful with no deadline on the finish milestone")
+    if qres["qualitative"]["summaries_with_links_count"] < 1:
+        failures.append("quality: a summary task carrying a link was not flagged")
+    for mtr in qres["metrics"]:
+        if mtr["threshold_pct"] is not None and mtr["population"] and mtr["status"] not in ("pass", "fail"):
+            failures.append(f"quality: {mtr['code']} has a threshold and a population but no status")
+
     # ---- the report must actually render. A valid file that runs to a blank page
     # is the failure mode this guards; see scripts/test_render.js for the real bug.
     rendered = render_checks()
@@ -484,6 +521,7 @@ def main() -> int:
     print("  reconciliation: file BCWP read, ahead-of-baseline classified, no unexplained gap")
     print("  phasing: blocks equal cost and BCWS on every task; sentinel dropped; curve rendered")
     print("  productivity: quantities from the ISO hours, three rates, projection and verdicts")
+    print("  quality: fourteen metrics with controls; Q12 and Q13 declared not computable")
     return 0
 
 

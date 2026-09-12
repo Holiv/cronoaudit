@@ -2728,6 +2728,202 @@
     </ExtendedAttribute>
   </Task>
   <Task>
+    <UID>26</UID>
+    <ID>26</ID>
+    <Name>Pinned by MFO</Name>
+    <WBS>26</WBS>
+    <OutlineLevel>2</OutlineLevel>
+    <Summary>0</Summary>
+    <Milestone>0</Milestone>
+    <Active>1</Active>
+    <ExternalTask>0</ExternalTask>
+    <CalendarUID>-1</CalendarUID>
+    <ConstraintType>3</ConstraintType>
+    <Start>2026-07-13T08:00:00</Start>
+    <Finish>2026-07-17T17:00:00</Finish>
+    <Duration>PT40H0M0S</Duration>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>26</UID>
+      <Start>2026-07-13T08:00:00</Start>
+      <Finish>2026-07-13T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>1000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>26</UID>
+      <Start>2026-07-14T08:00:00</Start>
+      <Finish>2026-07-14T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>1000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>26</UID>
+      <Start>2026-07-15T08:00:00</Start>
+      <Finish>2026-07-15T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>1000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>26</UID>
+      <Start>2026-07-16T08:00:00</Start>
+      <Finish>2026-07-16T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>1000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>26</UID>
+      <Start>2026-07-17T08:00:00</Start>
+      <Finish>2026-07-17T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>1000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>26</UID>
+      <Start>2026-07-13T08:00:00</Start>
+      <Finish>2026-07-13T08:00:00</Finish>
+      <Unit>1</Unit>
+      <Value></Value>
+    </TimephasedData>
+    <BCWS>0.00</BCWS>
+    <Baseline>
+      <Number>1</Number>
+      <Start>2026-07-13T08:00:00</Start>
+      <Finish>2026-07-17T17:00:00</Finish>
+      <Duration>PT40H0M0S</Duration>
+      <Cost>5000.0</Cost>
+      <Work>PT40H0M0S</Work>
+    </Baseline>
+    <ExtendedAttribute>
+      <FieldID>188743737</FieldID>
+      <Value>DRAINAGE</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743767</FieldID>
+      <Value>170</Value>
+    </ExtendedAttribute>
+  </Task>
+  <Task>
+    <UID>27</UID>
+    <ID>27</ID>
+    <Name>After a lag</Name>
+    <WBS>27</WBS>
+    <OutlineLevel>2</OutlineLevel>
+    <Summary>0</Summary>
+    <Milestone>0</Milestone>
+    <Active>1</Active>
+    <ExternalTask>0</ExternalTask>
+    <CalendarUID>-1</CalendarUID>
+    <Start>2026-07-23T08:00:00</Start>
+    <Finish>2026-07-29T17:00:00</Finish>
+    <Duration>PT40H0M0S</Duration>
+    <PredecessorLink>
+      <PredecessorUID>26</PredecessorUID>
+      <Type>1</Type>
+      <LinkLag>14400</LinkLag>
+      <LagFormat>7</LagFormat>
+    </PredecessorLink>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>27</UID>
+      <Start>2026-07-23T08:00:00</Start>
+      <Finish>2026-07-23T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>1000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>27</UID>
+      <Start>2026-07-24T08:00:00</Start>
+      <Finish>2026-07-24T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>1000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>27</UID>
+      <Start>2026-07-27T08:00:00</Start>
+      <Finish>2026-07-27T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>1000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>27</UID>
+      <Start>2026-07-28T08:00:00</Start>
+      <Finish>2026-07-28T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>1000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>27</UID>
+      <Start>2026-07-29T08:00:00</Start>
+      <Finish>2026-07-29T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>1000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>27</UID>
+      <Start>2026-07-23T08:00:00</Start>
+      <Finish>2026-07-23T08:00:00</Finish>
+      <Unit>1</Unit>
+      <Value></Value>
+    </TimephasedData>
+    <BCWS>0.00</BCWS>
+    <Baseline>
+      <Number>1</Number>
+      <Start>2026-07-23T08:00:00</Start>
+      <Finish>2026-07-29T17:00:00</Finish>
+      <Duration>PT40H0M0S</Duration>
+      <Cost>5000.0</Cost>
+      <Work>PT40H0M0S</Work>
+    </Baseline>
+    <ExtendedAttribute>
+      <FieldID>188743737</FieldID>
+      <Value>PAVEMENT</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743767</FieldID>
+      <Value>180</Value>
+    </ExtendedAttribute>
+  </Task>
+  <Task>
+    <UID>28</UID>
+    <ID>28</ID>
+    <Name>Summary with a link</Name>
+    <WBS>28</WBS>
+    <OutlineLevel>1</OutlineLevel>
+    <Summary>1</Summary>
+    <Milestone>0</Milestone>
+    <Active>1</Active>
+    <ExternalTask>0</ExternalTask>
+    <CalendarUID>-1</CalendarUID>
+    <Start>2026-07-13T08:00:00</Start>
+    <Finish>2026-07-29T17:00:00</Finish>
+    <Duration>PT120H0M0S</Duration>
+    <PredecessorLink>
+      <PredecessorUID>1</PredecessorUID>
+      <Type>1</Type>
+      <LinkLag>0</LinkLag>
+      <LagFormat>7</LagFormat>
+    </PredecessorLink>
+    <ExtendedAttribute>
+      <FieldID>188743737</FieldID>
+      <Value>EARTHWORKS</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743767</FieldID>
+      <Value>190</Value>
+    </ExtendedAttribute>
+  </Task>
+  <Task>
     <UID>14</UID>
     <ID>14</ID>
     <Name>Lead predecessor</Name>
@@ -2850,7 +3046,7 @@
     </ExtendedAttribute>
     <ExtendedAttribute>
       <FieldID>188743767</FieldID>
-      <Value>170</Value>
+      <Value>200</Value>
     </ExtendedAttribute>
   </Task>
   <Task>
@@ -2938,7 +3134,7 @@
     </ExtendedAttribute>
     <ExtendedAttribute>
       <FieldID>188743767</FieldID>
-      <Value>180</Value>
+      <Value>210</Value>
     </ExtendedAttribute>
   </Task>
   <Task>
@@ -3056,7 +3252,7 @@
     </ExtendedAttribute>
     <ExtendedAttribute>
       <FieldID>188743767</FieldID>
-      <Value>190</Value>
+      <Value>220</Value>
     </ExtendedAttribute>
   </Task>
   <Task>
@@ -3188,7 +3384,7 @@
     </ExtendedAttribute>
     <ExtendedAttribute>
       <FieldID>188743767</FieldID>
-      <Value>200</Value>
+      <Value>230</Value>
     </ExtendedAttribute>
   </Task>
   <Task>
@@ -3270,7 +3466,7 @@
     </ExtendedAttribute>
     <ExtendedAttribute>
       <FieldID>188743767</FieldID>
-      <Value>210</Value>
+      <Value>240</Value>
     </ExtendedAttribute>
   </Task>
   <Task>
@@ -3358,7 +3554,7 @@
     </ExtendedAttribute>
     <ExtendedAttribute>
       <FieldID>188743767</FieldID>
-      <Value>220</Value>
+      <Value>250</Value>
     </ExtendedAttribute>
   </Task>
   <Task>
@@ -3518,7 +3714,7 @@
     </ExtendedAttribute>
     <ExtendedAttribute>
       <FieldID>188743767</FieldID>
-      <Value>230</Value>
+      <Value>260</Value>
     </ExtendedAttribute>
   </Task>
   <Task>
@@ -3604,7 +3800,7 @@
     </ExtendedAttribute>
     <ExtendedAttribute>
       <FieldID>188743767</FieldID>
-      <Value>240</Value>
+      <Value>270</Value>
     </ExtendedAttribute>
   </Task>
   <Task>
@@ -3692,7 +3888,7 @@
     </ExtendedAttribute>
     <ExtendedAttribute>
       <FieldID>188743767</FieldID>
-      <Value>250</Value>
+      <Value>280</Value>
     </ExtendedAttribute>
   </Task>
   </Tasks>

@@ -62,6 +62,13 @@ remaining quantity runs over each on the activity's calendar and lands against t
 baseline and late finish. Three verdicts in order of gravity: reprogram, baseline delay that
 the float absorbs, entering the critical path on a date. `references/productivity.md`.
 
+**Network quality asks whether the schedule holds up as a model at all.** The fourteen
+mechanical metrics of the DCMA assessment with their published thresholds — open ends, leads,
+lags, relationship types, hard constraints, float, duration, invalid dates, resources, missed
+activities, execution index — implemented and labelled as such, not certified, and honest
+about the two a file cannot answer. Read Q1, Q2, Q5 and Q7 before any date.
+`references/network-quality.md`.
+
 **What you must have in hand** before either is worth starting: a status date, a saved
 baseline, and for the comparison the previous cycle's file. Fields the checks read must be
 populated — and a field left empty is itself a reportable finding, not a reason to skip the

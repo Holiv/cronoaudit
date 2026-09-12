@@ -227,6 +227,8 @@ def task(uid, tid, name, **kw):
         "    <ExternalTask>0</ExternalTask>",
         f"    <CalendarUID>{kw.get('cal', -1)}</CalendarUID>",
     ]
+    if kw.get("constraint") is not None:
+        parts.append(f"    <ConstraintType>{kw['constraint']}</ConstraintType>")
     for tag, key in (
         ("Start", "start"), ("Finish", "finish"),
         ("ActualStart", "astart"), ("ActualFinish", "afinish"),
@@ -425,6 +427,21 @@ def positive():
                   material=(1500.0, 0.0, [])))
     # 25: no resource at all, the -1 assignment the tool writes.
     t.append(task(25, 25, "No resource", **WIN, baseline=BL_OK, unassigned=True))
+
+    # --- Network quality ---
+    # 26: pinned by a must-finish-on constraint (type 3), incomplete.
+    t.append(task(26, 26, "Pinned by MFO", start="2026-07-13T08:00:00",
+                  finish="2026-07-17T17:00:00", dur_hours=40, constraint=3,
+                  baseline=("2026-07-13T08:00:00", "2026-07-17T17:00:00", 5000.0, 40)))
+    # 27: follows 26 with a 3-day lag (positive), so Q3 has a case; no successor.
+    t.append(task(27, 27, "After a lag", start="2026-07-23T08:00:00",
+                  finish="2026-07-29T17:00:00", dur_hours=40,
+                  baseline=("2026-07-23T08:00:00", "2026-07-29T17:00:00", 5000.0, 40),
+                  preds=[(26, 1, 3)]))
+    # 28: a SUMMARY carrying a link, which logic should never do.
+    t.append(task(28, 28, "Summary with a link", summary=True, level=1,
+                  start="2026-07-13T08:00:00", finish="2026-07-29T17:00:00", dur_hours=120,
+                  preds=[(1, 1, 0)]))
 
     # --- New network rules, each with its own control ---
     # 14 -> 15: FS with a 2-day LEAD (negative lag). The predecessor finished one

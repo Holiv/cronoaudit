@@ -266,6 +266,27 @@ UI = {
     "en": {
         "review_title": "Schedule integrity review",
         "chip_title": "Schedule critical analysis",
+        "quality_title": "Network quality",
+        "quality_sub": "Does this schedule hold up as a model, before any date is discussed? "
+                       "The mechanical metrics of the DCMA 14-point assessment, each with its "
+                       "formula and its published threshold, plus what a planner asks of any "
+                       "schedule. This is an implementation of the metrics, not a certification "
+                       "against the standard: thresholds are quoted so they can be argued with, "
+                       "and what cannot be computed from a file is said, not approximated.",
+        "col_metric": "Metric", "col_count": "Count", "col_population": "Of", "col_share": "Share",
+        "col_threshold": "Threshold", "col_status": "Status", "q_pass": "pass", "q_fail": "fail",
+        "q_na": "not computable", "q_info": "count only",
+        "tile_bei": "Baseline execution index", "tile_cpli": "Critical path length index",
+        "tile_critical_n": "Critical activities, incomplete", "tile_open_ends": "Open ends",
+        "bei_cap": "{a} on time of {d} due", "cpli_cap_na": "no deadline on the finish milestone",
+        "cpli_cap": "critical path {d} days",
+        "crit_reaches": "The critical chain reaches the final milestone.",
+        "crit_not_reaches": "The critical chain does not reach the final milestone: the network "
+                            "is not whole, or the finish is constrained elsewhere.",
+        "soft_constraints": "{n} soft constraints (start or finish no earlier than) also present; "
+                            "counted, not failed.",
+        "summaries_links": "{n} summary tasks carry links. Logic belongs on activities.",
+        "show_items": "Show the {n} items",
         "prod_title": "Productivity and trend by resource",
         "prod_sub": "Quantities come from the file's own assignments: for a material resource "
                     "the tool stores the quantity in the work fields. Three rates per activity, "
@@ -504,6 +525,27 @@ UI = {
     "pt": {
         "review_title": "Análise crítica de cronograma",
         "chip_title": "Análise crítica de cronograma",
+        "quality_title": "Qualidade da rede",
+        "quality_sub": "Este cronograma se sustenta como modelo, antes de qualquer discussão de "
+                       "data? As métricas mecânicas do modelo DCMA de 14 pontos, cada uma com "
+                       "fórmula e limiar publicado, mais o que um planejador pergunta de qualquer "
+                       "cronograma. É implementação das métricas, não certificação contra a norma: "
+                       "os limiares vão citados para poderem ser contestados, e o que não é "
+                       "computável de um arquivo é dito, não aproximado.",
+        "col_metric": "Métrica", "col_count": "Qtde", "col_population": "De", "col_share": "Parcela",
+        "col_threshold": "Limiar", "col_status": "Situação", "q_pass": "atende", "q_fail": "não atende",
+        "q_na": "não computável", "q_info": "só contagem",
+        "tile_bei": "Índice de execução da linha de base", "tile_cpli": "Índice de comprimento do caminho crítico",
+        "tile_critical_n": "Atividades críticas, incompletas", "tile_open_ends": "Pontas abertas",
+        "bei_cap": "{a} no prazo de {d} devidas", "cpli_cap_na": "sem data limite no marco final",
+        "cpli_cap": "caminho crítico de {d} dias",
+        "crit_reaches": "A cadeia crítica chega ao marco final.",
+        "crit_not_reaches": "A cadeia crítica não chega ao marco final: a rede não está inteira, "
+                            "ou o término está restrito em outro lugar.",
+        "soft_constraints": "{n} restrições flexíveis (não antes de) também presentes; contadas, "
+                            "não reprovadas.",
+        "summaries_links": "{n} tarefas resumo carregam vínculo. Lógica pertence às atividades.",
+        "show_items": "Mostrar os {n} itens",
         "prod_title": "Produtividade e tendência por recurso",
         "prod_sub": "As quantidades vêm das atribuições do próprio arquivo: para recurso de "
                     "material o Project guarda a quantidade nos campos de trabalho. Três ritmos "
@@ -830,3 +872,45 @@ WHY = {
 
 def why(lang: str, code: str) -> str:
     return WHY.get(lang, WHY["en"]).get(code, code)
+
+
+# Network quality metrics: title, what it measures, the formula in words. The
+# thresholds are quoted in the data, not here, so the numbers stay in one place.
+QUALITY = {
+    "en": {
+        "Q1": ("Missing logic", "Incomplete activities with no predecessor or no successor. An open end is delay that does not propagate."),
+        "Q2": ("Leads", "Links with a negative lag. A lead hides an overlap the logic should model explicitly."),
+        "Q3": ("Lags", "Links with a positive lag. Lag is time nobody owns; a waiting activity is honest about it."),
+        "Q4": ("Relationship types", "Links that are not finish-to-start. Not wrong, but each one deserves a reason."),
+        "Q5": ("Hard constraints", "Incomplete activities pinned by a must-start, must-finish or no-later-than constraint. A pinned date fights the logic."),
+        "Q6": ("High float", "Incomplete activities with more than 44 working days of total float. Usually a milestone nobody constrained."),
+        "Q7": ("Negative float", "Incomplete activities with total float below zero: a date the logic cannot meet."),
+        "Q8": ("High duration", "Incomplete activities with more than 44 working days remaining. Too coarse to control."),
+        "Q9": ("Invalid dates", "Actual dates after the status date. Forecast dates in the past are the H finding above."),
+        "Q10": ("No resource", "Incomplete activities with duration and no assignment. Nothing to trend."),
+        "Q11": ("Missed activities", "Due to finish by the status date on the baseline and not finished on time."),
+        "Q12": ("Critical path test", "Requires perturbing the schedule and watching the finish move. Not computable from a file."),
+        "Q13": ("Critical path length index", "Meaningful only with a deadline on the finish milestone; without one it is 1.0 by construction."),
+        "Q14": ("Baseline execution index", "Activities finished on time divided by activities due by the status date."),
+    },
+    "pt": {
+        "Q1": ("Lógica ausente", "Atividades incompletas sem predecessora ou sem sucessora. Ponta aberta é atraso que não propaga."),
+        "Q2": ("Leads", "Vínculos com lag negativo. Lead esconde sobreposição que a lógica deveria modelar explicitamente."),
+        "Q3": ("Lags", "Vínculos com lag positivo. Lag é tempo sem dono; uma atividade de espera é honesta sobre isso."),
+        "Q4": ("Tipos de vínculo", "Vínculos que não são término-início. Não é erro, mas cada um merece um motivo."),
+        "Q5": ("Restrições rígidas", "Atividades incompletas presas por restrição de deve iniciar, deve terminar ou não depois de. Data presa briga com a lógica."),
+        "Q6": ("Folga alta", "Atividades incompletas com mais de 44 dias úteis de folga total. Normalmente marco que ninguém restringiu."),
+        "Q7": ("Folga negativa", "Atividades incompletas com folga total abaixo de zero: data que a lógica não alcança."),
+        "Q8": ("Duração longa", "Atividades incompletas com mais de 44 dias úteis remanescentes. Grossas demais para controlar."),
+        "Q9": ("Datas inválidas", "Datas reais depois da data de status. Datas de tendência no passado são o achado H acima."),
+        "Q10": ("Sem recurso", "Atividades incompletas com duração e nenhuma atribuição. Nada para tendenciar."),
+        "Q11": ("Atividades perdidas", "Deviam terminar até a data de status pela linha de base e não terminaram no prazo."),
+        "Q12": ("Teste de caminho crítico", "Exige perturbar o cronograma e ver o término mover. Não é computável de um arquivo."),
+        "Q13": ("Índice de comprimento do caminho crítico", "Só faz sentido com data limite no marco final; sem ela é 1,0 por construção."),
+        "Q14": ("Índice de execução da linha de base", "Atividades terminadas no prazo divididas pelas devidas até a data de status."),
+    },
+}
+
+
+def quality_text(lang: str) -> dict:
+    return QUALITY.get(lang, QUALITY["en"])
