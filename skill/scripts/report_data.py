@@ -20,6 +20,7 @@ import custom_fields as cf_mod
 import explain as ex_mod
 import i18n
 import narrative as narrative_mod
+import profile as prof_mod
 
 # Severity is a judgement, not a measurement: network breaches invalidate every
 # date below them, so they outrank everything. Four named levels, as the in-tool
@@ -155,7 +156,9 @@ def discovered_columns(model, grouping: dict, L: dict) -> list:
 
 
 def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None,
-                 productivity=None, quality=None, forecast=None, forensics=None) -> dict:
+                 productivity=None, quality=None, forecast=None, forensics=None,
+                 profile=None) -> dict:
+    profile = profile or prof_mod.load(None)
     detected = i18n.detect(model)
     lang = lang or detected["lang"]
     L = i18n.ui(lang)
@@ -175,6 +178,20 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
     grp = resolve_grouping(model, grouping)
     labels = group_labels(model, grp)
     extra_cols = discovered_columns(model, grp, L)
+    # A profile's declared fields win over discovery, and a declared field that the
+    # file does not have is reported, never silently ignored.
+    declared, missing_fields = prof_mod.resolve_fields(model, profile)
+    if declared:
+        extra_cols = []
+        for role in ("discipline", "service", "section", "work_front", "regulator_code"):
+            row = declared.get(role)
+            if row and row["field_id"] != grp.get("field_id"):
+                extra_cols.append({"key": f"cf_{row['field_id']}", "field_id": row["field_id"],
+                                   "label": row.get("alias") or row.get("field_name")})
+    severity = dict(SEVERITY)
+    for code in profile.get("checks_optional") or []:
+        if code in ("B", "F"):
+            severity[code] = "high"
     conv = res["conventions"]
 
     def day_minutes(task):
@@ -290,7 +307,7 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
         problem, impact, solution = EX[code]
         findings.append({
             "code": code, "layer": LY[LAYER_KEY[code]],
-            "severity": SEVERITY[code], "severity_word": SW[SEVERITY[code]],
+            "severity": severity[code], "severity_word": SW[severity[code]],
             "title": title, "subtitle": subtitle, "criterion": criterion,
             "source": source, "reproduce": reproduce,
             "problem": problem, "impact": impact, "solution": solution,
@@ -387,6 +404,13 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
             "calendars_in_file": (model.get("calendars") or {}).get("count", 0),
             "ignored_pairs": conv.get("both_complete_pairs_ignored", 0),
             "links_evaluated": links_text,
+        },
+        "profile": {
+            "organisation": profile.get("organisation") or "",
+            "fields_missing": missing_fields,
+            "sections_hidden": profile.get("sections_hidden") or [],
+            "forced": {k: v for k, v in (("baseline_slot", profile.get("baseline_slot")),
+                                         ("ev_method", profile.get("ev_method"))) if v},
         },
         "conventions": {
             **conv,

@@ -595,6 +595,50 @@ def main() -> int:
     if "narrative" not in full_en or full_en["narrative"] is not None:
         failures.append("readings: the synthesis slot is missing or pre-filled")
 
+    # ---- the organisation profile: declared, validated, applied, and loud about a
+    # field the file does not have.
+    import profile as prof_mod
+    prof = prof_mod.load(None)
+    if prof_mod.validate(prof):
+        failures.append("profile: the defaults do not validate")
+    with tempfile.TemporaryDirectory() as tmp:
+        pj = os.path.join(tmp, "profile.json")
+        subprocess.run([sys.executable, os.path.join(HERE, "profile_tool.py"), "init", "--out", pj,
+                        "--organisation", "Test Org"], check=True, capture_output=True)
+        r = subprocess.run([sys.executable, os.path.join(HERE, "profile_tool.py"), "set", pj,
+                            "grouping=DISCIPLINA", "fields.discipline=DISCIPLINA",
+                            "fields.section=NO_SUCH_FIELD", 'checks_optional=["B"]',
+                            "threshold_days=10", 'sections_hidden=["v4"]', "theme.accent=#123456"],
+                           capture_output=True, text=True)
+        if r.returncode != 0:
+            failures.append(f"profile: set failed: {r.stderr.strip()}")
+        bad = subprocess.run([sys.executable, os.path.join(HERE, "profile_tool.py"), "set", pj,
+                              "ev_method=nonsense"], capture_output=True, text=True)
+        if bad.returncode == 0:
+            failures.append("profile: an invalid earned-value method was accepted")
+        loaded = prof_mod.load(pj)
+        if loaded["threshold_days"] != 10 or loaded["fields"]["discipline"] != "DISCIPLINA":
+            failures.append("profile: values did not round-trip through the tool")
+        pay = report_data.build_review(pm, pos, grouping=loaded["grouping"], lang="en", profile=loaded)
+        if pay["meta"]["grouping_mode"] != "custom":
+            failures.append("profile: grouping declared in the profile was not applied")
+        if "section: NO_SUCH_FIELD" not in " ".join(pay["profile"]["fields_missing"]):
+            failures.append("profile: a declared field the file lacks was not reported")
+        bsev = next(f["severity"] for f in pay["findings"] if f["code"] == "B")
+        if bsev != "high":
+            failures.append("profile: checks_optional did not promote B to a finding")
+        if pay["profile"]["sections_hidden"] != ["v4"]:
+            failures.append("profile: hidden sections did not reach the payload")
+        # A forced slot must be recorded as forced, so the report says whose choice it was.
+        forced = prof_mod.deep_merge(loaded, {"baseline_slot": "1"})
+        import copy
+        m2 = copy.deepcopy(pm)
+        m2["prevailing_baseline"] = {**m2["prevailing_baseline"], "slot": str(forced["baseline_slot"]),
+                                     "basis": "forced by the organisation profile"}
+        pay2 = report_data.build_review(m2, pos, grouping="wbs", lang="en", profile=forced)
+        if pay2["profile"]["forced"].get("baseline_slot") != "1":
+            failures.append("profile: a forced baseline slot was not declared in the payload")
+
     # ---- the report must actually render. A valid file that runs to a blank page
     # is the failure mode this guards; see scripts/test_render.js for the real bug.
     rendered = render_checks()
@@ -627,6 +671,7 @@ def main() -> int:
     print("  forecast: earned schedule, look-ahead, rates, milestone bands, rain exposure")
     print("  forensics: driving chain through the lag link, origin named, cycle readings")
     print("  readings: every section reads in both languages; synthesis injected without recompute")
+    print("  profile: init/set/validate round-trip; grouping, fields, optional checks and hiding applied")
     return 0
 
 

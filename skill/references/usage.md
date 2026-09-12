@@ -90,6 +90,24 @@ language: the same field reads `Text1` or `Texto1`, `Flag20` or `Sinalizador20`.
 keys on the stable identifier and shows the name only for the human. An alias you type is
 matched against the id, the alias and the name, so either works.
 
+## Step 2c — declare the organisation's conventions, once
+
+Optional. The skill runs ready-to-use; a profile only narrows. `scripts/profile_tool.py`
+creates and edits it, validates on every write, and resolves every declared field against the
+file so a name that does not exist is reported rather than ignored:
+
+```
+python3 scripts/profile_tool.py init --out profile.json --organisation "..."
+python3 scripts/profile_tool.py discover model.json
+python3 scripts/profile_tool.py set profile.json grouping=DISCIPLINA fields.discipline=DISCIPLINA
+python3 scripts/profile_tool.py show profile.json model.json
+python3 scripts/review.py delivery.xml --profile profile.json
+```
+
+Every key, its default and its effect: `references/profile.md`. Inside Claude Code, say
+"customise the organisation profile" or "customise the report" and the skill runs the
+interview, showing what the file has before asking.
+
 ## Step 3 — read what comes out
 
 Four files per run, written next to the input:

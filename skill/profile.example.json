@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "organisation": "Example Infrastructure Programme",
+  "lang": null,
+  "ev_method": null,
+  "baseline_slot": null,
+  "threshold_days": 30,
+  "tolerance_days": 1,
+  "checks_optional": [
+    "B"
+  ],
+  "grouping": "DISCIPLINE",
+  "fields": {
+    "discipline": "DISCIPLINE",
+    "service": null,
+    "section": "SECTION",
+    "work_front": null,
+    "justification": "JUSTIFICATION",
+    "quantity": null,
+    "unit": null,
+    "productivity_contracted": "CREW RATE",
+    "regulator_code": null
+  },
+  "productivity": {
+    "recent_days": 30,
+    "thin_evidence_days": 10,
+    "thin_evidence_share": 0.02
+  },
+  "rain": {
+    "reserve_days_per_month": 4
+  },
+  "lookahead_weeks": [
+    4,
+    8
+  ],
+  "theme": {
+    "accent": "#1B4D8F",
+    "crit": null,
+    "warn": null,
+    "good": null,
+    "font_display": null,
+    "font_sans": null,
+    "font_mono": null,
+    "logo_text": "EIP"
+  },
+  "template": null,
+  "sections_hidden": []
+}

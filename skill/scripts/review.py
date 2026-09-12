@@ -31,6 +31,7 @@ import resources as resources_mod  # noqa: E402
 import network_quality as quality_mod  # noqa: E402
 import forecast as forecast_mod  # noqa: E402
 import forensics as forensics_mod  # noqa: E402
+import profile as prof_mod  # noqa: E402
 import report_data  # noqa: E402
 import report_html  # noqa: E402
 import run_checks  # noqa: E402
@@ -112,7 +113,17 @@ def stem(path: str) -> str:
 
 def do_review(model, path, outdir, threshold, tolerance, quiet,
               theme=None, grouping="wbs", template=None, lang=None,
-              previous=None, cycle=None) -> dict:
+              previous=None, cycle=None, profile=None) -> dict:
+    profile = profile or prof_mod.load(None)
+    # A profile may force the baseline slot or the earned-value method. Both are
+    # recorded as forced, so the report says the choice was the organisation's,
+    # not the file's.
+    if profile.get("baseline_slot") is not None:
+        model["prevailing_baseline"] = {**(model.get("prevailing_baseline") or {}),
+                                        "slot": str(profile["baseline_slot"]),
+                                        "basis": "forced by the organisation profile"}
+    if profile.get("ev_method"):
+        model["project"]["ev_method_forced"] = profile["ev_method"]
     res = run_checks.run(model, threshold, tolerance)
     # The S-curve reads the XML a second time, streaming, because the phased
     # blocks are too many to keep in the model. XML only: the optional binary
@@ -125,13 +136,13 @@ def do_review(model, path, outdir, threshold, tolerance, quiet,
     if src and src.lower().endswith(".xml") and os.path.exists(src):
         grp = report_data.resolve_grouping(model, grouping)
         curve = phasing_mod.build(src, grp.get("field_id"))
-        prod = resources_mod.build(src, model)
+        prod = resources_mod.build(src, model, profile=profile)
     quality = quality_mod.build(model, src if (src and src.lower().endswith(".xml")
                                               and os.path.exists(src)) else None)
     fc = None
     if curve is not None:
         grp = report_data.resolve_grouping(model, grouping)
-        fc = forecast_mod.build(model, curve, prod, grp.get("field_id"))
+        fc = forecast_mod.build(model, curve, prod, grp.get("field_id"), profile=profile)
     grp = report_data.resolve_grouping(model, grouping)
     fx = forensics_mod.build(model, res, previous, cycle, grp.get("field_id"))
     base = os.path.join(outdir, f"{stem(path)}-review")
@@ -140,7 +151,7 @@ def do_review(model, path, outdir, threshold, tolerance, quiet,
     import i18n
     effective_lang = lang or i18n.detect(model)["lang"]
     payload = report_data.build_review(model, res, theme=theme, grouping=grouping,
-                                       lang=effective_lang, phasing=curve,
+                                       lang=effective_lang, phasing=curve, profile=profile,
                                        productivity=prod, quality=quality, forecast=fc,
                                        forensics=fx)
     with open(base + "-forensics.json", "w", encoding="utf-8") as fh:
@@ -196,20 +207,21 @@ def main() -> None:
     outdir = args.outdir or os.path.dirname(os.path.abspath(args.files[-1]))
     os.makedirs(outdir, exist_ok=True)
 
-    profile = {}
-    if args.profile:
-        with open(args.profile, encoding="utf-8") as fh:
-            profile = json.load(fh)
-    theme = profile.get("theme")
-    grouping = profile.get("grouping", args.group_by)
+    profile = prof_mod.load(args.profile)
+    theme = {k: v for k, v in (profile.get("theme") or {}).items() if v}
+    grouping = args.group_by if args.group_by != "wbs" else (profile.get("grouping") or "wbs")
     template = args.template or profile.get("template")
     lang = args.lang or profile.get("lang")
+    if args.profile:
+        args.threshold_days = profile.get("threshold_days", args.threshold_days)
+        args.tolerance_days = profile.get("tolerance_days", args.tolerance_days)
 
     models = [load(f) for f in args.files]
 
     if len(models) == 1:
         do_review(models[0], args.files[0], outdir, args.threshold_days,
-                  args.tolerance_days, args.quiet, theme, grouping, template, lang)
+                  args.tolerance_days, args.quiet, theme, grouping, template, lang,
+                  profile=profile)
         return
 
     prev_path, curr_path = args.files
@@ -223,7 +235,8 @@ def main() -> None:
     if not args.quiet:
         print("=== Review of the current delivery ===\n")
     do_review(curr, curr_path, outdir, args.threshold_days, args.tolerance_days,
-              args.quiet, theme, grouping, template, lang, previous=prev, cycle=res)
+              args.quiet, theme, grouping, template, lang, previous=prev, cycle=res,
+              profile=profile)
     base = os.path.join(outdir, f"{stem(prev_path)}--to--{stem(curr_path)}-cycle")
     with open(base + ".json", "w", encoding="utf-8") as fh:
         json.dump(res, fh, indent=2, ensure_ascii=False)

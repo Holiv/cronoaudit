@@ -52,6 +52,13 @@ def dt(v):
     return datetime.fromisoformat(v) if v else None
 
 
+def _num(v):
+    try:
+        return float(str(v).replace(",", ".")) if v not in (None, "") else None
+    except ValueError:
+        return None
+
+
 def qty(iso):
     """Material quantity encoded as hours of an ISO duration."""
     m = iso_duration_minutes(iso)
@@ -132,7 +139,17 @@ def verdict(projected, trend, baseline, late):
     return "critical"
 
 
-def build(xml_path: str, model: dict) -> dict:
+def build(xml_path: str, model: dict, profile: dict | None = None) -> dict:
+    prof = (profile or {}).get("productivity") or {}
+    recent_days = int(prof.get("recent_days") or RECENT_DAYS)
+    thin_days = float(prof.get("thin_evidence_days") or 10)
+    thin_share = float(prof.get("thin_evidence_share") or 0.02)
+    contracted_ref = ((profile or {}).get("fields") or {}).get("productivity_contracted")
+    contracted_field = None
+    if contracted_ref:
+        import profile as prof_mod
+        row = prof_mod.resolve_field(model, contracted_ref)
+        contracted_field = row["field_id"] if row else None
     status = dt(model["project"].get("status_date"))
     slot = (model.get("prevailing_baseline") or {}).get("slot")
     tasks = {t["uid"]: t for t in model["tasks"]}
@@ -154,7 +171,7 @@ def build(xml_path: str, model: dict) -> dict:
                                         "planned_days": 0.0})
     rows = []
     unassigned = 0
-    recent_from = (status - timedelta(days=RECENT_DAYS)).date().isoformat() if status else None
+    recent_from = (status - timedelta(days=recent_days)).date().isoformat() if status else None
     cutoff = status.date().isoformat() if status else "9999-12-31"
 
     for res, a in stream(xml_path):
@@ -220,6 +237,10 @@ def build(xml_path: str, model: dict) -> dict:
             "float_days": (round(t["total_slack_minutes"] / (cal.day_minutes if cal else 480), 1)
                            if t.get("total_slack_minutes") is not None else None),
             "critical_now": bool(t.get("critical")),
+            # The organisation's contracted rate, when its profile names the field.
+            # An overlay for comparison, never a requirement.
+            "rate_contracted": (_num((t.get("custom") or {}).get(contracted_field))
+                                if contracted_field else None),
         })
 
     # ---- resource-level rates
@@ -233,7 +254,7 @@ def build(xml_path: str, model: dict) -> dict:
         # projects nonsense with a straight face: a resource with 2% executed over
         # three days "finishes" in 2031. The rate is still reported -- it is what the
         # data says -- but flagged, and the verdict it drives is flagged with it.
-        thin = (pr["executed_days"] < 10) or (pr["planned"] > 0 and pr["executed"] < 0.02 * pr["planned"])
+        thin = (pr["executed_days"] < thin_days) or (pr["planned"] > 0 and pr["executed"] < thin_share * pr["planned"])
         res_out.append({
             "uid": uid, "name": r["name"], "type": r["type"], "unit": r["label"] or r["type"],
             "assignments": pr["assignments"],
@@ -296,7 +317,7 @@ def build(xml_path: str, model: dict) -> dict:
 
     return {
         "status_date": model["project"].get("status_date"),
-        "recent_window_days": RECENT_DAYS,
+        "recent_window_days": recent_days,
         "summary": {
             "resources_tracked": len(res_out),
             "assignments_unassigned": unassigned,

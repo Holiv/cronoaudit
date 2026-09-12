@@ -285,7 +285,7 @@ function renderReview(d){
   const groupName = m.grouping_mode==="wbs" ? L.wbs_branch : m.grouping;
 
   out.push(`<header class="capa"><div class="striping"></div>
-    <div class="chips"><span class="chip forte">${esc(L.chip_title)}</span>
+    <div class="chips"><span class="chip forte">${esc(L.chip_title)}</span>${(d.profile&&d.profile.organisation)?`<span class="chip">${esc(d.profile.organisation)}</span>`:""}${(d.theme&&d.theme.logo_text)?`<span class="chip forte">${esc(d.theme.logo_text)}</span>`:""}
       <span class="chip">${esc(L.status_date)}: ${esc(m.status_date||L.not_set)}</span>
       <span class="chip">${esc(L.generated)} ${esc(m.generated)}</span></div>
     <h1>${esc(m.title)}</h1>
@@ -293,6 +293,9 @@ function renderReview(d){
     ${bar()}</header>`);
 
   (d.blocking||[]).forEach(b=>out.push(`<div class="note bad" style="margin-top:14px"><b>${esc(L.blocking)}</b> ${esc(b)}</div>`));
+  if(d.profile&&d.profile.fields_missing&&d.profile.fields_missing.length){
+    out.push(`<div class="note" style="margin-top:14px"><b>${esc(L.warning)}</b> ${esc(L.profile_missing)} ${esc(d.profile.fields_missing.join("; "))}</div>`);
+  }
   if(d.narrative&&d.narrative.text){
     out.push(`<div class="sintese"><div class="eyebrow">${esc(L.syn_label)}</div>${d.narrative.text.split(/\n\s*\n/).map(pg=>`<p>${esc(pg.trim())}</p>`).join("")}
       <div class="who">${esc(fill(L.syn_written,{who:d.narrative.who||"",when:d.narrative.when||""}))}</div></div>`);
@@ -403,7 +406,7 @@ function renderReview(d){
       <h3 style="font-size:15px;margin:14px 0 8px">${esc(L.prod_activities_title)}</h3>
       ${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_resource,key:"resource"},{label:L.col_unit,key:"unit"},
         {label:L.col_planned_qty,key:"planned_qty"},{label:L.col_exec_qty,key:"executed_qty"},{label:L.col_source,key:"source_t"},{label:L.col_rem_qty,key:"remaining_qty"},
-        {label:L.col_rate_own,key:"rate_own"},{label:L.col_rate_global,key:"rate_global"},{label:L.col_rate_recent,key:"rate_recent"},{label:L.col_rate_planned,key:"rate_planned"},
+        {label:L.col_rate_own,key:"rate_own"},{label:L.col_rate_global,key:"rate_global"},{label:L.col_rate_recent,key:"rate_recent"},{label:L.col_rate_planned,key:"rate_planned"},{label:L.col_rate_contracted,key:"rate_contracted"},
         {label:L.col_req_trend,key:"rate_required_trend"},{label:L.col_req_late,key:"rate_required_late"},
         {label:L.col_fin_trend,key:"finish_trend"},{label:L.col_fin_baseline,key:"finish_baseline"},{label:L.col_fin_late,key:"finish_late"},
         {label:L.col_proj_own,key:"projected_own"},{label:L.col_proj_global,key:"projected_global"},{label:L.col_proj_recent,key:"projected_recent"},
@@ -601,6 +604,10 @@ function renderCycle(d){
   theme(DATA.theme);
   if(DATA.lang) document.documentElement.setAttribute("lang",DATA.lang);
   app.innerHTML=(DATA.kind==="cycle"?renderCycle(DATA):renderReview(DATA))+`<footer>${L.footer||""}</footer>`;
+  ((DATA.profile||{}).sections_hidden||[]).forEach(id=>{
+    const s=document.getElementById(id); if(s) s.remove();
+    document.querySelectorAll(`nav.indice a[href="#${id}"]`).forEach(a=>a.remove());
+  });
   const pdf=document.getElementById("pdf"), th=document.getElementById("th");
   if(pdf) pdf.onclick=()=>{document.querySelectorAll("details").forEach(x=>x.open=true);window.print();};
   if(th) th.onclick=()=>{

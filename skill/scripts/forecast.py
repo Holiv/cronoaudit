@@ -301,7 +301,7 @@ def milestone_bands(model: dict) -> dict:
 # ---------------------------------------------------------------------------
 # Rainy-season exposure
 # ---------------------------------------------------------------------------
-def rain_exposure(model: dict) -> dict:
+def rain_exposure(model: dict, reserve_days: int = RESERVE_DAYS_PER_MONTH) -> dict:
     status = dt(model["project"].get("status_date"))
     slot = (model.get("prevailing_baseline") or {}).get("slot")
     cal_blob = model.get("calendars") or {}
@@ -317,7 +317,7 @@ def rain_exposure(model: dict) -> dict:
         for day, ivs in cal.exception_intervals.items():
             if not ivs:
                 per_month[day.strftime("%Y-%m")] += 1
-        reserve[uid] = {m for m, n in per_month.items() if n >= RESERVE_DAYS_PER_MONTH}
+        reserve[uid] = {m for m, n in per_month.items() if n >= reserve_days}
 
     def spread(t, shift_days=0):
         cost = ((t.get("baselines") or {}).get(slot) or {}).get("cost") or 0.0
@@ -363,7 +363,7 @@ def rain_exposure(model: dict) -> dict:
               for m, v in sorted(months.items())]
     return {
         "available": True,
-        "reserve_rule": f"a month with at least {RESERVE_DAYS_PER_MONTH} non-working exceptions on the activity's calendar",
+        "reserve_rule": f"a month with at least {reserve_days} non-working exceptions on the activity's calendar",
         "remaining_total": round(total, 2),
         "in_reserve": round(in_reserve, 2),
         "share_in_reserve_pct": round(in_reserve / total * 100, 2) if total else None,
@@ -374,14 +374,18 @@ def rain_exposure(model: dict) -> dict:
     }
 
 
-def build(model: dict, scurve: dict, productivity: dict | None, group_field: str | None) -> dict:
+def build(model: dict, scurve: dict, productivity: dict | None, group_field: str | None,
+          profile: dict | None = None) -> dict:
+    prof = profile or {}
+    weeks = tuple(prof.get("lookahead_weeks") or (4, 8))
+    reserve_days = int(((prof.get("rain") or {}).get("reserve_days_per_month")) or RESERVE_DAYS_PER_MONTH)
     return {
         "status_date": model["project"].get("status_date"),
         "earned_schedule": earned_schedule(scurve, model),
-        "lookahead": lookahead(model, scurve, group_field),
+        "lookahead": lookahead(model, scurve, group_field, weeks),
         "rates_by_group": rates_by_group(model, scurve, group_field),
         "milestone_bands": milestone_bands(model),
-        "rain_exposure": rain_exposure(model),
+        "rain_exposure": rain_exposure(model, reserve_days),
     }
 
 

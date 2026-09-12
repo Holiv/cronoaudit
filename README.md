@@ -18,6 +18,21 @@ compute it on a real delivered file.
 Never edit the installed copy. A correction made downstream is erased by the next sync and
 nothing signals it.
 
+## What it does, in one run
+
+    python3 skill/scripts/review.py delivery.xml --group-by DISCIPLINE
+
+From the scheduling tool's own XML export, with nothing installed beyond Python:
+the nine integrity checks with stable codes, the S-curve read from the file's own
+phasing and reconciled against its totals, productivity and trend by resource from
+native assignment quantities, the fourteen network-quality metrics, Earned Schedule
+and the look-ahead, and the forensics that name where each milestone's delay
+entered. One self-contained HTML report in the schedule's own language, every
+section opening with a rule-built reading, plus a JSON sidecar per analysis.
+
+An organisation declares its own conventions in a profile instead of having them
+coded: `python3 skill/scripts/profile_tool.py example`.
+
 ## Install
 
     ./install.sh

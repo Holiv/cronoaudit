@@ -2,3 +2,6 @@
 __pycache__/
 *.pyc
 .local-targets
+.real-file
+profile.json
+*.local.json
