@@ -1,6 +1,6 @@
 ---
 name: schedule-integrity
-description: Audit a construction or infrastructure schedule and the progress/earned-value figures derived from it, hunting the failures that produce a plausible wrong number instead of an error. Use when reviewing a delivered contractor schedule, doing schedule critical analysis, computing or reconciling earned value (BCWS/BCWP/SPI/CPI), building or debugging an S-curve, comparing planned against actual physical progress, reading a .mpp or MPXJ-parsed schedule programmatically, reconciling two schedule versions, or explaining why a control indicator disagrees with its source tool.
+description: Review a delivered construction or infrastructure schedule, compare it against the previous version, and audit the progress and earned-value figures derived from it - finding the failures that produce a plausible wrong number rather than an error. Use for schedule critical analysis of a contractor delivery, the periodic cycle report, computing or reconciling earned value (BCWS/BCWP/SPI/CPI), building or debugging an S-curve or physical progress curve, comparing two schedule versions or snapshots, deciding whether a change was execution or a replan, reading a .mpp or MPXJ-parsed schedule programmatically, or explaining why a control indicator disagrees with its source tool. Produces named findings with stable codes, a weighted deviation decomposition, and a report where every finding carries how to reproduce it.
 user-invocable: true
 ---
 
@@ -11,6 +11,50 @@ failure class specifically: **the calculation is arithmetically correct, every i
 correct in its own source, the result is plausible, nothing raises an error, and the
 number is meaningless.** Textbooks cover how to compute earned value. This covers what
 goes wrong silently when you compute it on a real delivered file.
+
+## What this is for, concretely
+
+**Who runs it.** Whoever receives a schedule and has to say whether it is true: the planning
+engineer on the contracting side auditing a contractor's delivery, or the contractor's own
+planner who wants a delivery that passes. The checks are not traps — they are the questions a
+consistent schedule answers by itself.
+
+**The two jobs, and they are different.**
+
+| Job | Question | Input |
+|---|---|---|
+| **Critical review** (`checks.md`) | Is this delivery internally consistent? | one schedule |
+| **Cycle comparison** (`comparing-versions.md`) | What moved since last time, and was it execution or a replan? | two snapshots of the same schedule |
+
+**What you must have in hand** before either is worth starting: a status date, a saved
+baseline, and for the comparison the previous cycle's file. Fields the checks read must be
+populated — and a field left empty is itself a reportable finding, not a reason to skip the
+check.
+
+**What comes out.** Named findings with stable codes, each one a set of flagged activities
+navigable inside the schedule itself rather than a list beside it. A weighted decomposition
+that shows where the aggregate deviation actually comes from. A report in which every finding
+closes with which columns it came from and which filter reproduces it. And a clean-up routine,
+because the file belongs to somebody else.
+
+**What decision it feeds.** Whether to accept the delivery; what to put on the agenda with the
+contractor and with what evidence; whether a reported deviation is the works or the reference;
+and what the periodic report to management says.
+
+**The questions it answers, in the order they get asked:**
+
+1. Does the logic hold, or is every forecast date in this file derived from a network the works
+   does not follow?
+2. Which activities are elapsed, pulled forward or delayed beyond tolerance?
+3. Is the record-keeping consistent, or am I about to accuse execution of a reporting problem?
+4. Where does the aggregate progress figure actually come from, activity by activity?
+5. What moved since the last delivery, and was it executed or re-planned?
+6. Did the baseline itself move — that is, did my comparison basis change underneath me?
+7. Is each indicator's planned half measured against the same reference as its actual half?
+
+**What it does not do.** It does not level resources, run a forensic delay analysis, score a
+schedule against the DCMA 14-point assessment, or price anything. It reads and reconciles; it
+does not repair the schedule.
 
 ## Read this first: the datum question
 
@@ -159,6 +203,15 @@ A healthy aggregate can be the average of two pathologies. A positive aggregate 
 figure can be out-of-sequence activities covering activities that should be complete and
 sit at zero. **Every aggregate figure must travel with the distribution of its weight** —
 otherwise the apparent advance shows up where the money is not.
+
+## Comparing against the previous delivery
+
+Everything above reviews one file. The other half of the method compares two snapshots of the
+same schedule to answer what moved and whether it was execution or a replan, and to decompose
+the aggregate deviation into per-activity contributions that sum to it. Matching activities
+across versions, the three signals that separate execution from replan, and the reason a
+changed baseline is a finding about the report rather than about performance, are all in
+`references/comparing-versions.md`.
 
 ## The report
 
