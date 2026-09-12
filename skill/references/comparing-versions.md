@@ -46,8 +46,12 @@ cannot be verified. Report the unmatched count as a number the reader must judge
 classification you are confident about.
 
 **Caveat on the identifier**, and it is measured: the unique identifier on the phantom row that
-represents an inserted subproject is **local to the file**. Matching across files on it
-produces false positives. Exclude those rows rather than trusting the match.
+represents an inserted subproject is **local to the file**. Matching across files on it produces
+false positives — and **a false positive here is worse than a failure to match**, because the
+cascade resolves to the wrong pair instead of resolving to nothing. A pair that does not match
+lands in the unmatched list where somebody looks at it. A pair matched wrongly produces a date
+movement, a deviation and a trend entry for two activities that have nothing to do with each
+other, all of them plausible. Exclude those rows rather than trusting the match.
 
 **Summary rows and milestones are excluded** from deviation, trend and baseline comparison.
 Summary rows would double-count their children; milestones have no duration and distort every
@@ -69,8 +73,13 @@ rate.
 **The second row is the whole discipline in one line.** Both snapshots' general indicators are
 computed by **one reusable function called twice**, not by two code paths that happen to agree.
 If the previous cycle's figure is computed a different way from the current one, the difference
-between them is a datum artefact, and it will read as performance. Calling one function twice
-is the cheapest possible guarantee that both halves share a reference.
+between them is a datum artefact, and it will read as performance. Calling one function twice is
+the cheapest possible guarantee that both halves share a reference.
+
+The principle, worth stating in general because it applies far beyond schedules: **do not verify
+that the two halves agree — construct them so that they cannot disagree.** A test that checks
+two code paths against each other passes until the day somebody edits one of them. One code path
+called twice has nothing to drift.
 
 ## Separating a change in execution from a change in plan
 
