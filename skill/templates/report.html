@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Schedule report</title>
+<style>
+:root{
+  --bg:#fbfaf8; --panel:#ffffff; --panel2:#f6f4f1; --ink:#191919; --muted:#5d5d5d;
+  --line:#e3e0da; --accent:#1f4e5f; --high:#9c3b2e; --medium:#8a6a1e; --low:#3f6b57;
+  --warnbg:#fdf5ec; --grid:#ece9e3;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#14151a; --panel:#1c1e24; --panel2:#22252c; --ink:#eceae6; --muted:#a0a09e;
+  --line:#31343c; --warnbg:#291f17; --grid:#2a2d34;
+}}
+:root[data-theme="dark"]{
+  --bg:#14151a; --panel:#1c1e24; --panel2:#22252c; --ink:#eceae6; --muted:#a0a09e;
+  --line:#31343c; --warnbg:#291f17; --grid:#2a2d34;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--sans)}
+.wrap{max-width:1080px;margin:0 auto;padding-block:26px;padding-left:20px;padding-right:20px}
+h1{font-size:1.55rem;margin:0 0 2px;letter-spacing:-.015em}
+h2{font-size:1.08rem;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h3{font-size:.93rem;margin:18px 0 7px}
+p{margin:0 0 10px}
+a{color:var(--accent)}
+code{font-family:var(--mono);font-size:.88em}
+.eyebrow{font-size:.68rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+.sub{color:var(--muted);font-size:.86rem;margin:0 0 18px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
+button{font:inherit;padding:7px 13px;border:1px solid var(--line);border-radius:7px;
+  background:var(--panel);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--accent)}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:9px;margin:0 0 16px}
+.meta>div{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 11px}
+.meta dt{font-size:.66rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.meta dd{margin:3px 0 0;font-family:var(--mono);font-size:.87rem;word-break:break-word}
+.note{background:var(--warnbg);border:1px solid var(--medium);border-left-width:4px;
+  border-radius:7px;padding:11px 14px;margin:11px 0;font-size:.89rem}
+.note.bad{border-color:var(--high)}
+.note.good{background:transparent;border-color:var(--low)}
+.note b{font-weight:650}
+.read{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:0 0 18px}
+.read p:last-child{margin:0}
+ol.idx{list-style:none;counter-reset:i;padding:0;margin:0;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:4px}
+ol.idx li{counter-increment:i;display:flex;gap:9px;align-items:baseline;
+  padding:6px 9px;border-bottom:1px solid var(--line);font-size:.87rem}
+ol.idx .c{font-family:var(--mono);font-weight:700;color:var(--accent);min-width:22px}
+ol.idx .n{margin-left:auto;font-family:var(--mono);color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:9px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:11px 12px;
+  border-top:3px solid var(--line)}
+.card.high{border-top-color:var(--high)} .card.medium{border-top-color:var(--medium)}
+.card.low{border-top-color:var(--low)}
+.card .c{font-family:var(--mono);font-weight:700;font-size:.82rem;color:var(--accent)}
+.card .v{font-size:1.8rem;font-weight:650;line-height:1.12;margin:1px 0}
+.card .v.zero{color:var(--muted);font-weight:400}
+.card .t{font-size:.78rem;color:var(--muted)}
+.badge{display:inline-block;font-size:.63rem;text-transform:uppercase;letter-spacing:.07em;
+  padding:2px 6px;border-radius:4px;border:1px solid currentColor;vertical-align:2px}
+.badge.high{color:var(--high)} .badge.medium{color:var(--medium)} .badge.low{color:var(--low)}
+.blk{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:14px 16px;margin:0 0 14px;border-left:4px solid var(--line)}
+.blk.high{border-left-color:var(--high)} .blk.medium{border-left-color:var(--medium)}
+.blk.low{border-left-color:var(--low)}
+.blk-top{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;margin-bottom:2px}
+.blk-top .c{font-family:var(--mono);font-weight:700;color:var(--accent)}
+.blk-top .q{margin-left:auto;font-family:var(--mono);font-size:1.15rem;font-weight:650}
+.blk h3{margin:0}
+.blk .desc{color:var(--muted);font-size:.87rem;margin:2px 0 10px}
+.fonte{font-size:.82rem;margin:8px 0 0;padding:9px 11px;background:var(--panel2);
+  border-radius:7px}
+.fonte div+div{margin-top:5px}
+.fonte b{font-weight:650}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px;margin-top:11px}
+table{border-collapse:collapse;width:100%;font-size:.83rem;background:var(--panel)}
+th,td{text-align:left;padding:6px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);
+  background:var(--panel2)}
+tbody tr:nth-child(even){background:var(--panel2)}
+tr:last-child td{border-bottom:0}
+td.num{text-align:right;font-family:var(--mono)}
+td.name{white-space:normal;min-width:210px}
+.chart{margin:12px 0 4px}
+.chart .row{display:grid;grid-template-columns:minmax(96px,190px) 1fr auto;gap:10px;
+  align-items:center;padding:2px 0;font-size:.82rem}
+.chart .rot{color:var(--muted);font-family:var(--mono);font-size:.76rem;
+  overflow:hidden;text-overflow:ellipsis}
+.track{background:var(--grid);border-radius:3px;height:15px;position:relative;overflow:hidden}
+.fill{height:100%;background:var(--accent);border-radius:3px}
+.fill.high{background:var(--high)} .fill.low{background:var(--low)}
+.fill.medium{background:var(--medium)}
+.val{font-family:var(--mono);font-size:.78rem;color:var(--muted);min-width:52px;text-align:right}
+.dual{display:grid;grid-template-columns:1fr;gap:1px}
+.legend{display:flex;gap:14px;font-size:.74rem;color:var(--muted);margin:8px 0 0}
+.legend span{display:flex;gap:5px;align-items:center}
+.sw{width:11px;height:11px;border-radius:2px;display:inline-block}
+footer{margin-top:38px;padding-top:13px;border-top:1px solid var(--line);
+  font-size:.77rem;color:var(--muted)}
+@media print{
+  :root{--bg:#fff;--panel:#fff;--panel2:#f4f4f4;--ink:#000;--muted:#444;--line:#b9b9b9;--grid:#ddd}
+  .bar{display:none} body{font-size:10pt} .wrap{max-width:none}
+  h2{break-after:avoid} .blk{break-inside:avoid} .scroll{overflow:visible}
+  table{font-size:8pt} td,th{white-space:normal} th{background:#eee}
+  .fill{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+}
+</style></head>
+<body><div class="wrap" id="app">Rendering…</div>
+<script>
+const DATA = /*DATA*/ null;
+
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const n = (v,d=0) => v==null?"&mdash;":(typeof v==="number"?v.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}):esc(v));
+
+function theme(t){
+  if(!t) return;
+  const r=document.documentElement.style;
+  if(t.accent) r.setProperty("--accent",t.accent);
+  if(t.high) r.setProperty("--high",t.high);
+  if(t.medium) r.setProperty("--medium",t.medium);
+  if(t.low) r.setProperty("--low",t.low);
+  if(t.font_sans) r.setProperty("--sans",t.font_sans);
+  if(t.font_mono) r.setProperty("--mono",t.font_mono);
+}
+
+function metaGrid(pairs){
+  return `<div class="meta">${pairs.filter(([,v])=>v!=null&&v!=="").map(([k,v])=>
+    `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</div>`;
+}
+
+function chart(series,{cls="",fmt=v=>n(v)}={}){
+  if(!series||!series.length) return `<p class="sub">No data for this chart.</p>`;
+  const max=Math.max(...series.map(s=>Math.abs(s.value)))||1;
+  return `<div class="chart">${series.map(s=>`<div class="row">
+    <div class="rot" title="${esc(s.label)}">${esc(s.label)}</div>
+    <div class="track"><div class="fill ${cls}" style="width:${Math.abs(s.value)/max*100}%"></div></div>
+    <div class="val">${fmt(s.value)}</div></div>`).join("")}</div>`;
+}
+
+function table(cols,rows,limit=400){
+  if(!rows||!rows.length) return `<p class="sub">No activities in this finding.</p>`;
+  const head=cols.map(c=>`<th>${esc(c.label)}</th>`).join("");
+  const body=rows.slice(0,limit).map(r=>"<tr>"+cols.map(c=>{
+    const v=r[c.key];
+    const cls=c.key==="name"?"name":(typeof v==="number"?"num":"");
+    return `<td class="${cls}">${typeof v==="number"?n(v,Number.isInteger(v)?0:1):esc(v)}</td>`;
+  }).join("")+"</tr>").join("");
+  const more=rows.length>limit?`<p class="sub">Showing ${limit} of ${rows.length} rows; the full set is in the JSON beside this file.</p>`:"";
+  return `<div class="scroll"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>${more}`;
+}
+
+function renderReview(d){
+  const m=d.meta, c=d.conventions;
+  const net=d.findings.filter(f=>f.layer==="Network integrity").reduce((a,f)=>a+f.count,0);
+  const total=d.findings.reduce((a,f)=>a+f.count,0);
+  const out=[];
+
+  out.push(`<h1>${esc(m.title)}</h1>
+    <p class="sub">Schedule integrity review &middot; status date ${esc(m.status_date||"not set")}
+    &middot; ${n(m.leaves)} activities reviewed &middot; generated ${esc(m.generated)}</p>
+    <div class="bar"><button id="pdf">Print / save as PDF</button>
+    <button id="th">Toggle theme</button></div>`);
+
+  out.push(metaGrid([
+    ["Source file",m.file],["Baseline slot used",m.baseline_slot],
+    ["Budget at completion",n(m.budget,2)],
+    ["Weighted progress",m.percent_earned==null?null:n(m.percent_earned,2)+"%"],
+    ["Threshold",c.threshold_days+" calendar days"],
+    ["Physical % populated",`${n(m.with_physical_percent)} of ${n(m.tasks)}`],
+  ]));
+
+  (d.blocking||[]).forEach(b=>out.push(`<div class="note bad"><b>Blocking.</b> ${esc(b)}</div>`));
+
+  out.push(`<div class="read"><div class="eyebrow">How to read these numbers</div>
+    <p>Progress is <b>weighted by baseline cost</b>: each activity counts for its value, not
+    for being one row. A positive overall figure sitting next to high network findings usually
+    means work executed out of the planned order, which adds progress without meeting the plan.
+    That is not performance.</p>
+    <p><b>The network findings gate everything else.</b> When the scheduling tool recalculates
+    over logic the works does not follow, every forecast date in the file is derived from a
+    false premise, so a date discussion held before settling them is a discussion about
+    numbers with no basis.</p>
+    <p>Each finding below states its <b>criterion</b>, <b>where it came from</b> and <b>how to
+    reproduce it</b> in the scheduling tool, so nothing here has to be taken on trust. Counts
+    are distinct activities; a table can hold more rows than its count when an activity is
+    marked in two roles.</p></div>`);
+
+  out.push(`<h2>Index</h2><ol class="idx">${d.findings.map(f=>
+    `<li><span class="c">${esc(f.code)}</span><a href="#f-${esc(f.code)}">${esc(f.title)}</a>
+     <span class="n">${n(f.count)}</span></li>`).join("")}</ol>`);
+
+  out.push(net
+    ? `<div class="note bad"><b>Read this before any date below.</b> ${n(net)} activities are
+       involved in violated logic. Settle the network findings before discussing a single date.</div>`
+    : `<div class="note good"><b>Network integrity holds.</b> No out-of-sequence execution was
+       found, so the forecast dates below rest on logic the works is actually following.</div>`);
+
+  out.push(`<h2>Findings</h2><div class="cards">${d.findings.map(f=>
+    `<div class="card ${esc(f.severity)}"><div class="c">${esc(f.code)}</div>
+     <div class="v${f.count?"":" zero"}">${n(f.count)}</div>
+     <div class="t">${esc(f.title)}</div></div>`).join("")}</div>`);
+
+  out.push(`<h2>Where the weight sits</h2>
+    <p class="sub">Grouped by ${esc(m.grouping==="wbs"?"top WBS branch":m.grouping)}, ordered by
+    share of budget. An aggregate figure means little without this: the question is always
+    whether the progress happened where the money is.</p>`);
+  const g=d.charts.by_group;
+  out.push(chart(g.map(r=>({label:r.label,value:r.weight_pct})),{fmt:v=>n(v,1)+"%"}));
+  out.push(`<div class="legend"><span><i class="sw" style="background:var(--accent)"></i>
+    share of budget at completion</span></div>`);
+  out.push(table([
+    {label:"Branch",key:"label"},{label:"Activities",key:"activities"},
+    {label:"Budget",key:"budget"},{label:"Weight %",key:"weight_pct"},
+    {label:"Earned %",key:"earned_pct"},{label:"Findings",key:"finding_total"},
+  ],g));
+
+  out.push(`<h2>Distributions</h2>`);
+  out.push(`<h3>Finish variance against baseline</h3>
+    <p class="sub">Bands of 30 days. The shape matters more than any single row: a mass to the
+    right is slippage, a mass to the left is a forecast pulled earlier, and both tails at once
+    is reprogramming rather than progress.</p>`);
+  out.push(chart(d.charts.variance_histogram,{cls:"medium"}));
+  out.push(`<h3>Total float</h3>
+    <p class="sub">Bands of 10 days. A large population at high float, with a contractual
+    milestone elapsed, usually means the milestones are not constrained in the file.</p>`);
+  out.push(chart(d.charts.float_bands,{cls:"low"}));
+  out.push(`<h3>Activity starts per month</h3>
+    <p class="sub">From the current schedule. A cliff of starts in one month is a plan nobody
+    intends to execute that way.</p>`);
+  out.push(chart(d.charts.starts_per_month));
+
+  d.findings.forEach(f=>{
+    let extra="";
+    if(f.as_successors!=null){
+      extra=` Counted three defensible ways: ${n(f.count)} distinct activities,
+        ${n(f.as_successors)} as successors, ${n(f.as_predecessors)} as predecessors.
+        Align with whatever convention the other party's tool shows.`;
+    }
+    out.push(`<div class="blk ${esc(f.severity)}" id="f-${esc(f.code)}">
+      <div class="blk-top"><span class="c">${esc(f.code)}</span>
+        <span class="badge ${esc(f.severity)}">${esc(f.severity)}</span>
+        <span class="eyebrow">${esc(f.layer)}</span>
+        <span class="q">${n(f.count)}</span></div>
+      <h3>${esc(f.title)}</h3>
+      <p class="desc">${esc(f.subtitle)}</p>
+      ${f.code==="G"?`<div class="note"><b>Thermometer, not a finding.</b> G says something was
+        edited inconsistently, not what. Use it to choose what to inspect; never report it
+        alone.</div>`:""}
+      ${f.code==="P"&&f.count?`<div class="note"><b>A record defect, not an execution
+        defect.</b> These activities are held out of the network findings above. Without that
+        rule a reporting problem gets reported as an execution problem, and the conversation
+        with the people doing the work starts by accusing the wrong thing.</div>`:""}
+      <div class="fonte">
+        <div><b>Criterion.</b> ${esc(f.criterion)}${esc(extra)}</div>
+        <div><b>Where it came from.</b> ${esc(f.source)}</div>
+        <div><b>How to reproduce it.</b> ${esc(f.reproduce)}</div>
+      </div>
+      ${table(f.columns,f.items)}
+    </div>`);
+  });
+
+  out.push(`<h2>Conventions this report used</h2>${metaGrid([
+    ["Baseline slot",c.baseline_slot],["Chosen by",c.baseline_slot_basis],
+    ["Threshold",c.threshold_days+" "+c.threshold_unit],
+    ["Tolerance",c.tolerance_days+" days"],["Population",c.population],
+    ["Network counting",c.network_counting],["Working days",c.working_days],
+    ["Percent source",c.percent_source],
+  ])}`);
+  return out.join("");
+}
+
+function renderCycle(d){
+  const m=d.meta, out=[];
+  out.push(`<h1>Cycle comparison</h1>
+    <p class="sub">${esc(m.previous_source||"previous")} &rarr; ${esc(m.current_source||"current")}
+    &middot; generated ${esc(m.generated)}</p>
+    <div class="bar"><button id="pdf">Print / save as PDF</button>
+    <button id="th">Toggle theme</button></div>`);
+
+  out.push(metaGrid([
+    ["Previous status date",m.previous_status_date],["Current status date",m.current_status_date],
+    ["Baseline slot",m.current_baseline_slot],
+    ["Budget at completion",n(m.current_budget_at_completion,2)],
+  ]));
+
+  out.push(`<div class="read"><div class="eyebrow">How to read these numbers</div>
+    <p>The headline movement is <b>not necessarily progress</b>. It is the difference between
+    two weighted figures, and anything that changes the basis moves it too: activities inserted
+    or removed change the denominator, and a rebased baseline changes the reference itself.</p>
+    <p>So the movement is split in two: the part <b>explained</b> by per-activity progress, and
+    the <b>residue</b>. A residue that is not named is where a plausible wrong number lives.</p></div>`);
+
+  out.push(`<div class="cards">
+    <div class="card"><div class="c">PREVIOUS</div><div class="v">${n(m.previous_percent_earned,2)}%</div><div class="t">weighted progress</div></div>
+    <div class="card"><div class="c">CURRENT</div><div class="v">${n(m.current_percent_earned,2)}%</div><div class="t">weighted progress</div></div>
+    <div class="card"><div class="c">MOVEMENT</div><div class="v">${n(m.movement_points,3)}</div><div class="t">percentage points, headline</div></div>
+    <div class="card low"><div class="c">EXPLAINED</div><div class="v">${n(m.explained_points,3)}</div><div class="t">by activity progress</div></div>
+    <div class="card high"><div class="c">RESIDUE</div><div class="v">${n(m.unexplained_points,3)}</div><div class="t">not work done</div></div>
+  </div>`);
+
+  (d.warnings||[]).forEach(w=>out.push(`<div class="note"><b>Warning.</b> ${esc(w)}</div>`));
+
+  const r=d.readings;
+  out.push(`<h2>Was it execution, or was it the plan?</h2>
+    <p class="sub">Three signals, read together. A forecast rewritten with no execution behind it
+    is legitimate, but it has to be visible as a plan change, or the next cycle starts from a
+    baseline nobody agreed to.</p>
+    <div class="cards">
+      <div class="card low"><div class="c">EXECUTION</div><div class="v">${n(r.execution.length)}</div>
+        <div class="t">dates moved, actuals behind them</div></div>
+      <div class="card medium"><div class="c">REPLAN</div><div class="v">${n(r.replan.length)}</div>
+        <div class="t">dates moved, no actuals</div></div>
+      <div class="card high"><div class="c">REFERENCE</div><div class="v">${n(r.reference.length)}</div>
+        <div class="t">the baseline itself moved</div></div>
+    </div>`);
+
+  if(r.reference.length){
+    out.push(`<h2>The baseline moved &mdash; a finding about the report</h2>
+      <p class="sub">Every deviation straddling these changes is measured against two different
+      references. Two figures can each be perfectly measured and their difference still be
+      entirely false.</p>`);
+    out.push(table([{label:"Row",key:"id"},{label:"UID",key:"uid"},{label:"Activity",key:"name"},
+      {label:"BL start moved",key:"baseline_start_moved_days"},
+      {label:"BL finish moved",key:"baseline_finish_moved_days"}],r.reference));
+  }
+
+  out.push(`<h2>Where the movement came from</h2>
+    <p class="sub">Weight-relative contributions that sum to the movement. Denominator:
+    ${esc(d.conventions.denominator)}.</p>`);
+  out.push(chart(d.decomposition.slice(0,25).map(x=>({label:`${x.id} ${x.name}`,value:x.contribution_points})),
+    {fmt:v=>n(v,3)+" pp"}));
+  out.push(table([{label:"Row",key:"id"},{label:"Activity",key:"name"},{label:"WBS",key:"wbs"},
+    {label:"% previous",key:"percent_previous"},{label:"% current",key:"percent_current"},
+    {label:"Baseline cost",key:"baseline_cost"},{label:"Contribution pp",key:"contribution_points"}],
+    d.decomposition));
+
+  out.push(`<h2>Dates that moved</h2>`);
+  out.push(table([{label:"Row",key:"id"},{label:"Activity",key:"name"},{label:"Matched by",key:"matched_by"},
+    {label:"Start moved",key:"start_moved_days"},{label:"Finish moved",key:"finish_moved_days"},
+    {label:"Reading",key:"reading"}],r.execution.concat(r.replan)));
+
+  out.push(`<h2>Scope changes</h2>
+    <p class="sub">Two classes only. A renamed activity that also moved branch is
+    indistinguishable from a removal plus an insertion, so these are numbers to judge rather
+    than a classification to trust.</p>
+    <h3>Inserted (${n(d.unmatched.inserted.length)})</h3>`);
+  out.push(table([{label:"Row",key:"id"},{label:"UID",key:"uid"},{label:"Activity",key:"name"}],d.unmatched.inserted));
+  out.push(`<h3>Removed (${n(d.unmatched.removed.length)})</h3>`);
+  out.push(table([{label:"Row",key:"id"},{label:"UID",key:"uid"},{label:"Activity",key:"name"}],d.unmatched.removed));
+  return out.join("");
+}
+
+(function(){
+  const app=document.getElementById("app");
+  if(!DATA){app.innerHTML="<h1>No data</h1><p>This template was opened directly. It is filled in when a report is generated.</p>";return;}
+  theme(DATA.theme);
+  app.innerHTML=(DATA.kind==="cycle"?renderCycle(DATA):renderReview(DATA))+
+    `<footer>Generated by the <b>schedule-integrity</b> skill from the schedule's own XML export.
+     Every finding states the filter that reproduces it, so any number here can be checked in the
+     source file without trusting this report. No data left this machine.</footer>`;
+  const pdf=document.getElementById("pdf"), th=document.getElementById("th");
+  if(pdf) pdf.onclick=()=>window.print();
+  if(th) th.onclick=()=>{
+    const root=document.documentElement;
+    const dark=getComputedStyle(root).getPropertyValue("--bg").trim().startsWith("#14");
+    root.setAttribute("data-theme",dark?"light":"dark");
+  };
+})();
+</script></body></html>

@@ -26,6 +26,7 @@ sys.path.insert(0, HERE)
 
 import compare_snapshots  # noqa: E402
 import parse_mspdi  # noqa: E402
+import report_data  # noqa: E402
 import report_html  # noqa: E402
 import run_checks  # noqa: E402
 
@@ -104,12 +105,14 @@ def stem(path: str) -> str:
     return os.path.splitext(os.path.basename(path))[0]
 
 
-def do_review(model, path, outdir, threshold, tolerance, quiet) -> dict:
+def do_review(model, path, outdir, threshold, tolerance, quiet,
+              theme=None, grouping="wbs", template=None) -> dict:
     res = run_checks.run(model, threshold, tolerance)
     base = os.path.join(outdir, f"{stem(path)}-review")
     with open(base + ".json", "w", encoding="utf-8") as fh:
         json.dump(res, fh, indent=2, ensure_ascii=False)
-    report_html.write(res, base + ".html", "review")
+    payload = report_data.build_review(model, res, theme=theme, grouping=grouping)
+    report_html.write(payload, base + ".html", template)
     if not quiet:
         print(run_checks.report(res))
         print()
@@ -131,6 +134,10 @@ def main() -> None:
     ap.add_argument("--tolerance-days", type=float, default=run_checks.DEFAULT_TOLERANCE_DAYS,
                     help="the G tolerance, in days (default 1)")
     ap.add_argument("--quiet", action="store_true", help="write files without the console summary")
+    ap.add_argument("--group-by", default="wbs",
+                    help="field the report groups weight by (default: the top WBS branch)")
+    ap.add_argument("--template", help="a customised report template to use instead of the default")
+    ap.add_argument("--profile", help="JSON profile with theme and field mappings")
     args = ap.parse_args()
 
     if len(args.files) > 2:
@@ -143,11 +150,19 @@ def main() -> None:
     outdir = args.outdir or os.path.dirname(os.path.abspath(args.files[-1]))
     os.makedirs(outdir, exist_ok=True)
 
+    profile = {}
+    if args.profile:
+        with open(args.profile, encoding="utf-8") as fh:
+            profile = json.load(fh)
+    theme = profile.get("theme")
+    grouping = profile.get("grouping", args.group_by)
+    template = args.template or profile.get("template")
+
     models = [load(f) for f in args.files]
 
     if len(models) == 1:
-        do_review(models[0], args.files[0], outdir,
-                  args.threshold_days, args.tolerance_days, args.quiet)
+        do_review(models[0], args.files[0], outdir, args.threshold_days,
+                  args.tolerance_days, args.quiet, theme, grouping, template)
         return
 
     prev_path, curr_path = args.files
@@ -158,13 +173,14 @@ def main() -> None:
     # findings decide whether the forecast dates in the comparison mean anything.
     if not args.quiet:
         print("=== Review of the current delivery ===\n")
-    do_review(curr, curr_path, outdir, args.threshold_days, args.tolerance_days, args.quiet)
+    do_review(curr, curr_path, outdir, args.threshold_days, args.tolerance_days,
+              args.quiet, theme, grouping, template)
 
     res = compare_snapshots.compare(prev, curr)
     base = os.path.join(outdir, f"{stem(prev_path)}--to--{stem(curr_path)}-cycle")
     with open(base + ".json", "w", encoding="utf-8") as fh:
         json.dump(res, fh, indent=2, ensure_ascii=False)
-    report_html.write(res, base + ".html", "comparison")
+    report_html.write(report_data.build_cycle(res, theme=theme), base + ".html", template)
     if not args.quiet:
         print("\n=== Cycle comparison ===\n")
         print(compare_snapshots.report(res))

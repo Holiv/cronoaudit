@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -53,9 +54,64 @@ def compare_cycle():
     return compare_snapshots.compare(prev, curr)
 
 
-def render_sample(cyc):
-    import report_html
-    return report_html.render_comparison(cyc)
+REVIEW_SECTIONS = [
+    "How to read these numbers", "Index", "Where the weight sits",
+    "Finish variance against baseline", "Total float", "Activity starts per month",
+    "How to reproduce it", "Conventions this report used",
+]
+CYCLE_SECTIONS = [
+    "Was it execution, or was it the plan", "RESIDUE", "the baseline itself moved",
+    "Where the movement came from", "Scope changes",
+]
+
+
+def render_checks() -> dict:
+    """Generate both reports and execute their own renderer."""
+    import shutil
+
+    node = shutil.which("node")
+    if node is None:
+        return {"failures": [], "skipped": True}
+
+    out = {"failures": [], "skipped": False}
+    with tempfile.TemporaryDirectory() as tmp:
+        subprocess.run(
+            [sys.executable, os.path.join(HERE, "review.py"),
+             os.path.join(ROOT, "fixtures", "cycle_prev.xml"),
+             os.path.join(ROOT, "fixtures", "cycle_curr.xml"),
+             "--outdir", tmp, "--quiet"],
+            check=True, capture_output=True,
+        )
+        pairs = [
+            ("cycle_curr-review.html", REVIEW_SECTIONS),
+            ("cycle_prev--to--cycle_curr-cycle.html", CYCLE_SECTIONS),
+        ]
+        for name, sections in pairs:
+            path = os.path.join(tmp, name)
+            if not os.path.exists(path):
+                out["failures"].append(f"report: {name} was not produced")
+                continue
+            p = subprocess.run(
+                [node, os.path.join(HERE, "test_render.js"), path, *sections],
+                capture_output=True, text=True,
+            )
+            if p.returncode != 0:
+                out["failures"].append(f"report {name}: {p.stderr.strip()}")
+            with open(path, encoding="utf-8") as fh:
+                body = fh.read()
+            if "/*DATA*/" in body:
+                out["failures"].append(f"report {name}: the data marker was not replaced")
+            # No network, ever: it must open from an email attachment on a machine
+            # with no connection and look the same.
+            external = [
+                u for u in re.findall(r'(?:src|href)="([^"]+)"', body)
+                if u.startswith(("http", "//"))
+            ]
+            if external:
+                out["failures"].append(
+                    f"report {name}: external references break offline use: {external}"
+                )
+    return out
 
 
 def main() -> int:
@@ -116,13 +172,10 @@ def main() -> int:
     if "called twice" not in aggregates_note:
         failures.append("cycle: the shared-reference convention is no longer declared")
 
-    # ---- the HTML report must be self-contained: no network, ever.
-    import re
-    html_text = render_sample(cyc)
-    external = [u for u in re.findall(r'(?:src|href)=["\'](\S+?)["\']', html_text)
-                if u.startswith(("http", "//"))]
-    if external:
-        failures.append(f"report: external references present, breaks offline use: {external}")
+    # ---- the report must actually render. A valid file that runs to a blank page
+    # is the failure mode this guards; see scripts/test_render.js for the real bug.
+    rendered = render_checks()
+    failures.extend(rendered["failures"])
 
     if failures:
         print("FAIL")
@@ -136,6 +189,10 @@ def main() -> int:
     print("  transversal rule: pending record did not raise a network finding")
     print("  cycle: execution, replan and rebased-baseline all detected; residue named")
     print("  report: no external references, so it works offline")
+    if rendered["skipped"]:
+        print("  report render: SKIPPED (node not installed) -- the blank-page guard did not run")
+    else:
+        print("  report render: both reports executed and produced every expected section")
     return 0
 
 
