@@ -341,6 +341,11 @@ UI = {
         "conv_counting": "Network counting", "conv_working": "Working days",
         "conv_percent": "Percent source", "conv_language": "Report language",
         "conv_lang_basis": "Language chosen by",
+        "group_flat": "Everything landed in a single group, so this is not a distribution. "
+                      "Run the field discovery step and group by a field that actually varies, "
+                      "such as discipline or work front.",
+        "group_missing": "The grouping field named in the profile does not exist in this "
+                         "schedule, so everything landed in one bucket. Check the name:",
         "no_activities": "No activities in this finding.",
         "no_data": "No data for this chart.",
         "showing": "Showing {n} of {total} rows; the full set is in the JSON beside this file.",
@@ -488,6 +493,11 @@ UI = {
         "conv_population": "População", "conv_counting": "Contagem de rede",
         "conv_working": "Dias úteis", "conv_percent": "Origem do percentual",
         "conv_language": "Idioma do relatório", "conv_lang_basis": "Idioma escolhido por",
+        "group_flat": "Tudo caiu num único grupo, então isto não é uma distribuição. Rode a "
+                      "varredura de campos e agrupe por um campo que de fato varia, como "
+                      "disciplina ou frente de obra.",
+        "group_missing": "O campo de agrupamento indicado no perfil não existe neste "
+                         "cronograma, então tudo caiu num único grupo. Confira o nome:",
         "no_activities": "Nenhuma atividade neste achado.",
         "no_data": "Sem dados para este gráfico.",
         "showing": "Mostrando {n} de {total} linhas; o conjunto completo está no JSON ao lado "

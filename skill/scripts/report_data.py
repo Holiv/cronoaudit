@@ -63,23 +63,50 @@ def leaves(model):
     ]
 
 
-def group_key(task, field: str):
-    """Which bucket this activity reports under.
+def resolve_grouping(model, field: str) -> dict:
+    """Work out what to group by, accepting a custom field by alias or by id.
 
     Defaults to the top branch of the WBS, which every schedule has. A profile may
     name a custom field instead -- that mapping is the organisation's asset, and the
-    transferable idea is that it is declared rather than coded.
+    transferable idea is that it is declared rather than coded, so one codebase
+    serves organisations that keep their meaning in different places.
     """
-    if field == "wbs":
-        raw = task.get("outline_number") or task.get("wbs") or ""
-        return raw.split(".")[0] or "(unassigned)"
-    return str(task.get(field) or "(unassigned)")
+    if not field or field == "wbs":
+        return {"mode": "wbs", "field_id": None, "label": "wbs"}
+
+    fields = (model.get("custom_fields") or {}).get("fields", [])
+    wanted = field.strip()
+    if wanted.lower().startswith("custom:"):
+        wanted = wanted.split(":", 1)[1].strip()
+
+    for row in fields:
+        for key in ("field_id", "alias", "field_name"):
+            value = row.get(key)
+            if value and str(value).strip().lower() == wanted.lower():
+                return {
+                    "mode": "custom",
+                    "field_id": row["field_id"],
+                    "label": row.get("alias") or row.get("field_name") or row["field_id"],
+                    "fill_rate": row.get("fill_rate"),
+                }
+    # Named but not found: say so rather than silently grouping everything together.
+    return {"mode": "missing", "field_id": None, "label": field}
 
 
-def group_labels(model, field: str):
+def group_key(task, grouping: dict):
+    """Which bucket this activity reports under."""
+    if grouping["mode"] == "custom":
+        return str((task.get("custom") or {}).get(grouping["field_id"]) or "(unassigned)")
+    if grouping["mode"] == "missing":
+        return "(field not found)"
+    raw = task.get("outline_number") or task.get("wbs") or ""
+    return raw.split(".")[0] or "(unassigned)"
+
+
+def group_labels(model, grouping: dict):
     """Name each bucket from the summary row that owns it, when there is one."""
     labels = {}
-    if field != "wbs":
+    if grouping["mode"] != "wbs":
         return labels
     for t in model["tasks"]:
         num = t.get("outline_number") or ""
@@ -110,7 +137,8 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None) -> dict:
 
     lv = leaves(model)
     slot = (model.get("prevailing_baseline") or {}).get("slot")
-    labels = group_labels(model, grouping)
+    grp = resolve_grouping(model, grouping)
+    labels = group_labels(model, grp)
 
     budget = earned = 0.0
     for t in lv:
@@ -173,7 +201,7 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None) -> dict:
             k = s.strftime("%Y-%m")
             starts[k] = starts.get(k, 0) + 1
 
-        gk = group_key(t, grouping)
+        gk = group_key(t, grp)
         g = groups.setdefault(gk, {
             "key": gk, "label": labels.get(gk, gk), "budget": 0.0, "earned": 0.0,
             "activities": 0, "findings": {c: 0 for c in ORDER},
@@ -203,6 +231,9 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None) -> dict:
             "finding_total": sum(g["findings"].values()),
         })
     group_rows.sort(key=lambda r: r["weight_pct"], reverse=True)
+    # One bucket holding everything is not a distribution. Say so and point at the
+    # discovery step, rather than presenting a single 100% bar as an analysis.
+    grouping_uninformative = len(group_rows) < 2
 
     def series(d, sort_numeric=False):
         items = list(d.items())
@@ -226,7 +257,9 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None) -> dict:
             "percent_earned": round(earned / budget * 100, 2) if budget else None,
             "baseline_slot": slot,
             "with_physical_percent": model["counts"].get("with_physical_percent"),
-            "grouping": grouping,
+            "grouping": grp["label"],
+            "grouping_mode": grp["mode"],
+            "grouping_uninformative": grouping_uninformative,
             "calendars_in_file": (model.get("calendars") or {}).get("count", 0),
         },
         "calendars": (model.get("calendars") or {}).get("in_use", []),

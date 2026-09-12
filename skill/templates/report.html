@@ -204,7 +204,13 @@ function renderReview(d){
   out.push(`<p class="how" style="margin-top:14px">${L.counting_convention}
     ${esc(c.network_counting)} ${esc(L.counting_tail)}</p>`);
 
-  const groupName = m.grouping==="wbs" ? L.wbs_branch : m.grouping;
+  const groupName = m.grouping_mode==="wbs" ? L.wbs_branch : m.grouping;
+  if(m.grouping_uninformative && m.grouping_mode!=="missing"){
+    out.push(`<div class="note"><b>${esc(L.warning)}</b> ${esc(L.group_flat)}</div>`);
+  }
+  if(m.grouping_mode==="missing"){
+    out.push(`<div class="note bad"><b>${esc(L.warning)}</b> ${esc(L.group_missing)} <code>${esc(m.grouping)}</code></div>`);
+  }
   out.push(`<h2>${esc(L.weight_sits)}</h2>
     <p class="sub">${esc(fill(L.weight_sub,{group:groupName}))}</p>`);
   const g=d.charts.by_group;

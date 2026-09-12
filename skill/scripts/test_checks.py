@@ -46,6 +46,13 @@ def analyse(xml_name):
             return json.load(fh)
 
 
+def analyse_raw(model):
+    """Run the checks in-process, for assertions that need the parsed model too."""
+    import run_checks
+    return run_checks.run(model, run_checks.DEFAULT_THRESHOLD_DAYS,
+                          run_checks.DEFAULT_TOLERANCE_DAYS)
+
+
 def compare_cycle():
     import compare_snapshots
     import parse_mspdi
@@ -269,6 +276,56 @@ def main() -> int:
             if not entry or len(entry) != 5:
                 failures.append(f"language: {lang} has no complete text for finding {code}")
 
+    # ---- custom field discovery. An organisation keeps its meaning in these, and
+    # the point is to show someone candidates rather than ask them to recall.
+    import custom_fields as cf_mod
+    import report_data
+    disc = (pm.get("custom_fields") or {})
+    if disc.get("declared", 0) < 3:
+        failures.append("fields: the fixture's custom field definitions were not read")
+    by_alias = {f.get("alias"): f for f in disc.get("fields", [])}
+    d_field = by_alias.get("DISCIPLINA")
+    if not d_field:
+        failures.append("fields: DISCIPLINA was not discovered")
+    else:
+        if d_field["type"] != "text":
+            failures.append(f"fields: DISCIPLINA typed as {d_field['type']} from its values")
+        if not d_field["closed_set"]:
+            failures.append("fields: a three-value field was not recognised as a closed set")
+        if "discipline" not in d_field["suggested_roles"]:
+            failures.append("fields: DISCIPLINA did not suggest the discipline role")
+    q_field = by_alias.get("QTDE")
+    if q_field and q_field["type"] != "number":
+        failures.append(f"fields: QTDE typed as {q_field['type']}, not number")
+
+    cands, sparse = cf_mod.interview_candidates(disc)
+    if "discipline" not in cands:
+        failures.append("fields: no discipline candidate offered for the interview")
+    # A justification field filled on almost nothing must surface as a finding, not
+    # be silently dropped below a threshold.
+    if "justification" not in sparse:
+        failures.append(
+            "fields: a barely-populated justification field was dropped instead of being "
+            "reported as the finding it is"
+        )
+
+    # Grouping by a discovered field, by alias, must actually bucket the work.
+    res_pos = analyse_raw(pm)
+    by_wbs = report_data.build_review(pm, res_pos, grouping="wbs")
+    by_disc = report_data.build_review(pm, res_pos, grouping="DISCIPLINA")
+    missing_grp = report_data.build_review(pm, res_pos, grouping="NO_SUCH_FIELD")
+    if by_disc["meta"]["grouping_mode"] != "custom":
+        failures.append("fields: grouping by alias did not resolve to the custom field")
+    if len(by_disc["charts"]["by_group"]) < 3:
+        failures.append("fields: grouping by discipline produced fewer buckets than values")
+    if missing_grp["meta"]["grouping_mode"] != "missing":
+        failures.append(
+            "fields: a grouping field that does not exist was not reported as missing, so "
+            "everything would silently land in one bucket"
+        )
+    if not by_wbs["meta"].get("grouping_uninformative") and len(by_wbs["charts"]["by_group"]) < 2:
+        failures.append("fields: a single-bucket grouping was not flagged as uninformative")
+
     # ---- the report must actually render. A valid file that runs to a blank page
     # is the failure mode this guards; see scripts/test_render.js for the real bug.
     rendered = render_checks()
@@ -292,6 +349,7 @@ def main() -> int:
         print("  report render: both reports executed and produced every expected section")
     print("  calendars: 9h six-day week and its holiday applied; consistent task not flagged")
     print("  language: pt and en detected from content; every label present in both")
+    print("  fields: discovery typed and ranked them; grouping by alias and by a missing name")
     return 0
 
 

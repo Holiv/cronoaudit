@@ -22,6 +22,7 @@ from collections import Counter
 from datetime import datetime
 
 import calendars as cal_mod
+import custom_fields as cf_mod
 
 NS = {"p": "http://schemas.microsoft.com/project"}
 
@@ -220,6 +221,13 @@ def parse_task(task_el) -> dict:
         "fixed_cost": as_float(task_el, "FixedCost"),
         "baselines": parse_baselines(task_el),
         "predecessors": parse_links(task_el),
+        # Custom field values, keyed by the STABLE field id. Field names arrive
+        # translated by the installed language, so the id is the only safe key.
+        "custom": {
+            text(ea, "FieldID"): text(ea, "Value")
+            for ea in task_el.findall("p:ExtendedAttribute", NS)
+            if text(ea, "FieldID") and text(ea, "Value")
+        },
     }
 
 
@@ -288,6 +296,11 @@ def parse(path: str) -> dict:
             "definitions": cal_mod.to_dict(cals),
         },
         "prevailing_baseline": prevailing_baseline(tasks),
+        # What the organisation keeps in its own fields, discovered rather than
+        # assumed: which are populated, what type the values actually are, and a
+        # sample -- so a profile interview can show candidates instead of asking
+        # someone to recall which field holds the discipline.
+        "custom_fields": cf_mod.discover(root),
         "counts": {
             "tasks": len(tasks),
             "leaves": sum(1 for t in tasks if not t["summary"]),

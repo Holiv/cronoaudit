@@ -47,6 +47,49 @@ Useful flags: `--outdir` to choose where the output lands, `--threshold-days` to
 threshold for the pulled-forward and delayed checks, `--tolerance-days` for the duration
 thermometer, `--quiet` to write the files without the console summary.
 
+## Step 2b — find out what the organisation keeps in its own fields
+
+Optional, and worth doing once per organisation:
+
+```
+python3 scripts/discover_fields.py <name>-review.json   # or the parsed model
+```
+
+It lists every custom field that actually carries values, with the type inferred **from the
+values rather than the field name**, the fill rate, how many distinct values there are, whether
+that is a closed set, and a sample. Then it groups them by the role they might serve —
+discipline, work front, chainage, contractor, phase, justification, quantity, unit — strongest
+candidate first.
+
+**This exists so nobody has to answer a question from memory.** "Which field holds the
+discipline?" makes a person recall a convention. Showing them three populated fields with their
+values makes them recognise one. Recognition is reliable; recall is not.
+
+Two things it deliberately does:
+
+- **A closed set with a high fill rate is a good grouping field. Free text with hundreds of
+  distinct values is a note, not a dimension.** The listing says which is which.
+- **A field that exists and is almost empty is reported separately, as a finding rather than a
+  candidate.** A justification field blank on 96% of activities is not a field to ignore; it is
+  a contract-compliance finding waiting to be written down.
+
+Nothing it suggests is a decision. Confirm each one before a profile relies on it.
+
+Then group the report by what you confirmed, using the field's alias:
+
+```
+python3 scripts/review.py delivery.xml --group-by DISCIPLINA
+```
+
+If the name does not exist in the schedule the report says so instead of silently putting
+everything in one bucket, and if the grouping produces a single bucket it says that too — one
+bar at 100% is not a distribution.
+
+**Why the field id and not the field name.** Field names arrive translated by the installed
+language: the same field reads `Text1` or `Texto1`, `Flag20` or `Sinalizador20`. Everything here
+keys on the stable identifier and shows the name only for the human. An alias you type is
+matched against the id, the alias and the name, so either works.
+
 ## Step 3 — read what comes out
 
 Four files per run, written next to the input:

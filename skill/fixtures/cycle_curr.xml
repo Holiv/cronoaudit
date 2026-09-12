@@ -78,6 +78,14 @@
       </Exceptions>
     </Calendar>
   </Calendars>
+  <ExtendedAttributes>
+    <ExtendedAttribute><FieldID>188743737</FieldID><FieldName>Text3</FieldName>
+      <Alias>DISCIPLINA</Alias></ExtendedAttribute>
+    <ExtendedAttribute><FieldID>188743746</FieldID><FieldName>Text6</FieldName>
+      <Alias>JUSTIFICATIVA</Alias></ExtendedAttribute>
+    <ExtendedAttribute><FieldID>188743767</FieldID><FieldName>Number1</FieldName>
+      <Alias>QTDE</Alias></ExtendedAttribute>
+  </ExtendedAttributes>
   <Tasks>
   <Task>
     <UID>1</UID>
@@ -105,6 +113,18 @@
       <Cost>10000.0</Cost>
       <Work>PT40H0M0S</Work>
     </Baseline>
+    <ExtendedAttribute>
+      <FieldID>188743737</FieldID>
+      <Value>EARTHWORKS</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743767</FieldID>
+      <Value>10</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743746</FieldID>
+      <Value>Weather</Value>
+    </ExtendedAttribute>
   </Task>
   <Task>
     <UID>2</UID>
@@ -131,6 +151,14 @@
       <Cost>40000.0</Cost>
       <Work>PT160H0M0S</Work>
     </Baseline>
+    <ExtendedAttribute>
+      <FieldID>188743737</FieldID>
+      <Value>DRAINAGE</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743767</FieldID>
+      <Value>20</Value>
+    </ExtendedAttribute>
   </Task>
   <Task>
     <UID>3</UID>
@@ -154,6 +182,14 @@
       <Cost>20000.0</Cost>
       <Work>PT80H0M0S</Work>
     </Baseline>
+    <ExtendedAttribute>
+      <FieldID>188743737</FieldID>
+      <Value>PAVEMENT</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743767</FieldID>
+      <Value>30</Value>
+    </ExtendedAttribute>
   </Task>
   <Task>
     <UID>4</UID>
@@ -177,6 +213,14 @@
       <Cost>15000.0</Cost>
       <Work>PT80H0M0S</Work>
     </Baseline>
+    <ExtendedAttribute>
+      <FieldID>188743737</FieldID>
+      <Value>EARTHWORKS</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743767</FieldID>
+      <Value>40</Value>
+    </ExtendedAttribute>
   </Task>
   <Task>
     <UID>5</UID>
@@ -200,6 +244,14 @@
       <Cost>5000.0</Cost>
       <Work>PT32H0M0S</Work>
     </Baseline>
+    <ExtendedAttribute>
+      <FieldID>188743737</FieldID>
+      <Value>DRAINAGE</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743767</FieldID>
+      <Value>50</Value>
+    </ExtendedAttribute>
   </Task>
   </Tasks>
 </Project>

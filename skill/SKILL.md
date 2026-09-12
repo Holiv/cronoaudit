@@ -40,6 +40,20 @@ own text rather than configured, and it says which language it chose and on what
 tool cannot make for you are in `references/usage.md`. Verify the tool itself with
 `python3 scripts/test_checks.py` before trusting a clean result.
 
+**Learning the organisation's own fields.** An organisation keeps its meaning in custom fields:
+discipline, work front, contractor, justification, quantity, regulator code. That mapping is the
+organisation's asset and cannot be guessed from a schema, but it can be **discovered**. A bundled
+step lists every custom field that carries values, with the type inferred from the values rather
+than the field name, the fill rate, whether the values form a closed set, and a sample; then it
+ranks them by the role they might serve. The report can then group weight by the field you
+confirm, named by its alias. **The transferable idea is that the mapping is declared rather than
+coded** — one codebase serves organisations that keep their meaning in different places.
+
+Two rules it follows. **Key on the stable field identifier, never on the field name**, because
+names arrive translated by the installed language. And **a field that exists and is almost empty
+is a finding, not a dimension** — a justification blank on nearly every activity is a
+contract-compliance finding waiting to be written down.
+
 **What you must have in hand** before either is worth starting: a status date, a saved
 baseline, and for the comparison the previous cycle's file. Fields the checks read must be
 populated — and a field left empty is itself a reportable finding, not a reason to skip the

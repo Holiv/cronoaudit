@@ -98,6 +98,21 @@ CALENDARS = """  <Calendars>
 """
 
 
+# Custom fields, because an organisation keeps its own meaning in them and the
+# discovery step has to be exercised. Aliases deliberately in a mix of languages.
+EXT_DEFS = """  <ExtendedAttributes>
+    <ExtendedAttribute><FieldID>188743737</FieldID><FieldName>Text3</FieldName>
+      <Alias>DISCIPLINA</Alias></ExtendedAttribute>
+    <ExtendedAttribute><FieldID>188743746</FieldID><FieldName>Text6</FieldName>
+      <Alias>JUSTIFICATIVA</Alias></ExtendedAttribute>
+    <ExtendedAttribute><FieldID>188743767</FieldID><FieldName>Number1</FieldName>
+      <Alias>QTDE</Alias></ExtendedAttribute>
+  </ExtendedAttributes>
+"""
+
+DISCIPLINES = ["EARTHWORKS", "DRAINAGE", "PAVEMENT"]
+
+
 def task(uid, tid, name, **kw):
     """Build one <Task>. Absent keys are omitted, never emitted empty."""
     parts = [
@@ -137,6 +152,28 @@ def task(uid, tid, name, **kw):
             "      <LagFormat>7</LagFormat>",
             "    </PredecessorLink>",
         ]
+    disc = kw.get("disc")
+    if disc:
+        parts += [
+            "    <ExtendedAttribute>",
+            "      <FieldID>188743737</FieldID>",
+            f"      <Value>{disc}</Value>",
+            "    </ExtendedAttribute>",
+        ]
+    if kw.get("qty") is not None:
+        parts += [
+            "    <ExtendedAttribute>",
+            "      <FieldID>188743767</FieldID>",
+            f"      <Value>{kw['qty']}</Value>",
+            "    </ExtendedAttribute>",
+        ]
+    if kw.get("justif"):
+        parts += [
+            "    <ExtendedAttribute>",
+            "      <FieldID>188743746</FieldID>",
+            f"      <Value>{kw['justif']}</Value>",
+            "    </ExtendedAttribute>",
+        ]
     bl = kw.get("baseline")
     if bl:
         bstart, bfinish, bcost, bhours = bl
@@ -165,7 +202,7 @@ def document(name, tasks):
         "  <MinutesPerWeek>2400</MinutesPerWeek>\n"
         "  <DaysPerMonth>20</DaysPerMonth>\n"
         "  <CalendarUID>1</CalendarUID>\n"
-        + CALENDARS +
+        + CALENDARS + EXT_DEFS +
         "  <Tasks>\n" + "\n".join(tasks) + "\n  </Tasks>\n"
         "</Project>\n"
     )
@@ -174,6 +211,36 @@ def document(name, tasks):
 # A consistent five-day working window used wherever nothing should be flagged.
 WIN = dict(start="2026-03-02T08:00:00", finish="2026-03-06T17:00:00", dur_hours=40)
 BL_OK = ("2026-03-02T08:00:00", "2026-03-06T17:00:00", 10000.0, 40)
+
+
+def _decorate(tasks):
+    """Spread a closed-set discipline and a numeric quantity across the tasks.
+
+    Only one task carries a justification, so the discovery step has both a good
+    grouping candidate and a barely-populated field whose emptiness is the finding.
+    """
+    out = []
+    for i, raw in enumerate(tasks):
+        disc = DISCIPLINES[i % len(DISCIPLINES)]
+        extra = [
+            "    <ExtendedAttribute>",
+            "      <FieldID>188743737</FieldID>",
+            f"      <Value>{disc}</Value>",
+            "    </ExtendedAttribute>",
+            "    <ExtendedAttribute>",
+            "      <FieldID>188743767</FieldID>",
+            f"      <Value>{(i + 1) * 10}</Value>",
+            "    </ExtendedAttribute>",
+        ]
+        if i == 0:
+            extra += [
+                "    <ExtendedAttribute>",
+                "      <FieldID>188743746</FieldID>",
+                "      <Value>Weather</Value>",
+                "    </ExtendedAttribute>",
+            ]
+        out.append(raw.replace("\n  </Task>", "\n" + "\n".join(extra) + "\n  </Task>"))
+    return out
 
 
 def positive():
@@ -225,7 +292,7 @@ def positive():
     t.append(task(12, 12, "P successor must not raise A1", **WIN,
                   astart="2026-03-04T08:00:00", pct=20, baseline=BL_OK,
                   preds=[(11, 1, 0)]))
-    return document("Positive fixture", t)
+    return document("Positive fixture", _decorate(t))
 
 
 def negative():
@@ -256,7 +323,7 @@ def negative():
                   start="2026-07-10T17:00:00", finish="2026-07-10T17:00:00",
                   dur_hours=0, deadline="2026-07-10T17:00:00",
                   baseline=("2026-07-10T17:00:00", "2026-07-10T17:00:00", 500.0, 0)))
-    return document("Negative fixture", t)
+    return document("Negative fixture", _decorate(t))
 
 
 def cycle(which: str):
@@ -304,7 +371,7 @@ def cycle(which: str):
                       start="2026-09-07T08:00:00", finish="2026-09-11T17:00:00",
                       dur_hours=40,
                       baseline=("2026-09-07T08:00:00", "2026-09-11T17:00:00", 7000.0, 40)))
-    return document(f"Cycle fixture {which}", t)
+    return document(f"Cycle fixture {which}", _decorate(t))
 
 
 def main() -> None:
