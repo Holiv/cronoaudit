@@ -266,6 +266,9 @@ UI = {
     "en": {
         "review_title": "Schedule integrity review",
         "chip_title": "Schedule critical analysis",
+        "reading": "Reading",
+        "syn_label": "Executive synthesis",
+        "syn_written": "Written by {who} from the figures in this report, {when}.",
         "fx_title": "Forensics of the scenario",
         "fx_sub": "Where did the delay come from, by which path, and when did it start? Not a "
                   "contractual delay claim, which needs contemporaneous records and a formal "
@@ -604,6 +607,9 @@ UI = {
     "pt": {
         "review_title": "Análise crítica de cronograma",
         "chip_title": "Análise crítica de cronograma",
+        "reading": "Leitura",
+        "syn_label": "Síntese executiva",
+        "syn_written": "Redigida por {who} a partir dos números deste relatório, {when}.",
         "fx_title": "Forense do cenário",
         "fx_sub": "De onde veio o atraso, por qual caminho, e quando começou? Não é apuração "
                   "contratual de atraso, que exige registro contemporâneo e método formal: é a "

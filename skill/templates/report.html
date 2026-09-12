@@ -125,6 +125,12 @@ nav.indice .qtd{font:600 13px var(--mono);color:var(--ink-2);min-width:34px;text
 .note.bad{background:var(--crit-bg);border-color:var(--crit)}
 .note.good{background:var(--good-bg);border-color:var(--good)}
 .note.soft{background:var(--surface-2);border-color:var(--line)}
+.leitura{background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:3px;padding:12px 16px;margin:10px 0 14px}
+.leitura .rot{font:500 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.leitura p{margin:0 0 6px;font-size:14.5px;color:var(--ink)} .leitura p:last-child{margin:0}
+.sintese{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:20px 24px;margin:18px 0;box-shadow:var(--shadow)}
+.sintese .eyebrow{margin-bottom:8px} .sintese p{font-size:15.5px;max-width:72ch;color:var(--ink)}
+.sintese .who{font-size:12.5px;color:var(--ink-3);margin-top:8px}
 /* tables, collapsed by default */
 details{border:1px solid var(--line-soft);border-radius:3px;background:var(--surface-2)}
 summary{cursor:pointer;padding:9px 13px;font:500 13.5px var(--sans);color:var(--accent);list-style:none;display:flex;gap:8px;align-items:center}
@@ -190,6 +196,11 @@ function theme(t){
   if(t.font_display) r.setProperty("--display",t.font_display);
   if(t.font_sans) r.setProperty("--sans",t.font_sans);
   if(t.font_mono) r.setProperty("--mono",t.font_mono);
+}
+function reading(key){
+  const r=(DATA.readings||{})[key];
+  if(!r||!r.length) return "";
+  return `<div class="leitura"><div class="rot">${esc(L.reading)}</div>${r.map(s=>`<p>${esc(s)}</p>`).join("")}</div>`;
 }
 function bar(){
   return `<div class="bar"><button id="pdf">${esc(L.print)}</button><button id="th">${esc(L.toggle_theme)}</button></div>`;
@@ -282,12 +293,17 @@ function renderReview(d){
     ${bar()}</header>`);
 
   (d.blocking||[]).forEach(b=>out.push(`<div class="note bad" style="margin-top:14px"><b>${esc(L.blocking)}</b> ${esc(b)}</div>`));
+  if(d.narrative&&d.narrative.text){
+    out.push(`<div class="sintese"><div class="eyebrow">${esc(L.syn_label)}</div>${d.narrative.text.split(/\n\s*\n/).map(pg=>`<p>${esc(pg.trim())}</p>`).join("")}
+      <div class="who">${esc(fill(L.syn_written,{who:d.narrative.who||"",when:d.narrative.when||""}))}</div></div>`);
+  }
 
   out.push(`<div class="veredito"><div>
       <div class="eyebrow">${esc(L.hero_label)}</div>
       <div class="hero-num">${m.percent_earned==null?"&mdash;":n(m.percent_earned,2)+"%"}</div>
       <div class="hero-cap">${esc(fill(L.hero_cap,{n:n(m.leaves)}))}</div></div>
     <div class="contra"><h2>${esc(L.how_to_read)}</h2><p>${L.read_p1}</p><p>${L.read_p2}</p><p>${L.read_p3}</p></div></div>`);
+  out.push(reading("verdict"));
 
   out.push(`<div class="tiles">${d.findings.map(f=>`<div class="tile ${SEV[f.severity]}"><div class="c">${esc(f.code)}</div>
     <div class="v${f.count?"":" zero"}">${n(f.count)}</div><div class="t">${esc(f.title)}</div></div>`).join("")}</div>`);
@@ -329,7 +345,7 @@ function renderReview(d){
         <div class="tile ${(T.spi||1)<1?"al":"vs"}"><div class="c">${esc(L.tile_spi)}</div><div class="v">${n(T.spi,3)}</div><div class="t">${esc(L.tile_sv)} ${n(T.sv,0)}</div></div>
         <div class="tile vf"><div class="c">${esc(L.col_alt_pct)}</div><div class="v">${n(T.earned_alt_pct,2)}%</div><div class="t">${esc(altLabel)}</div></div>
       </div>
-      ${T.method_gap_points!=null?`<div class="note"><b>${esc(L.warning)}</b> ${esc(fill(L.scurve_gap,{n:n(Math.abs(T.method_gap_points),2)}))}</div>`:""}
+      ${reading("scurve")}
       ${scurveSvg(s.periods||[],altLabel)}
       <p class="fonte" style="margin-top:8px">${esc(fill(L.scurve_recon,{a:n(R.phasing_sum_equals_cost),c:n(R.with_cost),b:n(R.phasing_to_status_equals_bcws),t:n(R.tasks),e:n(R.earned_equals_bcwp)}))}
       ${rc2.ahead_of_baseline?" "+esc(fill(L.scurve_ahead,{n:n(rc2.ahead_of_baseline),v:n(rc2.ahead_of_baseline_value,0)})):""}</p>
@@ -346,6 +362,7 @@ function renderReview(d){
     <p class="sec-d">${esc(L.group_intro)}</p>`);
   if(m.grouping_mode==="missing") out.push(`<div class="note bad"><b>${esc(L.warning)}</b> ${esc(L.group_missing)} <code>${esc(m.grouping)}</code></div>`);
   else if(m.grouping_uninformative) out.push(`<div class="note"><b>${esc(L.warning)}</b> ${esc(L.group_flat)}</div>`);
+  out.push(reading("groups"));
   out.push(dualChart(g));
   const codes=d.findings.map(f=>f.code);
   const gcols=[{label:L.col_group,key:"label"},{label:L.col_activities,key:"activities"},{label:L.col_weight_pct,key:"weight_pct"},{label:L.col_planned_pct,key:"planned_pct"},{label:L.col_actual_pct,key:"earned_pct"}].concat(codes.map(k=>({label:k,key:"f_"+k})));
@@ -371,6 +388,7 @@ function renderReview(d){
     out.push(`<section id="v6"><div class="sec-h"><span class="eyebrow">V6</span><h2>${esc(L.prod_title)}</h2></div>
       <p class="sec-d">${esc(fill(L.prod_sub,{n:P.recent_window_days}))}</p>
       <p class="sec-d">${esc(L.prod_verdict_intro)}</p>
+      ${reading("productivity")}
       <div class="tiles">
         <div class="tile"><div class="c">${esc(L.tile_resources)}</div><div class="v">${n(S.resources_tracked)}</div><div class="t">${esc(fill(L.prod_unassigned,{n:n(S.assignments_unassigned)}))}</div></div>
         <div class="tile pd"><div class="c">${esc(L.tile_projected)}</div><div class="v">${n(S.activities_projected)}</div><div class="t">${esc(L.v_reprogram)} ${n(V.reprogram||0)} · ${esc(L.v_baseline_delay)} ${n(V.baseline_delay||0)}</div></div>
@@ -399,6 +417,7 @@ function renderReview(d){
     const q1=(Q.metrics||[]).find(x=>x.code==="Q1")||{};
     out.push(`<section id="v7"><div class="sec-h"><span class="eyebrow">V7</span><h2>${esc(L.quality_title)}</h2></div>
       <p class="sec-d">${esc(L.quality_sub)}</p>
+      ${reading("quality")}
       <div class="tiles">
         <div class="tile ${I.bei!=null&&I.bei<0.95?"al":"vs"}"><div class="c">${esc(L.tile_bei)}</div><div class="v">${I.bei==null?"&mdash;":n(I.bei,3)}</div><div class="t">${I.bei_due?esc(fill(L.bei_cap,{a:n(I.bei_on_time),d:n(I.bei_due)})):""}</div></div>
         <div class="tile vf"><div class="c">${esc(L.tile_cpli)}</div><div class="v">${I.cpli_meaningful&&I.cpli!=null?n(I.cpli,3):"&mdash;"}</div><div class="t">${I.cpli_meaningful?esc(fill(L.cpli_cap,{d:n(I.cpl_days)})):esc(L.cpli_cap_na)}</div></div>
@@ -421,7 +440,7 @@ function renderReview(d){
   if(d.forecast){
     const F=d.forecast, E=F.earned_schedule||{}, LA=F.lookahead||[], RG=F.rates_by_group||[], MB=F.milestone_bands||{}, RX=F.rain_exposure||{};
     const tv={recoverable:L.tspi_recoverable,hard:L.tspi_hard,unrecoverable:L.tspi_unrecoverable};
-    out.push(`<section id="v8"><div class="sec-h"><span class="eyebrow">V8</span><h2>${esc(L.fc_title)}</h2></div><p class="sec-d">${esc(L.fc_sub)}</p>`);
+    out.push(`<section id="v8"><div class="sec-h"><span class="eyebrow">V8</span><h2>${esc(L.fc_title)}</h2></div><p class="sec-d">${esc(L.fc_sub)}</p>${reading("forecast")}`);
     if(E.available){
       out.push(`<h3 style="font-size:16px;margin:10px 0 8px">${esc(L.es_title)}</h3><div class="tiles">
         <div class="tile pd"><div class="c">${esc(L.es_es)}</div><div class="v" style="font-size:22px">${esc(E.es_date)}</div><div class="t">${esc(L.es_es_cap)}</div></div>
@@ -476,7 +495,7 @@ function renderReview(d){
 
   if(d.forensics){
     const X=d.forensics, S=X.summary||{}, EX=X.execution||{}, SL=EX.start_slippage||{}, CY=X.cycle;
-    out.push(`<section id="v9"><div class="sec-h"><span class="eyebrow">V9</span><h2>${esc(L.fx_title)}</h2></div><p class="sec-d">${esc(X.provenance?L.fx_sub:L.fx_sub)}</p>`);
+    out.push(`<section id="v9"><div class="sec-h"><span class="eyebrow">V9</span><h2>${esc(L.fx_title)}</h2></div><p class="sec-d">${esc(L.fx_sub)}</p>${reading("forensics")}`);
     out.push(`<h3 style="font-size:16px;margin:10px 0 8px">${esc(L.fx_paths_title)}</h3><p class="sec-d">${esc(fill(L.fx_paths_sub,{n:5}))}</p>`);
     if(S.origins&&S.origins.length){
       out.push(`<p class="fonte" style="margin-bottom:6px"><b>${esc(L.fx_origins)}</b></p>${table([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_milestones_n,key:"milestones"}],S.origins)}`);

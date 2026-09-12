@@ -65,7 +65,7 @@ REVIEW_SECTIONS = [
     "How to read these numbers", "Index", "Progress by", "Starts per month",
     "S-curve from the file", "<polyline", "Productivity and trend by resource",
     "Network quality", "Baseline execution index", "Looking forward", "Earned Schedule",
-    "Forensics of the scenario", "Driving path per milestone",
+    "Forensics of the scenario", "Driving path per milestone", "Reading", "Executive synthesis",
     "Finish variance against baseline", "Total float", "Problem",
     "To reproduce in the scheduling tool", "Conventions this report used",
 ]
@@ -111,6 +111,23 @@ def render_checks() -> dict:
             check=True, capture_output=True,
         )
         pairs.append((os.path.join("pt", "cycle_curr-review.html"), PT_SECTIONS))
+        # Executive synthesis injection: rebuild from embedded data, no recomputation.
+        syn = os.path.join(tmp, "syn.txt")
+        with open(syn, "w", encoding="utf-8") as fh:
+            fh.write("First paragraph of a synthesis.\n\nSecond paragraph, with <b>no</b> markup interpreted.")
+        target = os.path.join(tmp, "cycle_curr-review.html")
+        if os.path.exists(target):
+            p = subprocess.run([sys.executable, os.path.join(HERE, "inject_narrative.py"), target, syn,
+                                "--who", "the test suite"], capture_output=True, text=True)
+            if p.returncode != 0:
+                out["failures"].append(f"synthesis: injection failed: {p.stderr.strip()}")
+            else:
+                with open(target, encoding="utf-8") as fh:
+                    body = fh.read()
+                if "Second paragraph" not in body or "the test suite" not in body:
+                    out["failures"].append("synthesis: injected text or author missing from the report")
+                if "<b>no</b>" in body:
+                    out["failures"].append("synthesis: markup in the text was interpreted, not escaped")
         for name, sections in pairs:
             path = os.path.join(tmp, name)
             if not os.path.exists(path):
@@ -559,6 +576,25 @@ def main() -> int:
     if not fx2["cycle"] or "float_by_group" not in fx2["cycle"]:
         failures.append("forensics: cycle forensics missing with a previous snapshot")
 
+    # ---- readings: rule-built sentences from the figures, in both languages, and
+    # the executive synthesis slot that inject_narrative.py fills without recomputing.
+    import narrative as narrative_mod
+    full_en = report_data.build_review(pm, pos, grouping="DISCIPLINA", lang="en",
+                                       phasing=curve, productivity=prod, quality=qres, forecast=fc,
+                                       forensics=fx)
+    full_pt = report_data.build_review(pm, pos, grouping="DISCIPLINA", lang="pt",
+                                       phasing=curve, productivity=prod, quality=qres, forecast=fc,
+                                       forensics=fx)
+    for lang, full in (("en", full_en), ("pt", full_pt)):
+        rd = full.get("readings") or {}
+        for sec in ("verdict", "scurve", "groups", "productivity", "quality", "forecast", "forensics"):
+            if not rd.get(sec):
+                failures.append(f"readings: no {sec} reading in {lang}")
+    if full_pt.get("readings", {}).get("verdict") and "network" in full_pt["readings"]["verdict"][0].lower():
+        failures.append("readings: the Portuguese report got an English verdict sentence")
+    if "narrative" not in full_en or full_en["narrative"] is not None:
+        failures.append("readings: the synthesis slot is missing or pre-filled")
+
     # ---- the report must actually render. A valid file that runs to a blank page
     # is the failure mode this guards; see scripts/test_render.js for the real bug.
     rendered = render_checks()
@@ -590,6 +626,7 @@ def main() -> int:
     print("  quality: fourteen metrics with controls; Q12 and Q13 declared not computable")
     print("  forecast: earned schedule, look-ahead, rates, milestone bands, rain exposure")
     print("  forensics: driving chain through the lag link, origin named, cycle readings")
+    print("  readings: every section reads in both languages; synthesis injected without recompute")
     return 0
 
 

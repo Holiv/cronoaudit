@@ -55,8 +55,12 @@ def write(payload: dict, out_path: str, template: str | None = None) -> str:
     # consumed together: replacing only the comment leaves `= {...} null;`, which is
     # a syntax error, and a syntax error here renders a blank page rather than
     # failing loudly. Caught exactly that way once.
+    # A function replacement, never the string: re.sub would read backslash
+    # sequences in the JSON as escapes, turning "\n" inside a synthesis into a
+    # real line break and breaking the script. It stayed hidden until the first
+    # injected text carried a paragraph break.
     filled, count = re.subn(
-        re.escape(MARKER) + r"\s*null", blob, tpl, count=1
+        re.escape(MARKER) + r"\s*null", lambda _m: blob, tpl, count=1
     )
     if count == 0:
         filled = tpl.replace(MARKER, blob, 1)

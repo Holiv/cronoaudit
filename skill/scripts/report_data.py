@@ -19,6 +19,7 @@ from datetime import datetime
 import custom_fields as cf_mod
 import explain as ex_mod
 import i18n
+import narrative as narrative_mod
 
 # Severity is a judgement, not a measurement: network breaches invalidate every
 # date below them, so they outrank everything. Four named levels, as the in-tool
@@ -355,7 +356,7 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
     links_text = L["links_evaluated"].format(list=", ".join(
         f"{i18n.link_type(lang, k)} {v}" for k, v in lt.items() if v))
 
-    return {
+    payload = {
         "kind": "review", "lang": lang, "labels": L, "language": detected,
         "theme": {**DEFAULT_THEME, **(theme or {})},
         "meta": {
@@ -410,7 +411,12 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
         "quality": localize_quality(quality, lang) if quality else None,
         "forecast": forecast,
         "forensics": forensics,
+        # The executive synthesis is injected later by whoever writes it; the slot
+        # exists so the template knows where it goes and how to label it.
+        "narrative": None,
     }
+    payload["readings"] = narrative_mod.build(payload, lang)
+    return payload
 
 
 def localize_quality(q: dict, lang: str) -> dict:
