@@ -37,7 +37,8 @@ Evaluated per link, from the successor's side. `s` is the successor, `p` the pre
 | has `AF` | no `AS` and no `AF` | **A2** total inversion |
 | no `AS` | any | nothing |
 | has `AS` and `AF` | has `AF` | **out of the count, by decision.** If `p.AF > s.AS` the pair is recorded under `ignored.A1_both_complete` with the overlap in days, for the forensics. |
-| has `AS`, no `AF` | no `AF` | **A1** `pred_not_finished` |
+| has `AS` (finished or not) | has `AS`, no `AF` | **A1** `pred_not_finished` — the successor ran, or finished, while the predecessor is still open. The both-complete exclusion needs both complete; a predecessor in progress is not. Measured: 21 pairs on the real programme, all with the predecessor above 90% |
+| has `AS`, no `AF` | no `AS`, no `AF` | **A1** `pred_not_finished` |
 | has `AS`, no `AF` | has `AF` | `gap = wm(p.AF → s.AS)`. **A1** `pred_finished_after_start` if `gap < L`. Reported `overlap_beyond_lead_days = (L − gap) / day`. |
 
 With `L = 0` the last row reads: breach if the predecessor finished after the successor
@@ -87,7 +88,7 @@ Same 6,484-task export, before and after the rules above:
 
 | | Pairs |
 |---|---|
-| FS, predecessor not finished | 47 |
+| FS, predecessor not finished (of which 21 with the successor already complete) | 47 |
 | FS, predecessor finished after the successor started, beyond the lead | 17 |
 | SS, started before the lag allowed | 7 |
 | SS, predecessor never started | 5 |
