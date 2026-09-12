@@ -115,12 +115,33 @@ def group_labels(model, grouping: dict):
     return labels
 
 
-def band(value, width, unit="d"):
-    """Bucket a signed number into fixed-width bands, labelled readably."""
+# Explicit buckets, with the tails clamped. Two things went wrong before this:
+# fixed-width bands over a multi-year schedule produced 133 float bands -- a wall of
+# rows, not a chart -- and the labels sorted as text, which put "+120" before "+30"
+# and made the distribution unreadable. A chart nobody can read is worse than no
+# chart, because it still occupies the place where the answer should be.
+VARIANCE_EDGES = [-180, -120, -90, -60, -30, -7, 0, 7, 30, 60, 90, 120, 180]
+FLOAT_EDGES = [0, 5, 10, 20, 40, 80, 160]
+
+
+def bucket(value, edges, unit="d"):
+    """Place a number in an ordered bucket. Returns (sort_key, label)."""
     if value is None:
-        return "no baseline"
-    lo = int(value // width) * width
-    return f"{lo:+d} to {lo + width:+d} {unit}"
+        return (len(edges) + 2, "no baseline")
+    if value < edges[0]:
+        return (0, f"\u2264 {edges[0]:+d} {unit}")
+    for i, hi in enumerate(edges[1:], start=1):
+        if value < hi:
+            return (i, f"{edges[i - 1]:+d} \u2026 {hi:+d} {unit}")
+    return (len(edges), f"\u2265 {edges[-1]:+d} {unit}")
+
+
+def bucket_series(counter_by_key):
+    """Order buckets by their numeric position, never by their label text."""
+    return [
+        {"label": label, "value": count}
+        for (_, label), count in sorted(counter_by_key.items(), key=lambda kv: kv[0][0])
+    ]
 
 
 def build_review(model, res, theme=None, grouping="wbs", lang=None) -> dict:
@@ -179,8 +200,8 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None) -> dict:
         })
 
     # ---- charts, all computable from a plain export with no custom field
-    var_hist = OrderedDict()
-    floats = OrderedDict()
+    var_hist: dict = {}
+    floats: dict = {}
     starts = OrderedDict()
     groups = OrderedDict()
 
@@ -188,13 +209,14 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None) -> dict:
         bl = (t.get("baselines") or {}).get(slot) or {}
         bf, f = dt(bl.get("finish")), dt(t.get("finish"))
         if bf and f:
-            key = band(int((f - bf).days), 30)
+            key = bucket(int((f - bf).days), VARIANCE_EDGES)
             var_hist[key] = var_hist.get(key, 0) + 1
 
         sl = t.get("total_slack_minutes")
         mpd = (model.get("units") or {}).get("minutes_per_day") or 480
         if sl is not None:
-            floats[band(int(sl / mpd), 10)] = floats.get(band(int(sl / mpd), 10), 0) + 1
+            key = bucket(int(sl / mpd), FLOAT_EDGES)
+            floats[key] = floats.get(key, 0) + 1
 
         s = dt(t.get("start"))
         if s:
@@ -235,10 +257,9 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None) -> dict:
     # discovery step, rather than presenting a single 100% bar as an analysis.
     grouping_uninformative = len(group_rows) < 2
 
-    def series(d, sort_numeric=False):
-        items = list(d.items())
-        items.sort(key=lambda kv: kv[0])
-        return [{"label": k, "value": v} for k, v in items]
+    def series(d):
+        """Chronological for YYYY-MM keys, which sort correctly as text."""
+        return [{"label": k, "value": v} for k, v in sorted(d.items())]
 
     return {
         "kind": "review",
@@ -277,8 +298,8 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None) -> dict:
         "blocking": res.get("blocking", []),
         "findings": findings,
         "charts": {
-            "variance_histogram": series(var_hist),
-            "float_bands": series(floats),
+            "variance_histogram": bucket_series(var_hist),
+            "float_bands": bucket_series(floats),
             "starts_per_month": series(starts),
             "by_group": group_rows,
         },
