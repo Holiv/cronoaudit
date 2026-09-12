@@ -145,7 +145,10 @@ at the end precisely because it is broken in the middle.
 ### 3. Reporting consistency
 
 The check catalogue, with stable codes and the exact criterion for each, is in
-`references/checks.md`. Codes are **stable identifiers**: a finding keeps its code when
+`references/checks.md`. The network rules as a decision table per relationship type, with the
+lag, the both-complete exclusion and the measured effect of each criterion, are in
+`references/network-rules.md` — written so another implementation can be aligned number for
+number. Codes are **stable identifiers**: a finding keeps its code when
 the implementation changes. Without that you cannot discuss a problem across weeks. Two
 numberings exist in the wild for these same findings and **A1/A2 mean different things in
 each** — `references/checks.md` says which set is canonical and maps between them. Never
