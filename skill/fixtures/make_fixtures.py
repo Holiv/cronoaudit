@@ -177,7 +177,7 @@ def task(uid, tid, name, **kw):
     bl = kw.get("baseline")
     if bl and kw.get("phys") is not None:
         bstart, bfinish, bcost, bhours = bl
-        bcwp = 0.0 if kw.get("milestone") else bcost * kw["phys"] / 100.0
+        bcwp = kw["bcwp_override"] if "bcwp_override" in kw else bcost * kw["phys"] / 100.0
         parts.append(f"    <BCWP>{bcwp:.2f}</BCWP>")
         parts.append("    <EarnedValueMethod>1</EarnedValueMethod>")
     if bl:
@@ -327,11 +327,14 @@ def positive():
                   baseline=("2026-06-22T08:00:00", "2026-07-10T17:00:00", 10000.0, 120)))
     # 21: a COSTED milestone at 100%. The tool writes zero earned value for it; the
     # method counts its cost. Reconciliation must classify this, not hide it.
-    t.append(task(21, 21, "Costed milestone complete", milestone=True,
+    # Executed in March, but its BASELINE sits in November, after the status date.
+    # The tool credits earned value only inside the baseline window up to the
+    # status date, so it writes zero here while the method credits the cost.
+    t.append(task(21, 21, "Done ahead of its baseline window", milestone=True,
                   start="2026-03-06T17:00:00", finish="2026-03-06T17:00:00",
                   dur_hours=0, astart="2026-03-06T17:00:00", afinish="2026-03-06T17:00:00",
-                  pct=100, phys=100,
-                  baseline=("2026-03-06T17:00:00", "2026-03-06T17:00:00", 2500.0, 0)))
+                  pct=100, phys=100, bcwp_override=0.0,
+                  baseline=("2026-11-25T14:00:00", "2026-11-30T11:00:00", 2500.0, 16)))
 
     # The migration rule: task 11 is a predecessor of 12, and 12 has started.
     # That is NOT an A1 breach -- 11 is a record defect and already sits in P.

@@ -324,7 +324,7 @@ function renderReview(d){
   const lg=d.language||{}, rc=m.reconciliation||{};
   out.push(`<section><div class="sec-h"><h2>${esc(L.conventions_title)}</h2></div><dl class="conv">
     ${[[L.conv_slot,c.baseline_slot],[L.conv_chosen,c.baseline_slot_basis],[L.conv_threshold,c.threshold_days+" "+c.threshold_unit],[L.conv_tolerance,c.tolerance_text],[L.conv_population,c.population],[L.conv_counting,c.network_counting],[L.conv_working,c.working_days],[L.conv_percent,c.percent_source],[L.conv_language,`${d.lang} (${lg.confidence||""})`],[L.conv_lang_basis,lg.basis],
-      [L.conv_reconciliation||"Earned value vs file",rc.leaves_compared?`${n(rc.matches_to_cent)} / ${n(rc.leaves_compared)} · ${n(rc.difference,2)}`:null]]
+      [L.conv_reconciliation||"Earned value vs file",rc.leaves_compared?`${n(rc.matches_to_cent)} / ${n(rc.leaves_compared)} · ${n(rc.difference,2)} · ${n(rc.ahead_of_baseline)}`:null]]
       .filter(([,v])=>v!=null&&v!=="").map(([k,v])=>`<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl></section>`);
   return out.join("");
 }

@@ -188,8 +188,9 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None) -> dict:
     # ---- earned value: ours, and the tool's own, side by side
     budget = earned = earned_file = planned_file = 0.0
     compared = matches = 0
-    costed_milestones = []   # the tool's earned value ignores these; the method does not
+    ahead_of_baseline = []   # executed before the baseline window; the tool credits nothing yet
     unexplained = []
+    status = dt(model["project"].get("status_date"))
     for t in lv:
         cost = bl_of(t).get("cost") or 0.0
         if cost <= 0:
@@ -202,16 +203,23 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None) -> dict:
             earned_file += t["bcwp"]
             if abs(mine - t["bcwp"]) < 0.01:
                 matches += 1
-            elif t.get("milestone") or (t.get("duration_minutes") or 0) == 0:
-                # A zero-length item occupies no time, so the tool phases none of
-                # its cost and writes zero earned value for it, while the cost sits
-                # correctly in the baseline. Both figures are right in their own
-                # source; the comparison is what needs the adjustment.
-                costed_milestones.append({"id": t["id"], "name": t["name"], "cost": cost,
-                                          "percent": pct_of(t), "file_bcwp": t["bcwp"]})
             else:
-                unexplained.append({"id": t["id"], "name": t["name"], "cost": cost,
-                                    "mine": round(mine, 2), "file_bcwp": t["bcwp"]})
+                bstart = dt(bl_of(t).get("start"))
+                if status is not None and bstart is not None and bstart > status:
+                    # The tool's earned value is the time-phased baseline cost credited
+                    # up to the status date. Work done BEFORE its baseline window has
+                    # no baseline cost phased before the status date, so the tool
+                    # credits nothing until the calendar reaches the window -- while
+                    # the method credits cost x physical percent at once. Both are
+                    # right against their own instant; this is the datum family.
+                    ahead_of_baseline.append({
+                        "id": t["id"], "name": t["name"], "cost": cost,
+                        "percent": pct_of(t), "file_bcwp": t["bcwp"],
+                        "baseline_start": bl_of(t).get("start"),
+                    })
+                else:
+                    unexplained.append({"id": t["id"], "name": t["name"], "cost": cost,
+                                        "mine": round(mine, 2), "file_bcwp": t["bcwp"]})
         if t.get("bcws") is not None:
             planned_file += t["bcws"]
 
@@ -360,8 +368,9 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None) -> dict:
             "percent_planned_file": round(planned_file / budget * 100, 2) if budget else None,
             "reconciliation": {
                 "leaves_compared": compared, "matches_to_cent": matches,
-                "costed_milestones": len(costed_milestones),
-                "costed_milestone_value": round(sum(x["cost"] for x in costed_milestones), 2),
+                "ahead_of_baseline": len(ahead_of_baseline),
+                "ahead_of_baseline_value": round(sum(x["cost"] for x in ahead_of_baseline), 2),
+                "ahead_of_baseline_items": ahead_of_baseline[:20],
                 "unexplained": len(unexplained),
                 "unexplained_items": unexplained[:20],
                 "earned_computed": round(earned, 2), "earned_file": round(earned_file, 2),

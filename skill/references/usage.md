@@ -133,8 +133,11 @@ total float, actual percent, predecessors.
 **Earned value is reconciled against the file's own figures.** The XML export carries the
 BCWP the tool computed, so the report compares its calculation leaf by leaf and prints matches
 to the cent, the costed milestones the tool zeroes by construction, and any unexplained gap.
-On the real programme this was 4,676 of 4,677 leaves, with the one difference a costed
-milestone — the mechanism the method already documents.
+On the real programme this was 4,676 of 4,677 leaves. The one difference was **work done ahead
+of its baseline window**: the tool's earned value is the time-phased baseline cost credited up
+to the status date, so an activity executed before its baseline dates gets nothing credited
+until the calendar reaches them, while the method credits cost times physical percent at once.
+Both are right against their own instant. The report classifies these rather than hiding them.
 
 ### Read it in this order, and the report is laid out to enforce it
 

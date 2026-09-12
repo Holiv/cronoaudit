@@ -352,10 +352,11 @@ def main() -> int:
     rc = by_wbs["meta"]["reconciliation"]
     if rc["leaves_compared"] < 5:
         failures.append("reconciliation: the file's BCWP was not read")
-    if rc["costed_milestones"] < 1:
+    if rc["ahead_of_baseline"] < 1:
         failures.append(
-            "reconciliation: a costed milestone the tool zeroes was not classified -- it would "
-            "surface as an unexplained mismatch or, worse, be hidden"
+            "reconciliation: work done ahead of its baseline window, which the tool credits "
+            "nothing for until the status date reaches the window, was not classified -- it "
+            "would surface as an unexplained mismatch or, worse, be hidden"
         )
     if rc["unexplained"] != 0:
         failures.append(f"reconciliation: {rc['unexplained']} unexplained mismatches on a fixture "
@@ -391,7 +392,7 @@ def main() -> int:
     print("  language: pt and en detected from content; every label present in both")
     print("  fields: discovery typed and ranked them; grouping by alias and by a missing name")
     print("  network: lead honoured, both-complete ignored and recorded, SS lag violation caught")
-    print("  reconciliation: file BCWP read, costed milestone classified, no unexplained gap")
+    print("  reconciliation: file BCWP read, ahead-of-baseline classified, no unexplained gap")
     return 0
 
 

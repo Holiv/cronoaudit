@@ -201,8 +201,9 @@ is populated — the reader is reading fine, the field is not there.
 both phases of a real schedule, in an independent verification recorded at the time — and the
 skill now does that reconciliation itself on every run, because the XML export carries the
 tool's own BCWP (the `.mpp` read through a library does not). On a 6,484-task programme:
-4,676 of 4,677 leaves to the cent, the one difference a costed milestone the tool zeroes by
-construction.
+4,676 of 4,677 leaves to the cent, the one difference an activity executed ahead of its baseline
+window, which the tool credits nothing for until the status date reaches that window. Which
+instant, again.
 
 One caution that is not about arithmetic: **using physical percent complete is a business
 rule, not a derivation.** Another organisation may weight by cost, by quantity or by a
