@@ -37,12 +37,19 @@ Calling something a milestone by its **current** duration, then summing its **ba
 cost. In the measured set, 268 activities had exactly one of the two zeroed — the
 classification and the value come from different instants.
 
-The fix is to make the criterion a conjunction on the same instant: declared a milestone
-**and** baseline duration zero. Neither condition alone is sufficient. When the criterion
-was tightened this way, a standing anomaly — one schedule with cost on a zero-duration item
-that did not diverge — **dissolved** rather than being explained. An anomaly that vanishes
-when you sharpen the rule is a sign the rule was loose, which is different from an anomaly
-that gets explained.
+This is a genuine datum instance: the classification and the value are read at different
+instants, and either one alone is defensible.
+
+**But the repair is not a sharper classifier.** `reported`: the cost was never lost because
+of what the items *were*; it was lost because a zero-length span generates no time buckets.
+Reconcile instead — the residue between baseline cost and the sum of the phased buckets goes
+to the start day, on every task, checked by difference with no classification at all. See
+`earned-value.md`.
+
+The wider lesson is about repairs, not about milestones. **When a datum mismatch shows up, the
+tempting fix is to make the two sides agree on the classification. The better fix is often to
+remove the classification from the calculation.** A total that reconciles cannot disagree with
+itself about which instant it was measured at.
 
 ## 4. Deriving as if time did not pass
 

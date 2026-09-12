@@ -106,18 +106,34 @@ file.** The tool does not persist calculated fields; it recalculates on open. A 
 reading the file finds them null in 100% of rows, including in files where baseline cost
 is populated — the reader is reading fine, the field is not there.
 
-    earned value = baseline cost x physical % complete
+    earned value = baseline cost of the prevailing baseline x physical % complete,
+                   accumulated to the status date
 
-And **which baseline** feeds it is a file setting, not a constant. A schedule that began
-as one phase and grew can hold baselines in different slots, with the current one not in
-the default slot. Getting this wrong is datum case #1: it moves a progress figure by more
-than half its value while looking entirely normal.
+Two cautions on that formula, both of which matter more than the formula:
 
-Worse, the accessor for that setting returns **0, not null** — so the natural guard
-(`if (v != null) use(v)`) **passes**, the code adopts the default slot on every file, and
-the wrong number arrives with the sentence *"the file declares slot 0"* attached. False,
-and convincing. **A plausible default returned instead of null disarms the check that
-would otherwise exist.** Null shouts; zero passes.
+**Using physical percent complete is a business rule, not a derivation.** Another
+organisation may weight by cost, by quantity or by a regulator's schedule. State which one
+you used; do not present it as the definition of earned value.
+
+**It has not been reconciled against the tool's own earned value**, because the tool does
+not expose that figure in a form you can compare against. What was reconciled to the cent
+was baseline cost and a legacy extraction. Treat the formula as the right mechanism with
+an unproven output, and say so, rather than borrowing the authority of a match that was
+about a different number.
+
+And **which baseline** feeds it is not a constant. A schedule that began as one phase and
+grew can hold baselines in different slots, with the current one not in the default slot.
+Getting this wrong is datum case #1: it moves a progress figure by more than half its
+value while looking entirely normal.
+
+**Do not expect the file to tell you which slot.** Determine it from the data: the
+prevailing baseline is **the highest-numbered slot that has any leaf activity with cost
+greater than zero.** Summary rows and external tasks do not vote — they carry rolled-up or
+foreign values and would elect an empty slot.
+
+That is an instance of a rule worth generalising: **when the file already contains the
+result of the expensive calculation, derive the setting from the data rather than trusting
+a field that claims to declare it.**
 
 S-curve and sampling rules, including why a costed milestone legitimately vanishes from a
 phased S-curve while both figures stay correct: `references/earned-value.md`.

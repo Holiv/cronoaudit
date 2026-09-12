@@ -5,11 +5,18 @@
 See `reading-schedules.md` for the measurement. Summary: the calculated fields are absent
 from the file, so
 
-    earned value = baseline cost x physical % complete
+    earned value = baseline cost of the prevailing baseline x physical % complete,
+                   accumulated to the status date
 
-and **which baseline** is a per-file setting the library reports unreliably. Getting the
-slot wrong is datum case #1 and moves the figure by more than half its value while looking
-entirely normal.
+**Which baseline is prevailing is not declared by the file.** Derive it: the highest-numbered
+slot with any leaf activity carrying cost above zero, with summary rows and external tasks
+excluded from the vote. Getting this wrong is datum case #1 and moves the figure by more than
+half its value while looking entirely normal.
+
+**The output of this formula has not been reconciled against the tool's own earned value**,
+because the tool does not expose it comparably. Baseline cost and a legacy extraction were
+reconciled to the cent; earned value was not. Right mechanism, unproven output — state it
+that way.
 
 **Also beware the manually-entered percent complete.** Percent complete can be typed by a
 person rather than derived from the work done. When it is, it is a declaration, not a
@@ -30,9 +37,31 @@ Each figure is right in its own source. It is the comparison that is meaningless
 the adjustment, and that is why the divergence survives review: whoever checks the schedule
 finds it correct, and whoever checks the curve does too.
 
-**The criterion, measured:** a milestone is **declared a milestone AND has baseline
-duration zero**. Neither condition alone works — see datum case #3, where classifying by
-current duration and summing baseline cost mixes two instants.
+**Do not fix this by classifying milestones.** `reported`, and it **corrects an earlier
+version of this document**, which claimed the criterion was a conjunction of the milestone
+flag and zero baseline duration. There is no flag test, and there should not be one.
+
+What actually loses the cost is the phasing condition **finish greater than start**. An item
+whose finish equals its start produces no time buckets, so its cost has nowhere to land. That
+is not a property of milestones; it is a property of zero-length items, and the milestone flag
+is neither necessary nor sufficient to identify them.
+
+**The fix is a reconciliation, applied to every task, not a classification applied to some:**
+
+    residue = baseline cost - sum of the phased buckets
+    if residue != 0: place the residue on the start day
+
+Checked **by difference**, with no flag anywhere. This is strictly better than a classifier
+for three reasons, and the reasons generalise:
+
+- it needs no criterion to be right, so it cannot be wrong about an edge case;
+- it catches every other way cost can fall out of the phasing, including ways nobody has
+  found yet;
+- it is self-verifying — a nonzero residue after the fix is a defect report, not a silent
+  loss.
+
+**Prefer reconciling a total to classifying its members.** A classifier fails silently on the
+case it did not anticipate; a residue check fails loudly on all of them.
 
 **The size, when it appears:** summed across seven work fronts, a large amount of budget
 sits outside the curve; in one front, milestones were 35% of the entire pre-works phase.
@@ -41,6 +70,16 @@ And the milestone names explain why this concentrates in pre-works: outorgas, li
 judicial processes, cadastral surveys, permit issuance. **Fees and licences are real money
 with no duration.** Watch also for milestone names ending in "(not applicable)" — that
 denounces a copied template where someone kept the row and the cost came along with it.
+
+## Dating consumption over time
+
+`reported`. When distributing a resource's consumption across a period, the dates that govern
+are **the assignment's own dates, not the activity's** — and where a task was suspended and
+resumed, consumption runs **from the resume**, not from the original start. Treating the
+suspension as if it never happened attributes work to a window in which none occurred, and
+the monthly figure then disagrees with the source tool by the whole of one activity.
+
+Same family as the unit traps: the interval you assume is not the interval the file records.
 
 ## Reconciling weekly measurement with a monthly reporting point
 
