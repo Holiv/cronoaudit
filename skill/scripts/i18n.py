@@ -266,6 +266,43 @@ UI = {
     "en": {
         "review_title": "Schedule integrity review",
         "chip_title": "Schedule critical analysis",
+        "fx_title": "Forensics of the scenario",
+        "fx_sub": "Where did the delay come from, by which path, and when did it start? Not a "
+                  "contractual delay claim, which needs contemporaneous records and a formal "
+                  "method: a reconstruction of the mechanism, with reproducible evidence, to "
+                  "sustain the meeting and the notification.",
+        "fx_paths_title": "Driving path per milestone",
+        "fx_paths_sub": "From each future milestone, back through the predecessor that actually "
+                        "drives each start, until the chain reaches an activity that has "
+                        "started or an open end. The origin is the deepest activity on the "
+                        "chain still carrying at least {n} working days of variance: the delay "
+                        "has a name, not an aggregate.",
+        "fx_origins": "Activities originating delay on the most milestones",
+        "col_milestones_n": "Milestones", "col_origin": "Origin", "col_origin_var": "Origin var. (d)",
+        "col_chain": "Chain", "col_open_end": "Open end", "col_reaches": "Reaches started work",
+        "col_amplifier": "Grew most at", "col_added": "Added (d)",
+        "fx_chain_show": "Show the driving chain",
+        "col_via": "Via", "col_var_days": "Var. (d)", "col_started": "Started",
+        "fx_cal_title": "Calendar forensics",
+        "fx_cal_sub": "A productivity reserve registered for one year while the activities on "
+                      "that calendar execute in another embeds optimism nothing in the file "
+                      "announces. Per calendar: non-working exceptions per year against "
+                      "activity-days per year.",
+        "col_year": "Year", "col_activity_days": "Activity-days", "col_reserve_days": "Reserve days",
+        "col_flags": "Flags",
+        "fx_exec_title": "Execution pattern",
+        "fx_exec_sub": "Out-of-sequence execution by the month the successor started, and the "
+                       "distribution of start slippage against the baseline: {n} started "
+                       "activities, P50 {p50} days, P80 {p80} days; {early} started early, "
+                       "{late} late.",
+        "col_pairs": "Pairs in the count", "col_ignored": "Both complete, recorded",
+        "fx_cycle_title": "This cycle: float consumed and milestone movement",
+        "fx_cycle_sub": "Between the two snapshots: float consumed per group, activities that "
+                        "became critical, and the movement of each milestone attributed to what "
+                        "moved on its driving chain: execution, replan, or a moved reference.",
+        "col_float_before": "Float before", "col_float_now": "Float now", "col_consumed": "Consumed (d)",
+        "col_moved": "Moved (d)", "col_attribution": "Attribution", "col_finish_before": "Finish before",
+        "col_finish_now": "Finish now", "fx_became_critical": "Became critical this cycle",
         "fc_title": "Looking forward",
         "fc_sub": "Five readings from data the file already carries. Earned Schedule asks on "
                   "what date the planned curve reached the value earned today; that date, set "
@@ -567,6 +604,43 @@ UI = {
     "pt": {
         "review_title": "Análise crítica de cronograma",
         "chip_title": "Análise crítica de cronograma",
+        "fx_title": "Forense do cenário",
+        "fx_sub": "De onde veio o atraso, por qual caminho, e quando começou? Não é apuração "
+                  "contratual de atraso, que exige registro contemporâneo e método formal: é a "
+                  "reconstrução do mecanismo, com evidência reproduzível, para sustentar a "
+                  "reunião e a notificação.",
+        "fx_paths_title": "Caminho condutor por marco",
+        "fx_paths_sub": "De cada marco futuro, para trás pela predecessora que de fato empurra "
+                        "cada início, até a cadeia chegar a uma atividade iniciada ou a uma "
+                        "ponta aberta. A origem é a atividade mais profunda da cadeia que ainda "
+                        "carrega ao menos {n} dias úteis de variação: o atraso tem nome, não "
+                        "agregado.",
+        "fx_origins": "Atividades que originam atraso no maior número de marcos",
+        "col_milestones_n": "Marcos", "col_origin": "Origem", "col_origin_var": "Var. da origem (d)",
+        "col_chain": "Cadeia", "col_open_end": "Ponta aberta", "col_reaches": "Chega a serviço iniciado",
+        "col_amplifier": "Cresceu mais em", "col_added": "Acrescentou (d)",
+        "fx_chain_show": "Mostrar a cadeia condutora",
+        "col_via": "Via", "col_var_days": "Var. (d)", "col_started": "Iniciada",
+        "fx_cal_title": "Forense de calendário",
+        "fx_cal_sub": "Reserva de improdutividade cadastrada num ano enquanto as atividades "
+                      "daquele calendário executam em outro embute otimismo que nada no arquivo "
+                      "anuncia. Por calendário: exceções não úteis por ano contra dias de "
+                      "atividade por ano.",
+        "col_year": "Ano", "col_activity_days": "Dias de atividade", "col_reserve_days": "Dias de reserva",
+        "col_flags": "Sinais",
+        "fx_exec_title": "Padrão de execução",
+        "fx_exec_sub": "Execução fora de sequência pelo mês em que a sucessora começou, e a "
+                       "distribuição de escorregão de início contra a linha de base: {n} "
+                       "atividades iniciadas, P50 {p50} dias, P80 {p80} dias; {early} começaram "
+                       "cedo, {late} tarde.",
+        "col_pairs": "Pares na contagem", "col_ignored": "Ambas concluídas, gravadas",
+        "fx_cycle_title": "Este ciclo: folga consumida e movimento dos marcos",
+        "fx_cycle_sub": "Entre os dois snapshots: folga consumida por grupo, atividades que "
+                        "viraram críticas, e o movimento de cada marco atribuído ao que se moveu "
+                        "na cadeia condutora dele: execução, replanejamento ou referência movida.",
+        "col_float_before": "Folga antes", "col_float_now": "Folga agora", "col_consumed": "Consumida (d)",
+        "col_moved": "Moveu (d)", "col_attribution": "Atribuição", "col_finish_before": "Término antes",
+        "col_finish_now": "Término agora", "fx_became_critical": "Viraram críticas neste ciclo",
         "fc_title": "Olhando para frente",
         "fc_sub": "Cinco leituras a partir de dados que o arquivo já carrega. Earned Schedule "
                   "pergunta em que data a curva de previsto alcançou o valor agregado de hoje; "

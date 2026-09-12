@@ -164,6 +164,12 @@ look-ahead, practised against required pace by group, milestone bands from the s
 observed, and exposure of the remaining cost to the calendars' rainy-season reserve. A sixth
 file, `<name>-review-forecast.json`. Method and formulas: `references/forecast.md`.
 
+**Forensics reconstruct the mechanism** behind each future milestone's date: the driving
+chain, the activity where the variance entered, calendar reserve against the years activities
+execute, the pattern of out-of-sequence execution and start slippage, and, with two files, the
+float consumed and each milestone's movement attributed to what moved on its chain. A seventh
+file, `<name>-review-forensics.json`. Method and its limits: `references/forensics.md`.
+
 ### Read it in this order, and the report is laid out to enforce it
 
 1. **The blocking notices, if any.** No status date means every adherence check is measured

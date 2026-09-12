@@ -76,6 +76,13 @@ set beside the schedule's own finish and never in its place. Plus the look-ahead
 against required pace by group, milestone bands from observed slippage, and rainy-season
 exposure of what remains. `references/forecast.md`.
 
+**Forensics name the origin.** From each future milestone back along the driving chain to the
+activity where the variance entered, so the delay has a row number rather than an aggregate;
+calendar reserve against the years activities execute; the pattern of out-of-sequence execution
+and start slippage; and, with a previous snapshot, float consumed and each milestone's
+movement attributed to execution, replan or a moved reference. A reconstruction of the
+mechanism, not a contractual claim. `references/forensics.md`.
+
 **What you must have in hand** before either is worth starting: a status date, a saved
 baseline, and for the comparison the previous cycle's file. Fields the checks read must be
 populated — and a field left empty is itself a reportable finding, not a reason to skip the

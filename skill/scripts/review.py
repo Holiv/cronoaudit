@@ -30,6 +30,7 @@ import phasing as phasing_mod  # noqa: E402
 import resources as resources_mod  # noqa: E402
 import network_quality as quality_mod  # noqa: E402
 import forecast as forecast_mod  # noqa: E402
+import forensics as forensics_mod  # noqa: E402
 import report_data  # noqa: E402
 import report_html  # noqa: E402
 import run_checks  # noqa: E402
@@ -110,7 +111,8 @@ def stem(path: str) -> str:
 
 
 def do_review(model, path, outdir, threshold, tolerance, quiet,
-              theme=None, grouping="wbs", template=None, lang=None) -> dict:
+              theme=None, grouping="wbs", template=None, lang=None,
+              previous=None, cycle=None) -> dict:
     res = run_checks.run(model, threshold, tolerance)
     # The S-curve reads the XML a second time, streaming, because the phased
     # blocks are too many to keep in the model. XML only: the optional binary
@@ -130,6 +132,8 @@ def do_review(model, path, outdir, threshold, tolerance, quiet,
     if curve is not None:
         grp = report_data.resolve_grouping(model, grouping)
         fc = forecast_mod.build(model, curve, prod, grp.get("field_id"))
+    grp = report_data.resolve_grouping(model, grouping)
+    fx = forensics_mod.build(model, res, previous, cycle, grp.get("field_id"))
     base = os.path.join(outdir, f"{stem(path)}-review")
     with open(base + ".json", "w", encoding="utf-8") as fh:
         json.dump(res, fh, indent=2, ensure_ascii=False)
@@ -137,7 +141,10 @@ def do_review(model, path, outdir, threshold, tolerance, quiet,
     effective_lang = lang or i18n.detect(model)["lang"]
     payload = report_data.build_review(model, res, theme=theme, grouping=grouping,
                                        lang=effective_lang, phasing=curve,
-                                       productivity=prod, quality=quality, forecast=fc)
+                                       productivity=prod, quality=quality, forecast=fc,
+                                       forensics=fx)
+    with open(base + "-forensics.json", "w", encoding="utf-8") as fh:
+        json.dump(fx, fh, indent=2, ensure_ascii=False)
     if fc is not None:
         with open(base + "-forecast.json", "w", encoding="utf-8") as fh:
             json.dump(fc, fh, indent=2, ensure_ascii=False)
@@ -208,15 +215,15 @@ def main() -> None:
     prev_path, curr_path = args.files
     prev, curr = models
 
-    # Review the current delivery first. A comparison between two files that do not
-    # each hold together is a comparison of two wrong answers, and the network
-    # findings decide whether the forecast dates in the comparison mean anything.
+    # The comparison runs first so the forensics of the current delivery can use
+    # its readings; the review of the current file is still printed first, because
+    # a comparison between two files that do not each hold together is a
+    # comparison of two wrong answers.
+    res = compare_snapshots.compare(prev, curr)
     if not args.quiet:
         print("=== Review of the current delivery ===\n")
     do_review(curr, curr_path, outdir, args.threshold_days, args.tolerance_days,
-              args.quiet, theme, grouping, template, lang)
-
-    res = compare_snapshots.compare(prev, curr)
+              args.quiet, theme, grouping, template, lang, previous=prev, cycle=res)
     base = os.path.join(outdir, f"{stem(prev_path)}--to--{stem(curr_path)}-cycle")
     with open(base + ".json", "w", encoding="utf-8") as fh:
         json.dump(res, fh, indent=2, ensure_ascii=False)

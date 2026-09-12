@@ -65,6 +65,7 @@ REVIEW_SECTIONS = [
     "How to read these numbers", "Index", "Progress by", "Starts per month",
     "S-curve from the file", "<polyline", "Productivity and trend by resource",
     "Network quality", "Baseline execution index", "Looking forward", "Earned Schedule",
+    "Forensics of the scenario", "Driving path per milestone",
     "Finish variance against baseline", "Total float", "Problem",
     "To reproduce in the scheduling tool", "Conventions this report used",
 ]
@@ -529,6 +530,35 @@ def main() -> int:
     if not RX.get("available") or RX.get("share_in_reserve_pct") is None:
         failures.append("forecast: rain exposure not computed although calendars exist")
 
+    # ---- forensics: driving path per milestone with a named origin, calendar
+    # forensics, execution pattern; and, with a previous snapshot, float consumed
+    # and milestone movement attributed to the chain.
+    import forensics as forensics_mod
+    fx = forensics_mod.build(pm, pos, None, None, None)
+    m29 = next((m for m in fx["milestones"] if m["id"] == 29), None)
+    if not m29:
+        failures.append("forensics: the future milestone has no driving path")
+    else:
+        ids = [c["id"] for c in m29["chain"]]
+        if ids[:3] != [29, 27, 26]:
+            failures.append(f"forensics: driving chain {ids} != [29, 27, 26] through the lag link")
+        if not m29["open_end"]:
+            failures.append("forensics: the chain ends on an activity with no predecessor and was not flagged open")
+        if not m29["origin"] or m29["origin"]["id"] != 29:
+            failures.append("forensics: the delay origin should be the milestone itself (only it slipped)")
+    if not fx["calendars"]:
+        failures.append("forensics: calendar forensics produced nothing with two calendars in use")
+    if fx["execution"]["start_slippage"]["sample"] < 1:
+        failures.append("forensics: start slippage sample empty on a fixture with started activities")
+    if fx["cycle"] is not None:
+        failures.append("forensics: cycle forensics present without a previous snapshot")
+    prev_m = parse_mspdi.parse(os.path.join(ROOT, "fixtures", "cycle_prev.xml"))
+    curr_m = parse_mspdi.parse(os.path.join(ROOT, "fixtures", "cycle_curr.xml"))
+    curr_res = analyse_raw(curr_m)
+    fx2 = forensics_mod.build(curr_m, curr_res, prev_m, cyc, None)
+    if not fx2["cycle"] or "float_by_group" not in fx2["cycle"]:
+        failures.append("forensics: cycle forensics missing with a previous snapshot")
+
     # ---- the report must actually render. A valid file that runs to a blank page
     # is the failure mode this guards; see scripts/test_render.js for the real bug.
     rendered = render_checks()
@@ -559,6 +589,7 @@ def main() -> int:
     print("  productivity: quantities from the ISO hours, three rates, projection and verdicts")
     print("  quality: fourteen metrics with controls; Q12 and Q13 declared not computable")
     print("  forecast: earned schedule, look-ahead, rates, milestone bands, rain exposure")
+    print("  forensics: driving chain through the lag link, origin named, cycle readings")
     return 0
 
 

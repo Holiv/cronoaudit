@@ -308,6 +308,7 @@ function renderReview(d){
   if(d.productivity) views.push({cod:"V6",tt:L.prod_title,sub:"",id:"v6"});
   if(d.quality) views.push({cod:"V7",tt:L.quality_title,sub:"",id:"v7"});
   if(d.forecast) views.push({cod:"V8",tt:L.fc_title,sub:"",id:"v8"});
+  if(d.forensics) views.push({cod:"V9",tt:L.fx_title,sub:"",id:"v9"});
   out.push(`<section id="indice"><div class="sec-h"><span class="eyebrow">${esc(L.roteiro)}</span><h2>${esc(L.index)}</h2></div>
     <p class="sec-d">${esc(L.index_sub)}</p><nav class="indice">
     ${views.map(v=>`<a href="#${v.id}"><span class="cod">${v.cod}</span><span class="tt">${esc(v.tt)}${v.sub?`<small>${esc(v.sub)}</small>`:""}</span><span class="qtd"></span><span class="sev vs">${esc(d.labels.severity_view||"")}</span></a>`).join("")}
@@ -471,6 +472,42 @@ function renderReview(d){
         <p class="fonte">${esc(RX.basis)}</p>`);
     }
     out.push(`</section>`);
+  }
+
+  if(d.forensics){
+    const X=d.forensics, S=X.summary||{}, EX=X.execution||{}, SL=EX.start_slippage||{}, CY=X.cycle;
+    out.push(`<section id="v9"><div class="sec-h"><span class="eyebrow">V9</span><h2>${esc(L.fx_title)}</h2></div><p class="sec-d">${esc(X.provenance?L.fx_sub:L.fx_sub)}</p>`);
+    out.push(`<h3 style="font-size:16px;margin:10px 0 8px">${esc(L.fx_paths_title)}</h3><p class="sec-d">${esc(fill(L.fx_paths_sub,{n:5}))}</p>`);
+    if(S.origins&&S.origins.length){
+      out.push(`<p class="fonte" style="margin-bottom:6px"><b>${esc(L.fx_origins)}</b></p>${table([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_milestones_n,key:"milestones"}],S.origins)}`);
+    }
+    const ms=(X.milestones||[]).map(m=>({...m,origin_id:m.origin?m.origin.id:null,origin_name:m.origin?m.origin.name:null,origin_var:m.origin?m.origin.variance_days:null,
+      amp_id:m.amplifier?m.amplifier.id:null,amp_added:m.amplifier?m.amplifier.added_days:null,
+      open_end_t:m.open_end?"●":"",reaches_t:m.reaches_started?"●":""}));
+    out.push(`<div style="margin-top:10px">${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_fin_baseline,key:"baseline_finish"},{label:L.col_fin_trend,key:"finish"},{label:L.col_var_days,key:"variance_days"},
+      {label:L.col_origin,key:"origin_id"},{label:L.col_activity,key:"origin_name"},{label:L.col_origin_var,key:"origin_var"},{label:L.col_amplifier,key:"amp_id"},{label:L.col_added,key:"amp_added"},{label:L.col_chain,key:"chain_length"},{label:L.col_reaches,key:"reaches_t"},{label:L.col_open_end,key:"open_end_t"}],ms,ms.length)}</div>`);
+    (X.milestones||[]).slice(0,12).forEach(m=>{
+      out.push(`<details style="margin-top:6px"><summary>${esc(L.fx_chain_show)} · ${esc(m.id)} ${esc(m.name)} · ${esc(L.col_var_days)} ${n(m.variance_days)}</summary>
+        ${table([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_via,key:"via"},{label:L.col_fin_baseline,key:"baseline_finish"},{label:L.col_fin_trend,key:"finish"},{label:L.col_var_days,key:"variance_days"},{label:L.col_started,key:"started_t"}],
+          m.chain.map(c=>({...c,started_t:c.finished?"✓✓":(c.started?"✓":"")})))}</details>`);
+    });
+    if(X.calendars&&X.calendars.length){
+      out.push(`<h3 style="font-size:16px;margin:18px 0 8px">${esc(L.fx_cal_title)}</h3><p class="sec-d">${esc(L.fx_cal_sub)}</p>`);
+      X.calendars.forEach(c=>{
+        out.push(`<details${c.flags.length?" open":""}><summary>${esc(c.name)}${c.flags.length?` · ${esc(c.flags.join("; "))}`:""}</summary>
+          ${table([{label:L.col_year,key:"year"},{label:L.col_activity_days,key:"activity_days"},{label:L.col_reserve_days,key:"reserve_days"}],c.years)}</details>`);
+      });
+    }
+    out.push(`<h3 style="font-size:16px;margin:18px 0 8px">${esc(L.fx_exec_title)}</h3><p class="sec-d">${esc(fill(L.fx_exec_sub,{n:n(SL.sample),p50:n(SL.p50),p80:n(SL.p80),early:n(SL.started_early),late:n(SL.started_late)}))}</p>
+      ${table([{label:L.col_period,key:"period"},{label:L.col_pairs,key:"pairs"},{label:L.col_ignored,key:"ignored"}],EX.out_of_sequence_by_month||[])}`);
+    if(CY){
+      out.push(`<h3 style="font-size:16px;margin:18px 0 8px">${esc(L.fx_cycle_title)}</h3><p class="sec-d">${esc(L.fx_cycle_sub)}</p>
+        ${table([{label:L.col_group,key:"group"},{label:L.col_activities,key:"activities"},{label:L.col_consumed,key:"float_consumed_days"}],CY.float_by_group||[])}
+        <p class="fonte" style="margin:10px 0 6px"><b>${esc(L.fx_became_critical)}</b> ${n((CY.became_critical||[]).length)}</p>
+        ${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_group,key:"group"},{label:L.col_float_before,key:"float_before"}],CY.became_critical||[])}
+        <div style="margin-top:10px">${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_finish_before,key:"finish_before"},{label:L.col_finish_now,key:"finish_now"},{label:L.col_moved,key:"moved_days"},{label:L.col_attribution,key:"attribution"}],CY.milestone_movements||[])}</div>`);
+    }
+    out.push(`<p class="fonte" style="margin-top:10px">${esc(X.provenance||"")}</p></section>`);
   }
 
   out.push(`<section><div class="sec-h"><span class="eyebrow">${esc(L.findings)}</span><h2>${esc(L.findings)}</h2></div>
