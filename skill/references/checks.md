@@ -61,101 +61,79 @@ its activities with a deadline populated. Note the distinction: **a deadline is 
 constraint** — it does not move dates, it only reveals slippage. Its absence hides the
 slippage rather than causing it.
 
-## Which code set is canonical
+## The codes are stable identifiers
 
-`measured` — read from the deployed macro source and its operating notes.
+A finding keeps its code when the implementation changes. Without that you cannot discuss a
+problem across weeks, or hand the discussion to somebody else.
 
-**The canonical set is the one above, and it is also what the deployed tool runs today.** An
-earlier version of this document claimed the deployed automation used a different numbering
-and gave a mapping table for it. That was wrong: the two converged. Six checks are active and
-two are on standby.
+Six checks are the working set: **A1, A2, H, E, C, G**. Two more, **B** and **F**, are worth
+running but are often already covered by whatever else an organisation reviews, so they are
+opt-in. **P** is not a check so much as a rule that reshapes A1 and A2.
 
-| Code | Status | Routine name in the tool | Card label in the report |
-|---|---|---|---|
-| A1 | active | `..._A_ForaDeSequencia` | A1 |
-| A2 | active | `..._A_InversaoTotal` | A2 |
-| H | active | `..._H_VencidasSemRealizacao` | H |
-| E | active | `..._B2_AntecipadaNaoIniciada` | E |
-| C | active | `..._C1_Atrasada30d` | C |
-| G | active | `..._G_DuracaoXJanela` | G |
-| B | standby | `..._B_MarcosSemDataLimite` | — |
-| F | standby | `..._F_PctConcluidaZerada` | — |
-| P | transversal rule | `EhApontPendente` | — |
+Two checks were deliberately dropped from an earlier, longer set — *leaf with no successor* and
+*deviation with no justification filled* — because another analysis already in use covered them.
+**Removing a check matters as much as adding one:** a set that only grows becomes noise and
+stops being run.
 
-**One residual mismatch, internal to the tool:** the routine names still carry the legacy
-`B2` and `C1` while the report cards show `E` and `C`. Same check, two names, depending on
-whether you are reading the macro menu or the report. Worth knowing before someone quotes a
-code from one and looks for it in the other.
+### Before inventing a code scheme, look for the one that already exists
 
-### The superseded numbering, and why it is worth recording
+A longer twelve-check numbering existed earlier in this method's history and is superseded. It
+is worth one table, purely as a warning, because it **collides dangerously** with the working
+set:
 
-An earlier twelve-check numbering existed and is **superseded**. It matters only because it
-**collides dangerously** with the canonical set:
-
-| Code | In the superseded set | In the canonical set |
+| Code | In the superseded set | In the working set |
 |---|---|---|
 | A1 | Start elapsed with no progress | Successor started without predecessor complete |
 | A2 | Finish elapsed with no progress | Total inversion |
 | I1 / I1b / I2 | the network findings | *(these are A1 and A2 now)* |
 
-**The same prefix, the same shape, different meanings.** Two parties can leave a meeting
-agreeing about different things, with no conflict and no symptom.
+**The same prefix, the same shape, different meanings.** Two people can leave a meeting agreeing
+about different things, with no conflict and no symptom. A second scheme with the same shape is
+worse than no scheme at all — without codes, people describe the finding and make themselves
+understood.
 
-Two checks left the model deliberately when the set converged — *leaf with no successor* and
-*deviation with no justification filled* — because another analysis already in use covered
-them. **Removing a check matters as much as adding one:** a set that only grows becomes noise
-and stops being run.
+The same defect appears in miniature wherever an internal name and a displayed name drift apart:
+one gets renamed and the other does not, and nobody decides it, it just happens. Check which one
+somebody is quoting before answering them.
 
-The transferable rule: **before inventing a code scheme, look for the one that already
-exists.** A second scheme with the same shape is worse than no scheme at all — without codes,
-people describe the finding and make themselves understood.
+## Two ways this gets run, and only one of them is this skill
 
-## How a review actually gets run
+**Inside the scheduling tool, in its macro language.** This is the strongest form: no export, no
+conversion, nothing to install, and the result is navigable in the schedule itself with each
+activity in its own context — which is what lets you walk through a finding with the other party
+in the meeting. A check that needs preparation does not get run weekly; one that is a keystroke
+does. The pattern that transfers: **mark the flagged activities in a spare flag field and apply a
+filter**, rather than producing a list beside the schedule; change nothing but the marker and the
+display; and ship a routine that clears the markers, because a tool that dirties somebody else's
+file must know how to undo. Two limits worth knowing before you plan such a tool: the macro can
+usually create its own tables, but some tools do not allow *creating* groupings by macro, only
+applying them — so groupings stay a one-time manual setup.
 
-`measured` from the tool's operating notes. This is the operating half of the method, and it
-is what makes the difference between a documented method and a used one.
+Implementations of this exist as proprietary products and are not part of this skill.
 
-**Where it runs: inside the scheduling tool, in its macro language.** No export, no
-conversion, no pipeline, nothing to install. Whoever receives the file runs it on the file.
-**A check that needs preparation does not get run weekly; one that is a keystroke does.**
+**Here, from an exported file.** This is what the skill does, and what `references/usage.md`
+describes: the scheduling tool exports its own documented XML, and the bundled scripts read it,
+run the checks and write a report. It needs nothing installed beyond Python, it runs on any
+platform, and it works on a file somebody emailed you without opening their tool at all.
 
-**Install once.** Import the modules into the tool's global template so they are available in
-every file, not just the one open.
+The trade is real and worth stating: you lose the in-context navigation, and you gain
+portability, a machine-readable result, and a report you can diff against last month's.
 
-**Prepare once.** Create one custom view. The tool's own limit, worth recording rather than
-working around: **the macro can create the per-check tables itself, but it cannot create the
-groupings — the tool only allows applying those, not creating them.** So groupings are a
-manual, one-time setup.
+## Minimum inputs
 
-**Then, per delivery:**
+A **status date** — every adherence check is measured against it, and defaulting to today would
+silently change the answer each day the review is re-run. A **saved baseline** for anything that
+compares against plan. And populated fields for the checks that read them: a field left empty is
+itself a reportable finding, not a reason to skip the check.
 
-1. **Work on a copy of the delivered file.** The macros write only a marker field and the
-   display, never schedule data — and the instruction is still to use a copy.
-2. **Run the network checks first** (A1, A2). The ordering rationale is in `SKILL.md` and it
-   is not a preference.
-3. **Investigate finding by finding.** Each check marks the activities in one spare flag
-   field and applies a filter, rather than producing a separate list. **The result is
-   navigable inside the schedule, with the activity in its context** — which is what lets you
-   walk through it with the other party in the meeting.
-4. **Apply a grouping** to see the finding by discipline, by float band, or by calendar.
-5. **Generate the report with one command.** It applies the same criteria, injects them into a
-   template and opens a full HTML report in the browser: weighted progress, a card per
-   finding, distribution charts, the full list of flagged activities per finding, and a
-   print-to-PDF button. There is a secondary routine that exports the same base to a
-   spreadsheet, with the per-activity markings and stable identifiers, for whoever prefers to
-   work there.
-6. **Clear the markings when done.** A routine removes the flags and restores the default
-   view. **A tool that dirties somebody else's file must know how to undo.**
+## What the sweep buys
 
-**Minimum inputs.** A status date, and a saved baseline for anything that compares against
-plan. Checks that read a justification field need that field populated — and its being empty
-is itself a reportable finding.
+On the in-tool implementation: a schedule of 5,251 activities reviewed in under 30 seconds against
+roughly three hours by hand (`reported`; the manual figure is a practice estimate, not timed).
 
-**What it buys, measured:** a schedule of 5,251 activities reviewed in under 30 seconds
-against roughly three hours by hand (the manual figure is his practice estimate, not
-timed). The larger gain is not speed: **the sweep becomes exhaustive by construction.** Manual
-analysis carries coverage risk, and coverage risk is invisible — you cannot see the activity
-you did not look at.
+The larger gain is not speed. **The sweep becomes exhaustive by construction.** Manual analysis
+carries coverage risk, and coverage risk is invisible — you cannot see the activity you did not
+look at.
 
 ## Findings not in the set, but worth checking
 

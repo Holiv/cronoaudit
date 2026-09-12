@@ -1,6 +1,6 @@
 ---
 name: schedule-integrity
-description: Review a delivered construction or infrastructure schedule, compare it against the previous version, and audit the progress and earned-value figures derived from it - finding the failures that produce a plausible wrong number rather than an error. Use for schedule critical analysis of a contractor delivery, the periodic cycle report, computing or reconciling earned value (BCWS/BCWP/SPI/CPI), building or debugging an S-curve or physical progress curve, comparing two schedule versions or snapshots, deciding whether a change was execution or a replan, reading a .mpp or MPXJ-parsed schedule programmatically, or explaining why a control indicator disagrees with its source tool. Produces named findings with stable codes, a weighted deviation decomposition, and a report where every finding carries how to reproduce it.
+description: Review a delivered construction or infrastructure schedule, compare it against the previous version, and audit the progress and earned-value figures derived from it - finding the failures that produce a plausible wrong number rather than an error. Use for schedule critical analysis of a contractor delivery, the periodic cycle report, computing or reconciling earned value (BCWS/BCWP/SPI/CPI), building or debugging an S-curve or physical progress curve, comparing two schedule versions or snapshots, deciding whether a change was execution or a replan, reading a .mpp or MPXJ-parsed schedule programmatically, or explaining why a control indicator disagrees with its source tool. Runs from one command over the schedule tool's own XML export with no dependencies beyond Python, and produces named findings with stable codes, a weighted deviation decomposition, and a self-contained HTML report where every finding carries the filter that reproduces it.
 user-invocable: true
 ---
 
@@ -25,6 +25,19 @@ consistent schedule answers by itself.
 |---|---|---|
 | **Critical review** (`checks.md`) | Is this delivery internally consistent? | one schedule |
 | **Cycle comparison** (`comparing-versions.md`) | What moved since last time, and was it execution or a replan? | two snapshots of the same schedule |
+
+**How you actually run it.** One command, no dependencies beyond Python. Export the schedule
+from the tool once (`File > Save As > XML Format`), then:
+
+```
+python3 scripts/review.py delivery.xml               # review one delivery
+python3 scripts/review.py previous.xml current.xml   # the periodic cycle report
+```
+
+Out come a self-contained HTML report with no external references, printable to PDF, and the
+same findings as JSON. The full process, the flags, the failure messages and the judgement the
+tool cannot make for you are in `references/usage.md`. Verify the tool itself with
+`python3 scripts/test_checks.py` before trusting a clean result.
 
 **What you must have in hand** before either is worth starting: a status date, a saved
 baseline, and for the comparison the previous cycle's file. Fields the checks read must be
