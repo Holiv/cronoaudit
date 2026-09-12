@@ -99,7 +99,13 @@ the middle versions were wrong with increasing confidence:
    It propagated: a downstream knowledge base downgraded a `measured` topic to `reported`
    on the strength of it.
 5. **The dated record was read.** Version 3 was right, and the formula *had* been reconciled
-   to the cent. Version 4 was a false memory, and the downgrade had to be undone.
+   to the cent. Version 4 was a false memory, and the downgrade was undone.
+
+And the detail that makes the defence more than a slogan: **two parties arrived at version 5
+independently, within the hour, by the same route** — each stopped taking anybody's word and
+went to read the dated line. Neither needed the other's conclusion. A claim that carries its
+citation can be settled by whoever happens to look first, which is what makes the chain
+break at its first link instead of at its last.
 
 Three things to take from it:
 
