@@ -3,6 +3,7 @@
   <Name>Cycle fixture prev</Name>
   <Title>Cycle fixture prev</Title>
   <StatusDate>2026-06-30T17:00:00</StatusDate>
+  <DefaultTaskEVMethod>1</DefaultTaskEVMethod>
   <CurrentDate>2026-06-30T17:00:00</CurrentDate>
   <MinutesPerDay>480</MinutesPerDay>
   <MinutesPerWeek>2400</MinutesPerWeek>
@@ -105,6 +106,8 @@
     <Duration>PT40H0M0S</Duration>
     <PercentComplete>100</PercentComplete>
     <PhysicalPercentComplete>100</PhysicalPercentComplete>
+    <BCWP>10000.00</BCWP>
+    <EarnedValueMethod>1</EarnedValueMethod>
     <Baseline>
       <Number>1</Number>
       <Start>2026-03-02T08:00:00</Start>
@@ -143,6 +146,8 @@
     <Duration>PT160H0M0S</Duration>
     <PercentComplete>30</PercentComplete>
     <PhysicalPercentComplete>30</PhysicalPercentComplete>
+    <BCWP>12000.00</BCWP>
+    <EarnedValueMethod>1</EarnedValueMethod>
     <Baseline>
       <Number>1</Number>
       <Start>2026-06-01T08:00:00</Start>

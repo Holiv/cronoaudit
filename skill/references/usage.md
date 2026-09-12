@@ -106,6 +106,36 @@ from a network share, from an email attachment, from a laptop with no connection
 the same in five years. One button prints it to PDF, because the artefact that ends up attached
 to a meeting record is a PDF, and a report that cannot become one gets screenshotted instead.
 
+### What the report looks like
+
+It follows the structure of a mature in-tool analysis report, because that structure was
+proven in meetings: a cover with the file, activity count, status date and baseline cost; a
+verdict block with the weighted progress figure beside **how to read these numbers**; one tile
+per finding; an index with code, title, subtitle, count and severity; the views — progress by
+group with planned against actual and a column per finding, starts per month, finish variance,
+total float, calendars — and then one block per finding.
+
+Each finding block carries the code, a severity in four named levels (critical, high, check,
+pending), the plain title and subtitle, then **problem, impact and solution**, then **how to
+reproduce it in the scheduling tool** and **where it came from**, and finally the activities,
+**collapsed under a toggle** so the report does not open as a wall of rows. Printing expands
+every table.
+
+**Only the visible row number identifies an activity.** The stable UID travels in the data
+file and never in the report, because nobody can find a UID on their screen. Network findings
+show the **pair explicitly** — successor after predecessor — with the relationship type in the
+schedule's own language, and every other finding shows the predecessor list.
+
+The table columns are the ones a planner reads first: row, activity, any discipline or section
+field the discovery step found well filled, baseline finish, finish, variance in working days,
+total float, actual percent, predecessors.
+
+**Earned value is reconciled against the file's own figures.** The XML export carries the
+BCWP the tool computed, so the report compares its calculation leaf by leaf and prints matches
+to the cent, the costed milestones the tool zeroes by construction, and any unexplained gap.
+On the real programme this was 4,676 of 4,677 leaves, with the one difference a costed
+milestone — the mechanism the method already documents.
+
 ### Read it in this order, and the report is laid out to enforce it
 
 1. **The blocking notices, if any.** No status date means every adherence check is measured

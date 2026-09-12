@@ -3,109 +3,168 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Schedule report</title>
 <style>
+/* Visual language of the in-tool analysis report, with system font stacks so the
+   file opens identically on a machine with no network and behind a proxy that
+   blocks external fonts. Every colour is a token; both themes are complete. */
 :root{
-  --bg:#fbfaf8; --panel:#ffffff; --panel2:#f6f4f1; --ink:#191919; --muted:#5d5d5d;
-  --line:#e3e0da; --accent:#1f4e5f; --high:#9c3b2e; --medium:#8a6a1e; --low:#3f6b57;
-  --warnbg:#fdf5ec; --grid:#ece9e3;
-  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --ground:#EDEFEE; --surface:#FFFFFF; --surface-2:#F5F7F6;
+  --line:#D4D9D7; --line-soft:#E5E9E7;
+  --ink:#111618; --ink-2:#3E4A4E; --ink-3:#68767B;
+  --accent:#1B4D8F; --accent-soft:#E7EEF7; --stripe:#D8A409;
+  --crit:#A32015; --crit-bg:#FBEAE7; --warn:#8A5300; --warn-bg:#FAF1E0;
+  --good:#166B50; --good-bg:#E5F2EC; --mark-soft:#9BA6AA;
+  --c1:#2C6BB5; --c2:#0E9384;
+  --shadow:0 1px 2px rgba(17,22,24,.05),0 10px 28px -20px rgba(17,22,24,.35);
+  --display:-apple-system,"Segoe UI Variable Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --sans:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#14151a; --panel:#1c1e24; --panel2:#22252c; --ink:#eceae6; --muted:#a0a09e;
-  --line:#31343c; --warnbg:#291f17; --grid:#2a2d34;
+  --ground:#0D1113; --surface:#161B1E; --surface-2:#1D2427;
+  --line:#2E3639; --line-soft:#232B2E;
+  --ink:#E7ECEE; --ink-2:#B3BEC2; --ink-3:#839499;
+  --accent:#7BADE8; --accent-soft:#16283C;
+  --crit:#F0897C; --crit-bg:#2D1512; --warn:#E0A64A; --warn-bg:#2A2011;
+  --good:#6DC7A4; --good-bg:#112A21; --mark-soft:#6C7A7F;
+  --c1:#6FA3E0; --c2:#4FB8A8;
+  --shadow:0 1px 2px rgba(0,0,0,.45),0 10px 28px -20px rgba(0,0,0,.9);
 }}
 :root[data-theme="dark"]{
-  --bg:#14151a; --panel:#1c1e24; --panel2:#22252c; --ink:#eceae6; --muted:#a0a09e;
-  --line:#31343c; --warnbg:#291f17; --grid:#2a2d34;
+  --ground:#0D1113; --surface:#161B1E; --surface-2:#1D2427;
+  --line:#2E3639; --line-soft:#232B2E;
+  --ink:#E7ECEE; --ink-2:#B3BEC2; --ink-3:#839499;
+  --accent:#7BADE8; --accent-soft:#16283C;
+  --crit:#F0897C; --crit-bg:#2D1512; --warn:#E0A64A; --warn-bg:#2A2011;
+  --good:#6DC7A4; --good-bg:#112A21; --mark-soft:#6C7A7F;
+  --c1:#6FA3E0; --c2:#4FB8A8;
+  --shadow:0 1px 2px rgba(0,0,0,.45),0 10px 28px -20px rgba(0,0,0,.9);
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--sans)}
-.wrap{max-width:1080px;margin:0 auto;padding-block:26px;padding-left:20px;padding-right:20px}
-h1{font-size:1.55rem;margin:0 0 2px;letter-spacing:-.015em}
-h2{font-size:1.08rem;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
-h3{font-size:.93rem;margin:18px 0 7px}
-p{margin:0 0 10px}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ground);color:var(--ink);font:15px/1.55 var(--sans)}
+.wrap{max-width:1120px;margin:0 auto;padding-block:28px 60px;padding-left:22px;padding-right:22px}
 a{color:var(--accent)}
-code{font-family:var(--mono);font-size:.88em}
-.eyebrow{font-size:.68rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
-.sub{color:var(--muted);font-size:.86rem;margin:0 0 18px}
-.bar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
-button{font:inherit;padding:7px 13px;border:1px solid var(--line);border-radius:7px;
-  background:var(--panel);color:var(--ink);cursor:pointer}
-button:hover{border-color:var(--accent)}
-.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:9px;margin:0 0 16px}
-.meta>div{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 11px}
-.meta dt{font-size:.66rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
-.meta dd{margin:3px 0 0;font-family:var(--mono);font-size:.87rem;word-break:break-word}
-.note{background:var(--warnbg);border:1px solid var(--medium);border-left-width:4px;
-  border-radius:7px;padding:11px 14px;margin:11px 0;font-size:.89rem}
-.note.bad{border-color:var(--high)}
-.note.good{background:transparent;border-color:var(--low)}
-.note b{font-weight:650}
-.read{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:0 0 18px}
-.read p:last-child{margin:0}
-ol.idx{list-style:none;counter-reset:i;padding:0;margin:0;
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:4px}
-ol.idx li{counter-increment:i;display:flex;gap:9px;align-items:baseline;
-  padding:6px 9px;border-bottom:1px solid var(--line);font-size:.87rem}
-ol.idx .c{font-family:var(--mono);font-weight:700;color:var(--accent);min-width:22px}
-ol.idx .n{margin-left:auto;font-family:var(--mono);color:var(--muted)}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:9px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:11px 12px;
-  border-top:3px solid var(--line)}
-.card.high{border-top-color:var(--high)} .card.medium{border-top-color:var(--medium)}
-.card.low{border-top-color:var(--low)}
-.card .c{font-family:var(--mono);font-weight:700;font-size:.82rem;color:var(--accent)}
-.card .v{font-size:1.8rem;font-weight:650;line-height:1.12;margin:1px 0}
-.card .v.zero{color:var(--muted);font-weight:400}
-.card .t{font-size:.78rem;color:var(--muted)}
-.badge{display:inline-block;font-size:.63rem;text-transform:uppercase;letter-spacing:.07em;
-  padding:2px 6px;border-radius:4px;border:1px solid currentColor;vertical-align:2px}
-.badge.high{color:var(--high)} .badge.medium{color:var(--medium)} .badge.low{color:var(--low)}
-.blk{background:var(--panel);border:1px solid var(--line);border-radius:10px;
-  padding:14px 16px;margin:0 0 14px;border-left:4px solid var(--line)}
-.blk.high{border-left-color:var(--high)} .blk.medium{border-left-color:var(--medium)}
-.blk.low{border-left-color:var(--low)}
-.blk-top{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;margin-bottom:2px}
-.blk-top .c{font-family:var(--mono);font-weight:700;color:var(--accent)}
-.blk-top .q{margin-left:auto;font-family:var(--mono);font-size:1.15rem;font-weight:650}
-.blk h3{margin:0}
-.blk .desc{color:var(--muted);font-size:.87rem;margin:2px 0 10px}
-.fonte{font-size:.82rem;margin:8px 0 0;padding:9px 11px;background:var(--panel2);
-  border-radius:7px}
-.fonte div+div{margin-top:5px}
-.fonte b{font-weight:650}
-.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px;margin-top:11px}
-table{border-collapse:collapse;width:100%;font-size:.83rem;background:var(--panel)}
-th,td{text-align:left;padding:6px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
-th{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);
-  background:var(--panel2)}
-tbody tr:nth-child(even){background:var(--panel2)}
+h1{font:700 30px/1.15 var(--display);letter-spacing:-.018em;margin:14px 0 18px;text-wrap:balance}
+h2{font:600 21px/1.2 var(--display);letter-spacing:-.012em;margin:0}
+h3{font:700 19px/1.25 var(--display);letter-spacing:-.012em;margin:0;flex:1 1 300px}
+p{margin:0 0 10px}
+.eyebrow{font:500 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.mono{font-family:var(--mono)}
+/* capa */
+.capa{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:22px 26px 24px;box-shadow:var(--shadow)}
+.striping{height:6px;background:repeating-linear-gradient(90deg,var(--stripe) 0 18px,transparent 18px 26px);opacity:.85;margin:-22px -26px 18px;border-radius:4px 4px 0 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:500 11.5px/1 var(--mono);letter-spacing:.04em;padding:6px 9px;border-radius:2px;border:1px solid var(--line);color:var(--ink-2);background:var(--surface-2)}
+.chip.forte{background:var(--accent-soft);border-color:transparent;color:var(--accent);font-weight:600}
+.ficha{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);border-radius:3px;overflow:hidden;margin:0}
+.ficha>div{background:var(--surface);padding:11px 13px}
+.ficha dt{font:500 10.5px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+.ficha dd{margin:0;font:600 15px/1.2 var(--sans);font-variant-numeric:tabular-nums;word-break:break-word}
+/* veredito */
+.veredito{display:grid;grid-template-columns:minmax(220px,1fr) 2fr;gap:18px;margin:18px 0;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:22px 26px;box-shadow:var(--shadow)}
+@media(max-width:720px){.veredito{grid-template-columns:1fr}}
+.hero-num{font:700 56px/1 var(--display);letter-spacing:-.03em;color:var(--accent);font-variant-numeric:tabular-nums;margin:8px 0 6px}
+.hero-cap{font-size:13px;color:var(--ink-3)}
+.contra h2{font-size:17px;margin-bottom:8px}
+.contra p{color:var(--ink-2);font-size:14.5px;max-width:66ch}
+.contra p:last-child{margin:0}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}
+button{font:500 13px var(--sans);padding:7px 12px;border:1px solid var(--line);border-radius:3px;background:var(--surface);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--accent);color:var(--accent)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin:18px 0}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:11px 13px;border-top:3px solid var(--line)}
+.tile.cr{border-top-color:var(--crit)} .tile.al{border-top-color:var(--warn)}
+.tile.vf{border-top-color:var(--mark-soft)} .tile.pd{border-top-color:var(--accent)}
+.tile .c{font:600 12px var(--mono);color:var(--ink-3)}
+.tile .v{font:700 30px/1.1 var(--display);letter-spacing:-.02em;margin:2px 0;font-variant-numeric:tabular-nums}
+.tile .v.zero{color:var(--ink-3);font-weight:500}
+.tile .t{font-size:12.5px;color:var(--ink-2)}
+/* sections */
+section{margin-top:34px}
+.sec-h{display:flex;flex-direction:column;gap:5px;margin-bottom:8px}
+.sec-d{color:var(--ink-2);font-size:14.5px;max-width:70ch;margin:0 0 12px}
+/* índice */
+nav.indice{background:var(--surface);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+nav.indice a{display:grid;grid-template-columns:56px minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:11px 16px;border-bottom:1px solid var(--line-soft);text-decoration:none;color:var(--ink)}
+nav.indice a:last-child{border-bottom:none}
+nav.indice a:hover{background:var(--surface-2)}
+nav.indice .cod{font:600 12px var(--mono);color:var(--ink-3)}
+nav.indice .tt{font-size:14.5px;font-weight:500}
+nav.indice .tt small{display:block;font-weight:400;color:var(--ink-3);font-size:12.5px}
+nav.indice .qtd{font:600 13px var(--mono);color:var(--ink-2);min-width:34px;text-align:right}
+.sev{font:600 10.5px/1 var(--mono);letter-spacing:.07em;text-transform:uppercase;padding:3px 7px;border-radius:2px;white-space:nowrap}
+.sev.cr{background:var(--crit-bg);color:var(--crit)} .sev.al{background:var(--warn-bg);color:var(--warn)}
+.sev.vf{background:var(--surface-2);color:var(--ink-3);border:1px solid var(--line-soft)}
+.sev.pd{background:var(--accent-soft);color:var(--accent)} .sev.vs{background:var(--good-bg);color:var(--good)}
+/* achado */
+.achado{background:var(--surface);border:1px solid var(--line);border-radius:4px;margin-top:18px;box-shadow:var(--shadow);overflow:hidden}
+.achado>.barra{height:3px;background:var(--line)}
+.achado.cr>.barra{background:var(--crit)} .achado.al>.barra{background:var(--warn)}
+.achado.vf>.barra{background:var(--mark-soft)} .achado.pd>.barra{background:var(--accent)}
+.achado-in{padding:22px 26px 24px;display:flex;flex-direction:column;gap:16px}
+@media(max-width:640px){.achado-in{padding:16px}}
+.achado-top{display:flex;gap:11px;align-items:baseline;flex-wrap:wrap}
+.achado-top .cod{font:600 12.5px var(--mono);color:var(--ink-3)}
+.badge{font:700 26px/1 var(--display);font-variant-numeric:tabular-nums}
+.achado.cr .badge{color:var(--crit)} .achado.al .badge{color:var(--warn)}
+.achado.vf .badge{color:var(--ink-3)} .achado.pd .badge{color:var(--accent)}
+.sub{color:var(--ink-3);font-size:14px;margin:-8px 0 0}
+.qa{display:grid;gap:12px}
+.qa .bloco{display:grid;grid-template-columns:100px minmax(0,1fr);gap:15px;align-items:start}
+@media(max-width:640px){.qa .bloco{grid-template-columns:1fr;gap:3px}}
+.qa .rot{font:500 10.5px/1.5 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);padding-top:4px}
+.qa .txt{color:var(--ink-2);font-size:14.8px;max-width:72ch}
+.levar{background:var(--surface-2);border:1px solid var(--line-soft);border-radius:3px;padding:13px 16px}
+.levar .rot{font:500 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+.levar p{margin:0;font-size:14px;color:var(--ink-2)}
+.fonte{font-size:12.5px;color:var(--ink-3)}
+.fonte b{color:var(--ink-2);font-weight:600}
+.note{background:var(--warn-bg);border:1px solid var(--warn);border-left-width:4px;border-radius:3px;padding:10px 14px;font-size:14px}
+.note.bad{background:var(--crit-bg);border-color:var(--crit)}
+.note.good{background:var(--good-bg);border-color:var(--good)}
+.note.soft{background:var(--surface-2);border-color:var(--line)}
+/* tables, collapsed by default */
+details{border:1px solid var(--line-soft);border-radius:3px;background:var(--surface-2)}
+summary{cursor:pointer;padding:9px 13px;font:500 13.5px var(--sans);color:var(--accent);list-style:none;display:flex;gap:8px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"";width:0;height:0;border-left:6px solid currentColor;border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+@media(prefers-reduced-motion:reduce){summary::before{transition:none}}
+.scroll{overflow-x:auto;border-top:1px solid var(--line-soft);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line-soft);white-space:nowrap;vertical-align:top}
+th{font:500 10.5px/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);background:var(--surface-2);position:sticky;top:0}
+tbody tr:nth-child(even){background:var(--surface-2)}
 tr:last-child td{border-bottom:0}
-td.num{text-align:right;font-family:var(--mono)}
-td.name{white-space:normal;min-width:210px}
-.chart{margin:12px 0 4px}
-.chart .row{display:grid;grid-template-columns:minmax(96px,190px) 1fr auto;gap:10px;
-  align-items:center;padding:2px 0;font-size:.82rem}
-.chart .rot{color:var(--muted);font-family:var(--mono);font-size:.76rem;
-  overflow:hidden;text-overflow:ellipsis}
-.track{background:var(--grid);border-radius:3px;height:15px;position:relative;overflow:hidden}
-.fill{height:100%;background:var(--accent);border-radius:3px}
-.fill.high{background:var(--high)} .fill.low{background:var(--low)}
-.fill.medium{background:var(--medium)}
-.val{font-family:var(--mono);font-size:.78rem;color:var(--muted);min-width:52px;text-align:right}
-.dual{display:grid;grid-template-columns:1fr;gap:1px}
-.legend{display:flex;gap:14px;font-size:.74rem;color:var(--muted);margin:8px 0 0}
-.legend span{display:flex;gap:5px;align-items:center}
+td.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+td.name{white-space:normal;min-width:220px}
+td.neg{color:var(--crit)} td.pos{color:var(--good)}
+/* charts */
+.chart{margin:8px 0 4px}
+.chart .row{display:grid;grid-template-columns:minmax(90px,200px) 1fr auto;gap:10px;align-items:center;padding:3px 0;font-size:13px}
+.chart .rot{color:var(--ink-2);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.track{background:var(--line-soft);border-radius:2px;height:14px;position:relative;overflow:hidden}
+.fill{height:100%;background:var(--accent);border-radius:2px}
+.fill.c1{background:var(--c1)} .fill.c2{background:var(--c2)} .fill.warn{background:var(--warn)} .fill.good{background:var(--good)}
+.val{font:500 12px var(--mono);color:var(--ink-3);min-width:56px;text-align:right;font-variant-numeric:tabular-nums}
+.dual .track{height:9px;margin:2px 0}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12.5px;color:var(--ink-3);margin:8px 0 4px}
+.legend span{display:flex;gap:6px;align-items:center}
 .sw{width:11px;height:11px;border-radius:2px;display:inline-block}
-footer{margin-top:38px;padding-top:13px;border-top:1px solid var(--line);
-  font-size:.77rem;color:var(--muted)}
+.conv{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);border-radius:3px;overflow:hidden}
+.conv>div{background:var(--surface);padding:10px 12px}
+.conv dt{font:500 10.5px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px}
+.conv dd{margin:0;font-size:13.5px;color:var(--ink-2)}
+footer{margin-top:44px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-3);max-width:80ch}
 @media print{
-  :root{--bg:#fff;--panel:#fff;--panel2:#f4f4f4;--ink:#000;--muted:#444;--line:#b9b9b9;--grid:#ddd}
-  .bar{display:none} body{font-size:10pt} .wrap{max-width:none}
-  h2{break-after:avoid} .blk{break-inside:avoid} .scroll{overflow:visible}
-  table{font-size:8pt} td,th{white-space:normal} th{background:#eee}
-  .fill{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  :root{--ground:#fff;--surface:#fff;--surface-2:#f4f4f4;--ink:#000;--ink-2:#222;--ink-3:#444;--line:#bbb;--line-soft:#ddd;--shadow:none}
+  .bar{display:none} body{font-size:10.5pt} .wrap{max-width:none;padding-block:0}
+  details{border:none} details>summary{display:none} details:not([open])>*{display:block}
+  .scroll{overflow:visible} table{font-size:8pt} td,th{white-space:normal} th{position:static}
+  .achado,.veredito,.capa{box-shadow:none;break-inside:avoid} section{break-before:auto}
+  .fill,.tile,.sev{print-color-adjust:exact;-webkit-print-color-adjust:exact}
 }
 </style></head>
 <body><div class="wrap" id="app">Rendering…</div>
@@ -113,34 +172,31 @@ footer{margin-top:38px;padding-top:13px;border-top:1px solid var(--line);
 const DATA = /*DATA*/ null;
 
 // The template holds no prose of its own: every word a person reads arrives in
-// DATA.labels, chosen for the schedule's own language. Adding a language means
-// adding a block to scripts/i18n.py and nothing here.
+// DATA.labels, chosen for the schedule's own language.
 const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const n = (v,d=0) => v==null?"&mdash;":(typeof v==="number"?v.toLocaleString(DATA&&DATA.lang==="pt"?"pt-BR":undefined,{minimumFractionDigits:d,maximumFractionDigits:d}):esc(v));
+const loc = () => (DATA&&DATA.lang==="pt")?"pt-BR":"en-US";
+const n = (v,d=0) => v==null?"&mdash;":(typeof v==="number"?v.toLocaleString(loc(),{minimumFractionDigits:d,maximumFractionDigits:d}):esc(v));
+const fill = (s,vals) => String(s==null?"":s).replace(/\{(\w+)\}/g,(_,k)=>vals[k]==null?"":vals[k]);
+const SEV = {critical:"cr",high:"al",check:"vf",pending:"pd",view:"vs"};
 let L = {};
-const fill = (s,vals) => String(s).replace(/\{(\w+)\}/g,(_,k)=>vals[k]==null?"":vals[k]);
 
 function theme(t){
   if(!t) return;
   const r=document.documentElement.style;
   if(t.accent) r.setProperty("--accent",t.accent);
-  if(t.high) r.setProperty("--high",t.high);
-  if(t.medium) r.setProperty("--medium",t.medium);
-  if(t.low) r.setProperty("--low",t.low);
+  if(t.crit) r.setProperty("--crit",t.crit);
+  if(t.warn) r.setProperty("--warn",t.warn);
+  if(t.good) r.setProperty("--good",t.good);
+  if(t.font_display) r.setProperty("--display",t.font_display);
   if(t.font_sans) r.setProperty("--sans",t.font_sans);
   if(t.font_mono) r.setProperty("--mono",t.font_mono);
 }
-
-function metaGrid(pairs){
-  return `<div class="meta">${pairs.filter(([,v])=>v!=null&&v!=="").map(([k,v])=>
-    `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</div>`;
-}
-
 function bar(){
-  return `<div class="bar"><button id="pdf">${esc(L.print)}</button>
-    <button id="th">${esc(L.toggle_theme)}</button></div>`;
+  return `<div class="bar"><button id="pdf">${esc(L.print)}</button><button id="th">${esc(L.toggle_theme)}</button></div>`;
 }
-
+function ficha(pairs){
+  return `<dl class="ficha">${pairs.filter(([,v])=>v!=null&&v!=="").map(([k,v])=>`<div><dt>${esc(k)}</dt><dd>${v}</dd></div>`).join("")}</dl>`;
+}
 function chart(series,{cls="",fmt=v=>n(v)}={}){
   if(!series||!series.length) return `<p class="sub">${esc(L.no_data)}</p>`;
   const max=Math.max(...series.map(s=>Math.abs(s.value)))||1;
@@ -149,199 +205,161 @@ function chart(series,{cls="",fmt=v=>n(v)}={}){
     <div class="track"><div class="fill ${cls}" style="width:${Math.abs(s.value)/max*100}%"></div></div>
     <div class="val">${fmt(s.value)}</div></div>`).join("")}</div>`;
 }
-
-function table(cols,rows,limit=400){
-  if(!rows||!rows.length) return `<p class="sub">${esc(L.no_activities)}</p>`;
+function dualChart(rows){
+  return `<div class="chart dual">${rows.map(r=>`<div class="row">
+    <div class="rot" title="${esc(r.label)}">${esc(r.label)}</div>
+    <div><div class="track"><div class="fill c1" style="width:${Math.min(100,r.planned_pct)}%"></div></div>
+         <div class="track"><div class="fill c2" style="width:${Math.min(100,r.earned_pct)}%"></div></div></div>
+    <div class="val">${n(r.weight_pct,1)}%</div></div>`).join("")}</div>
+  <div class="legend"><span><i class="sw" style="background:var(--c1)"></i>${esc(L.legend_planned)}</span>
+  <span><i class="sw" style="background:var(--c2)"></i>${esc(L.legend_actual)}</span>
+  <span>${esc(L.legend_budget)}</span></div>`;
+}
+function cell(v,key){
+  if(v==null||v==="") return `<td></td>`;
+  if(typeof v==="number"){
+    const neg = (key==="var_d"||key==="gap_days") && v<0, pos=(key==="var_d")&&v>0;
+    const d = Number.isInteger(v)?0:1;
+    const s = key==="var_d"&&v>0?"+"+n(v,d):n(v,d);
+    return `<td class="num${neg?" pos":""}${pos?" neg":""}">${s}</td>`;
+  }
+  return `<td class="${key==="name"?"name":""}">${esc(v)}</td>`;
+}
+function table(cols,rows,limit=600){
+  if(!rows||!rows.length) return "";
   const head=cols.map(c=>`<th>${esc(c.label)}</th>`).join("");
-  const body=rows.slice(0,limit).map(r=>"<tr>"+cols.map(c=>{
-    const v=r[c.key];
-    const cls=c.key==="name"?"name":(typeof v==="number"?"num":"");
-    return `<td class="${cls}">${typeof v==="number"?n(v,Number.isInteger(v)?0:1):esc(v)}</td>`;
-  }).join("")+"</tr>").join("");
-  const more=rows.length>limit
-    ? `<p class="sub">${esc(fill(L.showing,{n:limit,total:rows.length}))}</p>` : "";
+  const body=rows.slice(0,limit).map(r=>"<tr>"+cols.map(c=>cell(r[c.key],c.key)).join("")+"</tr>").join("");
+  const more=rows.length>limit?`<p class="sub" style="padding:8px 12px">${esc(fill(L.showing,{n:limit,total:rows.length}))}</p>`:"";
   return `<div class="scroll"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>${more}`;
 }
-
-const C = k => ({label:L[k]});
+function folded(cols,rows,count){
+  if(!rows||!rows.length) return `<p class="sub">${esc(L.no_activities)}</p>`;
+  return `<details><summary>${esc(fill(L.show_rows,{n:n(count!=null?count:rows.length)}))}</summary>${table(cols,rows)}</details>`;
+}
 
 function renderReview(d){
-  const m=d.meta, c=d.conventions;
-  const net=d.findings.filter(f=>["A1","A2"].includes(f.code)).reduce((a,f)=>a+f.count,0);
-  const out=[];
+  const m=d.meta, c=d.conventions, out=[];
+  const net=d.findings.filter(f=>f.code==="A1"||f.code==="A2").reduce((a,f)=>a+f.count,0);
+  const groupName = m.grouping_mode==="wbs" ? L.wbs_branch : m.grouping;
 
-  out.push(`<h1>${esc(m.title)}</h1>
-    <p class="sub">${esc(L.review_title)} &middot; ${esc(L.status_date)} ${esc(m.status_date||L.not_set)}
-    &middot; ${n(m.leaves)} ${esc(L.activities_reviewed)} &middot; ${esc(L.generated)} ${esc(m.generated)}</p>
-    ${bar()}`);
+  out.push(`<header class="capa"><div class="striping"></div>
+    <div class="chips"><span class="chip forte">${esc(L.chip_title)}</span>
+      <span class="chip">${esc(L.status_date)}: ${esc(m.status_date||L.not_set)}</span>
+      <span class="chip">${esc(L.generated)} ${esc(m.generated)}</span></div>
+    <h1>${esc(m.title)}</h1>
+    ${ficha([[L.ficha_file,esc(m.file)],[L.ficha_leaves,n(m.leaves)],[L.ficha_status,esc(m.status_date||L.not_set)],[L.ficha_budget,n(m.budget,2)]])}
+    ${bar()}</header>`);
 
-  out.push(metaGrid([
-    [L.source_file,m.file],[L.baseline_slot,m.baseline_slot],
-    [L.budget,n(m.budget,2)],
-    [L.weighted_progress,m.percent_earned==null?null:n(m.percent_earned,2)+"%"],
-    [L.threshold,c.threshold_days+" "+L.calendar_days],
-    [L.physical_populated,`${n(m.with_physical_percent)} ${L.of} ${n(m.tasks)}`],
-  ]));
+  (d.blocking||[]).forEach(b=>out.push(`<div class="note bad" style="margin-top:14px"><b>${esc(L.blocking)}</b> ${esc(b)}</div>`));
 
-  (d.blocking||[]).forEach(b=>out.push(`<div class="note bad"><b>${esc(L.blocking)}</b> ${esc(b)}</div>`));
+  out.push(`<div class="veredito"><div>
+      <div class="eyebrow">${esc(L.hero_label)}</div>
+      <div class="hero-num">${m.percent_earned==null?"&mdash;":n(m.percent_earned,2)+"%"}</div>
+      <div class="hero-cap">${esc(fill(L.hero_cap,{n:n(m.leaves)}))}</div></div>
+    <div class="contra"><h2>${esc(L.how_to_read)}</h2><p>${L.read_p1}</p><p>${L.read_p2}</p><p>${L.read_p3}</p></div></div>`);
 
-  out.push(`<div class="read"><div class="eyebrow">${esc(L.how_to_read)}</div>
-    <p>${L.read_p1}</p><p>${L.read_p2}</p><p>${L.read_p3}</p></div>`);
-
-  out.push(`<h2>${esc(L.index)}</h2><ol class="idx">${d.findings.map(f=>
-    `<li><span class="c">${esc(f.code)}</span><a href="#f-${esc(f.code)}">${esc(f.title)}</a>
-     <span class="n">${n(f.count)}</span></li>`).join("")}</ol>`);
+  out.push(`<div class="tiles">${d.findings.map(f=>`<div class="tile ${SEV[f.severity]}"><div class="c">${esc(f.code)}</div>
+    <div class="v${f.count?"":" zero"}">${n(f.count)}</div><div class="t">${esc(f.title)}</div></div>`).join("")}</div>`);
 
   out.push(net
     ? `<div class="note bad">${L.net_bad_1} ${n(net)} ${esc(L.net_bad_2)}</div>`
     : `<div class="note good">${L.net_good}</div>`);
 
-  out.push(`<h2>${esc(L.findings)}</h2><div class="cards">${d.findings.map(f=>
-    `<div class="card ${esc(f.severity)}"><div class="c">${esc(f.code)}</div>
-     <div class="v${f.count?"":" zero"}">${n(f.count)}</div>
-     <div class="t">${esc(f.title)}</div></div>`).join("")}</div>`);
+  const views=[
+    {cod:"V1",tt:fill(L.view_group,{group:groupName}),sub:L.view_group_sub,id:"v1"},
+    {cod:"V2",tt:L.view_starts,sub:L.view_starts_sub,id:"v2"},
+    {cod:"V3",tt:L.variance_title,sub:"",id:"v3"},
+    {cod:"V4",tt:L.float_title,sub:"",id:"v4"},
+  ];
+  if(d.calendars&&d.calendars.length) views.push({cod:"V5",tt:L.calendars_title,sub:"",id:"v5"});
+  out.push(`<section id="indice"><div class="sec-h"><span class="eyebrow">${esc(L.roteiro)}</span><h2>${esc(L.index)}</h2></div>
+    <p class="sec-d">${esc(L.index_sub)}</p><nav class="indice">
+    ${views.map(v=>`<a href="#${v.id}"><span class="cod">${v.cod}</span><span class="tt">${esc(v.tt)}${v.sub?`<small>${esc(v.sub)}</small>`:""}</span><span class="qtd"></span><span class="sev vs">${esc(d.labels.severity_view||"")}</span></a>`).join("")}
+    ${d.findings.map(f=>`<a href="#f-${f.code}"><span class="cod">${f.code}</span><span class="tt">${esc(f.title)}<small>${esc(f.subtitle)}</small></span><span class="qtd">${n(f.count)}</span><span class="sev ${SEV[f.severity]}">${esc(f.severity_word)}</span></a>`).join("")}
+    </nav></section>`);
 
-  out.push(`<p class="how" style="margin-top:14px">${L.counting_convention}
-    ${esc(c.network_counting)} ${esc(L.counting_tail)}</p>`);
-
-  const groupName = m.grouping_mode==="wbs" ? L.wbs_branch : m.grouping;
-  if(m.grouping_uninformative && m.grouping_mode!=="missing"){
-    out.push(`<div class="note"><b>${esc(L.warning)}</b> ${esc(L.group_flat)}</div>`);
-  }
-  if(m.grouping_mode==="missing"){
-    out.push(`<div class="note bad"><b>${esc(L.warning)}</b> ${esc(L.group_missing)} <code>${esc(m.grouping)}</code></div>`);
-  }
-  out.push(`<h2>${esc(L.weight_sits)}</h2>
-    <p class="sub">${esc(fill(L.weight_sub,{group:groupName}))}</p>`);
+  // V1 group
   const g=d.charts.by_group;
-  out.push(chart(g.map(r=>({label:r.label,value:r.weight_pct})),{fmt:v=>n(v,1)+"%"}));
-  out.push(`<div class="legend"><span><i class="sw" style="background:var(--accent)"></i>
-    ${esc(L.legend_budget)}</span></div>`);
-  out.push(table([C("col_branch"),C("col_activities"),C("col_budget"),
-    C("col_weight"),C("col_earned"),C("col_findings")].map((c,i)=>
-      ({...c,key:["label","activities","budget","weight_pct","earned_pct","finding_total"][i]})),g));
+  out.push(`<section id="v1"><div class="sec-h"><span class="eyebrow">V1</span><h2>${esc(fill(L.view_group,{group:groupName}))}</h2></div>
+    <p class="sec-d">${esc(L.group_intro)}</p>`);
+  if(m.grouping_mode==="missing") out.push(`<div class="note bad"><b>${esc(L.warning)}</b> ${esc(L.group_missing)} <code>${esc(m.grouping)}</code></div>`);
+  else if(m.grouping_uninformative) out.push(`<div class="note"><b>${esc(L.warning)}</b> ${esc(L.group_flat)}</div>`);
+  out.push(dualChart(g));
+  const codes=d.findings.map(f=>f.code);
+  const gcols=[{label:L.col_group,key:"label"},{label:L.col_activities,key:"activities"},{label:L.col_weight_pct,key:"weight_pct"},{label:L.col_planned_pct,key:"planned_pct"},{label:L.col_actual_pct,key:"earned_pct"}].concat(codes.map(k=>({label:k,key:"f_"+k})));
+  const grows=g.map(r=>{const o={...r};codes.forEach(k=>o["f_"+k]=r.findings[k]||0);return o;});
+  out.push(`<div style="margin-top:12px">${table(gcols,grows)}</div></section>`);
 
+  out.push(`<section id="v2"><div class="sec-h"><span class="eyebrow">V2</span><h2>${esc(L.view_starts)}</h2></div><p class="sec-d">${esc(L.starts_sub)}</p>${chart(d.charts.starts_per_month)}</section>`);
+  out.push(`<section id="v3"><div class="sec-h"><span class="eyebrow">V3</span><h2>${esc(L.variance_title)}</h2></div><p class="sec-d">${esc(L.variance_sub)}</p>${chart(d.charts.variance_histogram,{cls:"warn"})}</section>`);
+  out.push(`<section id="v4"><div class="sec-h"><span class="eyebrow">V4</span><h2>${esc(L.float_title)}</h2></div><p class="sec-d">${esc(L.float_sub)}</p>${chart(d.charts.float_bands,{cls:"good"})}</section>`);
   if(d.calendars&&d.calendars.length){
-    out.push(`<h2>${esc(L.calendars_title)}</h2><p class="sub">${esc(L.calendars_sub)}</p>`);
-    out.push(table([
-      {label:L.col_calendar,key:"name"},{label:L.col_activities,key:"tasks"},
-      {label:L.col_hours_day,key:"hours_per_day"},
-      {label:L.col_days_week,key:"working_days_per_week"},
-      {label:L.col_exceptions,key:"exceptions"},
-      {label:L.col_nonworking,key:"non_working_exceptions"},
-    ],d.calendars));
-    out.push(chart(d.calendars.map(r=>({label:r.name,value:r.tasks})),{fmt:v=>n(v)}));
+    out.push(`<section id="v5"><div class="sec-h"><span class="eyebrow">V5</span><h2>${esc(L.calendars_title)}</h2></div><p class="sec-d">${esc(L.calendars_sub)}</p>
+      ${table([{label:L.col_calendar,key:"name"},{label:L.col_activities,key:"tasks"},{label:L.col_hours_day,key:"hours_per_day"},{label:L.col_days_week,key:"working_days_per_week"},{label:L.col_exceptions,key:"exceptions"},{label:L.col_nonworking,key:"non_working_exceptions"}],d.calendars)}</section>`);
   }
 
-  out.push(`<h2>${esc(L.distributions)}</h2>`);
-  out.push(`<h3>${esc(L.variance_title)}</h3><p class="sub">${esc(L.variance_sub)}</p>`);
-  out.push(chart(d.charts.variance_histogram,{cls:"medium"}));
-  out.push(`<h3>${esc(L.float_title)}</h3><p class="sub">${esc(L.float_sub)}</p>`);
-  out.push(chart(d.charts.float_bands,{cls:"low"}));
-  out.push(`<h3>${esc(L.starts_title)}</h3><p class="sub">${esc(L.starts_sub)}</p>`);
-  out.push(chart(d.charts.starts_per_month));
-
+  out.push(`<section><div class="sec-h"><span class="eyebrow">${esc(L.findings)}</span><h2>${esc(L.findings)}</h2></div>
+    <p class="sec-d">${L.counting_convention} ${esc(c.network_counting)} ${esc(L.counting_tail)} ${esc(m.links_evaluated||"")}</p>`);
   d.findings.forEach(f=>{
     let extra="";
-    if(f.as_successors!=null){
-      extra=" "+fill(L.counted_three,{d:n(f.count),s:n(f.as_successors),p:n(f.as_predecessors)});
-    }
-    out.push(`<div class="blk ${esc(f.severity)}" id="f-${esc(f.code)}">
-      <div class="blk-top"><span class="c">${esc(f.code)}</span>
-        <span class="badge ${esc(f.severity)}">${esc(f.severity_word||f.severity)}</span>
-        <span class="eyebrow">${esc(f.layer)}</span>
-        <span class="q">${n(f.count)}</span></div>
-      <h3>${esc(f.title)}</h3>
-      <p class="desc">${esc(f.subtitle)}</p>
-      ${f.code==="G"?`<div class="note">${L.g_note}</div>`:""}
-      ${f.code==="P"&&f.count?`<div class="note">${L.p_note}</div>`:""}
-      <div class="fonte">
-        <div><b>${esc(L.criterion)}</b> ${esc(f.criterion)}${esc(extra)}</div>
-        <div><b>${esc(L.came_from)}</b> ${esc(f.source)}</div>
-        <div><b>${esc(L.reproduce)}</b> ${esc(f.reproduce)}</div>
+    if(f.as_successors!=null) extra=" "+fill(L.counted_three,{d:n(f.count),s:n(f.as_successors),p:n(f.as_predecessors)});
+    out.push(`<div class="achado ${SEV[f.severity]}" id="f-${f.code}"><div class="barra"></div><div class="achado-in">
+      <div class="achado-top"><span class="cod">${f.code}</span><h3>${esc(f.title)}</h3><span class="sev ${SEV[f.severity]}">${esc(f.severity_word)}</span><span class="badge">${n(f.count)}</span></div>
+      <p class="sub">${esc(f.subtitle)}</p>
+      ${f.code==="G"?`<div class="note soft">${L.g_note}</div>`:""}
+      ${f.code==="P"&&f.count?`<div class="note soft">${L.p_note}</div>`:""}
+      ${f.code==="A1"&&m.ignored_pairs?`<div class="note soft">${esc(fill(L.ignored_pairs,{n:n(m.ignored_pairs)}))}</div>`:""}
+      <div class="qa">
+        <div class="bloco"><div class="rot">${esc(L.problem)}</div><div class="txt">${esc(f.problem)}</div></div>
+        <div class="bloco"><div class="rot">${esc(L.impact)}</div><div class="txt">${esc(f.impact)}</div></div>
+        <div class="bloco"><div class="rot">${esc(L.solution)}</div><div class="txt">${esc(f.solution)}</div></div>
       </div>
-      ${table(f.columns,f.items)}
-    </div>`);
+      <div class="levar"><div class="rot">${esc(L.levar)}</div><p>${esc(f.criterion)}${esc(extra)} ${esc(f.reproduce)}</p></div>
+      <div class="fonte"><b>${esc(L.fonte)}</b> ${esc(f.source)}</div>
+      ${folded(f.columns,f.items,f.count)}
+    </div></div>`);
   });
+  out.push(`</section>`);
 
-  const lg=d.language||{};
-  out.push(`<h2>${esc(L.conventions_title)}</h2>${metaGrid([
-    [L.conv_slot,c.baseline_slot],[L.conv_chosen,c.baseline_slot_basis],
-    [L.conv_threshold,c.threshold_days+" "+c.threshold_unit],
-    [L.conv_tolerance,c.tolerance_text||c.tolerance_days],[L.conv_population,c.population],
-    [L.conv_counting,c.network_counting],[L.conv_working,c.working_days],
-    [L.conv_percent,c.percent_source],
-    [L.conv_language,`${d.lang} (${lg.confidence||""})`],
-    [L.conv_lang_basis,lg.basis],
-  ])}`);
+  const lg=d.language||{}, rc=m.reconciliation||{};
+  out.push(`<section><div class="sec-h"><h2>${esc(L.conventions_title)}</h2></div><dl class="conv">
+    ${[[L.conv_slot,c.baseline_slot],[L.conv_chosen,c.baseline_slot_basis],[L.conv_threshold,c.threshold_days+" "+c.threshold_unit],[L.conv_tolerance,c.tolerance_text],[L.conv_population,c.population],[L.conv_counting,c.network_counting],[L.conv_working,c.working_days],[L.conv_percent,c.percent_source],[L.conv_language,`${d.lang} (${lg.confidence||""})`],[L.conv_lang_basis,lg.basis],
+      [L.conv_reconciliation||"Earned value vs file",rc.leaves_compared?`${n(rc.matches_to_cent)} / ${n(rc.leaves_compared)} · ${n(rc.difference,2)}`:null]]
+      .filter(([,v])=>v!=null&&v!=="").map(([k,v])=>`<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl></section>`);
   return out.join("");
 }
 
 function renderCycle(d){
   const m=d.meta, out=[];
-  out.push(`<h1>${esc(L.cycle_title)}</h1>
-    <p class="sub">${esc(m.previous_source||"")} &rarr; ${esc(m.current_source||"")}
-    &middot; ${esc(L.generated)} ${esc(m.generated)}</p>${bar()}`);
-
-  out.push(metaGrid([
-    [L.prev_status,m.previous_status_date],[L.curr_status,m.current_status_date],
-    [L.baseline_slot,m.current_baseline_slot],
-    [L.budget,n(m.current_budget_at_completion,2)],
-  ]));
-
-  out.push(`<div class="read"><div class="eyebrow">${esc(L.how_to_read)}</div>
-    <p>${L.cycle_read_p1}</p><p>${L.cycle_read_p2}</p></div>`);
-
-  out.push(`<div class="cards">
-    <div class="card"><div class="c">${esc(L.card_previous)}</div><div class="v">${n(m.previous_percent_earned,2)}%</div><div class="t">${esc(L.weighted_progress)}</div></div>
-    <div class="card"><div class="c">${esc(L.card_current)}</div><div class="v">${n(m.current_percent_earned,2)}%</div><div class="t">${esc(L.weighted_progress)}</div></div>
-    <div class="card"><div class="c">${esc(L.card_movement)}</div><div class="v">${n(m.movement_points,3)}</div><div class="t">${esc(L.pp_headline)}</div></div>
-    <div class="card low"><div class="c">${esc(L.card_explained)}</div><div class="v">${n(m.explained_points,3)}</div><div class="t">${esc(L.by_progress)}</div></div>
-    <div class="card high"><div class="c">${esc(L.card_residue)}</div><div class="v">${n(m.unexplained_points,3)}</div><div class="t">${esc(L.not_work)}</div></div>
-  </div>`);
-
+  out.push(`<header class="capa"><div class="striping"></div>
+    <div class="chips"><span class="chip forte">${esc(L.cycle_title)}</span><span class="chip">${esc(L.generated)} ${esc(m.generated)}</span></div>
+    <h1>${esc(m.previous_source||"")} &rarr; ${esc(m.current_source||"")}</h1>
+    ${ficha([[L.prev_status,esc(m.previous_status_date)],[L.curr_status,esc(m.current_status_date)],[L.baseline_slot,esc(m.current_baseline_slot)],[L.budget,n(m.current_budget_at_completion,2)]])}${bar()}</header>`);
+  out.push(`<div class="veredito"><div><div class="eyebrow">${esc(L.card_movement)}</div><div class="hero-num">${n(m.movement_points,2)}</div><div class="hero-cap">${esc(L.pp_headline)}</div></div>
+    <div class="contra"><h2>${esc(L.how_to_read)}</h2><p>${L.cycle_read_p1}</p><p>${L.cycle_read_p2}</p></div></div>`);
+  out.push(`<div class="tiles">
+    <div class="tile"><div class="c">${esc(L.card_previous)}</div><div class="v">${n(m.previous_percent_earned,2)}%</div><div class="t">${esc(L.weighted_progress)}</div></div>
+    <div class="tile"><div class="c">${esc(L.card_current)}</div><div class="v">${n(m.current_percent_earned,2)}%</div><div class="t">${esc(L.weighted_progress)}</div></div>
+    <div class="tile pd"><div class="c">${esc(L.card_explained)}</div><div class="v">${n(m.explained_points,3)}</div><div class="t">${esc(L.by_progress)}</div></div>
+    <div class="tile cr"><div class="c">${esc(L.card_residue)}</div><div class="v">${n(m.unexplained_points,3)}</div><div class="t">${esc(L.not_work)}</div></div></div>`);
   (d.warnings||[]).forEach(w=>out.push(`<div class="note"><b>${esc(L.warning)}</b> ${esc(w)}</div>`));
-
   const r=d.readings;
-  out.push(`<h2>${esc(L.exec_or_plan)}</h2><p class="sub">${esc(L.exec_or_plan_sub)}</p>
-    <div class="cards">
-      <div class="card low"><div class="c">${esc(L.card_execution)}</div><div class="v">${n(r.execution.length)}</div>
-        <div class="t">${esc(L.exec_sub)}</div></div>
-      <div class="card medium"><div class="c">${esc(L.card_replan)}</div><div class="v">${n(r.replan.length)}</div>
-        <div class="t">${esc(L.replan_sub)}</div></div>
-      <div class="card high"><div class="c">${esc(L.card_reference)}</div><div class="v">${n(r.reference.length)}</div>
-        <div class="t">${esc(L.reference_sub)}</div></div>
-    </div>`);
-
+  out.push(`<section><div class="sec-h"><h2>${esc(L.exec_or_plan)}</h2></div><p class="sec-d">${esc(L.exec_or_plan_sub)}</p><div class="tiles">
+    <div class="tile pd"><div class="c">${esc(L.card_execution)}</div><div class="v">${n(r.execution.length)}</div><div class="t">${esc(L.exec_sub)}</div></div>
+    <div class="tile al"><div class="c">${esc(L.card_replan)}</div><div class="v">${n(r.replan.length)}</div><div class="t">${esc(L.replan_sub)}</div></div>
+    <div class="tile cr"><div class="c">${esc(L.card_reference)}</div><div class="v">${n(r.reference.length)}</div><div class="t">${esc(L.reference_sub)}</div></div></div></section>`);
   if(r.reference.length){
-    out.push(`<h2>${esc(L.baseline_moved_title)}</h2><p class="sub">${esc(L.baseline_moved_sub)}</p>`);
-    out.push(table([{label:L.col_row,key:"id"},{label:L.col_uid,key:"uid"},
-      {label:L.col_activity,key:"name"},{label:L.col_bl_start,key:"baseline_start_moved_days"},
-      {label:L.col_bl_finish,key:"baseline_finish_moved_days"}],r.reference));
+    out.push(`<section><div class="sec-h"><h2>${esc(L.baseline_moved_title)}</h2></div><p class="sec-d">${esc(L.baseline_moved_sub)}</p>
+      ${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_bl_start,key:"baseline_start_moved_days"},{label:L.col_bl_finish,key:"baseline_finish_moved_days"}],r.reference)}</section>`);
   }
-
-  out.push(`<h2>${esc(L.movement_from)}</h2>
-    <p class="sub">${esc(fill(L.movement_from_sub,{denom:d.conventions.denominator}))}</p>`);
-  out.push(chart(d.decomposition.slice(0,25).map(x=>({label:`${x.id} ${x.name}`,value:x.contribution_points})),
-    {fmt:v=>n(v,3)+" pp"}));
-  out.push(table([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},
-    {label:L.col_wbs,key:"wbs"},{label:L.col_pct_prev,key:"percent_previous"},
-    {label:L.col_pct_curr,key:"percent_current"},{label:L.col_bl_cost,key:"baseline_cost"},
-    {label:L.col_contribution,key:"contribution_points"}],d.decomposition));
-
-  out.push(`<h2>${esc(L.dates_moved)}</h2>`);
-  out.push(table([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},
-    {label:L.col_matched,key:"matched_by"},{label:L.col_start_moved,key:"start_moved_days"},
-    {label:L.col_finish_moved,key:"finish_moved_days"},{label:L.col_reading,key:"reading"}],
-    r.execution.concat(r.replan)));
-
-  out.push(`<h2>${esc(L.scope_changes)}</h2><p class="sub">${esc(L.scope_sub)}</p>
-    <h3>${esc(L.inserted)} (${n(d.unmatched.inserted.length)})</h3>`);
-  out.push(table([{label:L.col_row,key:"id"},{label:L.col_uid,key:"uid"},
-    {label:L.col_activity,key:"name"}],d.unmatched.inserted));
-  out.push(`<h3>${esc(L.removed)} (${n(d.unmatched.removed.length)})</h3>`);
-  out.push(table([{label:L.col_row,key:"id"},{label:L.col_uid,key:"uid"},
-    {label:L.col_activity,key:"name"}],d.unmatched.removed));
+  out.push(`<section><div class="sec-h"><h2>${esc(L.movement_from)}</h2></div><p class="sec-d">${esc(fill(L.movement_from_sub,{denom:d.conventions.denominator}))}</p>
+    ${chart(d.decomposition.slice(0,25).map(x=>({label:`${x.id} ${x.name}`,value:x.contribution_points})),{fmt:v=>n(v,3)+" pp"})}
+    ${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_wbs,key:"wbs"},{label:L.col_pct_prev,key:"percent_previous"},{label:L.col_pct_curr,key:"percent_current"},{label:L.col_bl_cost,key:"baseline_cost"},{label:L.col_contribution,key:"contribution_points"}],d.decomposition)}</section>`);
+  out.push(`<section><div class="sec-h"><h2>${esc(L.dates_moved)}</h2></div>
+    ${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_matched,key:"matched_by"},{label:L.col_start_moved,key:"start_moved_days"},{label:L.col_finish_moved,key:"finish_moved_days"},{label:L.col_reading,key:"reading"}],r.execution.concat(r.replan))}</section>`);
+  out.push(`<section><div class="sec-h"><h2>${esc(L.scope_changes)}</h2></div><p class="sec-d">${esc(L.scope_sub)}</p>
+    <h3 style="font-size:15px;margin:8px 0">${esc(L.inserted)} (${n(d.unmatched.inserted.length)})</h3>${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"}],d.unmatched.inserted)}
+    <h3 style="font-size:15px;margin:12px 0 8px">${esc(L.removed)} (${n(d.unmatched.removed.length)})</h3>${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"}],d.unmatched.removed)}</section>`);
   return out.join("");
 }
 
@@ -351,13 +369,12 @@ function renderCycle(d){
   L=DATA.labels||{};
   theme(DATA.theme);
   if(DATA.lang) document.documentElement.setAttribute("lang",DATA.lang);
-  app.innerHTML=(DATA.kind==="cycle"?renderCycle(DATA):renderReview(DATA))+
-    `<footer>${L.footer||""}</footer>`;
+  app.innerHTML=(DATA.kind==="cycle"?renderCycle(DATA):renderReview(DATA))+`<footer>${L.footer||""}</footer>`;
   const pdf=document.getElementById("pdf"), th=document.getElementById("th");
-  if(pdf) pdf.onclick=()=>window.print();
+  if(pdf) pdf.onclick=()=>{document.querySelectorAll("details").forEach(x=>x.open=true);window.print();};
   if(th) th.onclick=()=>{
     const root=document.documentElement;
-    const dark=getComputedStyle(root).getPropertyValue("--bg").trim().startsWith("#14");
+    const dark=getComputedStyle(root).getPropertyValue("--ground").trim().startsWith("#0D");
     root.setAttribute("data-theme",dark?"light":"dark");
   };
 })();

@@ -3,6 +3,7 @@
   <Name>Positive fixture</Name>
   <Title>Positive fixture</Title>
   <StatusDate>2026-06-30T17:00:00</StatusDate>
+  <DefaultTaskEVMethod>1</DefaultTaskEVMethod>
   <CurrentDate>2026-06-30T17:00:00</CurrentDate>
   <MinutesPerDay>480</MinutesPerDay>
   <MinutesPerWeek>2400</MinutesPerWeek>
@@ -218,6 +219,8 @@
       <LinkLag>0</LinkLag>
       <LagFormat>7</LagFormat>
     </PredecessorLink>
+    <BCWP>10000.00</BCWP>
+    <EarnedValueMethod>1</EarnedValueMethod>
     <Baseline>
       <Number>1</Number>
       <Start>2026-03-02T08:00:00</Start>
@@ -473,6 +476,8 @@
     <Duration>PT40H0M0S</Duration>
     <PercentComplete>100</PercentComplete>
     <PhysicalPercentComplete>100</PhysicalPercentComplete>
+    <BCWP>10000.00</BCWP>
+    <EarnedValueMethod>1</EarnedValueMethod>
     <Baseline>
       <Number>1</Number>
       <Start>2026-03-02T08:00:00</Start>
@@ -488,6 +493,302 @@
     <ExtendedAttribute>
       <FieldID>188743767</FieldID>
       <Value>120</Value>
+    </ExtendedAttribute>
+  </Task>
+  <Task>
+    <UID>14</UID>
+    <ID>14</ID>
+    <Name>Lead predecessor</Name>
+    <WBS>14</WBS>
+    <OutlineLevel>2</OutlineLevel>
+    <Summary>0</Summary>
+    <Milestone>0</Milestone>
+    <Active>1</Active>
+    <ExternalTask>0</ExternalTask>
+    <CalendarUID>-1</CalendarUID>
+    <Start>2026-03-02T08:00:00</Start>
+    <Finish>2026-03-06T17:00:00</Finish>
+    <ActualStart>2026-03-02T08:00:00</ActualStart>
+    <ActualFinish>2026-03-06T17:00:00</ActualFinish>
+    <Duration>PT40H0M0S</Duration>
+    <PercentComplete>100</PercentComplete>
+    <PhysicalPercentComplete>100</PhysicalPercentComplete>
+    <BCWP>10000.00</BCWP>
+    <EarnedValueMethod>1</EarnedValueMethod>
+    <Baseline>
+      <Number>1</Number>
+      <Start>2026-03-02T08:00:00</Start>
+      <Finish>2026-03-06T17:00:00</Finish>
+      <Duration>PT40H0M0S</Duration>
+      <Cost>10000.0</Cost>
+      <Work>PT40H0M0S</Work>
+    </Baseline>
+    <ExtendedAttribute>
+      <FieldID>188743737</FieldID>
+      <Value>EARTHWORKS</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743767</FieldID>
+      <Value>130</Value>
+    </ExtendedAttribute>
+  </Task>
+  <Task>
+    <UID>15</UID>
+    <ID>15</ID>
+    <Name>Successor within the lead</Name>
+    <WBS>15</WBS>
+    <OutlineLevel>2</OutlineLevel>
+    <Summary>0</Summary>
+    <Milestone>0</Milestone>
+    <Active>1</Active>
+    <ExternalTask>0</ExternalTask>
+    <CalendarUID>-1</CalendarUID>
+    <Start>2026-03-05T08:00:00</Start>
+    <Finish>2026-03-11T17:00:00</Finish>
+    <ActualStart>2026-03-05T08:00:00</ActualStart>
+    <Duration>PT40H0M0S</Duration>
+    <PercentComplete>30</PercentComplete>
+    <PredecessorLink>
+      <PredecessorUID>14</PredecessorUID>
+      <Type>1</Type>
+      <LinkLag>-9600</LinkLag>
+      <LagFormat>7</LagFormat>
+    </PredecessorLink>
+    <Baseline>
+      <Number>1</Number>
+      <Start>2026-03-05T08:00:00</Start>
+      <Finish>2026-03-11T17:00:00</Finish>
+      <Duration>PT40H0M0S</Duration>
+      <Cost>10000.0</Cost>
+      <Work>PT40H0M0S</Work>
+    </Baseline>
+    <ExtendedAttribute>
+      <FieldID>188743737</FieldID>
+      <Value>DRAINAGE</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743767</FieldID>
+      <Value>140</Value>
+    </ExtendedAttribute>
+  </Task>
+  <Task>
+    <UID>16</UID>
+    <ID>16</ID>
+    <Name>Both complete, predecessor</Name>
+    <WBS>16</WBS>
+    <OutlineLevel>2</OutlineLevel>
+    <Summary>0</Summary>
+    <Milestone>0</Milestone>
+    <Active>1</Active>
+    <ExternalTask>0</ExternalTask>
+    <CalendarUID>-1</CalendarUID>
+    <Start>2026-03-02T08:00:00</Start>
+    <Finish>2026-03-06T17:00:00</Finish>
+    <ActualStart>2026-03-03T08:00:00</ActualStart>
+    <ActualFinish>2026-03-06T17:00:00</ActualFinish>
+    <Duration>PT40H0M0S</Duration>
+    <PercentComplete>100</PercentComplete>
+    <PhysicalPercentComplete>100</PhysicalPercentComplete>
+    <BCWP>10000.00</BCWP>
+    <EarnedValueMethod>1</EarnedValueMethod>
+    <Baseline>
+      <Number>1</Number>
+      <Start>2026-03-02T08:00:00</Start>
+      <Finish>2026-03-06T17:00:00</Finish>
+      <Duration>PT40H0M0S</Duration>
+      <Cost>10000.0</Cost>
+      <Work>PT40H0M0S</Work>
+    </Baseline>
+    <ExtendedAttribute>
+      <FieldID>188743737</FieldID>
+      <Value>PAVEMENT</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743767</FieldID>
+      <Value>150</Value>
+    </ExtendedAttribute>
+  </Task>
+  <Task>
+    <UID>17</UID>
+    <ID>17</ID>
+    <Name>Both complete, successor started first</Name>
+    <WBS>17</WBS>
+    <OutlineLevel>2</OutlineLevel>
+    <Summary>0</Summary>
+    <Milestone>0</Milestone>
+    <Active>1</Active>
+    <ExternalTask>0</ExternalTask>
+    <CalendarUID>-1</CalendarUID>
+    <Start>2026-03-02T08:00:00</Start>
+    <Finish>2026-03-06T17:00:00</Finish>
+    <ActualStart>2026-03-02T08:00:00</ActualStart>
+    <ActualFinish>2026-03-06T17:00:00</ActualFinish>
+    <Duration>PT40H0M0S</Duration>
+    <PercentComplete>100</PercentComplete>
+    <PhysicalPercentComplete>100</PhysicalPercentComplete>
+    <PredecessorLink>
+      <PredecessorUID>16</PredecessorUID>
+      <Type>1</Type>
+      <LinkLag>0</LinkLag>
+      <LagFormat>7</LagFormat>
+    </PredecessorLink>
+    <BCWP>10000.00</BCWP>
+    <EarnedValueMethod>1</EarnedValueMethod>
+    <Baseline>
+      <Number>1</Number>
+      <Start>2026-03-02T08:00:00</Start>
+      <Finish>2026-03-06T17:00:00</Finish>
+      <Duration>PT40H0M0S</Duration>
+      <Cost>10000.0</Cost>
+      <Work>PT40H0M0S</Work>
+    </Baseline>
+    <ExtendedAttribute>
+      <FieldID>188743737</FieldID>
+      <Value>EARTHWORKS</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743767</FieldID>
+      <Value>160</Value>
+    </ExtendedAttribute>
+  </Task>
+  <Task>
+    <UID>18</UID>
+    <ID>18</ID>
+    <Name>SS predecessor</Name>
+    <WBS>18</WBS>
+    <OutlineLevel>2</OutlineLevel>
+    <Summary>0</Summary>
+    <Milestone>0</Milestone>
+    <Active>1</Active>
+    <ExternalTask>0</ExternalTask>
+    <CalendarUID>-1</CalendarUID>
+    <Start>2026-03-02T08:00:00</Start>
+    <Finish>2026-03-06T17:00:00</Finish>
+    <ActualStart>2026-03-02T08:00:00</ActualStart>
+    <Duration>PT40H0M0S</Duration>
+    <PercentComplete>40</PercentComplete>
+    <Baseline>
+      <Number>1</Number>
+      <Start>2026-03-02T08:00:00</Start>
+      <Finish>2026-03-06T17:00:00</Finish>
+      <Duration>PT40H0M0S</Duration>
+      <Cost>10000.0</Cost>
+      <Work>PT40H0M0S</Work>
+    </Baseline>
+    <ExtendedAttribute>
+      <FieldID>188743737</FieldID>
+      <Value>DRAINAGE</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743767</FieldID>
+      <Value>170</Value>
+    </ExtendedAttribute>
+  </Task>
+  <Task>
+    <UID>19</UID>
+    <ID>19</ID>
+    <Name>SS successor too early</Name>
+    <WBS>19</WBS>
+    <OutlineLevel>2</OutlineLevel>
+    <Summary>0</Summary>
+    <Milestone>0</Milestone>
+    <Active>1</Active>
+    <ExternalTask>0</ExternalTask>
+    <CalendarUID>-1</CalendarUID>
+    <Start>2026-03-03T08:00:00</Start>
+    <Finish>2026-03-09T17:00:00</Finish>
+    <ActualStart>2026-03-03T08:00:00</ActualStart>
+    <Duration>PT40H0M0S</Duration>
+    <PercentComplete>10</PercentComplete>
+    <PredecessorLink>
+      <PredecessorUID>18</PredecessorUID>
+      <Type>3</Type>
+      <LinkLag>14400</LinkLag>
+      <LagFormat>7</LagFormat>
+    </PredecessorLink>
+    <Baseline>
+      <Number>1</Number>
+      <Start>2026-03-03T08:00:00</Start>
+      <Finish>2026-03-09T17:00:00</Finish>
+      <Duration>PT40H0M0S</Duration>
+      <Cost>10000.0</Cost>
+      <Work>PT40H0M0S</Work>
+    </Baseline>
+    <ExtendedAttribute>
+      <FieldID>188743737</FieldID>
+      <Value>PAVEMENT</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743767</FieldID>
+      <Value>180</Value>
+    </ExtendedAttribute>
+  </Task>
+  <Task>
+    <UID>20</UID>
+    <ID>20</ID>
+    <Name>H start elapsed</Name>
+    <WBS>20</WBS>
+    <OutlineLevel>2</OutlineLevel>
+    <Summary>0</Summary>
+    <Milestone>0</Milestone>
+    <Active>1</Active>
+    <ExternalTask>0</ExternalTask>
+    <CalendarUID>-1</CalendarUID>
+    <Start>2026-06-22T08:00:00</Start>
+    <Finish>2026-07-10T17:00:00</Finish>
+    <Duration>PT120H0M0S</Duration>
+    <Baseline>
+      <Number>1</Number>
+      <Start>2026-06-22T08:00:00</Start>
+      <Finish>2026-07-10T17:00:00</Finish>
+      <Duration>PT120H0M0S</Duration>
+      <Cost>10000.0</Cost>
+      <Work>PT120H0M0S</Work>
+    </Baseline>
+    <ExtendedAttribute>
+      <FieldID>188743737</FieldID>
+      <Value>EARTHWORKS</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743767</FieldID>
+      <Value>190</Value>
+    </ExtendedAttribute>
+  </Task>
+  <Task>
+    <UID>21</UID>
+    <ID>21</ID>
+    <Name>Costed milestone complete</Name>
+    <WBS>21</WBS>
+    <OutlineLevel>2</OutlineLevel>
+    <Summary>0</Summary>
+    <Milestone>1</Milestone>
+    <Active>1</Active>
+    <ExternalTask>0</ExternalTask>
+    <CalendarUID>-1</CalendarUID>
+    <Start>2026-03-06T17:00:00</Start>
+    <Finish>2026-03-06T17:00:00</Finish>
+    <ActualStart>2026-03-06T17:00:00</ActualStart>
+    <ActualFinish>2026-03-06T17:00:00</ActualFinish>
+    <Duration>PT0H0M0S</Duration>
+    <PercentComplete>100</PercentComplete>
+    <PhysicalPercentComplete>100</PhysicalPercentComplete>
+    <BCWP>0.00</BCWP>
+    <EarnedValueMethod>1</EarnedValueMethod>
+    <Baseline>
+      <Number>1</Number>
+      <Start>2026-03-06T17:00:00</Start>
+      <Finish>2026-03-06T17:00:00</Finish>
+      <Duration>PT0H0M0S</Duration>
+      <Cost>2500.0</Cost>
+      <Work>PT0H0M0S</Work>
+    </Baseline>
+    <ExtendedAttribute>
+      <FieldID>188743737</FieldID>
+      <Value>DRAINAGE</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743767</FieldID>
+      <Value>200</Value>
     </ExtendedAttribute>
   </Task>
   <Task>
@@ -522,11 +823,11 @@
     </Baseline>
     <ExtendedAttribute>
       <FieldID>188743737</FieldID>
-      <Value>EARTHWORKS</Value>
+      <Value>PAVEMENT</Value>
     </ExtendedAttribute>
     <ExtendedAttribute>
       <FieldID>188743767</FieldID>
-      <Value>130</Value>
+      <Value>210</Value>
     </ExtendedAttribute>
   </Task>
   </Tasks>

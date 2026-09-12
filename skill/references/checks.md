@@ -15,28 +15,44 @@ Run first. See the ordering rationale in `SKILL.md`.
 
 | Code | Finding |
 |---|---|
-| A1 | Successor started without the predecessor complete |
-| A2 | Total inversion: successor complete, predecessor not even started |
+| A1 | Execution out of sequence: a successor is running against what its link allows |
+| A2 | Total inversion: successor complete, predecessor never started |
 
-A2 is the extreme of A1 and deserves its own code because it is unanswerable in a
-meeting. A measured instance: an activity complete while its predecessor still forecast
-finishing nearly a year later.
+**What A1 evaluates, exactly.** All four relationship types, on actual dates, on the
+successor's calendar, honouring the lag:
 
-**Mark both ends of a violated link, not just the successor.** This is a presentation
-decision, not a criterion change — but it changes the displayed count, so decide which
-convention is official and say so. Align with the tool the other party uses.
+- **Finish-to-start.** The successor has started and is not finished. Breach if the predecessor
+  has no actual finish, or if it finished after the successor started by more than the lead
+  allows. A link with a negative lag is an intentional overlap, and accusing it is a false
+  positive that an in-tool implementation measured as the first thing it would do differently.
+- **Start-to-start.** Both started: breach if the successor started before the lag allowed.
+  Successor started and predecessor never did: breach.
+- **Finish-to-finish** and **start-to-finish**: the same shape, on the corresponding ends.
+- **Pairs with both activities complete leave the count, by decision.** They no longer change a
+  forecast. They are recorded under `ignored` in the data file, with the overlap in days,
+  because a history of out-of-sequence execution is evidence for the forensics.
+
+**Both ends of a violated link are marked**, and the report counts three defensible ways:
+distinct activities, as successors, as predecessors. Align with whatever the other party's
+tool shows.
+
+**The relationship types evaluated are declared** in the output, with counts. Silence about
+start-to-start links looks like coverage; it is not.
 
 ## Layer 2 — Date adherence
 
 | Code | Finding |
 |---|---|
-| H | Trend date elapsed with no actual progress |
-| E | Pulled forward by 30 days or more and never started |
-| C | Delayed by 30 days or more |
+| H | A trend date elapsed with nothing behind it: start with no actual start, or finish with no actual finish |
+| E | Pulled forward by 30 working days or more, on the activity's own calendar, and never started |
+| C | Delayed by 30 working days or more, on the activity's own calendar |
 
-The 30-day threshold is a convention, not a derivation. State it in the report so it can
-be argued with. Thresholds compare against variance fields — see the unit trap in
-`reading-schedules.md` before writing the comparison.
+**The threshold is in working days of the activity's calendar**, not calendar days, so that
+the count agrees with what an in-tool check shows in the meeting. Calendar days are reported
+alongside. **Completed activities stay in C on purpose**: consumed delay is information.
+
+**H refuses to run without a status date.** Defaulting to today would change the answer every
+day the review is re-run, silently.
 
 ## Layer 3 — Reporting consistency
 
@@ -45,7 +61,11 @@ be argued with. Thresholds compare against variance fields — see the unit trap
 | G | Duration disagrees with the start-to-finish window — *a thermometer, not an independent finding* |
 | P | Pending record: 100% physical with no actual finish |
 | B | Milestones with no deadline set |
-| F | In progress with percent complete at zero |
+| F | In progress with percent complete at zero — *duration-based percent, deliberately; the physical figure belongs to P* |
+
+**F is standby-grade.** On a schedule reported by physical progress it collides with the
+reporting flow and fires on activities that are fine. It is shown with the "check" severity,
+never counted as a finding on its own.
 
 **G is a thermometer.** It flags that something was edited inconsistently; it does not by
 itself say what. Treat it as a pointer to inspect, never as a finding to report on its

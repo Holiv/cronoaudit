@@ -62,14 +62,14 @@ def compare_cycle():
 
 
 REVIEW_SECTIONS = [
-    "How to read these numbers", "Index", "Where the weight sits",
-    "Finish variance against baseline", "Total float", "Activity starts per month",
-    "How to reproduce it", "Conventions this report used",
+    "How to read these numbers", "Index", "Progress by", "Starts per month",
+    "Finish variance against baseline", "Total float", "Problem",
+    "To reproduce in the scheduling tool", "Conventions this report used",
 ]
 PT_SECTIONS = [
-    "Como ler estes n\u00fameros", "\u00cdndice", "Onde est\u00e1 o peso",
-    "Term\u00f4metro", "Conven\u00e7\u00f5es que este relat\u00f3rio usou",
-    "Calend\u00e1rios que carregam o trabalho",
+    "Como ler estes n\u00fameros", "\u00cdndice", "Avan\u00e7o por", "Partidas por m\u00eas",
+    "Problema", "Para reproduzir no Project", "Conven\u00e7\u00f5es que este relat\u00f3rio usou",
+    "Calend\u00e1rios que carregam o trabalho", "Term\u00f4metro",
 ]
 CYCLE_SECTIONS = [
     "Was it execution, or was it the plan", "RESIDUE", "the baseline itself moved",
@@ -193,6 +193,28 @@ def main() -> int:
     aggregates_note = cyc["conventions"]["aggregates"]
     if "called twice" not in aggregates_note:
         failures.append("cycle: the shared-reference convention is no longer declared")
+
+    # ---- the network rules the in-tool implementation taught, each with a control.
+    a1_pairs = {(p["successor_id"], p["predecessor_id"]) for p in pos["pairs"]["A1"]}
+    if (15, 14) in a1_pairs:
+        failures.append("network: an overlap covered by a lead was accused as A1 -- lag not honoured")
+    if (17, 16) in a1_pairs:
+        failures.append("network: a pair with both activities complete was counted, against the rule")
+    ign = pos.get("ignored", {}).get("A1_both_complete", [])
+    if not any(x["successor_id"] == 17 and x["predecessor_id"] == 16 for x in ign):
+        failures.append("network: the both-complete inverted pair was not recorded as ignored")
+    if (19, 18) not in a1_pairs:
+        failures.append("network: a start-to-start lag violation was not detected")
+    if (2, 1) not in a1_pairs:
+        failures.append("network: the plain finish-to-start breach stopped firing")
+    lt = pos["conventions"].get("link_types_evaluated", {})
+    if lt.get("SS", 0) < 1:
+        failures.append("network: start-to-start links were not counted as evaluated")
+    h_why = {f["uid"]: f.get("why") for f in pos["findings"]["H"]}
+    if 20 not in h_why or not str(h_why[20]).startswith("start"):
+        failures.append("H: a start elapsed with no actual start was not flagged by the start rule")
+    if pos["conventions"].get("threshold_basis") != "working_days_task_calendar":
+        failures.append("threshold: E and C must be measured in working days of the task calendar")
 
     # ---- calendars. Leaving them out does not approximate the answer, it invents
     # one: a real programme had 107 calendars, most tasks on a 9-hour six-day week
@@ -326,6 +348,24 @@ def main() -> int:
     if not by_wbs["meta"].get("grouping_uninformative") and len(by_wbs["charts"]["by_group"]) < 2:
         failures.append("fields: a single-bucket grouping was not flagged as uninformative")
 
+    # ---- earned value reconciled against the file's own figures.
+    rc = by_wbs["meta"]["reconciliation"]
+    if rc["leaves_compared"] < 5:
+        failures.append("reconciliation: the file's BCWP was not read")
+    if rc["costed_milestones"] < 1:
+        failures.append(
+            "reconciliation: a costed milestone the tool zeroes was not classified -- it would "
+            "surface as an unexplained mismatch or, worse, be hidden"
+        )
+    if rc["unexplained"] != 0:
+        failures.append(f"reconciliation: {rc['unexplained']} unexplained mismatches on a fixture "
+                        "built to match to the cent")
+    if rc["ev_method"] != "physical":
+        failures.append("reconciliation: the declared earned value method was not read")
+    # Slot election by coverage: the fixture keeps everything in slot 1, so 1 wins.
+    if pm["prevailing_baseline"]["slot"] != "1":
+        failures.append("baseline: coverage election picked the wrong slot on the fixture")
+
     # ---- the report must actually render. A valid file that runs to a blank page
     # is the failure mode this guards; see scripts/test_render.js for the real bug.
     rendered = render_checks()
@@ -350,6 +390,8 @@ def main() -> int:
     print("  calendars: 9h six-day week and its holiday applied; consistent task not flagged")
     print("  language: pt and en detected from content; every label present in both")
     print("  fields: discovery typed and ranked them; grouping by alias and by a missing name")
+    print("  network: lead honoured, both-complete ignored and recorded, SS lag violation caught")
+    print("  reconciliation: file BCWP read, costed milestone classified, no unexplained gap")
     return 0
 
 

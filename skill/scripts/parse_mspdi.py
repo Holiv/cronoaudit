@@ -217,6 +217,13 @@ def parse_task(task_el) -> dict:
         "physical_percent_complete": as_float(task_el, "PhysicalPercentComplete"),
         "percent_work_complete": as_float(task_el, "PercentWorkComplete"),
         "total_slack_minutes": tenths_to_minutes(text(task_el, "TotalSlack")),
+        # Earned value as the tool itself computed it. The .mpp binary read through
+        # a library leaves these null; the XML export carries them, which lets the
+        # skill reconcile its own calculation against the tool's, to the cent.
+        "bcws": as_float(task_el, "BCWS"),
+        "bcwp": as_float(task_el, "BCWP"),
+        "acwp": as_float(task_el, "ACWP"),
+        "earned_value_method": as_int(task_el, "EarnedValueMethod"),
         "cost": as_float(task_el, "Cost"),
         "fixed_cost": as_float(task_el, "FixedCost"),
         "baselines": parse_baselines(task_el),
@@ -232,27 +239,30 @@ def parse_task(task_el) -> dict:
 
 
 def prevailing_baseline(tasks) -> dict:
-    """Derive the live baseline slot from the data, not from a declared field.
+    """Elect the live baseline slot from the data, not from a declared field.
 
     The setting that names the earned-value baseline is not dependable, so the
-    slot is elected: the highest-numbered slot with any leaf task carrying cost
-    above zero. Summary rows and external tasks do not vote -- they hold
-    rolled-up or foreign values and would elect a slot that holds nothing.
+    slot is elected by COVERAGE: the slot with the most leaf tasks carrying cost
+    above zero, ties going to the higher-numbered slot. Three independent systems
+    converged on this rule. "Highest slot with any cost" was tried first and picks
+    wrongly when three stray leaves sit in a high slot. Summary rows and external
+    tasks do not vote -- they hold rolled-up or foreign values.
     """
-    evidence = {}
+    coverage = {}
     for t in tasks:
         if t["summary"] or t["external"]:
             continue
         for slot, bl in t["baselines"].items():
             if (bl.get("cost") or 0) > 0:
-                evidence[slot] = evidence.get(slot, 0) + 1
-    if not evidence:
+                coverage[slot] = coverage.get(slot, 0) + 1
+    if not coverage:
         return {"slot": None, "leaves_with_cost": {}, "basis": "no baseline cost found"}
-    slot = max(evidence, key=lambda s: int(s))
+    slot = max(coverage, key=lambda s: (coverage[s], int(s)))
     return {
         "slot": slot,
-        "leaves_with_cost": dict(sorted(evidence.items(), key=lambda kv: int(kv[0]))),
-        "basis": "highest-numbered slot with leaf cost > 0; summaries and external tasks excluded",
+        "leaves_with_cost": dict(sorted(coverage.items(), key=lambda kv: int(kv[0]))),
+        "basis": "slot with the widest leaf-cost coverage, ties to the higher slot; "
+                 "summaries and external tasks excluded",
     }
 
 
@@ -287,6 +297,10 @@ def parse(path: str) -> dict:
             "last_saved": as_date(root, "LastSaved"),
             "start": as_date(root, "StartDate"),
             "finish": as_date(root, "FinishDate"),
+            # 0 = percent complete, 1 = physical percent complete. Reconcile against
+            # the method the file declares, or the comparison is of two things.
+            "default_ev_method": as_int(root, "DefaultTaskEVMethod"),
+            "baseline_for_ev_declared": as_int(root, "BaselineForEarnedValue"),
         },
         "units": units(root),
         "calendars": {

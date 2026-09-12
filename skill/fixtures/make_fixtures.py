@@ -175,6 +175,11 @@ def task(uid, tid, name, **kw):
             "    </ExtendedAttribute>",
         ]
     bl = kw.get("baseline")
+    if bl and kw.get("phys") is not None:
+        bstart, bfinish, bcost, bhours = bl
+        bcwp = 0.0 if kw.get("milestone") else bcost * kw["phys"] / 100.0
+        parts.append(f"    <BCWP>{bcwp:.2f}</BCWP>")
+        parts.append("    <EarnedValueMethod>1</EarnedValueMethod>")
     if bl:
         bstart, bfinish, bcost, bhours = bl
         parts += [
@@ -197,6 +202,7 @@ def document(name, tasks):
         f"  <Name>{name}</Name>\n"
         f"  <Title>{name}</Title>\n"
         f"  <StatusDate>{STATUS}</StatusDate>\n"
+        "  <DefaultTaskEVMethod>1</DefaultTaskEVMethod>\n"
         f"  <CurrentDate>{STATUS}</CurrentDate>\n"
         f"  <MinutesPerDay>{MPD}</MinutesPerDay>\n"
         "  <MinutesPerWeek>2400</MinutesPerWeek>\n"
@@ -287,6 +293,46 @@ def positive():
     # P -- declared complete with no actual finish.
     t.append(task(11, 11, "P pending record", **WIN,
                   astart="2026-03-02T08:00:00", pct=100, phys=100, baseline=BL_OK))
+    # --- New network rules, each with its own control ---
+    # 14 -> 15: FS with a 2-day LEAD (negative lag). The predecessor finished one
+    # working day after the successor started, which the lead allows. Must NOT be A1.
+    t.append(task(14, 14, "Lead predecessor", **WIN,
+                  astart="2026-03-02T08:00:00", afinish="2026-03-06T17:00:00",
+                  pct=100, phys=100, baseline=BL_OK))
+    t.append(task(15, 15, "Successor within the lead", start="2026-03-05T08:00:00",
+                  finish="2026-03-11T17:00:00", dur_hours=40,
+                  astart="2026-03-05T08:00:00", pct=30,
+                  baseline=("2026-03-05T08:00:00", "2026-03-11T17:00:00", 10000.0, 40),
+                  preds=[(14, 1, -2)]))
+    # 16 -> 17: both complete, order inverted. By decision this leaves the count
+    # and is recorded as ignored, for the forensics.
+    t.append(task(16, 16, "Both complete, predecessor", **WIN,
+                  astart="2026-03-03T08:00:00", afinish="2026-03-06T17:00:00",
+                  pct=100, phys=100, baseline=BL_OK))
+    t.append(task(17, 17, "Both complete, successor started first", **WIN,
+                  astart="2026-03-02T08:00:00", afinish="2026-03-06T17:00:00",
+                  pct=100, phys=100, baseline=BL_OK, preds=[(16, 1, 0)]))
+    # 18 -> 19: SS with 3 days lag; successor started only 1 day after. Must be A1.
+    t.append(task(18, 18, "SS predecessor", **WIN,
+                  astart="2026-03-02T08:00:00", pct=40, baseline=BL_OK))
+    t.append(task(19, 19, "SS successor too early", start="2026-03-03T08:00:00",
+                  finish="2026-03-09T17:00:00", dur_hours=40,
+                  astart="2026-03-03T08:00:00", pct=10,
+                  baseline=("2026-03-03T08:00:00", "2026-03-09T17:00:00", 10000.0, 40),
+                  preds=[(18, 3, 3)]))
+    # 20: start in the past with no actual start (and a future finish) -> H by the
+    # start condition, not the finish one.
+    t.append(task(20, 20, "H start elapsed", start="2026-06-22T08:00:00",
+                  finish="2026-07-10T17:00:00", dur_hours=120,
+                  baseline=("2026-06-22T08:00:00", "2026-07-10T17:00:00", 10000.0, 120)))
+    # 21: a COSTED milestone at 100%. The tool writes zero earned value for it; the
+    # method counts its cost. Reconciliation must classify this, not hide it.
+    t.append(task(21, 21, "Costed milestone complete", milestone=True,
+                  start="2026-03-06T17:00:00", finish="2026-03-06T17:00:00",
+                  dur_hours=0, astart="2026-03-06T17:00:00", afinish="2026-03-06T17:00:00",
+                  pct=100, phys=100,
+                  baseline=("2026-03-06T17:00:00", "2026-03-06T17:00:00", 2500.0, 0)))
+
     # The migration rule: task 11 is a predecessor of 12, and 12 has started.
     # That is NOT an A1 breach -- 11 is a record defect and already sits in P.
     t.append(task(12, 12, "P successor must not raise A1", **WIN,

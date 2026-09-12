@@ -226,9 +226,23 @@ LAYERS = {
 }
 
 SEVERITY_WORDS = {
-    "en": {"high": "high", "medium": "medium", "low": "low"},
-    "pt": {"high": "alta", "medium": "média", "low": "baixa"},
+    "en": {"critical": "critical", "high": "high", "check": "check", "pending": "pending",
+           "view": "view"},
+    "pt": {"critical": "crítico", "high": "alto", "check": "verificação",
+           "pending": "pendência", "view": "visão"},
 }
+
+# Relationship types, as the tool names them in each language. In Portuguese
+# Project the same links read TI, II, TT and IT, and a planner reads those, not
+# the English codes.
+LINK_TYPES = {
+    "en": {"FS": "FS", "SS": "SS", "FF": "FF", "SF": "SF"},
+    "pt": {"FS": "TI", "SS": "II", "FF": "TT", "SF": "IT"},
+}
+
+
+def link_type(lang: str, code: str) -> str:
+    return LINK_TYPES.get(lang, LINK_TYPES["en"]).get(code, code)
 
 
 def findings_text(lang: str) -> dict:
@@ -251,6 +265,38 @@ def severity_words(lang: str) -> dict:
 UI = {
     "en": {
         "review_title": "Schedule integrity review",
+        "chip_title": "Schedule critical analysis",
+        "severity_view": "view",
+        "conv_reconciliation": "Earned value against the file's own (matches / compared · difference)",
+        "ficha_file": "File", "ficha_leaves": "Leaf activities",
+        "ficha_status": "Status date", "ficha_budget": "Baseline cost",
+        "hero_label": "Accumulated physical progress",
+        "hero_cap": "weighted by baseline cost, {n} activities",
+        "roteiro": "Route", "index_sub": "Each line leads to its section, with the detail and "
+                                          "the list of activities.",
+        "view_group": "Progress by {group}", "view_group_sub": "where the money is and where "
+                      "the problems are",
+        "view_starts": "Starts per month", "view_starts_sub": "distribution of effort along the "
+                       "contract",
+        "group_intro": "Planned against actual in each group, weighted by that group's own "
+                       "baseline cost. A heavy group with both bars low weighs more in the "
+                       "project's risk than a light group running ahead. The table also says "
+                       "how many activities of each group are marked in each check.",
+        "legend_planned": "Planned", "legend_actual": "Actual",
+        "col_group": "Group", "col_weight_pct": "Weight %", "col_planned_pct": "Planned %",
+        "col_actual_pct": "Actual %",
+        "problem": "Problem", "impact": "Impact", "solution": "Solution",
+        "levar": "To reproduce in the scheduling tool", "fonte": "Where it came from:",
+        "show_rows": "Show the {n} activities", "hide_rows": "Hide the activities",
+        "col_pred": "Pred.", "col_succ": "Succ.", "col_service": "Service",
+        "col_discipline": "Discipline", "col_section": "Section",
+        "col_term_lb": "Baseline finish", "col_term": "Finish", "col_var": "Var. (d)",
+        "col_float": "Float (d)", "col_real_pct": "Actual %", "col_why": "Why",
+        "col_pair": "Pair", "pair_fmt": "{succ} after {pred}",
+        "ignored_pairs": "{n} pairs with both activities complete were left out of the "
+                         "count, by decision: they no longer change a forecast. They are in "
+                         "the data file for the forensics.",
+        "links_evaluated": "Relationships evaluated: {list}. Lags honoured.",
         "cycle_title": "Cycle comparison",
         "status_date": "status date",
         "not_set": "not set",
@@ -402,6 +448,39 @@ UI = {
     },
     "pt": {
         "review_title": "Análise crítica de cronograma",
+        "chip_title": "Análise crítica de cronograma",
+        "severity_view": "visão",
+        "conv_reconciliation": "Valor agregado contra o do próprio arquivo (bate / comparadas · diferença)",
+        "ficha_file": "Arquivo", "ficha_leaves": "Atividades folha",
+        "ficha_status": "Data de status", "ficha_budget": "Custo de linha de base",
+        "hero_label": "Avanço físico acumulado",
+        "hero_cap": "ponderado pelo custo de linha de base, {n} atividades",
+        "roteiro": "Roteiro", "index_sub": "Cada linha leva à seção correspondente, com o "
+                                           "detalhamento e a lista de atividades.",
+        "view_group": "Avanço por {group}", "view_group_sub": "onde está o dinheiro e onde "
+                      "estão os problemas",
+        "view_starts": "Partidas por mês", "view_starts_sub": "distribuição do esforço ao "
+                       "longo do contrato",
+        "group_intro": "Previsto contra realizado em cada grupo, ponderados pelo custo de "
+                       "linha de base do próprio grupo. Um grupo de peso alto com as duas "
+                       "barras baixas pesa mais no risco do projeto do que um grupo pequeno "
+                       "adiantado. A tabela indica também quantas atividades de cada grupo "
+                       "estão marcadas em cada verificação.",
+        "legend_planned": "Previsto", "legend_actual": "Realizado",
+        "col_group": "Grupo", "col_weight_pct": "Peso %", "col_planned_pct": "Prev %",
+        "col_actual_pct": "Real %",
+        "problem": "Problema", "impact": "Impacto", "solution": "Solução",
+        "levar": "Para reproduzir no Project", "fonte": "De onde saiu:",
+        "show_rows": "Mostrar as {n} atividades", "hide_rows": "Ocultar as atividades",
+        "col_pred": "Pred.", "col_succ": "Suc.", "col_service": "Serviço",
+        "col_discipline": "Disciplina", "col_section": "Trecho",
+        "col_term_lb": "Term. LB", "col_term": "Término", "col_var": "Var (d)",
+        "col_float": "Folga (d)", "col_real_pct": "Real %", "col_why": "Motivo",
+        "col_pair": "Par", "pair_fmt": "{succ} depois de {pred}",
+        "ignored_pairs": "{n} pares com as duas atividades concluídas ficaram fora da "
+                         "contagem, por decisão: já não mudam tendência. Estão no arquivo de "
+                         "dados para a forense.",
+        "links_evaluated": "Vínculos avaliados: {list}. Lags respeitados.",
         "cycle_title": "Comparação de ciclo",
         "status_date": "data de status",
         "not_set": "não preenchida",
@@ -566,9 +645,10 @@ def ui(lang: str) -> dict:
 # language; the machine-readable keys in the findings JSON stay stable in English.
 CONVENTIONS = {
     "en": {
-        "slot_basis": "highest-numbered slot with leaf cost above zero; summaries and "
-                      "external tasks excluded",
-        "threshold_unit": "calendar days between baseline finish and current finish",
+        "slot_basis": "slot with the widest leaf-cost coverage, ties to the higher slot; "
+                      "summaries and external tasks excluded",
+        "threshold_unit": "working days of the activity's own calendar, between baseline "
+                          "finish and current finish",
         "population": "leaf, active, non-external activities only",
         "network_counting": "both ends of each violated link are marked, to agree with the "
                             "scheduling tool's own routines",
@@ -580,9 +660,10 @@ CONVENTIONS = {
         "denominator": "current snapshot budget at completion",
     },
     "pt": {
-        "slot_basis": "gaveta de maior número com custo em folha acima de zero; resumos e "
-                      "tarefas externas não votam",
-        "threshold_unit": "dias corridos entre o término da linha de base e o término atual",
+        "slot_basis": "gaveta com maior cobertura de custo nas folhas, empate para a mais "
+                      "alta; resumos e tarefas externas não votam",
+        "threshold_unit": "dias úteis do calendário da própria atividade, entre o término da "
+                          "linha de base e o término atual",
         "population": "apenas atividades folha, ativas e não externas",
         "network_counting": "as duas pontas de cada vínculo violado são marcadas, para bater "
                             "com as rotinas da própria ferramenta de cronograma",
@@ -602,3 +683,38 @@ def conventions(lang: str) -> dict:
     base = dict(CONVENTIONS["en"])
     base.update(CONVENTIONS.get(lang, {}))
     return base
+
+
+# Reasons attached to a finding row. Stable codes in the data; words here.
+WHY = {
+    "en": {
+        "pred_not_finished": "predecessor not finished",
+        "pred_finished_after_start": "predecessor finished after the successor started, beyond the lead",
+        "ss_before_lag": "started before the start-to-start lag allowed",
+        "ss_pred_not_started": "started while the start-to-start predecessor never started",
+        "ff_before_lag": "finished before the finish-to-finish lag allowed",
+        "ff_pred_not_finished": "finished while the finish-to-finish predecessor is not finished",
+        "sf_before_lag": "finished before the start-to-finish lag allowed",
+        "sf_pred_not_started": "finished while the start-to-finish predecessor never started",
+        "start_elapsed": "start elapsed with no actual start",
+        "finish_elapsed": "finish elapsed with no actual finish",
+        "pending_record": "declared complete with no actual finish",
+    },
+    "pt": {
+        "pred_not_finished": "predecessora não terminou",
+        "pred_finished_after_start": "predecessora terminou depois do início da sucessora, além do lead",
+        "ss_before_lag": "começou antes do que o lag início-início permite",
+        "ss_pred_not_started": "começou com a predecessora início-início sem começar",
+        "ff_before_lag": "terminou antes do que o lag término-término permite",
+        "ff_pred_not_finished": "terminou com a predecessora término-término sem terminar",
+        "sf_before_lag": "terminou antes do que o lag início-término permite",
+        "sf_pred_not_started": "terminou com a predecessora início-término sem começar",
+        "start_elapsed": "início vencido sem início real",
+        "finish_elapsed": "término vencido sem término real",
+        "pending_record": "declarada concluída sem término real",
+    },
+}
+
+
+def why(lang: str, code: str) -> str:
+    return WHY.get(lang, WHY["en"]).get(code, code)

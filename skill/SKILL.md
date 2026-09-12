@@ -59,7 +59,9 @@ baseline, and for the comparison the previous cycle's file. Fields the checks re
 populated — and a field left empty is itself a reportable finding, not a reason to skip the
 check.
 
-**What comes out.** Named findings with stable codes, each one a set of flagged activities
+**What comes out.** A report in the structure a mature in-tool analysis proved in meetings:
+cover, verdict, tiles, index, views, and one block per finding with problem, impact, solution,
+reproduction and the activities collapsed under a toggle. Named findings with stable codes, each one a set of flagged activities
 navigable inside the schedule itself rather than a list beside it. A weighted decomposition
 that shows where the aggregate deviation actually comes from. A report in which every finding
 closes with which columns it came from and which filter reproduces it. And a clean-up routine,
@@ -193,7 +195,11 @@ is populated — the reader is reading fine, the field is not there.
                    accumulated to the status date
 
 `measured`. That formula was reconciled **to the cent** against what the tool displays, on
-both phases of a real schedule, in an independent verification recorded at the time.
+both phases of a real schedule, in an independent verification recorded at the time — and the
+skill now does that reconciliation itself on every run, because the XML export carries the
+tool's own BCWP (the `.mpp` read through a library does not). On a 6,484-task programme:
+4,676 of 4,677 leaves to the cent, the one difference a costed milestone the tool zeroes by
+construction.
 
 One caution that is not about arithmetic: **using physical percent complete is a business
 rule, not a derivation.** Another organisation may weight by cost, by quantity or by a
