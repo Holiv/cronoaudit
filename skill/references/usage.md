@@ -139,6 +139,12 @@ to the status date, so an activity executed before its baseline dates gets nothi
 until the calendar reaches them, while the method credits cost times physical percent at once.
 Both are right against their own instant. The report classifies these rather than hiding them.
 
+**The S-curve is read from the file, not modelled.** The export phases baseline cost and
+physical percent per task, and those blocks reconcile against the file's own totals task by
+task. The report draws planned, earned, and the other earned-value method as sensitivity, with
+SPI and SV by month, and states the reconciliation counts underneath. A third file,
+`<name>-review-scurve.json`, carries the monthly series and the per-group curves.
+
 ### Read it in this order, and the report is laid out to enforce it
 
 1. **The blocking notices, if any.** No status date means every adherence check is measured

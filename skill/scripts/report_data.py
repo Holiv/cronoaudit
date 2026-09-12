@@ -153,7 +153,7 @@ def discovered_columns(model, grouping: dict, L: dict) -> list:
     return cols
 
 
-def build_review(model, res, theme=None, grouping="wbs", lang=None) -> dict:
+def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None) -> dict:
     detected = i18n.detect(model)
     lang = lang or detected["lang"]
     L = i18n.ui(lang)
@@ -404,6 +404,7 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None) -> dict:
             "by_group": group_rows,
         },
         "calendars": (model.get("calendars") or {}).get("in_use", []),
+        "scurve": phasing,
     }
 
 

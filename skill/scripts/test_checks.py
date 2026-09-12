@@ -63,6 +63,7 @@ def compare_cycle():
 
 REVIEW_SECTIONS = [
     "How to read these numbers", "Index", "Progress by", "Starts per month",
+    "S-curve from the file", "<polyline",
     "Finish variance against baseline", "Total float", "Problem",
     "To reproduce in the scheduling tool", "Conventions this report used",
 ]
@@ -367,6 +368,45 @@ def main() -> int:
     if pm["prevailing_baseline"]["slot"] != "1":
         failures.append("baseline: coverage election picked the wrong slot on the fixture")
 
+    # ---- the S-curve from the file's own phasing. Nothing invented: the per-task
+    # sums must equal the totals the file writes, and a non-working day's sentinel
+    # must never reach the curve.
+    import phasing as phasing_mod
+    curve = phasing_mod.build(os.path.join(ROOT, "fixtures", "positive.xml"), None)
+    rr = curve["reconciliation"]
+    if rr["phasing_sum_equals_cost"] != rr["with_cost"]:
+        failures.append(
+            f"phasing: baseline-cost blocks sum to the baseline cost on only "
+            f"{rr['phasing_sum_equals_cost']} of {rr['with_cost']} tasks"
+        )
+    if rr["phasing_to_status_equals_bcws"] != rr["tasks"]:
+        failures.append(
+            f"phasing: blocks up to the status date equal the file's BCWS on only "
+            f"{rr['phasing_to_status_equals_bcws']} of {rr['tasks']} tasks"
+        )
+    T = curve["totals"]
+    if T["earned_pct"] is None or T["planned_pct"] is None:
+        failures.append("phasing: totals missing")
+    # Earned to date must equal the sum of cost x physical over the leaves, which is
+    # only true if the 32768 sentinel days were dropped before summing.
+    expected = sum(
+        ((t.get("baselines") or {}).get("1") or {}).get("cost", 0) * (t.get("physical_percent_complete") or 0) / 100
+        for t in pm["tasks"] if not t.get("summary") and t.get("physical_percent_complete")
+    )
+    if abs(T["earned_to_date"] - expected) > 1.0:
+        failures.append(
+            f"phasing: earned to date {T['earned_to_date']} != cost x physical {expected:.2f}; "
+            "a sentinel day leaked into the curve or the spread was not normalised"
+        )
+    if T["method_gap_points"] is None:
+        failures.append("phasing: the other method's curve was not computed as sensitivity")
+    if curve["method"] != "physical":
+        failures.append("phasing: the declared earned value method was not read")
+    if not curve["periods"] or curve["periods"][-1]["planned_cum_pct"] is None:
+        failures.append("phasing: the monthly series is empty or lacks cumulative percent")
+    if any(p["earned_cum"] is not None for p in curve["periods"] if p["period"] > "2026-06"):
+        failures.append("phasing: earned values appear after the status month")
+
     # ---- the report must actually render. A valid file that runs to a blank page
     # is the failure mode this guards; see scripts/test_render.js for the real bug.
     rendered = render_checks()
@@ -393,6 +433,7 @@ def main() -> int:
     print("  fields: discovery typed and ranked them; grouping by alias and by a missing name")
     print("  network: lead honoured, both-complete ignored and recorded, SS lag violation caught")
     print("  reconciliation: file BCWP read, ahead-of-baseline classified, no unexplained gap")
+    print("  phasing: blocks equal cost and BCWS on every task; sentinel dropped; curve rendered")
     return 0
 
 

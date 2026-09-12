@@ -266,6 +266,31 @@ UI = {
     "en": {
         "review_title": "Schedule integrity review",
         "chip_title": "Schedule critical analysis",
+        "scurve_title": "S-curve from the file's own phasing",
+        "scurve_sub": "Planned is the baseline cost the file phases by period; earned is the "
+                      "file's daily spread of physical percent times baseline cost; the third "
+                      "line is what the other earned-value method would say. Nothing here is "
+                      "an invented distribution.",
+        "scurve_planned": "Planned", "scurve_earned": "Earned", "scurve_alt": "Earned, duration method",
+        "scurve_alt_physical": "Earned, physical method",
+        "col_period": "Period", "col_planned_cum": "Planned cum.", "col_earned_cum": "Earned cum.",
+        "col_sv": "SV cum.", "col_spi": "SPI cum.", "col_planned_pct": "Planned %",
+        "col_earned_pct_cum": "Earned %", "col_alt_pct": "Other method %",
+        "scurve_method": "Earned value method declared in the file: {m}.",
+        "scurve_method_physical": "physical percent complete",
+        "scurve_method_percent": "percent complete (duration)",
+        "scurve_mixed": "Tasks in this file declare different methods; the majority rules the "
+                        "curve and the mix is a finding.",
+        "scurve_gap": "The two methods differ by {n} points of progress at the status date. "
+                      "Switching method changes the curve, not the works.",
+        "scurve_recon": "Reconciliation against the file: phasing equals baseline cost on "
+                        "{a} of {c} tasks with cost; phasing to the status date equals the "
+                        "file's BCWS on {b} of {t}; cost × physical equals the file's BCWP on "
+                        "{e}.",
+        "scurve_ahead": "{n} activities were executed ahead of their baseline window; the tool "
+                        "credits nothing for them until the status date reaches the window, "
+                        "the method credits them now. Worth {v}.",
+        "tile_spi": "SPI", "tile_sv": "SV", "tile_planned": "Planned to date",
         "severity_view": "view",
         "conv_reconciliation": "Earned value against the file's own (matches / compared · difference · ahead of baseline window)",
         "ficha_file": "File", "ficha_leaves": "Leaf activities",
@@ -449,6 +474,32 @@ UI = {
     "pt": {
         "review_title": "Análise crítica de cronograma",
         "chip_title": "Análise crítica de cronograma",
+        "scurve_title": "Curva S do faseamento do próprio arquivo",
+        "scurve_sub": "Previsto é o custo de linha de base que o arquivo faseia por período; "
+                      "realizado é a distribuição diária de percentual físico do próprio arquivo "
+                      "vezes o custo de linha de base; a terceira linha é o que o outro método "
+                      "de valor agregado diria. Nada aqui é distribuição inventada.",
+        "scurve_planned": "Previsto", "scurve_earned": "Realizado",
+        "scurve_alt": "Realizado, método de duração",
+        "scurve_alt_physical": "Realizado, método físico",
+        "col_period": "Período", "col_planned_cum": "Prev. acum.", "col_earned_cum": "Real. acum.",
+        "col_sv": "VP acum.", "col_spi": "IDP acum.", "col_planned_pct": "Prev %",
+        "col_earned_pct_cum": "Real %", "col_alt_pct": "Outro método %",
+        "scurve_method": "Método de valor agregado declarado no arquivo: {m}.",
+        "scurve_method_physical": "percentual físico concluído",
+        "scurve_method_percent": "percentual concluído (duração)",
+        "scurve_mixed": "Tarefas deste arquivo declaram métodos diferentes; a maioria governa a "
+                        "curva e a mistura é um achado.",
+        "scurve_gap": "Os dois métodos diferem em {n} pontos de avanço na data de status. Trocar "
+                      "o método muda a curva, não a obra.",
+        "scurve_recon": "Conciliação contra o arquivo: faseamento igual ao custo de linha de base "
+                        "em {a} de {c} tarefas com custo; faseamento até a data de status igual "
+                        "ao BCWS do arquivo em {b} de {t}; custo × físico igual ao BCWP do "
+                        "arquivo em {e}.",
+        "scurve_ahead": "{n} atividades foram executadas antes da janela da linha de base; o "
+                        "Project não credita nada até a data de status alcançar a janela, o "
+                        "método credita agora. Valem {v}.",
+        "tile_spi": "IDP", "tile_sv": "VP", "tile_planned": "Previsto até a data",
         "severity_view": "visão",
         "conv_reconciliation": "Valor agregado contra o do próprio arquivo (bate / comparadas · diferença · executadas antes da janela da linha de base)",
         "ficha_file": "Arquivo", "ficha_leaves": "Atividades folha",

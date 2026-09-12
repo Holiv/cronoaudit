@@ -26,6 +26,7 @@ sys.path.insert(0, HERE)
 
 import compare_snapshots  # noqa: E402
 import parse_mspdi  # noqa: E402
+import phasing as phasing_mod  # noqa: E402
 import report_data  # noqa: E402
 import report_html  # noqa: E402
 import run_checks  # noqa: E402
@@ -108,13 +109,25 @@ def stem(path: str) -> str:
 def do_review(model, path, outdir, threshold, tolerance, quiet,
               theme=None, grouping="wbs", template=None, lang=None) -> dict:
     res = run_checks.run(model, threshold, tolerance)
+    # The S-curve reads the XML a second time, streaming, because the phased
+    # blocks are too many to keep in the model. XML only: the optional binary
+    # reader converts to a temporary XML, which is fine, but a file that came in
+    # some other way has no phasing to read.
+    curve = None
+    src = model.get("source")
+    if src and src.lower().endswith(".xml") and os.path.exists(src):
+        grp = report_data.resolve_grouping(model, grouping)
+        curve = phasing_mod.build(src, grp.get("field_id"))
     base = os.path.join(outdir, f"{stem(path)}-review")
     with open(base + ".json", "w", encoding="utf-8") as fh:
         json.dump(res, fh, indent=2, ensure_ascii=False)
     import i18n
     effective_lang = lang or i18n.detect(model)["lang"]
     payload = report_data.build_review(model, res, theme=theme, grouping=grouping,
-                                       lang=effective_lang)
+                                       lang=effective_lang, phasing=curve)
+    if curve is not None:
+        with open(base + "-scurve.json", "w", encoding="utf-8") as fh:
+            json.dump(curve, fh, indent=2, ensure_ascii=False)
     report_html.write(payload, base + ".html", template)
     if not quiet:
         print(run_checks.report(res, effective_lang))

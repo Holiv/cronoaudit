@@ -233,8 +233,12 @@ cannot be trusted, and it is an instance of a wider rule: **when the file alread
 the result of the expensive calculation, derive the setting from the data rather than from
 a field that claims to declare it.**
 
-S-curve and sampling rules, including why a costed milestone legitimately vanishes from a
-phased S-curve while both figures stay correct: `references/earned-value.md`.
+**The S-curve is the file's own.** The XML export phases baseline cost and physical percent
+per task, and those blocks reconcile against the file's totals task by task, so the planned
+curve is read rather than modelled and the earned curve is the tool's own spread. The other
+earned-value method is drawn as sensitivity, because on a real programme the two differed by
+1.88 points with nothing changed on site. Details, the sentinel, and the ahead-of-window
+mechanism: `references/earned-value.md`.
 
 ## Counting convention is part of the finding
 

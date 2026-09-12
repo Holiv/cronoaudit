@@ -113,7 +113,65 @@ EXT_DEFS = """  <ExtendedAttributes>
 DISCIPLINES = ["EARTHWORKS", "DRAINAGE", "PAVEMENT"]
 
 
+from datetime import datetime, timedelta
+
+SENTINEL = 32768  # what Project writes in a percent block on a non-working day
+
+
+def _days(start, finish, six_day=False):
+    a = datetime.fromisoformat(start).date()
+    b = datetime.fromisoformat(finish).date()
+    out = []
+    cur = a
+    while cur <= b:
+        working = cur.weekday() < (6 if six_day else 5)
+        out.append((cur, working))
+        cur += timedelta(days=1)
+    return out
+
+
+def _phasing(kw):
+    """Time-phased blocks the way Project writes them: baseline cost per working
+    day (type 10) and physical percent per day (type 11, sentinel on non-working
+    days). Returns (xml_lines, bcws_at_status)."""
+    lines = []
+    bl = kw.get("baseline")
+    bcws = 0.0
+    six = kw.get("cal") == 2
+    if bl:
+        bstart, bfinish, bcost, _ = bl
+        days = [d for d, w in _days(bstart, bfinish, six) if w] or [datetime.fromisoformat(bstart).date()]
+        per = bcost / len(days)
+        for d in days:
+            lines += ["    <TimephasedData>", "      <Type>10</Type>", f"      <UID>{kw['_uid']}</UID>",
+                      f"      <Start>{d.isoformat()}T08:00:00</Start>",
+                      f"      <Finish>{d.isoformat()}T17:00:00</Finish>",
+                      "      <Unit>1</Unit>", f"      <Value>{per:.2f}</Value>", "    </TimephasedData>"]
+            if d.isoformat() <= STATUS[:10]:
+                bcws += per
+    # One empty-valued block, as real exports carry them; it must be skipped.
+    if bl:
+        lines += ["    <TimephasedData>", "      <Type>10</Type>", f"      <UID>{kw['_uid']}</UID>",
+                  f"      <Start>{bl[0]}</Start>", f"      <Finish>{bl[0]}</Finish>",
+                  "      <Unit>1</Unit>", "      <Value></Value>", "    </TimephasedData>"]
+    phys = kw.get("phys")
+    if phys and kw.get("astart"):
+        end = kw.get("afinish") or STATUS
+        span = _days(kw["astart"], end, six)
+        working = [d for d, w in span if w] or [span[0][0]]
+        per = phys / len(working)
+        for d, w in span:
+            lines += ["    <TimephasedData>", "      <Type>11</Type>", f"      <UID>{kw['_uid']}</UID>",
+                      f"      <Start>{d.isoformat()}T08:00:00</Start>",
+                      f"      <Finish>{d.isoformat()}T17:00:00</Finish>",
+                      "      <Unit>2</Unit>",
+                      f"      <Value>{per:.4f}</Value>" if w else f"      <Value>{SENTINEL}</Value>",
+                      "    </TimephasedData>"]
+    return lines, bcws
+
+
 def task(uid, tid, name, **kw):
+    kw["_uid"] = uid
     """Build one <Task>. Absent keys are omitted, never emitted empty."""
     parts = [
         f"    <UID>{uid}</UID>",
@@ -175,6 +233,10 @@ def task(uid, tid, name, **kw):
             "    </ExtendedAttribute>",
         ]
     bl = kw.get("baseline")
+    phasing_lines, bcws = _phasing(kw)
+    parts += phasing_lines
+    if bl:
+        parts.append(f"    <BCWS>{bcws:.2f}</BCWS>")
     if bl and kw.get("phys") is not None:
         bstart, bfinish, bcost, bhours = bl
         bcwp = kw["bcwp_override"] if "bcwp_override" in kw else bcost * kw["phys"] / 100.0

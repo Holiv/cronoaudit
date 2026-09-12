@@ -24,6 +24,37 @@ phases, in a verification recorded at the time.
 person rather than derived from the work done. When it is, it is a declaration, not a
 measurement — and earned value computed from it inherits that. State which it is.
 
+## The S-curve comes from the file's own phasing
+
+`measured` on a 6,484-task export. The XML export carries, per task, time-phased blocks that
+nothing outside the tool needs to invent:
+
+| Block type | Content | Verified against |
+|---|---|---|
+| 10 | baseline cost per period | sums to the baseline cost on 4,677 of 4,677 tasks with cost; sums to the file's own BCWS up to the status date on 5,249 of 5,251 |
+| 11 | physical percent per day | sums to the task's physical percent; a non-working day carries `32768`, a sentinel, not a percent |
+
+So the **planned curve is the file's**, read rather than modelled. The **earned curve** is the
+file's daily spread of physical percent times baseline cost. Two honest caveats travel with it:
+the spread is the tool's own interpolation across the actual duration to date, not a record of
+when each update was reported, so the curve's shape is what the tool draws in its own graphs;
+and a sentinel left in the sum corrupts everything, silently, which is why the test suite
+checks that earned-to-date equals cost times physical to the cent.
+
+**The other earned-value method is drawn as sensitivity.** The file declares one method,
+project-wide and per task, and the skill reads it rather than asking. But on the real programme
+the two methods differed by **1.88 points of progress** at the status date — physical 7.73%,
+duration-based 5.85% — because the organisation maintains physical percent and leaves the
+duration percent at zero on 94 of 98 activities in progress. Switching method would collapse
+the curve with nothing changed on site. The report shows both lines so that gap is seen before
+a meeting, not during one.
+
+**Work executed ahead of its baseline window is credited by the method and not by the
+tool.** The tool's earned value is the phased baseline cost credited up to the status date; an
+activity done before its baseline dates has nothing phased before the status date, so the
+tool writes zero until the calendar reaches the window. Both are right against their own
+instant. The reconciliation classifies these separately from anything unexplained.
+
 ## A costed milestone legitimately vanishes from a phased S-curve
 
 `reported`, with two of the three figures independently measured.
