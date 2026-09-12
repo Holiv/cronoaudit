@@ -35,10 +35,8 @@ underperformance.
 
 Calling something a milestone by its **current** duration, then summing its **baseline**
 cost. In the measured set, 268 activities had exactly one of the two zeroed — the
-classification and the value come from different instants.
-
-This is a genuine datum instance: the classification and the value are read at different
-instants, and either one alone is defensible.
+classification and the value come from different instants, and either reading alone is
+defensible. A genuine datum instance.
 
 **But the repair is not a sharper classifier.** `reported`: the cost was never lost because
 of what the items *were*; it was lost because a zero-length span generates no time buckets.
