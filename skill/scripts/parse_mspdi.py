@@ -18,7 +18,10 @@ import json
 import re
 import sys
 import xml.etree.ElementTree as ET
+from collections import Counter
 from datetime import datetime
+
+import calendars as cal_mod
 
 NS = {"p": "http://schemas.microsoft.com/project"}
 
@@ -193,6 +196,9 @@ def parse_task(task_el) -> dict:
         "wbs": text(task_el, "WBS"),
         "outline_number": text(task_el, "OutlineNumber"),
         "outline_level": as_int(task_el, "OutlineLevel"),
+        # Which calendar governs THIS task. "-1" or absent means the project default.
+        # Every duration and span on this task is expressed against it.
+        "calendar_uid": text(task_el, "CalendarUID"),
         "summary": as_bool(task_el, "Summary"),
         "milestone": as_bool(task_el, "Milestone"),
         "active": as_bool(task_el, "Active"),
@@ -250,6 +256,16 @@ def parse(path: str) -> dict:
     tasks = [parse_task(t) for t in root.findall("p:Tasks/p:Task", NS)]
     tasks = [t for t in tasks if t["uid"] is not None]
 
+    # Calendars are not optional context: a construction schedule keeps its
+    # holidays, its shift length and its weather reserve in them, and they differ
+    # per task. See scripts/calendars.py for what assuming a five-day week cost.
+    cals = cal_mod.parse_calendars(root)
+    default_cal = text(root, "CalendarUID")
+    for t in tasks:
+        if not t["calendar_uid"] or t["calendar_uid"] == "-1":
+            t["calendar_uid"] = default_cal
+    used = Counter(t["calendar_uid"] for t in tasks)
+
     status_date = as_date(root, "StatusDate")
     return {
         "source": path,
@@ -265,6 +281,12 @@ def parse(path: str) -> dict:
             "finish": as_date(root, "FinishDate"),
         },
         "units": units(root),
+        "calendars": {
+            "default_uid": default_cal,
+            "count": len(cals),
+            "in_use": cal_mod.summarise(cals, used),
+            "definitions": cal_mod.to_dict(cals),
+        },
         "prevailing_baseline": prevailing_baseline(tasks),
         "counts": {
             "tasks": len(tasks),

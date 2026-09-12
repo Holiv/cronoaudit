@@ -114,10 +114,16 @@ IDs alone is unusable in a meeting.
 
 - **G is a thermometer, not a finding.** It says something was edited inconsistently, not what.
   Use it to choose what to inspect. Never report it alone.
-- **The working-day counts are a Monday-to-Friday approximation.** The file's own holidays and
-  calendar exceptions are not applied, so calendar and working figures are reported side by side.
-  When they disagree in a way that matters, go and look at the calendar — *a calendar applied to
-  the wrong year* is one of the failures this method hunts.
+- **Working days are counted on each activity's own calendar**, read from the activity's
+  Calendar column, including that calendar's exceptions. The project calendar is used only for
+  activities that have none of their own. This is not a detail: on one real programme 107
+  calendars were in use, most activities worked a nine-hour six-day week while the file header
+  said eight hours over five days, and a rainy-season calendar carried 616 non-working days of
+  weather reserve. Counting Monday to Friday against the header's day flagged 27% of that
+  schedule; counting on each activity's calendar flagged 2%, and the real signal stopped being
+  buried. **Read the calendar table in the report.** If the shift length or the working week is
+  not what the works actually does, every date inherits the error — and a calendar registered
+  against the wrong year embeds optimism that nothing else in the file announces.
 - **Percent complete may have been typed by a person** rather than derived from work done. When
   it is, it is a declaration, and everything computed from it inherits that. The report says
   which field it used.

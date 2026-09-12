@@ -22,6 +22,82 @@ STATUS = "2026-06-30T17:00:00"
 MPD = 480
 
 
+# Two calendars, because a real programme has many and they disagree. The default
+# works five 8-hour days; the second works six 9-hour days and carries a holiday.
+# A task's duration and span are expressed against ITS calendar, never the header's.
+CALENDARS = """  <Calendars>
+    <Calendar>
+      <UID>1</UID><Name>Standard</Name><IsBaseCalendar>1</IsBaseCalendar>
+      <BaseCalendarUID>-1</BaseCalendarUID>
+      <WeekDays>
+        <WeekDay><DayType>1</DayType><DayWorking>0</DayWorking></WeekDay>
+        <WeekDay><DayType>2</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>08:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+        <WeekDay><DayType>3</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>08:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+        <WeekDay><DayType>4</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>08:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+        <WeekDay><DayType>5</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>08:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+        <WeekDay><DayType>6</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>08:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+        <WeekDay><DayType>7</DayType><DayWorking>0</DayWorking></WeekDay>
+      </WeekDays>
+      <Exceptions/>
+    </Calendar>
+    <Calendar>
+      <UID>2</UID><Name>Earthworks six-day</Name><IsBaseCalendar>1</IsBaseCalendar>
+      <BaseCalendarUID>-1</BaseCalendarUID>
+      <WeekDays>
+        <WeekDay><DayType>1</DayType><DayWorking>0</DayWorking></WeekDay>
+        <WeekDay><DayType>2</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>07:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+        <WeekDay><DayType>3</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>07:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+        <WeekDay><DayType>4</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>07:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+        <WeekDay><DayType>5</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>07:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+        <WeekDay><DayType>6</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>07:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+        <WeekDay><DayType>7</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>07:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+      </WeekDays>
+      <Exceptions>
+        <Exception>
+          <EnteredByOccurrences>0</EnteredByOccurrences>
+          <TimePeriod><FromDate>2026-03-04T00:00:00</FromDate><ToDate>2026-03-04T23:59:00</ToDate></TimePeriod>
+          <Occurrences>1</Occurrences><Name>Holiday</Name><Type>1</Type>
+          <DayWorking>0</DayWorking>
+        </Exception>
+      </Exceptions>
+    </Calendar>
+  </Calendars>
+"""
+
+
 def task(uid, tid, name, **kw):
     """Build one <Task>. Absent keys are omitted, never emitted empty."""
     parts = [
@@ -34,6 +110,7 @@ def task(uid, tid, name, **kw):
         f"    <Milestone>{1 if kw.get('milestone') else 0}</Milestone>",
         "    <Active>1</Active>",
         "    <ExternalTask>0</ExternalTask>",
+        f"    <CalendarUID>{kw.get('cal', -1)}</CalendarUID>",
     ]
     for tag, key in (
         ("Start", "start"), ("Finish", "finish"),
@@ -87,6 +164,8 @@ def document(name, tasks):
         f"  <MinutesPerDay>{MPD}</MinutesPerDay>\n"
         "  <MinutesPerWeek>2400</MinutesPerWeek>\n"
         "  <DaysPerMonth>20</DaysPerMonth>\n"
+        "  <CalendarUID>1</CalendarUID>\n"
+        + CALENDARS +
         "  <Tasks>\n" + "\n".join(tasks) + "\n  </Tasks>\n"
         "</Project>\n"
     )
@@ -123,6 +202,13 @@ def positive():
     # G -- duration far wider than the start-to-finish window.
     t.append(task(8, 8, "G duration disagrees", start="2026-03-02T08:00:00",
                   finish="2026-03-06T17:00:00", dur_hours=160, baseline=BL_OK))
+    # On the six-day calendar, whose day is 9 hours and which loses 4 March to a
+    # holiday. Duration matches the real working time, so this must NOT raise G --
+    # it is the negative control for the calendar path.
+    t.append(task(13, 13, "Six-day calendar, consistent", cal=2,
+                  start="2026-03-02T07:00:00", finish="2026-03-06T17:00:00",
+                  dur_hours=36, astart="2026-03-02T07:00:00", pct=50,
+                  baseline=("2026-03-02T07:00:00", "2026-03-06T17:00:00", 12000.0, 36)))
     # B -- milestone with no deadline.
     t.append(task(9, 9, "B milestone no deadline", milestone=True,
                   start="2026-03-06T17:00:00", finish="2026-03-06T17:00:00",

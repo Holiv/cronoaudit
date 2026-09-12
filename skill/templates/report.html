@@ -217,6 +217,24 @@ function renderReview(d){
     {label:"Earned %",key:"earned_pct"},{label:"Findings",key:"finding_total"},
   ],g));
 
+  if(d.calendars&&d.calendars.length){
+    out.push(`<h2>Calendars carrying the work</h2>
+      <p class="sub">Every duration, variance and span in this report is counted on the
+      calendar of its own activity, including that calendar's exceptions. This table is here
+      because it is where a construction schedule keeps its holidays and its weather reserve,
+      and because a calendar registered against the wrong year embeds optimism that nothing
+      else in the file announces. Read it: if the shift length or the working week is not what
+      the works actually does, every date below inherits the error.</p>`);
+    out.push(table([
+      {label:"Calendar",key:"name"},{label:"Activities",key:"tasks"},
+      {label:"Hours per day",key:"hours_per_day"},
+      {label:"Working days per week",key:"working_days_per_week"},
+      {label:"Exceptions",key:"exceptions"},
+      {label:"Non-working exceptions",key:"non_working_exceptions"},
+    ],d.calendars));
+    out.push(chart(d.calendars.map(r=>({label:r.name,value:r.tasks})),{fmt:v=>n(v)}));
+  }
+
   out.push(`<h2>Distributions</h2>`);
   out.push(`<h3>Finish variance against baseline</h3>
     <p class="sub">Bands of 30 days. The shape matters more than any single row: a mass to the

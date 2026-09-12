@@ -69,9 +69,9 @@ SOURCE = {
     "A1": "Actual Start, predecessor Actual Finish, Predecessor Link",
     "A2": "Actual Finish, predecessor Actual Start, Predecessor Link",
     "H": "Finish, Actual Start, Actual Finish, project Status Date",
-    "E": "Finish, Baseline Finish, Actual Start",
-    "C": "Finish, Baseline Finish",
-    "G": "Duration, Start, Finish, project Minutes Per Day",
+    "E": "Finish, Baseline Finish, Actual Start, and the activity's own Calendar column",
+    "C": "Finish, Baseline Finish, and the activity's own Calendar column",
+    "G": "Duration, Start, Finish, and the activity's own Calendar column",
     "B": "Milestone, Deadline",
     "F": "Actual Start, Actual Finish, Percent Complete",
     "P": "Physical Percent Complete, Actual Finish",
@@ -85,7 +85,8 @@ REPRODUCE = {
     "E": "Insert Finish Variance. Filter at or below minus the threshold with Actual "
          "Start blank.",
     "C": "Insert Finish Variance and filter at or above the threshold.",
-    "G": "Show Duration, Start and Finish side by side and compare the span.",
+    "G": "Show Duration, Start, Finish and Calendar side by side. The span must be "
+         "measured in that calendar's working time, not in days.",
     "B": "Filter on Milestone, insert the Deadline column, and sort by it.",
     "F": "Filter Actual Start present and Percent Complete equal to zero.",
     "P": "Insert Physical Percent Complete and Actual Finish, and filter one hundred "
@@ -98,6 +99,7 @@ COLUMNS = [
     ("Var. calendar d", "finish_variance_calendar_days"),
     ("Var. working d", "finish_variance_working_days"),
     ("Duration d", "duration_days"), ("Window wd", "window_working_days"),
+    ("Gap d", "gap_days"), ("Calendar", "calendar"),
     ("Actual start", "actual_start"), ("Percent", "percent"),
 ]
 ORDER = ["A1", "A2", "H", "E", "C", "G", "B", "F", "P"]
@@ -272,7 +274,9 @@ def build_review(model, res, theme=None, grouping="wbs") -> dict:
             "baseline_slot": slot,
             "with_physical_percent": model["counts"].get("with_physical_percent"),
             "grouping": grouping,
+            "calendars_in_file": (model.get("calendars") or {}).get("count", 0),
         },
+        "calendars": (model.get("calendars") or {}).get("in_use", []),
         "conventions": res["conventions"],
         "blocking": res.get("blocking", []),
         "findings": findings,

@@ -7,6 +7,77 @@
   <MinutesPerDay>480</MinutesPerDay>
   <MinutesPerWeek>2400</MinutesPerWeek>
   <DaysPerMonth>20</DaysPerMonth>
+  <CalendarUID>1</CalendarUID>
+  <Calendars>
+    <Calendar>
+      <UID>1</UID><Name>Standard</Name><IsBaseCalendar>1</IsBaseCalendar>
+      <BaseCalendarUID>-1</BaseCalendarUID>
+      <WeekDays>
+        <WeekDay><DayType>1</DayType><DayWorking>0</DayWorking></WeekDay>
+        <WeekDay><DayType>2</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>08:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+        <WeekDay><DayType>3</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>08:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+        <WeekDay><DayType>4</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>08:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+        <WeekDay><DayType>5</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>08:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+        <WeekDay><DayType>6</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>08:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+        <WeekDay><DayType>7</DayType><DayWorking>0</DayWorking></WeekDay>
+      </WeekDays>
+      <Exceptions/>
+    </Calendar>
+    <Calendar>
+      <UID>2</UID><Name>Earthworks six-day</Name><IsBaseCalendar>1</IsBaseCalendar>
+      <BaseCalendarUID>-1</BaseCalendarUID>
+      <WeekDays>
+        <WeekDay><DayType>1</DayType><DayWorking>0</DayWorking></WeekDay>
+        <WeekDay><DayType>2</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>07:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+        <WeekDay><DayType>3</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>07:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+        <WeekDay><DayType>4</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>07:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+        <WeekDay><DayType>5</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>07:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+        <WeekDay><DayType>6</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>07:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+        <WeekDay><DayType>7</DayType><DayWorking>1</DayWorking><WorkingTimes>
+          <WorkingTime><FromTime>07:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>
+          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>
+        </WorkingTimes></WeekDay>
+      </WeekDays>
+      <Exceptions>
+        <Exception>
+          <EnteredByOccurrences>0</EnteredByOccurrences>
+          <TimePeriod><FromDate>2026-03-04T00:00:00</FromDate><ToDate>2026-03-04T23:59:00</ToDate></TimePeriod>
+          <Occurrences>1</Occurrences><Name>Holiday</Name><Type>1</Type>
+          <DayWorking>0</DayWorking>
+        </Exception>
+      </Exceptions>
+    </Calendar>
+  </Calendars>
   <Tasks>
   <Task>
     <UID>1</UID>
@@ -18,6 +89,7 @@
     <Milestone>0</Milestone>
     <Active>1</Active>
     <ExternalTask>0</ExternalTask>
+    <CalendarUID>-1</CalendarUID>
     <Start>2026-03-02T08:00:00</Start>
     <Finish>2026-03-06T17:00:00</Finish>
     <ActualStart>2026-03-02T08:00:00</ActualStart>
@@ -44,6 +116,7 @@
     <Milestone>0</Milestone>
     <Active>1</Active>
     <ExternalTask>0</ExternalTask>
+    <CalendarUID>-1</CalendarUID>
     <Start>2026-03-09T08:00:00</Start>
     <Finish>2026-03-13T17:00:00</Finish>
     <ActualStart>2026-03-09T08:00:00</ActualStart>
@@ -76,6 +149,7 @@
     <Milestone>0</Milestone>
     <Active>1</Active>
     <ExternalTask>0</ExternalTask>
+    <CalendarUID>-1</CalendarUID>
     <Start>2026-06-29T08:00:00</Start>
     <Finish>2026-07-03T17:00:00</Finish>
     <ActualStart>2026-06-29T08:00:00</ActualStart>
@@ -100,6 +174,7 @@
     <Milestone>0</Milestone>
     <Active>1</Active>
     <ExternalTask>0</ExternalTask>
+    <CalendarUID>-1</CalendarUID>
     <Start>2026-07-06T08:00:00</Start>
     <Finish>2026-07-10T17:00:00</Finish>
     <Duration>PT40H0M0S</Duration>
@@ -122,6 +197,7 @@
     <Milestone>1</Milestone>
     <Active>1</Active>
     <ExternalTask>0</ExternalTask>
+    <CalendarUID>-1</CalendarUID>
     <Start>2026-07-10T17:00:00</Start>
     <Finish>2026-07-10T17:00:00</Finish>
     <Deadline>2026-07-10T17:00:00</Deadline>

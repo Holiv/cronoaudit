@@ -172,6 +172,40 @@ def main() -> int:
     if "called twice" not in aggregates_note:
         failures.append("cycle: the shared-reference convention is no longer declared")
 
+    # ---- calendars. Leaving them out does not approximate the answer, it invents
+    # one: a real programme had 107 calendars, most tasks on a 9-hour six-day week
+    # while the header said 8 hours over five days.
+    import parse_mspdi
+    pm = parse_mspdi.parse(os.path.join(ROOT, "fixtures", "positive.xml"))
+    cal_block = pm.get("calendars") or {}
+    if cal_block.get("count", 0) < 2:
+        failures.append("calendars: the fixture's calendars were not parsed")
+    in_use = {c["name"]: c for c in cal_block.get("in_use", [])}
+    six = in_use.get("Earthworks six-day")
+    if not six:
+        failures.append("calendars: the six-day calendar is not reported as in use")
+    else:
+        if six["hours_per_day"] != 9.0:
+            failures.append(
+                f"calendars: six-day calendar day length read as {six['hours_per_day']}h, "
+                "not 9h -- durations on it will convert wrongly"
+            )
+        if six["working_days_per_week"] != 6:
+            failures.append("calendars: the six-day working week was not detected")
+        if six["non_working_exceptions"] < 1:
+            failures.append("calendars: the holiday exception was not detected")
+    # UID 13 sits on the six-day calendar and its duration matches the real working
+    # time once the holiday is removed. If it is flagged, the calendar is being
+    # ignored -- this is the negative control for the whole calendar path.
+    g_uids = {f["uid"] for f in pos["findings"]["G"]}
+    if 13 in g_uids:
+        failures.append(
+            "calendars: a consistent activity on a six-day calendar with a holiday was "
+            "flagged as G, so the calendar is not being applied"
+        )
+    if 8 not in g_uids:
+        failures.append("calendars: the genuinely inconsistent duration stopped firing")
+
     # ---- the report must actually render. A valid file that runs to a blank page
     # is the failure mode this guards; see scripts/test_render.js for the real bug.
     rendered = render_checks()
@@ -193,6 +227,7 @@ def main() -> int:
         print("  report render: SKIPPED (node not installed) -- the blank-page guard did not run")
     else:
         print("  report render: both reports executed and produced every expected section")
+    print("  calendars: 9h six-day week and its holiday applied; consistent task not flagged")
     return 0
 
 

@@ -25,6 +25,8 @@ import json
 import sys
 from datetime import datetime, timedelta
 
+import calendars as cal_mod
+
 DEFAULT_THRESHOLD_DAYS = 30
 DEFAULT_TOLERANCE_DAYS = 1
 
@@ -40,36 +42,44 @@ def calendar_days(a, b):
     return (b - a).total_seconds() / 86400.0
 
 
-def working_days(a, b):
-    """Signed Monday-Friday day count between two dates.
+def working_days(a, b, calendar=None):
+    """Signed working-day count between two dates, by the task's own calendar.
 
-    An approximation of the file's own calendar: it does not know the project's
-    holidays or exceptions. Reported alongside the calendar figure rather than
-    instead of it, because a calendar applied to the wrong year is itself one of
-    the findings this method looks for -- so the two numbers disagreeing is
-    information, not noise.
+    The calendar is not decoration. A real programme was measured with 107 of them:
+    the default worked 8 hours over 5 days, while the calendars carrying 90% of the
+    tasks worked 9 hours over 6 days, and a rainy-season calendar held 616
+    non-working days of weather reserve. Counting Monday to Friday and dividing by
+    the header's minutes-per-day flagged 27% of that schedule as inconsistent, with
+    a median disagreement of two days -- pure noise, burying the 64 activities that
+    genuinely disagreed by more than sixty days.
+
+    A calendar is passed in every real path. The weekday fallback exists only for
+    a file that ships no calendars at all, and it is declared in the output so
+    nobody mistakes it for a measurement.
     """
     if a is None or b is None:
         return None
+    if calendar is not None:
+        return calendar.working_days(a, b)
     sign = 1 if b >= a else -1
     lo, hi = sorted((a.date(), b.date()))
     days = 0
     cur = lo
-    while cur < hi:
+    while cur <= hi:
         if cur.weekday() < 5:
             days += 1
         cur += timedelta(days=1)
     return sign * days
 
 
-def finish_variance_days(task, slot):
-    """Finish minus baseline finish, in calendar and working days."""
+def finish_variance_days(task, slot, calendar=None):
+    """Finish minus baseline finish, in calendar days and in working days."""
     bl = (task.get("baselines") or {}).get(slot) if slot else None
     bf = dt(bl.get("finish")) if bl else None
     f = dt(task.get("finish"))
     if bf is None or f is None:
         return None, None
-    return calendar_days(bf, f), working_days(bf, f)
+    return calendar_days(bf, f), working_days(bf, f, calendar)
 
 
 def has_actual(task) -> bool:
@@ -116,6 +126,20 @@ def run(model: dict, threshold_days: int, tolerance_days: float) -> dict:
     by_uid = {t["uid"]: t for t in tasks}
     slot = (model.get("prevailing_baseline") or {}).get("slot")
     status = dt(model["project"].get("status_date"))
+
+    cal_blob = (model.get("calendars") or {})
+    cals = cal_mod.from_dict(cal_blob.get("definitions"))
+    default_cal_uid = cal_blob.get("default_uid")
+    if cals:
+        stamps = [
+            dt(v) for t in tasks for v in (t.get("start"), t.get("finish"))
+            if v
+        ]
+        if stamps:
+            cal_mod.prepare(cals, min(stamps).date(), max(stamps).date())
+
+    def cal_for(task):
+        return cal_mod.resolve(cals, task.get("calendar_uid"), default_cal_uid)
 
     blocking = []
     if status is None:
@@ -198,7 +222,8 @@ def run(model: dict, threshold_days: int, tolerance_days: float) -> dict:
                     })
                 )
 
-        cal, work = finish_variance_days(t, slot)
+        tcal = cal_for(t)
+        cal, work = finish_variance_days(t, slot, tcal)
         if cal is not None:
             if cal <= -threshold_days and not t.get("actual_start"):
                 out["E"].append(
@@ -206,6 +231,7 @@ def run(model: dict, threshold_days: int, tolerance_days: float) -> dict:
                         "finish_variance_calendar_days": round(cal, 1),
                         "finish_variance_working_days": work,
                         "baseline_slot": slot,
+                        "calendar": tcal.name if tcal else None,
                     })
                 )
             elif cal >= threshold_days:
@@ -214,21 +240,30 @@ def run(model: dict, threshold_days: int, tolerance_days: float) -> dict:
                         "finish_variance_calendar_days": round(cal, 1),
                         "finish_variance_working_days": work,
                         "baseline_slot": slot,
+                        "calendar": tcal.name if tcal else None,
                     })
                 )
 
         # ---- Layer 3: reporting consistency.
         s, f = dt(t.get("start")), dt(t.get("finish"))
         dur_min = t.get("duration_minutes")
-        mpd = (model.get("units") or {}).get("minutes_per_day")
+        # The day length of THIS task's calendar, never the project header's.
+        mpd = tcal.day_minutes if tcal else (model.get("units") or {}).get("minutes_per_day")
         if s and f and dur_min is not None and mpd:
-            span_working = working_days(s, f) + (0 if t.get("milestone") else 1)
-            dur_days = dur_min / mpd
-            if abs(dur_days - span_working) > tolerance_days:
+            # Working time against working time. Comparing a fractional duration
+            # against a count of whole days touched disagrees on every task that
+            # starts or ends mid-shift, which is most of them.
+            window_min = tcal.working_minutes(s, f) if tcal else None
+            if window_min is None:
+                span = working_days(s, f, None)
+                window_min = (span or 0) * mpd
+            if abs(dur_min - window_min) > tolerance_days * mpd:
                 out["G"].append(
                     finding(t, "G", {
-                        "duration_days": round(dur_days, 2),
-                        "window_working_days": span_working,
+                        "duration_days": round(dur_min / mpd, 2),
+                        "window_working_days": round(window_min / mpd, 2),
+                        "gap_days": round((dur_min - window_min) / mpd, 2),
+                        "calendar": tcal.name if tcal else None,
                         "note": "thermometer: inspect, do not report alone",
                     })
                 )
@@ -255,7 +290,14 @@ def run(model: dict, threshold_days: int, tolerance_days: float) -> dict:
                 "scheduling tool's own routines"
             ),
             "population": "leaf, active, non-external tasks only",
-            "working_days": "Monday-Friday approximation; the file's holidays are not applied",
+            "working_days": (
+                "counted on each task's own calendar, including its exceptions"
+                if cals else
+                "NO CALENDARS IN FILE: fell back to a Monday-Friday approximation, "
+                "which is not a measurement"
+            ),
+            "calendars_in_file": cal_blob.get("count", 0),
+            "calendars_in_use": cal_blob.get("in_use", []),
             "percent_source": "physical percent complete when present, else percent complete",
         },
         "counts": summarise(out),

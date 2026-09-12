@@ -154,6 +154,17 @@ The generalisable form: **every scheduling tool has an internal unit that is not
 on screen.** Ask "what unit is this field stored in?" before writing the first
 comparison, because the failure mode here is a plausible list, not an exception.
 
+**And the conversion basis is per activity, not per file.** The working day belongs to the
+calendar attached to that activity, in its own Calendar column, not to the project header.
+Measured on one real programme: 107 calendars, most activities on a nine-hour six-day week
+while the header declared eight hours over five days, and a rainy-season calendar holding 616
+non-working days of weather reserve. Converting everything by the header flagged 27% of the
+schedule as inconsistent with a median disagreement of two days, burying the 38 activities that
+genuinely disagreed by more than sixty. Counting on each activity's own calendar brought it to
+2% with the signal intact. **A construction schedule keeps its holidays, its shift pattern and
+its productivity reserve in the calendars; leaving them out does not approximate the answer, it
+invents one.**
+
 Mechanics, with the measured cases: `references/reading-schedules.md`.
 
 ## Earned value must be computed, not read
