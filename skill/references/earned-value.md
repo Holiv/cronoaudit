@@ -8,15 +8,17 @@ from the file, so
     earned value = baseline cost of the prevailing baseline x physical % complete,
                    accumulated to the status date
 
-**Which baseline is prevailing is not declared by the file.** Derive it: the highest-numbered
-slot with any leaf activity carrying cost above zero, with summary rows and external tasks
-excluded from the vote. Getting this wrong is datum case #1 and moves the figure by more than
-half its value while looking entirely normal.
+**Which baseline is prevailing cannot be read from the file** — the accessor returns 0 in
+every file, so the natural null guard passes and the code silently adopts slot 0. Derive it
+instead: the highest-numbered slot with any leaf activity carrying cost above zero, with
+summary rows and external tasks excluded from the vote.
 
-**The output of this formula has not been reconciled against the tool's own earned value**,
-because the tool does not expose it comparably. Baseline cost and a legacy extraction were
-reconciled to the cent; earned value was not. Right mechanism, unproven output — state it
-that way.
+Getting this wrong is datum case #1. Measured: a parser fixed on slot 0, against a schedule
+whose live baseline was in slot 1, zeroed an entire phase's earned value and reported 8.95%
+progress where the correct figure was 19.93%.
+
+**The formula itself was reconciled to the cent** against what the tool displays, on both
+phases, in a verification recorded at the time.
 
 **Also beware the manually-entered percent complete.** Percent complete can be typed by a
 person rather than derived from the work done. When it is, it is a declaration, not a

@@ -83,3 +83,35 @@ material matched the source tool and the previously correct one **kept** matchin
 That second half is the test that matters. **A correction that fixes one case without
 breaking the other** is the evidence; a tool only tested where the answer was already known
 has not been tested.
+
+## Appendix: what this family did to its own record
+
+Worth keeping, because it is the method turned on itself.
+
+Case #1 — earned value on the wrong baseline slot — has now been written **five times**, and
+the middle versions were wrong with increasing confidence:
+
+1. *"The library does not expose the setting."* False; the getter exists.
+2. *"It exposes it, but the reader never populates it, so test for non-null."* Right in the
+   first half. The second half was **inference presented as measurement**, from a static
+   search.
+3. *"It returns 0, not null."* Measured, across six schedules by two parties. Correct.
+4. *"The 0 belonged to a different family of fields, and the formula was never reconciled
+   against the tool."* Asserted from memory by the party that had originally measured it.
+   It propagated: a downstream knowledge base downgraded a `measured` topic to `reported`
+   on the strength of it.
+5. **The dated record was read.** Version 3 was right, and the formula *had* been reconciled
+   to the cent. Version 4 was a false memory, and the downgrade had to be undone.
+
+Three things to take from it:
+
+- **"I do not remember measuring that" is not "it was not measured."** Before contradicting
+  a recorded claim, find the record. The party most likely to misremember a measurement is
+  the one who made it, because they remember the reasoning and not the artefact.
+- **A claim that survives being wrong twice is not thereby right the third time** — and,
+  symmetrically, a correction from an authoritative source is not right either. Version 4
+  came from the most credible possible source and was still false.
+- **A retraction travels slower than the claim.** The downgrade reached the knowledge base
+  within the hour; undoing it needed someone to go and read a dated file. Build the citation
+  into the claim, so the next reader does not have to trust anybody's memory — which is the
+  whole reason provenance labels exist.

@@ -59,47 +59,54 @@ the whole file went to slot 1, saved later.
 Which slot feeds the earned-value calculation is **a setting of the file**, defaulting to
 slot 0.
 
-### Determine the prevailing slot from the data, not from a field
+### The accessor returns 0, not null — and that is worse
 
-`reported`, and this **corrects an earlier version of this document.** Which slot feeds the
-earned-value calculation is a setting of the file, defaulting to slot 0 — but do not try to
-read it. Determine it:
+`measured`. Which slot feeds the earned-value calculation is a setting of the file,
+defaulting to slot 0. The library exposes a getter for it. **Do not trust it:** it returns
+**`0`, constant, in every file** — measured across six real schedules by two independent
+parties, of sizes from tens to over a thousand tasks, with control fields populated on the
+same object to rule out a failed read.
+
+Why zero is worse than null. The natural defence writes itself:
+
+```
+if (v != null) useSlot(v);
+```
+
+**With null that guard protects. With zero it passes** — the code adopts slot 0 on every
+file, convinced the file said so. And the wrong number arrives carrying the sentence *"the
+file declares slot 0"*: false, and convincing. Borrowed authority is worse than an
+unexplained error.
+
+**The lesson that generalises:** an accessor returning a **plausible default** instead of
+null **disarms the check that would otherwise exist naturally.** Null shouts; zero passes.
+It holds for any API where 0, empty string, `false` or "today" are legitimate domain values
+— you cannot distinguish "unknown" from "this is it" when both have the same representation.
+
+**The one-line test, with the right criterion:** not *"did it return non-null?"* but **"did
+it return something other than 0 on at least one file known to use a different slot?"**
+While the answer is always 0, the field carries no information — and a future library
+version could start populating it without any signature changing.
+
+Note that a **different** family of fields has the same trap, and confusing the two is easy:
+custom numeric fields that were never configured also return 0 from every one,
+indistinguishable from a real zero. Same lesson, different object. Naming the object matters,
+because the defence differs.
+
+### So determine the prevailing slot from the data
+
+`reported`. Since the declared setting carries no information, derive it:
 
 **The prevailing baseline is the highest-numbered slot with any leaf activity whose cost is
-greater than zero.** Summary rows and external tasks do not vote. They carry rolled-up or
+greater than zero.** Summary rows and external tasks do not vote — they carry rolled-up or
 foreign values, and letting them vote elects a slot that holds nothing.
 
-An earlier version of this document claimed the accessor for that setting returns `0`
-instead of `null`, and built the lesson on that. **The attribution was wrong.** The
-`0`-instead-of-`null` trap is real and was measured, but it belongs to **custom numeric
-fields that were never configured** — a schedule where nobody populated them returns 0 from
-every one, indistinguishable from a real zero.
+This is the defence adopted in production precisely because the accessor cannot be trusted.
+It complements the measurement above rather than replacing it.
 
-The lesson survives the correction, and applies wherever you meet it:
-
-**An accessor returning a plausible default instead of null disarms the check that would
-otherwise exist naturally.** The natural defence writes itself:
-
-```
-if (v != null) use(v);
-```
-
-**With null that guard protects. With zero it passes** — and the wrong value arrives
-carrying the sentence *"the file says so"*. False, and convincing. Borrowed authority is
-worse than an unexplained error. It holds for any API where 0, empty string, `false` or
-"today" are legitimate domain values: you cannot distinguish "unknown" from "this is it"
-when both have the same representation.
-
-**The test, with the right criterion:** not *"did it return non-null?"* but **"did it return
-something other than the default on at least one case known to differ?"** While the answer
-is always the default, the field carries no information.
-
-And the correction itself is the more useful lesson. Two earlier versions of this claim were
-wrong, each confidently. The sequence: first *"the library does not expose the setting"*
-(false, the getter exists); then *"it exposes it but the reader never populates it"*
-(inferred from a static search, not measured); then a measured zero attributed to the wrong
-family of fields. **A claim that survives being wrong twice is not thereby right the third
-time.** Carry the label.
+What getting it wrong costs, measured: a parser that always used slot 0 on a schedule whose
+live baseline sat in slot 1 produced **zero** earned value for an entire phase, and overall
+progress read 8.95% where the correct figure was 19.93%.
 
 ## The calculated fields are not in the file
 
@@ -113,16 +120,15 @@ a library must compute:
 
     earned value = baseline cost x physical % complete
 
-`reported`, and **narrower than an earlier version of this document claimed.** What was
-reconciled to the cent was **baseline cost and a legacy extraction — not earned value**,
-which the tool does not expose in a comparable form. So the mechanism is right and the
-output is unproven. Say that, rather than lending the figure the authority of a match that
-was about something else.
+`measured`. In the measured case that formula matched what the tool displays **to the cent**,
+on both phases of the schedule, in a verification recorded at the time against the figures a
+person read off the screen. That is the kind of reconciliation worth doing once and never
+arguing about again.
 
-Note also that **physical percent complete is a business rule**, not a definition. Another
-organisation weights by cost, by quantity, or by a regulator's schedule. And percent
-complete can be typed by a person rather than derived, in which case it is a declaration
-and earned value inherits that.
+Note that **physical percent complete is a business rule**, not a definition. Another
+organisation weights by cost, by quantity, or by a regulator's schedule. And percent complete
+can be typed by a person rather than derived, in which case it is a declaration and earned
+value inherits that.
 
 ## Material resources
 
