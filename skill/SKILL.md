@@ -69,6 +69,13 @@ activities, execution index — implemented and labelled as such, not certified,
 about the two a file cannot answer. Read Q1, Q2, Q5 and Q7 before any date.
 `references/network-quality.md`.
 
+**Looking forward.** Earned Schedule turns schedule performance into time — the date the plan
+reached today's earned value, an efficiency, an independent finish, and the efficiency the
+remainder needs — with its limits stated: aggregate, cost-weighted, blind to the critical path,
+set beside the schedule's own finish and never in its place. Plus the look-ahead, practised
+against required pace by group, milestone bands from observed slippage, and rainy-season
+exposure of what remains. `references/forecast.md`.
+
 **What you must have in hand** before either is worth starting: a status date, a saved
 baseline, and for the comparison the previous cycle's file. Fields the checks read must be
 populated — and a field left empty is itself a reportable finding, not a reason to skip the

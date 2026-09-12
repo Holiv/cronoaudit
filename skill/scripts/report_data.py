@@ -154,7 +154,7 @@ def discovered_columns(model, grouping: dict, L: dict) -> list:
 
 
 def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None,
-                 productivity=None, quality=None) -> dict:
+                 productivity=None, quality=None, forecast=None) -> dict:
     detected = i18n.detect(model)
     lang = lang or detected["lang"]
     L = i18n.ui(lang)
@@ -408,6 +408,7 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
         "scurve": phasing,
         "productivity": productivity,
         "quality": localize_quality(quality, lang) if quality else None,
+        "forecast": forecast,
     }
 
 

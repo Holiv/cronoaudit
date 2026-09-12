@@ -307,6 +307,7 @@ function renderReview(d){
   if(d.calendars&&d.calendars.length) views.push({cod:"V5",tt:L.calendars_title,sub:"",id:"v5"});
   if(d.productivity) views.push({cod:"V6",tt:L.prod_title,sub:"",id:"v6"});
   if(d.quality) views.push({cod:"V7",tt:L.quality_title,sub:"",id:"v7"});
+  if(d.forecast) views.push({cod:"V8",tt:L.fc_title,sub:"",id:"v8"});
   out.push(`<section id="indice"><div class="sec-h"><span class="eyebrow">${esc(L.roteiro)}</span><h2>${esc(L.index)}</h2></div>
     <p class="sec-d">${esc(L.index_sub)}</p><nav class="indice">
     ${views.map(v=>`<a href="#${v.id}"><span class="cod">${v.cod}</span><span class="tt">${esc(v.tt)}${v.sub?`<small>${esc(v.sub)}</small>`:""}</span><span class="qtd"></span><span class="sev vs">${esc(d.labels.severity_view||"")}</span></a>`).join("")}
@@ -414,6 +415,62 @@ function renderReview(d){
         ${mt.items&&mt.items.length?`<details><summary>${esc(fill(L.show_items,{n:n(mt.items.length)}))}</summary>${table(Object.keys(mt.items[0]).filter(k=>k!=="uid").map(k=>({label:k,key:k})),mt.items)}</details>`:""}
       </div></div>`).join("")}
     </section>`);
+  }
+
+  if(d.forecast){
+    const F=d.forecast, E=F.earned_schedule||{}, LA=F.lookahead||[], RG=F.rates_by_group||[], MB=F.milestone_bands||{}, RX=F.rain_exposure||{};
+    const tv={recoverable:L.tspi_recoverable,hard:L.tspi_hard,unrecoverable:L.tspi_unrecoverable};
+    out.push(`<section id="v8"><div class="sec-h"><span class="eyebrow">V8</span><h2>${esc(L.fc_title)}</h2></div><p class="sec-d">${esc(L.fc_sub)}</p>`);
+    if(E.available){
+      out.push(`<h3 style="font-size:16px;margin:10px 0 8px">${esc(L.es_title)}</h3><div class="tiles">
+        <div class="tile pd"><div class="c">${esc(L.es_es)}</div><div class="v" style="font-size:22px">${esc(E.es_date)}</div><div class="t">${esc(L.es_es_cap)}</div></div>
+        <div class="tile ${E.sv_t_days<0?"al":"vs"}"><div class="c">${esc(L.es_sv)}</div><div class="v">${n(E.sv_t_days,0)}</div><div class="t">${esc(L.es_sv_cap)}</div></div>
+        <div class="tile ${E.spi_t<1?"al":"vs"}"><div class="c">${esc(L.es_spi)}</div><div class="v">${n(E.spi_t,3)}</div><div class="t">${esc(L.es_spi_cap)}</div></div>
+        <div class="tile cr"><div class="c">${esc(L.es_ieac)}</div><div class="v" style="font-size:22px">${esc(E.ieac_t_date)}</div><div class="t">${esc(L.es_ieac_cap)} · ${esc(L.es_schedule)} ${esc(E.schedule_finish)} · ${esc(L.es_planned)} ${esc(E.planned_finish)}</div></div>
+        <div class="tile ${E.tspi_verdict==="recoverable"?"vs":(E.tspi_verdict==="hard"?"al":"cr")}"><div class="c">${esc(L.es_tspi)}</div><div class="v">${n(E.tspi,3)}</div><div class="t">${esc(L.es_tspi_cap)} · ${esc(tv[E.tspi_verdict]||"")}</div></div>
+      </div>
+      ${E.gap_vs_schedule_days!=null?`<div class="note"><b>${esc(L.warning)}</b> ${esc(fill(L.es_gap,{n:n(E.gap_vs_schedule_days)}))}</div>`:""}
+      <p class="fonte"><b>${esc(L.es_limits)}</b> ${esc(E.limits)}</p>`);
+    }
+    if(LA.length){
+      out.push(`<h3 style="font-size:16px;margin:18px 0 8px">${esc(L.la_title)}</h3>`);
+      LA.forEach(w=>{
+        out.push(`<div class="achado"><div class="barra"></div><div class="achado-in">
+          <div class="achado-top"><span class="cod">${esc(fill(L.la_window,{w:w.weeks,a:w.from,b:w.to}))}</span>
+            <span class="sev ${w.reachable===false?"al":"vs"}">${w.reachable==null?"":(w.reachable?esc(L.la_reachable):esc(L.la_not_reachable))}</span></div>
+          <div class="tiles">
+            <div class="tile"><div class="c">${esc(L.la_start)}</div><div class="v">${n(w.must_start)}</div></div>
+            <div class="tile"><div class="c">${esc(L.la_finish)}</div><div class="v">${n(w.must_finish)}</div></div>
+            <div class="tile pd"><div class="c">${esc(L.la_planned)}</div><div class="v">${n(w.planned_earning_pct,2)}%</div><div class="t">${n(w.planned_earning,0)}</div></div>
+            <div class="tile ${w.reachable===false?"al":"vs"}"><div class="c">${esc(L.la_projected)}</div><div class="v">${n(w.projected_pct,2)}%</div><div class="t">${n(w.projected_earning_at_practised_rate,0)}</div></div>
+          </div>
+          ${table([{label:L.col_group,key:"group"},{label:L.col_starts,key:"starts"},{label:L.col_finishes,key:"finishes"},{label:L.col_weight_pct,key:"weight_pct"}],w.by_group)}
+          <details style="margin-top:8px"><summary>${esc(fill(L.show_items,{n:n(w.starts.length+w.finishes.length)}))}</summary>
+            ${table([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_group,key:"group"},{label:L.col_start,key:"start"},{label:L.col_weight_pct,key:"weight_pct"}],w.starts)}
+            ${table([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_group,key:"group"},{label:L.col_finish,key:"finish"},{label:L.col_weight_pct,key:"weight_pct"}],w.finishes)}</details>
+        </div></div>`);
+      });
+    }
+    if(RG.length){
+      const rv={"on pace":L.rg_on_pace,"stretch":L.rg_stretch,"out of reach":L.rg_out};
+      out.push(`<h3 style="font-size:16px;margin:18px 0 8px">${esc(L.rg_title)}</h3><p class="sec-d">${esc(L.rg_sub)}</p>
+        ${table([{label:L.col_group,key:"group"},{label:L.col_weight_pct,key:"_w"},{label:L.col_earned_pct_cum,key:"earned_pct"},{label:L.col_planned_pct,key:"planned_pct"},
+          {label:L.col_practised,key:"practised_pct_per_week"},{label:L.col_required,key:"required_pct_per_week"},{label:L.col_fin_baseline,key:"baseline_finish"},
+          {label:L.col_weeks_left,key:"weeks_left"},{label:L.col_ratio,key:"ratio_required_over_practised"},{label:L.col_verdict,key:"_v"}],
+          RG.map(r=>({...r,_w:d.scurve&&d.scurve.bac?Math.round(r.bac/d.scurve.bac*10000)/100:null,_v:rv[r.verdict]||""})))}`);
+    }
+    if(MB.milestones&&MB.milestones.length){
+      out.push(`<h3 style="font-size:16px;margin:18px 0 8px">${esc(L.mb_title)}</h3><p class="sec-d">${esc(fill(L.mb_sub,{a:n(MB.p50_days),b:n(MB.p80_days),n:n(MB.sample)}))}</p>
+        ${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_fin_baseline,key:"baseline_finish"},{label:L.col_fin_trend,key:"finish"},{label:L.col_slip_now,key:"slip_now_days"},{label:L.col_p50,key:"p50"},{label:L.col_p80,key:"p80"},{label:L.col_deadline,key:"deadline"},{label:L.col_critical,key:"critical"}],MB.milestones,MB.milestones.length)}`);
+    }
+    if(RX.available){
+      out.push(`<h3 style="font-size:16px;margin:18px 0 8px">${esc(L.rx_title)}</h3><p class="sec-d">${esc(fill(L.rx_sub,{rule:RX.reserve_rule}))}</p>
+        <div class="tiles"><div class="tile al"><div class="c">${esc(L.rx_now)}</div><div class="v">${n(RX.share_in_reserve_pct,1)}%</div><div class="t">${n(RX.in_reserve,0)} / ${n(RX.remaining_total,0)}</div></div>
+        <div class="tile cr"><div class="c">${esc(L.rx_shift)}</div><div class="v">${n(RX.share_if_slips_30_days_pct,1)}%</div><div class="t"></div></div></div>
+        ${chart((RX.months||[]).map(x=>({label:x.period,value:x.share_in_reserve})),{cls:"warn",fmt:v=>n(v,1)+"%"})}
+        <p class="fonte">${esc(RX.basis)}</p>`);
+    }
+    out.push(`</section>`);
   }
 
   out.push(`<section><div class="sec-h"><span class="eyebrow">${esc(L.findings)}</span><h2>${esc(L.findings)}</h2></div>

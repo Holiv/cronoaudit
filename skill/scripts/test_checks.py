@@ -64,7 +64,7 @@ def compare_cycle():
 REVIEW_SECTIONS = [
     "How to read these numbers", "Index", "Progress by", "Starts per month",
     "S-curve from the file", "<polyline", "Productivity and trend by resource",
-    "Network quality", "Baseline execution index",
+    "Network quality", "Baseline execution index", "Looking forward", "Earned Schedule",
     "Finish variance against baseline", "Total float", "Problem",
     "To reproduce in the scheduling tool", "Conventions this report used",
 ]
@@ -493,6 +493,42 @@ def main() -> int:
         if mtr["threshold_pct"] is not None and mtr["population"] and mtr["status"] not in ("pass", "fail"):
             failures.append(f"quality: {mtr['code']} has a threshold and a population but no status")
 
+    # ---- looking forward. Earned Schedule from the phased curve, with its limits;
+    # look-ahead windows; rates by group; milestone bands; rain exposure.
+    import forecast as forecast_mod
+    fc = forecast_mod.build(pm, curve, prod, None)
+    E = fc["earned_schedule"]
+    if not E.get("available"):
+        failures.append(f"forecast: earned schedule not available: {E.get('reason')}")
+    else:
+        for k in ("es_date", "spi_t", "ieac_t_date", "tspi", "sv_t_days", "planned_finish"):
+            if E.get(k) is None:
+                failures.append(f"forecast: earned schedule lacks {k}")
+        if E.get("spi_t") is not None and not (0 < E["spi_t"] < 5):
+            failures.append(f"forecast: SPI(t) {E['spi_t']} out of any plausible range")
+        # ES cannot be later than the status date when EV <= PV, and the sign of
+        # SV(t) must agree with EV against PV.
+        if E["ev_pct"] <= E["pv_pct"] and E["sv_t_days"] > 0:
+            failures.append("forecast: SV(t) positive while earned is below planned")
+        if not E.get("limits"):
+            failures.append("forecast: the aggregate-measure limits are not declared")
+    LA = fc["lookahead"]
+    if len(LA) != 2 or LA[0]["weeks"] != 4 or LA[1]["weeks"] != 8:
+        failures.append("forecast: look-ahead windows are not 4 and 8 weeks")
+    elif LA[1]["must_start"] + LA[1]["must_finish"] < 1:
+        failures.append("forecast: the 8-week window found nothing to start or finish in a fixture "
+                        "with July activities")
+    MB = fc["milestone_bands"]
+    if MB.get("sample", 0) < 1 or not MB.get("milestones"):
+        failures.append("forecast: milestone bands were not built from the slippage sample")
+    else:
+        m0 = MB["milestones"][0]
+        if m0["p80"] < m0["p50"] or m0["p50"] < m0["finish"]:
+            failures.append("forecast: milestone band is not ordered finish <= P50 <= P80")
+    RX = fc["rain_exposure"]
+    if not RX.get("available") or RX.get("share_in_reserve_pct") is None:
+        failures.append("forecast: rain exposure not computed although calendars exist")
+
     # ---- the report must actually render. A valid file that runs to a blank page
     # is the failure mode this guards; see scripts/test_render.js for the real bug.
     rendered = render_checks()
@@ -522,6 +558,7 @@ def main() -> int:
     print("  phasing: blocks equal cost and BCWS on every task; sentinel dropped; curve rendered")
     print("  productivity: quantities from the ISO hours, three rates, projection and verdicts")
     print("  quality: fourteen metrics with controls; Q12 and Q13 declared not computable")
+    print("  forecast: earned schedule, look-ahead, rates, milestone bands, rain exposure")
     return 0
 
 

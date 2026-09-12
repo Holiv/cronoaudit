@@ -159,6 +159,11 @@ labelled as an implementation rather than a certification and honest about the t
 file cannot answer. A fifth file, `<name>-review-quality.json`, carries every metric with its
 items. Method: `references/network-quality.md`.
 
+**Looking forward** gives Earned Schedule with its limits stated, a four- and eight-week
+look-ahead, practised against required pace by group, milestone bands from the slippage already
+observed, and exposure of the remaining cost to the calendars' rainy-season reserve. A sixth
+file, `<name>-review-forecast.json`. Method and formulas: `references/forecast.md`.
+
 ### Read it in this order, and the report is laid out to enforce it
 
 1. **The blocking notices, if any.** No status date means every adherence check is measured

@@ -29,6 +29,7 @@ import parse_mspdi  # noqa: E402
 import phasing as phasing_mod  # noqa: E402
 import resources as resources_mod  # noqa: E402
 import network_quality as quality_mod  # noqa: E402
+import forecast as forecast_mod  # noqa: E402
 import report_data  # noqa: E402
 import report_html  # noqa: E402
 import run_checks  # noqa: E402
@@ -125,6 +126,10 @@ def do_review(model, path, outdir, threshold, tolerance, quiet,
         prod = resources_mod.build(src, model)
     quality = quality_mod.build(model, src if (src and src.lower().endswith(".xml")
                                               and os.path.exists(src)) else None)
+    fc = None
+    if curve is not None:
+        grp = report_data.resolve_grouping(model, grouping)
+        fc = forecast_mod.build(model, curve, prod, grp.get("field_id"))
     base = os.path.join(outdir, f"{stem(path)}-review")
     with open(base + ".json", "w", encoding="utf-8") as fh:
         json.dump(res, fh, indent=2, ensure_ascii=False)
@@ -132,7 +137,10 @@ def do_review(model, path, outdir, threshold, tolerance, quiet,
     effective_lang = lang or i18n.detect(model)["lang"]
     payload = report_data.build_review(model, res, theme=theme, grouping=grouping,
                                        lang=effective_lang, phasing=curve,
-                                       productivity=prod, quality=quality)
+                                       productivity=prod, quality=quality, forecast=fc)
+    if fc is not None:
+        with open(base + "-forecast.json", "w", encoding="utf-8") as fh:
+            json.dump(fc, fh, indent=2, ensure_ascii=False)
     with open(base + "-quality.json", "w", encoding="utf-8") as fh:
         json.dump(quality, fh, indent=2, ensure_ascii=False)
     if curve is not None:

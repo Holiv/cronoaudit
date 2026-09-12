@@ -266,6 +266,48 @@ UI = {
     "en": {
         "review_title": "Schedule integrity review",
         "chip_title": "Schedule critical analysis",
+        "fc_title": "Looking forward",
+        "fc_sub": "Five readings from data the file already carries. Earned Schedule asks on "
+                  "what date the planned curve reached the value earned today; that date, set "
+                  "against the elapsed time, gives a schedule efficiency and an independent "
+                  "finish that is compared with the schedule's own, never used in its place. "
+                  "The look-ahead says what the next weeks demand. The rates say where the "
+                  "practised pace does not reach the required one. The milestone bands apply "
+                  "the slippage this snapshot has already shown. The rain exposure says how "
+                  "much of what remains sits in months the calendars reserve for bad weather.",
+        "es_title": "Earned Schedule",
+        "es_es": "Earned Schedule", "es_es_cap": "date the plan reached today's earned value",
+        "es_sv": "SV(t)", "es_sv_cap": "days behind the plan, in time",
+        "es_spi": "SPI(t)", "es_spi_cap": "schedule efficiency to date",
+        "es_ieac": "IEAC(t)", "es_ieac_cap": "independent finish at this efficiency",
+        "es_tspi": "TSPI", "es_tspi_cap": "efficiency the remainder needs to finish as planned",
+        "es_schedule": "Schedule's own finish", "es_planned": "Planned finish",
+        "es_gap": "The independent finish lands {n} days from the schedule's own finish. The "
+                  "gap is the conversation: either the logic is optimistic, or the remainder "
+                  "will run at a pace not yet seen.",
+        "es_limits": "Limits.",
+        "tspi_recoverable": "recoverable", "tspi_hard": "hard", "tspi_unrecoverable": "unrecoverable in practice",
+        "la_title": "Look-ahead", "la_window": "{w} weeks, {a} to {b}",
+        "la_start": "Must start", "la_finish": "Must finish", "la_planned": "Planned earning",
+        "la_projected": "At the practised rate", "la_reachable": "reachable", "la_not_reachable": "not reachable",
+        "col_starts": "Starts", "col_finishes": "Finishes", "col_start": "Start",
+        "rg_title": "Practised pace against required pace, by group",
+        "rg_sub": "Earned percent per week to date, against the percent per week the remainder "
+                  "needs to land on the group's baseline finish. One number per group says "
+                  "whether there is time.",
+        "col_practised": "Practised %/wk", "col_required": "Required %/wk", "col_ratio": "Required ÷ practised",
+        "col_weeks_left": "Weeks left", "rg_on_pace": "on pace", "rg_stretch": "stretch", "rg_out": "out of reach",
+        "mb_title": "Milestones with a confidence band",
+        "mb_sub": "The distribution of finish slippage already observed in this snapshot, "
+                  "applied to each future milestone's current finish: P50 {a} days, P80 {b} "
+                  "days, from {n} activities. Not a simulation with an invented premise.",
+        "col_slip_now": "Slip now (d)", "col_p50": "P50", "col_p80": "P80", "col_deadline": "Deadline",
+        "col_critical": "Critical",
+        "rx_title": "Exposure to the rainy season",
+        "rx_sub": "Remaining cost spread over each activity's current span, read against the "
+                  "months its own calendar reserves for bad weather ({rule}).",
+        "rx_now": "In reserve months now", "rx_shift": "If everything slips 30 days",
+        "col_remaining": "Remaining", "col_in_reserve": "In reserve", "col_share_reserve": "Share",
         "quality_title": "Network quality",
         "quality_sub": "Does this schedule hold up as a model, before any date is discussed? "
                        "The mechanical metrics of the DCMA 14-point assessment, each with its "
@@ -525,6 +567,48 @@ UI = {
     "pt": {
         "review_title": "Análise crítica de cronograma",
         "chip_title": "Análise crítica de cronograma",
+        "fc_title": "Olhando para frente",
+        "fc_sub": "Cinco leituras a partir de dados que o arquivo já carrega. Earned Schedule "
+                  "pergunta em que data a curva de previsto alcançou o valor agregado de hoje; "
+                  "essa data, contra o tempo decorrido, dá uma eficiência de prazo e um término "
+                  "independente que se compara com o do próprio cronograma, nunca o substitui. "
+                  "O look-ahead diz o que as próximas semanas exigem. Os ritmos dizem onde o "
+                  "praticado não alcança o necessário. As faixas de marco aplicam o escorregão "
+                  "que este snapshot já mostrou. A exposição à chuva diz quanto do remanescente "
+                  "cai em meses que os calendários reservam para o tempo ruim.",
+        "es_title": "Earned Schedule",
+        "es_es": "Earned Schedule", "es_es_cap": "data em que o plano alcançou o realizado de hoje",
+        "es_sv": "SV(t)", "es_sv_cap": "dias atrás do plano, em tempo",
+        "es_spi": "SPI(t)", "es_spi_cap": "eficiência de prazo até a data",
+        "es_ieac": "IEAC(t)", "es_ieac_cap": "término independente nesta eficiência",
+        "es_tspi": "TSPI", "es_tspi_cap": "eficiência que o restante precisa para terminar no previsto",
+        "es_schedule": "Término do próprio cronograma", "es_planned": "Término previsto",
+        "es_gap": "O término independente cai a {n} dias do término do próprio cronograma. A "
+                  "diferença é a conversa: ou a lógica está otimista, ou o restante vai rodar "
+                  "num ritmo que ainda não aconteceu.",
+        "es_limits": "Limites.",
+        "tspi_recoverable": "recuperável", "tspi_hard": "difícil", "tspi_unrecoverable": "irrecuperável na prática",
+        "la_title": "Look-ahead", "la_window": "{w} semanas, de {a} a {b}",
+        "la_start": "Devem iniciar", "la_finish": "Devem terminar", "la_planned": "Medição prevista",
+        "la_projected": "No ritmo praticado", "la_reachable": "alcançável", "la_not_reachable": "não alcançável",
+        "col_starts": "Inícios", "col_finishes": "Términos", "col_start": "Início",
+        "rg_title": "Ritmo praticado contra necessário, por grupo",
+        "rg_sub": "Percentual agregado por semana até a data, contra o percentual por semana "
+                  "que o restante precisa para cair no término de linha de base do grupo. Um "
+                  "número por grupo diz se dá tempo.",
+        "col_practised": "Praticado %/sem", "col_required": "Necessário %/sem", "col_ratio": "Necessário ÷ praticado",
+        "col_weeks_left": "Semanas restantes", "rg_on_pace": "no ritmo", "rg_stretch": "esticado", "rg_out": "fora de alcance",
+        "mb_title": "Marcos com faixa de confiança",
+        "mb_sub": "A distribuição de escorregão de término já observada neste snapshot, "
+                  "aplicada ao término atual de cada marco futuro: P50 {a} dias, P80 {b} dias, "
+                  "de {n} atividades. Não é simulação com premissa inventada.",
+        "col_slip_now": "Escorregão hoje (d)", "col_p50": "P50", "col_p80": "P80", "col_deadline": "Data limite",
+        "col_critical": "Crítico",
+        "rx_title": "Exposição ao período chuvoso",
+        "rx_sub": "Custo remanescente distribuído pela janela atual de cada atividade, lido "
+                  "contra os meses que o calendário dela reserva para o tempo ruim ({rule}).",
+        "rx_now": "Em meses de reserva hoje", "rx_shift": "Se tudo escorregar 30 dias",
+        "col_remaining": "Remanescente", "col_in_reserve": "Em reserva", "col_share_reserve": "Parcela",
         "quality_title": "Qualidade da rede",
         "quality_sub": "Este cronograma se sustenta como modelo, antes de qualquer discussão de "
                        "data? As métricas mecânicas do modelo DCMA de 14 pontos, cada uma com "

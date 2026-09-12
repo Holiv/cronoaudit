@@ -443,6 +443,13 @@ def positive():
                   start="2026-07-13T08:00:00", finish="2026-07-29T17:00:00", dur_hours=120,
                   preds=[(1, 1, 0)]))
 
+    # 29: a FUTURE milestone, already slipped 15 days against its baseline, so the
+    # confidence band and the look-ahead have something ahead of the status date.
+    t.append(task(29, 29, "Future contractual milestone", milestone=True,
+                  start="2026-09-30T17:00:00", finish="2026-09-30T17:00:00", dur_hours=0,
+                  baseline=("2026-09-15T17:00:00", "2026-09-15T17:00:00", 0.0, 0),
+                  preds=[(27, 1, 0)]))
+
     # --- New network rules, each with its own control ---
     # 14 -> 15: FS with a 2-day LEAD (negative lag). The predecessor finished one
     # working day after the successor started, which the lead allows. Must NOT be A1.
