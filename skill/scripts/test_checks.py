@@ -63,7 +63,7 @@ def compare_cycle():
 
 REVIEW_SECTIONS = [
     "How to read these numbers", "Index", "Progress by", "Starts per month",
-    "S-curve from the file", "<polyline",
+    "S-curve from the file", "<polyline", "Productivity and trend by resource",
     "Finish variance against baseline", "Total float", "Problem",
     "To reproduce in the scheduling tool", "Conventions this report used",
 ]
@@ -407,6 +407,55 @@ def main() -> int:
     if any(p["earned_cum"] is not None for p in curve["periods"] if p["period"] > "2026-06"):
         failures.append("phasing: earned values appear after the status month")
 
+    # ---- productivity from the file's own assignments. Quantities are hours of
+    # an ISO duration; three rates; four dates; three verdicts.
+    import resources as resources_mod
+    prod = resources_mod.build(os.path.join(ROOT, "fixtures", "positive.xml"), pm)
+    by_res = {r["name"]: r for r in prod["resources"]}
+    cut = by_res.get("Earthworks cut")
+    if not cut:
+        failures.append("productivity: the material resource was not read")
+    else:
+        if abs(cut["planned_qty"] - 3500.0) > 0.01:
+            failures.append(f"productivity: planned quantity {cut['planned_qty']} != 3500 -- the "
+                            "hours-of-duration encoding was misread")
+        if abs(cut["executed_qty"] - 1200.0) > 0.01:
+            failures.append(f"productivity: executed quantity {cut['executed_qty']} != 1200")
+        if not cut["rate_global"] or not (50 < cut["rate_global"] < 200):
+            failures.append(f"productivity: global rate {cut['rate_global']} not between the two "
+                            "activities' own rates")
+    acts = {a["id"]: a for a in prod["activities"]}
+    a22 = acts.get(22)
+    if not a22:
+        failures.append("productivity: the in-progress activity was not projected")
+    else:
+        # 400 executed over the working days ELAPSED since the actual start (17 to
+        # 30 June on a five-day week: ten days, two of them without production), so
+        # 40 a day, not the 50 a day the daily blocks show on the days work happened.
+        # The practised rate includes the days nothing came out; that is the point.
+        if not a22["rate_own"] or abs(a22["rate_own"] - 40.0) > 0.5:
+            failures.append(f"productivity: own rate {a22['rate_own']} != 40 per working day")
+        if a22["executed_source"] != "actual":
+            failures.append("productivity: an entered quantity was labelled as inferred")
+        if not a22["projected_own"] or not a22["verdict_own"]:
+            failures.append("productivity: no projection or verdict on the in-progress activity")
+        if not a22["finish_late"] or not a22["finish_baseline"]:
+            failures.append("productivity: the four dates are incomplete")
+        # 800 m3 left at 40 a day is 20 working days from 30/06, landing late July.
+        # Trend is 03/07 and baseline 30/06, both passed; the late finish is
+        # 03/07 plus 28 calendar days, 31/07, not yet passed. So: the baseline is
+        # missed and the float absorbs it -- with a few days of float to spare.
+        if a22["verdict_own"] != "baseline_delay":
+            failures.append(f"productivity: own-rate verdict {a22['verdict_own']}, expected "
+                            "baseline_delay")
+        if a22.get("days_of_float_left_global") is None:
+            failures.append("productivity: days of float left were not computed")
+    a24 = acts.get(24)
+    if not a24 or a24["executed_source"] != "inferred":
+        failures.append("productivity: executed quantity derived from percent was not flagged inferred")
+    if prod["summary"]["assignments_unassigned"] < 1:
+        failures.append("productivity: the unassigned (-1) assignment was not counted")
+
     # ---- the report must actually render. A valid file that runs to a blank page
     # is the failure mode this guards; see scripts/test_render.js for the real bug.
     rendered = render_checks()
@@ -434,6 +483,7 @@ def main() -> int:
     print("  network: lead honoured, both-complete ignored and recorded, SS lag violation caught")
     print("  reconciliation: file BCWP read, ahead-of-baseline classified, no unexplained gap")
     print("  phasing: blocks equal cost and BCWS on every task; sentinel dropped; curve rendered")
+    print("  productivity: quantities from the ISO hours, three rates, projection and verdicts")
     return 0
 
 

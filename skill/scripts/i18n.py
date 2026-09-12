@@ -266,6 +266,36 @@ UI = {
     "en": {
         "review_title": "Schedule integrity review",
         "chip_title": "Schedule critical analysis",
+        "prod_title": "Productivity and trend by resource",
+        "prod_sub": "Quantities come from the file's own assignments: for a material resource "
+                    "the tool stores the quantity in the work fields. Three rates per activity, "
+                    "because one is not a fair reading: what this activity has practised, what "
+                    "the resource has practised everywhere, and the resource's last {n} days. "
+                    "The projection runs the remaining quantity over each rate on the activity's "
+                    "own calendar and reads the result against four dates.",
+        "prod_verdict_intro": "Three verdicts, in order of gravity. After the trend finish but not "
+                              "after the baseline finish: reprogram, no baseline delay. After the "
+                              "baseline finish but not after the late finish: the float absorbs it, "
+                              "and the column says how much is left. After the late finish: the "
+                              "activity enters the critical path, on the date shown.",
+        "v_ahead": "ahead", "v_reprogram": "reprogram", "v_baseline_delay": "baseline delay, float absorbs",
+        "v_critical": "enters critical path", "v_none": "no rate yet",
+        "tile_resources": "Resources tracked", "tile_projected": "Activities projected",
+        "tile_critical": "Would enter the critical path", "tile_inferred": "Executed inferred from percent",
+        "prod_resources_title": "Rates by resource",
+        "col_resource": "Resource", "col_unit": "Unit", "col_assign": "Assign.",
+        "col_planned_qty": "Planned", "col_exec_qty": "Executed", "col_rem_qty": "Remaining",
+        "col_rate_global": "Rate to date", "col_rate_recent": "Rate recent", "col_rate_planned": "Rate planned",
+        "col_progress": "Progress %",
+        "prod_activities_title": "Activities in progress, projected",
+        "col_rate_own": "Rate own", "col_req_trend": "Needed for trend", "col_req_late": "Needed for late",
+        "col_fin_trend": "Trend", "col_fin_baseline": "Baseline", "col_fin_late": "Late",
+        "col_proj_own": "Proj. own", "col_proj_global": "Proj. global", "col_proj_recent": "Proj. recent",
+        "col_verdict": "Verdict", "col_float_left": "Float left (d)", "col_source": "Executed from",
+        "src_actual": "actual quantity", "src_inferred": "percent (inferred)",
+        "col_evidence": "Evidence", "ev_thin": "thin", "ev_ok": "ok", "col_exec_days": "Days of data",
+        "tile_thin": "Verdicts on thin evidence",
+        "prod_unassigned": "{n} assignments carry no resource, so they cannot be trended.",
         "scurve_title": "S-curve from the file's own phasing",
         "scurve_sub": "Planned is the baseline cost the file phases by period; earned is the "
                       "file's daily spread of physical percent times baseline cost; the third "
@@ -474,6 +504,37 @@ UI = {
     "pt": {
         "review_title": "Análise crítica de cronograma",
         "chip_title": "Análise crítica de cronograma",
+        "prod_title": "Produtividade e tendência por recurso",
+        "prod_sub": "As quantidades vêm das atribuições do próprio arquivo: para recurso de "
+                    "material o Project guarda a quantidade nos campos de trabalho. Três ritmos "
+                    "por atividade, porque um só não é leitura justa: o que esta atividade "
+                    "praticou, o que o recurso praticou em todas as frentes, e os últimos {n} "
+                    "dias do recurso. A projeção divide o remanescente por cada ritmo, no "
+                    "calendário da própria atividade, e lê o resultado contra quatro datas.",
+        "prod_verdict_intro": "Três veredictos, em ordem de gravidade. Depois da tendência mas não "
+                              "depois da linha de base: reprogramar, sem atraso de linha de base. "
+                              "Depois da linha de base mas não depois do término tarde: a folga "
+                              "absorve, e a coluna diz quanto sobra. Depois do término tarde: a "
+                              "atividade entra no caminho crítico, na data mostrada.",
+        "v_ahead": "adiantada", "v_reprogram": "reprogramar",
+        "v_baseline_delay": "atrasa a LB, folga absorve", "v_critical": "entra no caminho crítico",
+        "v_none": "ainda sem ritmo",
+        "tile_resources": "Recursos acompanhados", "tile_projected": "Atividades projetadas",
+        "tile_critical": "Entrariam no caminho crítico", "tile_inferred": "Executado inferido do percentual",
+        "prod_resources_title": "Ritmos por recurso",
+        "col_resource": "Recurso", "col_unit": "Unid.", "col_assign": "Atrib.",
+        "col_planned_qty": "Previsto", "col_exec_qty": "Executado", "col_rem_qty": "Remanescente",
+        "col_rate_global": "Ritmo até a data", "col_rate_recent": "Ritmo recente", "col_rate_planned": "Ritmo previsto",
+        "col_progress": "Avanço %",
+        "prod_activities_title": "Atividades em andamento, projetadas",
+        "col_rate_own": "Ritmo próprio", "col_req_trend": "Necessário p/ tendência", "col_req_late": "Necessário p/ tarde",
+        "col_fin_trend": "Tendência", "col_fin_baseline": "Linha de base", "col_fin_late": "Tarde",
+        "col_proj_own": "Proj. próprio", "col_proj_global": "Proj. global", "col_proj_recent": "Proj. recente",
+        "col_verdict": "Veredicto", "col_float_left": "Folga que sobra (d)", "col_source": "Executado de",
+        "src_actual": "quantidade real", "src_inferred": "percentual (inferido)",
+        "col_evidence": "Evidência", "ev_thin": "fina", "ev_ok": "ok", "col_exec_days": "Dias de dado",
+        "tile_thin": "Veredictos com evidência fina",
+        "prod_unassigned": "{n} atribuições não têm recurso, então não podem ser tendenciadas.",
         "scurve_title": "Curva S do faseamento do próprio arquivo",
         "scurve_sub": "Previsto é o custo de linha de base que o arquivo faseia por período; "
                       "realizado é a distribuição diária de percentual físico do próprio arquivo "

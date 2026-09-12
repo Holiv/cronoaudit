@@ -170,8 +170,50 @@ def _phasing(kw):
     return lines, bcws
 
 
+RESOURCES = """  <Resources>
+    <Resource><UID>1</UID><Name>Earthworks cut</Name><Type>0</Type><MaterialLabel>m3</MaterialLabel></Resource>
+    <Resource><UID>2</UID><Name>Crew</Name><Type>1</Type></Resource>
+  </Resources>
+"""
+
+ASSIGNMENTS = []   # collected by task(); emitted by document()
+
+
+def _iso_hours(q):
+    h = int(q)
+    m = int(round((q - h) * 60))
+    return f"PT{h}H{m}M0S"
+
+
+def _assignment(uid, task_uid, rid, planned, executed, remaining, astart, afinish, daily):
+    lines = ["  <Assignment>", f"    <UID>{uid}</UID>", f"    <TaskUID>{task_uid}</TaskUID>",
+             f"    <ResourceUID>{rid}</ResourceUID>", f"    <Units>{planned}</Units>",
+             f"    <Work>{_iso_hours(planned)}</Work>",
+             f"    <ActualWork>{_iso_hours(executed)}</ActualWork>",
+             f"    <RemainingWork>{_iso_hours(remaining)}</RemainingWork>"]
+    if astart:
+        lines.append(f"    <ActualStart>{astart}</ActualStart>")
+    if afinish:
+        lines.append(f"    <ActualFinish>{afinish}</ActualFinish>")
+    lines += ["    <Baseline>", "      <Number>1</Number>",
+              f"      <Work>{_iso_hours(planned)}</Work>", "    </Baseline>"]
+    for day, q in daily:
+        lines += ["    <TimephasedData>", "      <Type>2</Type>", f"      <UID>{uid}</UID>",
+                  f"      <Start>{day}T08:00:00</Start>", f"      <Finish>{day}T17:00:00</Finish>",
+                  "      <Unit>2</Unit>", f"      <Value>{_iso_hours(q)}</Value>", "    </TimephasedData>"]
+    lines.append("  </Assignment>")
+    return "\n".join(lines)
+
+
 def task(uid, tid, name, **kw):
     kw["_uid"] = uid
+    if kw.get("material"):
+        planned, executed, daily = kw["material"]
+        remaining = max(0.0, planned - executed)
+        ASSIGNMENTS.append(_assignment(1000 + uid, uid, 1, planned, executed, remaining,
+                                       kw.get("astart"), kw.get("afinish"), daily))
+    if kw.get("unassigned"):
+        ASSIGNMENTS.append(_assignment(2000 + uid, uid, -1, 0, 0, 0, None, None, []))
     """Build one <Task>. Absent keys are omitted, never emitted empty."""
     parts = [
         f"    <UID>{uid}</UID>",
@@ -200,6 +242,9 @@ def task(uid, tid, name, **kw):
         parts.append(f"    <PhysicalPercentComplete>{kw['phys']}</PhysicalPercentComplete>")
     if kw.get("slack_days") is not None:
         parts.append(f"    <TotalSlack>{int(kw['slack_days'] * MPD * 10)}</TotalSlack>")
+        if kw.get("finish"):
+            lf = datetime.fromisoformat(kw["finish"]) + timedelta(days=int(kw["slack_days"] * 7 / 5))
+            parts.append(f"    <LateFinish>{lf.isoformat()}</LateFinish>")
     for pred in kw.get("preds", []):
         puid, ptype, lag_days = pred
         parts += [
@@ -272,6 +317,8 @@ def document(name, tasks):
         "  <CalendarUID>1</CalendarUID>\n"
         + CALENDARS + EXT_DEFS +
         "  <Tasks>\n" + "\n".join(tasks) + "\n  </Tasks>\n"
+        + RESOURCES +
+        "  <Assignments>\n" + "\n".join(ASSIGNMENTS) + "\n  </Assignments>\n"
         "</Project>\n"
     )
 
@@ -312,6 +359,7 @@ def _decorate(tasks):
 
 
 def positive():
+    ASSIGNMENTS.clear()
     t = []
     # A1 -- successor started, predecessor not finished. Both ends must be marked.
     t.append(task(1, 1, "A1 predecessor not finished", **WIN,
@@ -355,6 +403,29 @@ def positive():
     # P -- declared complete with no actual finish.
     t.append(task(11, 11, "P pending record", **WIN,
                   astart="2026-03-02T08:00:00", pct=100, phys=100, baseline=BL_OK))
+    # --- Productivity: quantities as hours of the ISO duration ---
+    # 22: in progress, 1,200 m3 planned, 400 executed in 8 working days -> 50/day own
+    # rate; baseline finish 30/06, trend finish 03/07, late finish via slack.
+    t.append(task(22, 22, "Cut in progress", start="2026-06-17T08:00:00",
+                  finish="2026-07-03T17:00:00", dur_hours=96, astart="2026-06-17T08:00:00",
+                  pct=33, phys=33, slack_days=20,
+                  baseline=("2026-06-17T08:00:00", "2026-06-30T17:00:00", 24000.0, 80),
+                  material=(1200.0, 400.0, [(f"2026-06-{d:02d}", 50.0) for d in (17,18,19,22,23,24,25,26)])))
+    # 23: complete, 800 m3 in 4 working days -> 200/day, lifts the global rate.
+    t.append(task(23, 23, "Cut complete", start="2026-06-01T08:00:00",
+                  finish="2026-06-04T17:00:00", dur_hours=32, astart="2026-06-01T08:00:00",
+                  afinish="2026-06-04T17:00:00", pct=100, phys=100,
+                  baseline=("2026-06-01T08:00:00", "2026-06-04T17:00:00", 16000.0, 32),
+                  material=(800.0, 800.0, [(f"2026-06-{d:02d}", 200.0) for d in (1,2,3,4)])))
+    # 24: physical percent reported, no executed quantity entered -> inferred.
+    t.append(task(24, 24, "Cut with percent only", start="2026-06-22T08:00:00",
+                  finish="2026-07-10T17:00:00", dur_hours=120, astart="2026-06-22T08:00:00",
+                  pct=25, phys=25, slack_days=5,
+                  baseline=("2026-06-22T08:00:00", "2026-07-10T17:00:00", 30000.0, 120),
+                  material=(1500.0, 0.0, [])))
+    # 25: no resource at all, the -1 assignment the tool writes.
+    t.append(task(25, 25, "No resource", **WIN, baseline=BL_OK, unassigned=True))
+
     # --- New network rules, each with its own control ---
     # 14 -> 15: FS with a 2-day LEAD (negative lag). The predecessor finished one
     # working day after the successor started, which the lead allows. Must NOT be A1.
@@ -408,6 +479,7 @@ def positive():
 
 def negative():
     """A consistent schedule. Every check must stay silent on this file."""
+    ASSIGNMENTS.clear()
     t = []
     # Finished cleanly, in sequence, on the baseline window.
     t.append(task(1, 1, "Finished in sequence", **WIN,
@@ -448,6 +520,7 @@ def cycle(which: str):
       uid 6  present only in previous                 -> removed
     """
     prev = which == "prev"
+    ASSIGNMENTS.clear()
     t = []
     t.append(task(1, 1, "Complete both cycles", **WIN,
                   astart="2026-03-02T08:00:00", afinish="2026-03-06T17:00:00",

@@ -305,6 +305,7 @@ function renderReview(d){
     {cod:"V4",tt:L.float_title,sub:"",id:"v4"},
   );
   if(d.calendars&&d.calendars.length) views.push({cod:"V5",tt:L.calendars_title,sub:"",id:"v5"});
+  if(d.productivity) views.push({cod:"V6",tt:L.prod_title,sub:"",id:"v6"});
   out.push(`<section id="indice"><div class="sec-h"><span class="eyebrow">${esc(L.roteiro)}</span><h2>${esc(L.index)}</h2></div>
     <p class="sec-d">${esc(L.index_sub)}</p><nav class="indice">
     ${views.map(v=>`<a href="#${v.id}"><span class="cod">${v.cod}</span><span class="tt">${esc(v.tt)}${v.sub?`<small>${esc(v.sub)}</small>`:""}</span><span class="qtd"></span><span class="sev vs">${esc(d.labels.severity_view||"")}</span></a>`).join("")}
@@ -354,6 +355,39 @@ function renderReview(d){
   if(d.calendars&&d.calendars.length){
     out.push(`<section id="v5"><div class="sec-h"><span class="eyebrow">V5</span><h2>${esc(L.calendars_title)}</h2></div><p class="sec-d">${esc(L.calendars_sub)}</p>
       ${table([{label:L.col_calendar,key:"name"},{label:L.col_activities,key:"tasks"},{label:L.col_hours_day,key:"hours_per_day"},{label:L.col_days_week,key:"working_days_per_week"},{label:L.col_exceptions,key:"exceptions"},{label:L.col_nonworking,key:"non_working_exceptions"}],d.calendars)}</section>`);
+  }
+
+  if(d.productivity){
+    const P=d.productivity, S=P.summary||{}, V=S.verdicts||{};
+    const vw = v => ({ahead:L.v_ahead,reprogram:L.v_reprogram,baseline_delay:L.v_baseline_delay,critical:L.v_critical}[v]||L.v_none);
+    const acts=(P.activities||[]).map(a=>({...a,
+      verdict_global_t:vw(a.verdict_global),verdict_own_t:vw(a.verdict_own),
+      source_t:a.executed_source==="actual"?L.src_actual:L.src_inferred,
+      evidence_t:a.thin_evidence?L.ev_thin:L.ev_ok}));
+    const resRows=(P.resources||[]).map(r=>({...r,evidence_t:r.thin_evidence?L.ev_thin:L.ev_ok}));
+    out.push(`<section id="v6"><div class="sec-h"><span class="eyebrow">V6</span><h2>${esc(L.prod_title)}</h2></div>
+      <p class="sec-d">${esc(fill(L.prod_sub,{n:P.recent_window_days}))}</p>
+      <p class="sec-d">${esc(L.prod_verdict_intro)}</p>
+      <div class="tiles">
+        <div class="tile"><div class="c">${esc(L.tile_resources)}</div><div class="v">${n(S.resources_tracked)}</div><div class="t">${esc(fill(L.prod_unassigned,{n:n(S.assignments_unassigned)}))}</div></div>
+        <div class="tile pd"><div class="c">${esc(L.tile_projected)}</div><div class="v">${n(S.activities_projected)}</div><div class="t">${esc(L.v_reprogram)} ${n(V.reprogram||0)} · ${esc(L.v_baseline_delay)} ${n(V.baseline_delay||0)}</div></div>
+        <div class="tile cr"><div class="c">${esc(L.tile_critical)}</div><div class="v${V.critical?"":" zero"}">${n(V.critical||0)}</div><div class="t">${esc(L.v_ahead)} ${n(V.ahead||0)}</div></div>
+        <div class="tile vf"><div class="c">${esc(L.tile_thin)}</div><div class="v${S.thin_evidence?"":" zero"}">${n(S.thin_evidence||0)}</div><div class="t">${esc(L.tile_inferred)} ${n(S.inferred_executed||0)}</div></div>
+      </div>
+      <h3 style="font-size:15px;margin:14px 0 8px">${esc(L.prod_resources_title)}</h3>
+      ${folded([{label:L.col_resource,key:"name"},{label:L.col_unit,key:"unit"},{label:L.col_assign,key:"assignments"},
+        {label:L.col_planned_qty,key:"planned_qty"},{label:L.col_exec_qty,key:"executed_qty"},{label:L.col_rem_qty,key:"remaining_qty"},
+        {label:L.col_progress,key:"progress_pct"},{label:L.col_rate_planned,key:"rate_planned"},{label:L.col_rate_global,key:"rate_global"},{label:L.col_rate_recent,key:"rate_recent"},{label:L.col_exec_days,key:"executed_days"},{label:L.col_evidence,key:"evidence_t"}],
+        resRows,resRows.length)}
+      <h3 style="font-size:15px;margin:14px 0 8px">${esc(L.prod_activities_title)}</h3>
+      ${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_resource,key:"resource"},{label:L.col_unit,key:"unit"},
+        {label:L.col_planned_qty,key:"planned_qty"},{label:L.col_exec_qty,key:"executed_qty"},{label:L.col_source,key:"source_t"},{label:L.col_rem_qty,key:"remaining_qty"},
+        {label:L.col_rate_own,key:"rate_own"},{label:L.col_rate_global,key:"rate_global"},{label:L.col_rate_recent,key:"rate_recent"},{label:L.col_rate_planned,key:"rate_planned"},
+        {label:L.col_req_trend,key:"rate_required_trend"},{label:L.col_req_late,key:"rate_required_late"},
+        {label:L.col_fin_trend,key:"finish_trend"},{label:L.col_fin_baseline,key:"finish_baseline"},{label:L.col_fin_late,key:"finish_late"},
+        {label:L.col_proj_own,key:"projected_own"},{label:L.col_proj_global,key:"projected_global"},{label:L.col_proj_recent,key:"projected_recent"},
+        {label:L.col_verdict,key:"verdict_global_t"},{label:L.col_float_left,key:"days_of_float_left_global"},{label:L.col_evidence,key:"evidence_t"}],acts,acts.length)}
+    </section>`);
   }
 
   out.push(`<section><div class="sec-h"><span class="eyebrow">${esc(L.findings)}</span><h2>${esc(L.findings)}</h2></div>

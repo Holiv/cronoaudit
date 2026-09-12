@@ -54,6 +54,14 @@ names arrive translated by the installed language. And **a field that exists and
 is a finding, not a dimension** — a justification blank on nearly every activity is a
 contract-compliance finding waiting to be written down.
 
+**Productivity and trend come from the file's own assignments.** For a material resource the
+tool stores the quantity in the work fields as hours of the ISO duration, so planned, executed
+and remaining quantities are native. Three rates per activity — its own, the resource's across
+every front, the resource's last thirty days — because one rate is not a fair reading; the
+remaining quantity runs over each on the activity's calendar and lands against the trend,
+baseline and late finish. Three verdicts in order of gravity: reprogram, baseline delay that
+the float absorbs, entering the critical path on a date. `references/productivity.md`.
+
 **What you must have in hand** before either is worth starting: a status date, a saved
 baseline, and for the comparison the previous cycle's file. Fields the checks read must be
 populated — and a field left empty is itself a reportable finding, not a reason to skip the

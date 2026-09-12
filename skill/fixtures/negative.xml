@@ -562,4 +562,11 @@
     </ExtendedAttribute>
   </Task>
   </Tasks>
+  <Resources>
+    <Resource><UID>1</UID><Name>Earthworks cut</Name><Type>0</Type><MaterialLabel>m3</MaterialLabel></Resource>
+    <Resource><UID>2</UID><Name>Crew</Name><Type>1</Type></Resource>
+  </Resources>
+  <Assignments>
+
+  </Assignments>
 </Project>

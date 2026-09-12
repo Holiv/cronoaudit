@@ -209,6 +209,16 @@ def parse_task(task_el) -> dict:
         "actual_start": as_date(task_el, "ActualStart"),
         "actual_finish": as_date(task_el, "ActualFinish"),
         "deadline": as_date(task_el, "Deadline"),
+        # The tool's own critical-path reading: early and late dates and the
+        # critical flag. Read rather than recomputed, so the projection's "when
+        # does this enter the critical path" is measured against the file's float.
+        "early_start": as_date(task_el, "EarlyStart"),
+        "early_finish": as_date(task_el, "EarlyFinish"),
+        "late_start": as_date(task_el, "LateStart"),
+        "late_finish": as_date(task_el, "LateFinish"),
+        "critical": as_bool(task_el, "Critical"),
+        "actual_duration_minutes": iso_duration_minutes(text(task_el, "ActualDuration")),
+        "remaining_duration_minutes": iso_duration_minutes(text(task_el, "RemainingDuration")),
         "constraint_type": as_int(task_el, "ConstraintType"),
         "duration_minutes": iso_duration_minutes(text(task_el, "Duration")),
         "percent_complete": as_float(task_el, "PercentComplete"),

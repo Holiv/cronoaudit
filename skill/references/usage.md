@@ -145,6 +145,14 @@ task. The report draws planned, earned, and the other earned-value method as sen
 SPI and SV by month, and states the reconciliation counts underneath. A third file,
 `<name>-review-scurve.json`, carries the monthly series and the per-group curves.
 
+**Productivity is read from the file's own assignments.** For a material resource the tool
+stores the quantity in the work fields, so planned, executed and remaining quantities, and the
+executed quantity per day, need no custom field. The report gives three rates per activity in
+progress, projects the remaining quantity over each on the activity's own calendar, and reads
+the result against the trend, baseline and late finish: reprogram, baseline delay absorbed by
+float, or entering the critical path on a date. A fourth file, `<name>-review-productivity.json`,
+carries the rates by resource and by activity. Method: `references/productivity.md`.
+
 ### Read it in this order, and the report is laid out to enforce it
 
 1. **The blocking notices, if any.** No status date means every adherence check is measured

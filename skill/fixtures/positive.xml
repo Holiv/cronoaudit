@@ -2060,6 +2060,674 @@
     </ExtendedAttribute>
   </Task>
   <Task>
+    <UID>22</UID>
+    <ID>22</ID>
+    <Name>Cut in progress</Name>
+    <WBS>22</WBS>
+    <OutlineLevel>2</OutlineLevel>
+    <Summary>0</Summary>
+    <Milestone>0</Milestone>
+    <Active>1</Active>
+    <ExternalTask>0</ExternalTask>
+    <CalendarUID>-1</CalendarUID>
+    <Start>2026-06-17T08:00:00</Start>
+    <Finish>2026-07-03T17:00:00</Finish>
+    <ActualStart>2026-06-17T08:00:00</ActualStart>
+    <Duration>PT96H0M0S</Duration>
+    <PercentComplete>33</PercentComplete>
+    <PhysicalPercentComplete>33</PhysicalPercentComplete>
+    <TotalSlack>96000</TotalSlack>
+    <LateFinish>2026-07-31T17:00:00</LateFinish>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>22</UID>
+      <Start>2026-06-17T08:00:00</Start>
+      <Finish>2026-06-17T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2400.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>22</UID>
+      <Start>2026-06-18T08:00:00</Start>
+      <Finish>2026-06-18T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2400.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>22</UID>
+      <Start>2026-06-19T08:00:00</Start>
+      <Finish>2026-06-19T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2400.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>22</UID>
+      <Start>2026-06-22T08:00:00</Start>
+      <Finish>2026-06-22T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2400.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>22</UID>
+      <Start>2026-06-23T08:00:00</Start>
+      <Finish>2026-06-23T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2400.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>22</UID>
+      <Start>2026-06-24T08:00:00</Start>
+      <Finish>2026-06-24T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2400.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>22</UID>
+      <Start>2026-06-25T08:00:00</Start>
+      <Finish>2026-06-25T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2400.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>22</UID>
+      <Start>2026-06-26T08:00:00</Start>
+      <Finish>2026-06-26T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2400.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>22</UID>
+      <Start>2026-06-29T08:00:00</Start>
+      <Finish>2026-06-29T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2400.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>22</UID>
+      <Start>2026-06-30T08:00:00</Start>
+      <Finish>2026-06-30T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2400.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>22</UID>
+      <Start>2026-06-17T08:00:00</Start>
+      <Finish>2026-06-17T08:00:00</Finish>
+      <Unit>1</Unit>
+      <Value></Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>22</UID>
+      <Start>2026-06-17T08:00:00</Start>
+      <Finish>2026-06-17T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>3.3000</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>22</UID>
+      <Start>2026-06-18T08:00:00</Start>
+      <Finish>2026-06-18T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>3.3000</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>22</UID>
+      <Start>2026-06-19T08:00:00</Start>
+      <Finish>2026-06-19T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>3.3000</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>22</UID>
+      <Start>2026-06-20T08:00:00</Start>
+      <Finish>2026-06-20T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>32768</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>22</UID>
+      <Start>2026-06-21T08:00:00</Start>
+      <Finish>2026-06-21T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>32768</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>22</UID>
+      <Start>2026-06-22T08:00:00</Start>
+      <Finish>2026-06-22T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>3.3000</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>22</UID>
+      <Start>2026-06-23T08:00:00</Start>
+      <Finish>2026-06-23T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>3.3000</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>22</UID>
+      <Start>2026-06-24T08:00:00</Start>
+      <Finish>2026-06-24T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>3.3000</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>22</UID>
+      <Start>2026-06-25T08:00:00</Start>
+      <Finish>2026-06-25T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>3.3000</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>22</UID>
+      <Start>2026-06-26T08:00:00</Start>
+      <Finish>2026-06-26T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>3.3000</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>22</UID>
+      <Start>2026-06-27T08:00:00</Start>
+      <Finish>2026-06-27T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>32768</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>22</UID>
+      <Start>2026-06-28T08:00:00</Start>
+      <Finish>2026-06-28T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>32768</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>22</UID>
+      <Start>2026-06-29T08:00:00</Start>
+      <Finish>2026-06-29T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>3.3000</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>22</UID>
+      <Start>2026-06-30T08:00:00</Start>
+      <Finish>2026-06-30T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>3.3000</Value>
+    </TimephasedData>
+    <BCWS>24000.00</BCWS>
+    <BCWP>7920.00</BCWP>
+    <EarnedValueMethod>1</EarnedValueMethod>
+    <Baseline>
+      <Number>1</Number>
+      <Start>2026-06-17T08:00:00</Start>
+      <Finish>2026-06-30T17:00:00</Finish>
+      <Duration>PT80H0M0S</Duration>
+      <Cost>24000.0</Cost>
+      <Work>PT80H0M0S</Work>
+    </Baseline>
+    <ExtendedAttribute>
+      <FieldID>188743737</FieldID>
+      <Value>EARTHWORKS</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743767</FieldID>
+      <Value>130</Value>
+    </ExtendedAttribute>
+  </Task>
+  <Task>
+    <UID>23</UID>
+    <ID>23</ID>
+    <Name>Cut complete</Name>
+    <WBS>23</WBS>
+    <OutlineLevel>2</OutlineLevel>
+    <Summary>0</Summary>
+    <Milestone>0</Milestone>
+    <Active>1</Active>
+    <ExternalTask>0</ExternalTask>
+    <CalendarUID>-1</CalendarUID>
+    <Start>2026-06-01T08:00:00</Start>
+    <Finish>2026-06-04T17:00:00</Finish>
+    <ActualStart>2026-06-01T08:00:00</ActualStart>
+    <ActualFinish>2026-06-04T17:00:00</ActualFinish>
+    <Duration>PT32H0M0S</Duration>
+    <PercentComplete>100</PercentComplete>
+    <PhysicalPercentComplete>100</PhysicalPercentComplete>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>23</UID>
+      <Start>2026-06-01T08:00:00</Start>
+      <Finish>2026-06-01T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>4000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>23</UID>
+      <Start>2026-06-02T08:00:00</Start>
+      <Finish>2026-06-02T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>4000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>23</UID>
+      <Start>2026-06-03T08:00:00</Start>
+      <Finish>2026-06-03T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>4000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>23</UID>
+      <Start>2026-06-04T08:00:00</Start>
+      <Finish>2026-06-04T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>4000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>23</UID>
+      <Start>2026-06-01T08:00:00</Start>
+      <Finish>2026-06-01T08:00:00</Finish>
+      <Unit>1</Unit>
+      <Value></Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>23</UID>
+      <Start>2026-06-01T08:00:00</Start>
+      <Finish>2026-06-01T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>25.0000</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>23</UID>
+      <Start>2026-06-02T08:00:00</Start>
+      <Finish>2026-06-02T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>25.0000</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>23</UID>
+      <Start>2026-06-03T08:00:00</Start>
+      <Finish>2026-06-03T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>25.0000</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>23</UID>
+      <Start>2026-06-04T08:00:00</Start>
+      <Finish>2026-06-04T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>25.0000</Value>
+    </TimephasedData>
+    <BCWS>16000.00</BCWS>
+    <BCWP>16000.00</BCWP>
+    <EarnedValueMethod>1</EarnedValueMethod>
+    <Baseline>
+      <Number>1</Number>
+      <Start>2026-06-01T08:00:00</Start>
+      <Finish>2026-06-04T17:00:00</Finish>
+      <Duration>PT32H0M0S</Duration>
+      <Cost>16000.0</Cost>
+      <Work>PT32H0M0S</Work>
+    </Baseline>
+    <ExtendedAttribute>
+      <FieldID>188743737</FieldID>
+      <Value>DRAINAGE</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743767</FieldID>
+      <Value>140</Value>
+    </ExtendedAttribute>
+  </Task>
+  <Task>
+    <UID>24</UID>
+    <ID>24</ID>
+    <Name>Cut with percent only</Name>
+    <WBS>24</WBS>
+    <OutlineLevel>2</OutlineLevel>
+    <Summary>0</Summary>
+    <Milestone>0</Milestone>
+    <Active>1</Active>
+    <ExternalTask>0</ExternalTask>
+    <CalendarUID>-1</CalendarUID>
+    <Start>2026-06-22T08:00:00</Start>
+    <Finish>2026-07-10T17:00:00</Finish>
+    <ActualStart>2026-06-22T08:00:00</ActualStart>
+    <Duration>PT120H0M0S</Duration>
+    <PercentComplete>25</PercentComplete>
+    <PhysicalPercentComplete>25</PhysicalPercentComplete>
+    <TotalSlack>24000</TotalSlack>
+    <LateFinish>2026-07-17T17:00:00</LateFinish>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>24</UID>
+      <Start>2026-06-22T08:00:00</Start>
+      <Finish>2026-06-22T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>24</UID>
+      <Start>2026-06-23T08:00:00</Start>
+      <Finish>2026-06-23T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>24</UID>
+      <Start>2026-06-24T08:00:00</Start>
+      <Finish>2026-06-24T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>24</UID>
+      <Start>2026-06-25T08:00:00</Start>
+      <Finish>2026-06-25T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>24</UID>
+      <Start>2026-06-26T08:00:00</Start>
+      <Finish>2026-06-26T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>24</UID>
+      <Start>2026-06-29T08:00:00</Start>
+      <Finish>2026-06-29T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>24</UID>
+      <Start>2026-06-30T08:00:00</Start>
+      <Finish>2026-06-30T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>24</UID>
+      <Start>2026-07-01T08:00:00</Start>
+      <Finish>2026-07-01T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>24</UID>
+      <Start>2026-07-02T08:00:00</Start>
+      <Finish>2026-07-02T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>24</UID>
+      <Start>2026-07-03T08:00:00</Start>
+      <Finish>2026-07-03T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>24</UID>
+      <Start>2026-07-06T08:00:00</Start>
+      <Finish>2026-07-06T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>24</UID>
+      <Start>2026-07-07T08:00:00</Start>
+      <Finish>2026-07-07T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>24</UID>
+      <Start>2026-07-08T08:00:00</Start>
+      <Finish>2026-07-08T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>24</UID>
+      <Start>2026-07-09T08:00:00</Start>
+      <Finish>2026-07-09T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>24</UID>
+      <Start>2026-07-10T08:00:00</Start>
+      <Finish>2026-07-10T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>24</UID>
+      <Start>2026-06-22T08:00:00</Start>
+      <Finish>2026-06-22T08:00:00</Finish>
+      <Unit>1</Unit>
+      <Value></Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>24</UID>
+      <Start>2026-06-22T08:00:00</Start>
+      <Finish>2026-06-22T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>3.5714</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>24</UID>
+      <Start>2026-06-23T08:00:00</Start>
+      <Finish>2026-06-23T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>3.5714</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>24</UID>
+      <Start>2026-06-24T08:00:00</Start>
+      <Finish>2026-06-24T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>3.5714</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>24</UID>
+      <Start>2026-06-25T08:00:00</Start>
+      <Finish>2026-06-25T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>3.5714</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>24</UID>
+      <Start>2026-06-26T08:00:00</Start>
+      <Finish>2026-06-26T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>3.5714</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>24</UID>
+      <Start>2026-06-27T08:00:00</Start>
+      <Finish>2026-06-27T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>32768</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>24</UID>
+      <Start>2026-06-28T08:00:00</Start>
+      <Finish>2026-06-28T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>32768</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>24</UID>
+      <Start>2026-06-29T08:00:00</Start>
+      <Finish>2026-06-29T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>3.5714</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>11</Type>
+      <UID>24</UID>
+      <Start>2026-06-30T08:00:00</Start>
+      <Finish>2026-06-30T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>3.5714</Value>
+    </TimephasedData>
+    <BCWS>14000.00</BCWS>
+    <BCWP>7500.00</BCWP>
+    <EarnedValueMethod>1</EarnedValueMethod>
+    <Baseline>
+      <Number>1</Number>
+      <Start>2026-06-22T08:00:00</Start>
+      <Finish>2026-07-10T17:00:00</Finish>
+      <Duration>PT120H0M0S</Duration>
+      <Cost>30000.0</Cost>
+      <Work>PT120H0M0S</Work>
+    </Baseline>
+    <ExtendedAttribute>
+      <FieldID>188743737</FieldID>
+      <Value>PAVEMENT</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743767</FieldID>
+      <Value>150</Value>
+    </ExtendedAttribute>
+  </Task>
+  <Task>
+    <UID>25</UID>
+    <ID>25</ID>
+    <Name>No resource</Name>
+    <WBS>25</WBS>
+    <OutlineLevel>2</OutlineLevel>
+    <Summary>0</Summary>
+    <Milestone>0</Milestone>
+    <Active>1</Active>
+    <ExternalTask>0</ExternalTask>
+    <CalendarUID>-1</CalendarUID>
+    <Start>2026-03-02T08:00:00</Start>
+    <Finish>2026-03-06T17:00:00</Finish>
+    <Duration>PT40H0M0S</Duration>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>25</UID>
+      <Start>2026-03-02T08:00:00</Start>
+      <Finish>2026-03-02T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>25</UID>
+      <Start>2026-03-03T08:00:00</Start>
+      <Finish>2026-03-03T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>25</UID>
+      <Start>2026-03-04T08:00:00</Start>
+      <Finish>2026-03-04T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>25</UID>
+      <Start>2026-03-05T08:00:00</Start>
+      <Finish>2026-03-05T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>25</UID>
+      <Start>2026-03-06T08:00:00</Start>
+      <Finish>2026-03-06T17:00:00</Finish>
+      <Unit>1</Unit>
+      <Value>2000.00</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>10</Type>
+      <UID>25</UID>
+      <Start>2026-03-02T08:00:00</Start>
+      <Finish>2026-03-02T08:00:00</Finish>
+      <Unit>1</Unit>
+      <Value></Value>
+    </TimephasedData>
+    <BCWS>10000.00</BCWS>
+    <Baseline>
+      <Number>1</Number>
+      <Start>2026-03-02T08:00:00</Start>
+      <Finish>2026-03-06T17:00:00</Finish>
+      <Duration>PT40H0M0S</Duration>
+      <Cost>10000.0</Cost>
+      <Work>PT40H0M0S</Work>
+    </Baseline>
+    <ExtendedAttribute>
+      <FieldID>188743737</FieldID>
+      <Value>EARTHWORKS</Value>
+    </ExtendedAttribute>
+    <ExtendedAttribute>
+      <FieldID>188743767</FieldID>
+      <Value>160</Value>
+    </ExtendedAttribute>
+  </Task>
+  <Task>
     <UID>14</UID>
     <ID>14</ID>
     <Name>Lead predecessor</Name>
@@ -2178,11 +2846,11 @@
     </Baseline>
     <ExtendedAttribute>
       <FieldID>188743737</FieldID>
-      <Value>EARTHWORKS</Value>
+      <Value>DRAINAGE</Value>
     </ExtendedAttribute>
     <ExtendedAttribute>
       <FieldID>188743767</FieldID>
-      <Value>130</Value>
+      <Value>170</Value>
     </ExtendedAttribute>
   </Task>
   <Task>
@@ -2266,11 +2934,11 @@
     </Baseline>
     <ExtendedAttribute>
       <FieldID>188743737</FieldID>
-      <Value>DRAINAGE</Value>
+      <Value>PAVEMENT</Value>
     </ExtendedAttribute>
     <ExtendedAttribute>
       <FieldID>188743767</FieldID>
-      <Value>140</Value>
+      <Value>180</Value>
     </ExtendedAttribute>
   </Task>
   <Task>
@@ -2384,11 +3052,11 @@
     </Baseline>
     <ExtendedAttribute>
       <FieldID>188743737</FieldID>
-      <Value>PAVEMENT</Value>
+      <Value>EARTHWORKS</Value>
     </ExtendedAttribute>
     <ExtendedAttribute>
       <FieldID>188743767</FieldID>
-      <Value>150</Value>
+      <Value>190</Value>
     </ExtendedAttribute>
   </Task>
   <Task>
@@ -2516,11 +3184,11 @@
     </Baseline>
     <ExtendedAttribute>
       <FieldID>188743737</FieldID>
-      <Value>EARTHWORKS</Value>
+      <Value>DRAINAGE</Value>
     </ExtendedAttribute>
     <ExtendedAttribute>
       <FieldID>188743767</FieldID>
-      <Value>160</Value>
+      <Value>200</Value>
     </ExtendedAttribute>
   </Task>
   <Task>
@@ -2598,11 +3266,11 @@
     </Baseline>
     <ExtendedAttribute>
       <FieldID>188743737</FieldID>
-      <Value>DRAINAGE</Value>
+      <Value>PAVEMENT</Value>
     </ExtendedAttribute>
     <ExtendedAttribute>
       <FieldID>188743767</FieldID>
-      <Value>170</Value>
+      <Value>210</Value>
     </ExtendedAttribute>
   </Task>
   <Task>
@@ -2686,11 +3354,11 @@
     </Baseline>
     <ExtendedAttribute>
       <FieldID>188743737</FieldID>
-      <Value>PAVEMENT</Value>
+      <Value>EARTHWORKS</Value>
     </ExtendedAttribute>
     <ExtendedAttribute>
       <FieldID>188743767</FieldID>
-      <Value>180</Value>
+      <Value>220</Value>
     </ExtendedAttribute>
   </Task>
   <Task>
@@ -2846,11 +3514,11 @@
     </Baseline>
     <ExtendedAttribute>
       <FieldID>188743737</FieldID>
-      <Value>EARTHWORKS</Value>
+      <Value>DRAINAGE</Value>
     </ExtendedAttribute>
     <ExtendedAttribute>
       <FieldID>188743767</FieldID>
-      <Value>190</Value>
+      <Value>230</Value>
     </ExtendedAttribute>
   </Task>
   <Task>
@@ -2932,11 +3600,11 @@
     </Baseline>
     <ExtendedAttribute>
       <FieldID>188743737</FieldID>
-      <Value>DRAINAGE</Value>
+      <Value>PAVEMENT</Value>
     </ExtendedAttribute>
     <ExtendedAttribute>
       <FieldID>188743767</FieldID>
-      <Value>200</Value>
+      <Value>240</Value>
     </ExtendedAttribute>
   </Task>
   <Task>
@@ -3020,12 +3688,170 @@
     </Baseline>
     <ExtendedAttribute>
       <FieldID>188743737</FieldID>
-      <Value>PAVEMENT</Value>
+      <Value>EARTHWORKS</Value>
     </ExtendedAttribute>
     <ExtendedAttribute>
       <FieldID>188743767</FieldID>
-      <Value>210</Value>
+      <Value>250</Value>
     </ExtendedAttribute>
   </Task>
   </Tasks>
+  <Resources>
+    <Resource><UID>1</UID><Name>Earthworks cut</Name><Type>0</Type><MaterialLabel>m3</MaterialLabel></Resource>
+    <Resource><UID>2</UID><Name>Crew</Name><Type>1</Type></Resource>
+  </Resources>
+  <Assignments>
+  <Assignment>
+    <UID>1022</UID>
+    <TaskUID>22</TaskUID>
+    <ResourceUID>1</ResourceUID>
+    <Units>1200.0</Units>
+    <Work>PT1200H0M0S</Work>
+    <ActualWork>PT400H0M0S</ActualWork>
+    <RemainingWork>PT800H0M0S</RemainingWork>
+    <ActualStart>2026-06-17T08:00:00</ActualStart>
+    <Baseline>
+      <Number>1</Number>
+      <Work>PT1200H0M0S</Work>
+    </Baseline>
+    <TimephasedData>
+      <Type>2</Type>
+      <UID>1022</UID>
+      <Start>2026-06-17T08:00:00</Start>
+      <Finish>2026-06-17T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>PT50H0M0S</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>2</Type>
+      <UID>1022</UID>
+      <Start>2026-06-18T08:00:00</Start>
+      <Finish>2026-06-18T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>PT50H0M0S</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>2</Type>
+      <UID>1022</UID>
+      <Start>2026-06-19T08:00:00</Start>
+      <Finish>2026-06-19T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>PT50H0M0S</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>2</Type>
+      <UID>1022</UID>
+      <Start>2026-06-22T08:00:00</Start>
+      <Finish>2026-06-22T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>PT50H0M0S</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>2</Type>
+      <UID>1022</UID>
+      <Start>2026-06-23T08:00:00</Start>
+      <Finish>2026-06-23T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>PT50H0M0S</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>2</Type>
+      <UID>1022</UID>
+      <Start>2026-06-24T08:00:00</Start>
+      <Finish>2026-06-24T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>PT50H0M0S</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>2</Type>
+      <UID>1022</UID>
+      <Start>2026-06-25T08:00:00</Start>
+      <Finish>2026-06-25T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>PT50H0M0S</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>2</Type>
+      <UID>1022</UID>
+      <Start>2026-06-26T08:00:00</Start>
+      <Finish>2026-06-26T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>PT50H0M0S</Value>
+    </TimephasedData>
+  </Assignment>
+  <Assignment>
+    <UID>1023</UID>
+    <TaskUID>23</TaskUID>
+    <ResourceUID>1</ResourceUID>
+    <Units>800.0</Units>
+    <Work>PT800H0M0S</Work>
+    <ActualWork>PT800H0M0S</ActualWork>
+    <RemainingWork>PT0H0M0S</RemainingWork>
+    <ActualStart>2026-06-01T08:00:00</ActualStart>
+    <ActualFinish>2026-06-04T17:00:00</ActualFinish>
+    <Baseline>
+      <Number>1</Number>
+      <Work>PT800H0M0S</Work>
+    </Baseline>
+    <TimephasedData>
+      <Type>2</Type>
+      <UID>1023</UID>
+      <Start>2026-06-01T08:00:00</Start>
+      <Finish>2026-06-01T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>PT200H0M0S</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>2</Type>
+      <UID>1023</UID>
+      <Start>2026-06-02T08:00:00</Start>
+      <Finish>2026-06-02T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>PT200H0M0S</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>2</Type>
+      <UID>1023</UID>
+      <Start>2026-06-03T08:00:00</Start>
+      <Finish>2026-06-03T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>PT200H0M0S</Value>
+    </TimephasedData>
+    <TimephasedData>
+      <Type>2</Type>
+      <UID>1023</UID>
+      <Start>2026-06-04T08:00:00</Start>
+      <Finish>2026-06-04T17:00:00</Finish>
+      <Unit>2</Unit>
+      <Value>PT200H0M0S</Value>
+    </TimephasedData>
+  </Assignment>
+  <Assignment>
+    <UID>1024</UID>
+    <TaskUID>24</TaskUID>
+    <ResourceUID>1</ResourceUID>
+    <Units>1500.0</Units>
+    <Work>PT1500H0M0S</Work>
+    <ActualWork>PT0H0M0S</ActualWork>
+    <RemainingWork>PT1500H0M0S</RemainingWork>
+    <ActualStart>2026-06-22T08:00:00</ActualStart>
+    <Baseline>
+      <Number>1</Number>
+      <Work>PT1500H0M0S</Work>
+    </Baseline>
+  </Assignment>
+  <Assignment>
+    <UID>2025</UID>
+    <TaskUID>25</TaskUID>
+    <ResourceUID>-1</ResourceUID>
+    <Units>0</Units>
+    <Work>PT0H0M0S</Work>
+    <ActualWork>PT0H0M0S</ActualWork>
+    <RemainingWork>PT0H0M0S</RemainingWork>
+    <Baseline>
+      <Number>1</Number>
+      <Work>PT0H0M0S</Work>
+    </Baseline>
+  </Assignment>
+  </Assignments>
 </Project>

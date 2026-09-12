@@ -27,6 +27,7 @@ sys.path.insert(0, HERE)
 import compare_snapshots  # noqa: E402
 import parse_mspdi  # noqa: E402
 import phasing as phasing_mod  # noqa: E402
+import resources as resources_mod  # noqa: E402
 import report_data  # noqa: E402
 import report_html  # noqa: E402
 import run_checks  # noqa: E402
@@ -114,20 +115,26 @@ def do_review(model, path, outdir, threshold, tolerance, quiet,
     # reader converts to a temporary XML, which is fine, but a file that came in
     # some other way has no phasing to read.
     curve = None
+    prod = None
     src = model.get("source")
     if src and src.lower().endswith(".xml") and os.path.exists(src):
         grp = report_data.resolve_grouping(model, grouping)
         curve = phasing_mod.build(src, grp.get("field_id"))
+        prod = resources_mod.build(src, model)
     base = os.path.join(outdir, f"{stem(path)}-review")
     with open(base + ".json", "w", encoding="utf-8") as fh:
         json.dump(res, fh, indent=2, ensure_ascii=False)
     import i18n
     effective_lang = lang or i18n.detect(model)["lang"]
     payload = report_data.build_review(model, res, theme=theme, grouping=grouping,
-                                       lang=effective_lang, phasing=curve)
+                                       lang=effective_lang, phasing=curve,
+                                       productivity=prod)
     if curve is not None:
         with open(base + "-scurve.json", "w", encoding="utf-8") as fh:
             json.dump(curve, fh, indent=2, ensure_ascii=False)
+    if prod is not None:
+        with open(base + "-productivity.json", "w", encoding="utf-8") as fh:
+            json.dump(prod, fh, indent=2, ensure_ascii=False)
     report_html.write(payload, base + ".html", template)
     if not quiet:
         print(run_checks.report(res, effective_lang))
