@@ -14,7 +14,7 @@ with date movement, the next few weeks of trend, and the historical series for t
 ## Input contract
 
 Two snapshots of **the same schedule** — the previous delivery and the current one. Not two
-different schedules, and not a schedule against an application's database: **each contractor
+different schedules, and not a schedule against an application's database: **each schedule
 compared against itself**, which is what makes the reading defensible.
 
 Each snapshot needs a status date and a saved baseline. Without the baseline there is no
@@ -97,7 +97,7 @@ inferred. **When the baseline changes between two cycles, your comparison basis 
 underneath the comparison.** Every deviation figure that straddles the change is measured
 against two different references. Report it as a finding about the report, not as performance.
 
-The second is where the conversation with a contractor is won or lost. A forecast rewritten
+The second is where the conversation between the parties is won or lost. A forecast rewritten
 with no execution behind it is a plan change, and it is legitimate — but it must be visible as
 one, because otherwise next cycle's comparison starts from a baseline nobody agreed to.
 

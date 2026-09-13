@@ -1,7 +1,7 @@
 # cronoaudit
 
 **Schedule integrity review for construction and infrastructure programmes.** An Agent Skill,
-and a runnable method, that audits a delivered schedule and the indicators derived from it —
+and a runnable method, that audits a schedule and the indicators derived from it —
 hunting the failures that produce a plausible wrong number rather than an error.
 
 From the scheduling tool's own XML export, with nothing installed beyond Python:

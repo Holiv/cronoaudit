@@ -52,7 +52,7 @@
 
 <h2>Entrada</h2>
 <pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py anterior.xml atual.xml</pre>
-<p>Dois instantâneos do mesmo cronograma: a entrega anterior e a atual. Não dois cronogramas diferentes, e não um cronograma contra o banco de dados de um aplicativo. Cada contratada comparada consigo mesma, que é o que torna a leitura defensável. Com dois arquivos você recebe a comparação e a análise do arquivo atual, de propósito: comparar dois arquivos que não se sustentam é comparar duas respostas erradas.</p>
+<p>Dois instantâneos do mesmo cronograma: a versão anterior e a atual. Não dois cronogramas diferentes, e não um cronograma contra o banco de dados de um aplicativo. Cada cronograma comparado consigo mesmo, que é o que torna a leitura defensável. Com dois arquivos saem a comparação e a análise do arquivo atual, de propósito: comparar dois arquivos que não se sustentam é comparar duas respostas erradas.</p>
 <p>Cada instantâneo precisa de data de status e de linha de base salva. Sem linha de base não há metade prevista e a decomposição do desvio fica sem denominador.</p>
 
 <h2>Casar uma atividade entre versões</h2>
@@ -66,7 +66,7 @@
 <tr><td>datas se moveram, <strong>sem</strong> datas reais</td><td class="c">replanejamento</td></tr>
 <tr><td>datas de <strong>linha de base</strong> se moveram</td><td class="c">referência movida</td></tr>
 </table>
-<p>O terceiro é o que se olha primeiro. Quando a linha de base muda entre dois ciclos, a base da comparação se moveu por baixo dela, e todo desvio que atravessa a mudança está medido contra duas referências. Reporte como achado sobre o relatório, não como desempenho. O segundo é onde a conversa com a contratada se decide: uma tendência reescrita sem execução por trás é mudança de plano, legítima, mas tem de ser visível como tal, senão o próximo ciclo parte de uma referência que ninguém acordou.</p>
+<p>O terceiro é o que se olha primeiro. Quando a linha de base muda entre dois ciclos, a base da comparação se moveu por baixo dela, e todo desvio que atravessa a mudança está medido contra duas referências. Reporte como achado sobre o relatório, não como desempenho. O segundo é onde a conversa entre as partes se decide: uma tendência reescrita sem execução por trás é mudança de plano, legítima, mas tem de ser visível como tal, senão o próximo ciclo parte de uma referência que ninguém acordou.</p>
 
 <h2>A decomposição do desvio</h2>
 <p>Para cada atividade folha com custo de linha de base acima de zero, a contribuição é a diferença entre realizado e previsto dela dividida pelo custo total de linha de base, em pontos percentuais. As contribuições somam o agregado, e as que arredondam a zero são descartadas, porque uma lista de zeros esconde as que importam. Quando a soma não bate com o movimento, o resíduo aparece como <strong>não explicado</strong>, com o número, em vez de sumir. O denominador é declarado: total do resumo ou soma das folhas.</p>
@@ -199,10 +199,10 @@ python3 scripts/review.py entrega.xml --profile perfil.json</pre>
 <p>É o que E procura: término puxado para antes sem execução. Reprogramar para antes pode ser legítimo, mas tem de ter motivo, e o E é a lista de perguntas. Se o motivo existe, fica registrado; se não, a tendência está otimista.</p>
 
 <h2>Tem dados sensíveis saindo da máquina</h2>
-<p>Não. A ferramenta não acessa rede. O relatório é um arquivo local sem referência externa. Um assistente só vê o que você mostra a ele, e a síntese é a única parte em que ele redige.</p>
+<p>Não. A ferramenta não acessa rede. O relatório é um arquivo local sem referência externa. Um assistente só vê o que lhe é mostrado, e a síntese é a única parte em que ele redige.</p>
 
 <h2>Como atualizo</h2>
-<p>Rode o instalador de novo. Ele substitui a skill e mantém um template personalizado, se houver. O perfil da empresa fica onde você o gravou e não é tocado.</p>
+<p>Rode o instalador de novo. Ele substitui a skill e mantém um template personalizado, se houver. O perfil da empresa fica onde foi gravado e não é tocado.</p>
 
 <h2>Funciona com Primavera P6</h2>
 <p>O método transfere, mas nada foi medido nesse formato. A leitura por biblioteca Java existe como caminho opcional e o resultado deve ser tratado como não verificado.</p>

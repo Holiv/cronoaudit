@@ -1,6 +1,6 @@
 ---
 name: cronoaudit
-description: Review a delivered construction or infrastructure schedule, compare it with the previous version, and audit the progress and earned-value figures derived from it - finding the failures that produce a plausible wrong number rather than an error. Use for schedule critical analysis of a contractor delivery, the periodic cycle report, computing or reconciling earned value (BCWS/BCWP/SPI/CPI), S-curves and Earned Schedule, productivity and trend by resource, network quality (DCMA-style metrics), delay forensics by driving path, look-ahead and forecasting, comparing two schedule versions, reading a .mpp or MPXJ-parsed schedule programmatically, or explaining why a control indicator disagrees with its source tool. Runs from one command over the schedule tool's own XML export with no dependency beyond Python, in the schedule's own language, and produces a self-contained HTML report with every section opening with a rule-built reading. Also use when asked to customise the organisation profile or the report ("personalizar padrão da empresa", "personalizar relatório").
+description: Review a construction or infrastructure schedule - received from another party, produced in-house, or under maintenance - compare it with the previous version, and audit the progress and earned-value figures derived from it - finding the failures that produce a plausible wrong number rather than an error. Use for the critical analysis of any schedule delivery or version, the periodic cycle report, computing or reconciling earned value (BCWS/BCWP/SPI/CPI), S-curves and Earned Schedule, productivity and trend by resource, network quality (DCMA-style metrics), delay forensics by driving path, look-ahead and forecasting, comparing two schedule versions, reading a .mpp or MPXJ-parsed schedule programmatically, or explaining why a control indicator disagrees with its source tool. Runs from one command over the schedule tool's own XML export with no dependency beyond Python, in the schedule's own language, and produces a self-contained HTML report with every section opening with a rule-built reading. Also use when asked to customise the organisation profile or the report ("personalizar padrão da empresa", "personalizar relatório").
 user-invocable: true
 ---
 
@@ -10,7 +10,7 @@ A method, and a runnable implementation of it, for auditing a schedule and the i
 derived from it. It targets one failure class specifically: **the calculation is arithmetically
 correct, every input is correct in its own source, the result is plausible, nothing raises an
 error, and the number is meaningless.** Textbooks cover how to compute earned value. This
-covers what goes wrong silently when you compute it on a real delivered file.
+covers what goes wrong silently when you compute it on a real file.
 
 ## Run it
 
@@ -26,6 +26,23 @@ Nothing to install beyond Python. Out come one self-contained HTML report in the
 own language and one JSON sidecar per analysis. Verify the tool itself first:
 `python3 scripts/test_checks.py`. The whole process, flags, failure messages and the judgement
 the tool cannot make for you: `references/usage.md`.
+
+## How a conversation starts
+
+The person may be on any side of the schedule: the one who received it, the one who produced
+it, the one responsible for updating it, a regulator, or someone studying. Never assume a role.
+
+1. **Locate the file.** If the request names a path, use it. If it names a folder, or nothing,
+   look in the folder (or the working directory) for `.xml` files: exactly one, propose it and
+   confirm; more than one, list them and ask which; none, ask for the path. Never pick silently.
+2. **Run the analysis once.** `review.py <file>` writes the report and the JSON sidecars beside
+   the XML; `--outdir` when the person names a folder. The analysis and the report are the same
+   command, so the report always exists after the first run.
+3. **State the full path of the report in the first reply**, then answer from the JSON
+   sidecars, point by point. Do not rerun unless asked or the file changed.
+4. **The report need not be opened.** A conversation about one finding, one rate or one
+   milestone is a complete use of the skill. Write the executive synthesis only when asked, or
+   when the person asks for a report to hand over.
 
 ## The one question, before anything
 
@@ -71,9 +88,9 @@ identifies an activity.
 - **A plausible default returned instead of null disarms the check that would exist.** Test for
   a value known to differ, not for non-null.
 
-## Write the executive synthesis when you run it
+## Writing the executive synthesis, when asked
 
-After `review.py`, read the JSON sidecars and write four to six short paragraphs a director can
+Read the JSON sidecars and write four to six short paragraphs a director can
 read in two minutes: whether the network holds and what that means; where the weight is and
 whether progress happened there; the Earned Schedule reading with its limit; the activities the
 forensics name; what the next four weeks demand. Quote figures from the files, say what is

@@ -52,7 +52,7 @@
 
 <h2>Input</h2>
 <pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py previous.xml current.xml</pre>
-<p>Two snapshots of the same schedule: the previous delivery and the current one. Not two different schedules, and not a schedule against an application's database. Each contractor compared against itself, which is what makes the reading defensible. With two files you get the comparison and the review of the current file, deliberately: comparing two files that do not hold together is comparing two wrong answers.</p>
+<p>Two snapshots of the same schedule: the previous version and the current one. Not two different schedules, and not a schedule against an application's database. Each schedule compared against itself, which is what makes the reading defensible. With two files come the comparison and the review of the current file, deliberately: comparing two files that do not hold together is comparing two wrong answers.</p>
 <p>Each snapshot needs a status date and a saved baseline. Without a baseline there is no planned half and the deviation decomposition has no denominator.</p>
 
 <h2>Matching an activity across versions</h2>
@@ -66,14 +66,14 @@
 <tr><td>dates moved, <strong>no</strong> actual dates</td><td class="c">replan</td></tr>
 <tr><td><strong>baseline</strong> dates moved</td><td class="c">reference moved</td></tr>
 </table>
-<p>The third is the one to look at first. When the baseline changes between two cycles, the basis of the comparison moved underneath it, and every deviation that straddles the change is measured against two references. Report it as a finding about the report, not as performance. The second is where the conversation with the contractor is decided: a forecast rewritten with no execution behind it is a plan change, legitimate, but it has to be visible as one, otherwise the next cycle starts from a reference nobody agreed to.</p>
+<p>The third is the one to look at first. When the baseline changes between two cycles, the basis of the comparison moved underneath it, and every deviation that straddles the change is measured against two references. Report it as a finding about the report, not as performance. The second is where the conversation between the parties is decided: a forecast rewritten with no execution behind it is a plan change, legitimate, but it has to be visible as one, otherwise the next cycle starts from a reference nobody agreed to.</p>
 
 <h2>The deviation decomposition</h2>
 <p>For each leaf activity with baseline cost above zero, the contribution is its earned minus planned divided by total baseline cost, in percentage points. The contributions sum to the aggregate, and those that round to zero are dropped, because a list of zeros hides the ones that matter. When the sum does not match the movement, the residue appears as <strong>unexplained</strong>, with the number, instead of vanishing. The denominator is declared: summary total or sum of the leaves.</p>
 <p>It is the operational answer to the aggregate problem. A positive aggregate progress can be out-of-sequence work covering activities that should be complete and sit at zero; the decomposition is what lets that be read on the spot.</p>
 
 <h2>One function, called twice</h2>
-<p>Both snapshots' indicators are computed by the same function, called twice, and not by two paths that happen to agree. If the previous cycle's figure were computed differently from the current one, the difference between them would be a reference artefact, and it would read as performance. You do not verify that the two halves agree; you build them so they cannot disagree.</p>
+<p>Both snapshots' indicators are computed by the same function, called twice, and not by two paths that happen to agree. If the previous cycle's figure were computed differently from the current one, the difference between them would be a reference artefact, and it would read as performance. The two halves are not verified to agree; they are built so they cannot disagree.</p>
 
 <h2>What comes out</h2>
 <p>A cycle report and a JSON, named after both files. Inside: both snapshots' general indicators by the identical rule, the movement in points, the per-activity decomposition that sums to it, the unexplained residue, the trend with the three-signal reading per activity, the moved baselines, the inserted and removed, and the warnings: a baseline that changed slot between cycles, for instance, comes out as a warning.</p>
@@ -199,10 +199,10 @@ python3 scripts/review.py delivery.xml --profile profile.json</pre>
 <p>That is what E looks for: finish pulled earlier with no execution. Reprogramming earlier can be legitimate, but it needs a reason, and E is the list of questions. If the reason exists, it gets recorded; if not, the forecast is optimistic.</p>
 
 <h2>Does sensitive data leave the machine</h2>
-<p>No. The tool does not access the network. The report is a local file with no external reference. An assistant only sees what you show it, and the synthesis is the only part it writes.</p>
+<p>No. The tool does not access the network. The report is a local file with no external reference. An assistant only sees what it is shown, and the synthesis is the only part it writes.</p>
 
 <h2>How do I update</h2>
-<p>Run the installer again. It replaces the skill and keeps a customised template, if there is one. The organisation profile stays where you saved it and is not touched.</p>
+<p>Run the installer again. It replaces the skill and keeps a customised template, if there is one. The organisation profile stays where it was saved and is not touched.</p>
 
 <h2>Does it work with Primavera P6</h2>
 <p>The method transfers, but nothing was measured in that format. Reading through a Java library exists as an optional path and the result should be treated as unverified.</p>

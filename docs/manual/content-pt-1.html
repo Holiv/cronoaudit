@@ -1,10 +1,10 @@
 <section class="ch">
 <h1>O que a cronoaudit faz, e para quem</h1>
-<p class="lede">A cronoaudit lê um cronograma entregue, verifica se ele se sustenta, mede o que está feito contra o que estava previsto, projeta o que vem, e escreve um relatório em que cada número diz de onde saiu e como reproduzir. Ela procura um tipo específico de falha: a conta está certa, cada parcela está certa na própria fonte, o resultado é plausível, nada dá erro, e o número não significa nada.</p>
+<p class="lede">A cronoaudit lê um cronograma, verifica se ele se sustenta, mede o que está feito contra o que estava previsto, projeta o que vem, e escreve um relatório em que cada número diz de onde saiu e como reproduzir. Ela procura um tipo específico de falha: a conta está certa, cada parcela está certa na própria fonte, o resultado é plausível, nada dá erro, e o número não significa nada.</p>
 
 <h2>Para quem</h2>
-<p>Para quem recebe um cronograma e precisa dizer se aquilo é verdade. O engenheiro de planejamento do lado contratante, que audita a entrega de uma contratada. O planejador da contratada, que quer entregar um cronograma que passe. O gerente que precisa de um relatório de ciclo para a diretoria sem depender de quem o apresenta.</p>
-<p>O manual não assume que você conheça os conceitos. O capítulo 2 explica cada um do zero. Se você já os domina, vá direto ao capítulo 3.</p>
+<p>Para quem tem um cronograma diante de si e precisa dizer se ele se sustenta: o cronograma recebido de outra parte, o elaborado internamente ou o que está sob responsabilidade de atualização. O leitor pode estar numa contratada, numa fiscalizadora, numa reguladora, numa consultoria, ou apenas estudando. A ferramenta não distingue o papel de quem a usa; distingue o arquivo. O planejador que precisa entregar um cronograma que passe, o engenheiro que audita o que recebeu e o gerente que precisa de um relatório de ciclo para a diretoria usam o mesmo relatório.</p>
+<p>O manual não assume conhecimento prévio dos conceitos. O capítulo 2 explica cada um do zero. Quem já os domina pode ir direto ao capítulo 3.</p>
 
 <h2>O que entra e o que sai</h2>
 <div class="def"><div class="k">Entrada</div><div class="v">O cronograma exportado do MS Project em formato XML, que é o formato documentado do próprio Project. Um arquivo para a análise crítica; dois arquivos, anterior e atual, para a comparação de ciclo.</div></div>
@@ -89,7 +89,7 @@ python3 cronoaudit/skills/cronoaudit/scripts/review.py entrega.xml</pre>
 
 <h2>Exportar o cronograma</h2>
 <p>O arquivo .mpp é um formato proprietário fechado. A cronoaudit lê o XML que o próprio Project exporta, que é um formato documentado e carrega tudo o que a análise precisa: tarefas, vínculos com lag, as onze linhas de base, calendários, campos personalizados, atribuições e o faseamento no tempo.</p>
-<div class="note"><b>No MS Project</b>Arquivo, Salvar como, e no tipo de arquivo escolha Formato XML. Guarde o XML ao lado do .mpp. Se a contratada enviar o XML junto com o .mpp, esse passo desaparece da sua rotina.</div>
+<div class="note"><b>No MS Project</b>Arquivo, Salvar como, e no tipo de arquivo escolha Formato XML. Guarde o XML ao lado do .mpp. Quando o XML é enviado junto com o .mpp por quem elabora o cronograma, esse passo desaparece da rotina.</div>
 <p>Há um caminho opcional para ler o .mpp diretamente, por uma biblioteca Java, para quem a tiver instalada. Ele nunca é exigido.</p>
 
 <h2>Primeira execução</h2>
@@ -107,8 +107,37 @@ python3 cronoaudit/skills/cronoaudit/scripts/review.py entrega.xml</pre>
 </table>
 <p>Opções úteis: <code>--outdir</code> para escolher onde gravar, <code>--group-by</code> para agrupar o peso por um campo personalizado, <code>--profile</code> para aplicar o perfil da empresa, <code>--lang</code> para forçar o idioma, <code>--threshold-days</code> e <code>--tolerance-days</code> para mover os limiares.</p>
 
-<h2>Dentro de um assistente</h2>
-<p>Com a skill instalada, você não precisa lembrar comandos. Peça em linguagem natural: analise este cronograma, compare estas duas versões, personalize o padrão da empresa. O assistente lê as instruções da skill, roda os programas, lê os resultados e, quando você pede, redige a síntese executiva e a injeta no relatório. Os números vêm sempre dos programas; o assistente orquestra, interpreta e escreve.</p>
+<h2>Dentro de um assistente: como iniciar a conversa</h2>
+<p>Com a skill instalada, nenhum comando precisa ser lembrado. O assistente lê as instruções da skill, roda os programas, lê os resultados e conversa sobre eles. Os números vêm sempre dos programas; o assistente orquestra, interpreta e escreve. O que segue é a forma mais direta de começar.</p>
+<h3>Onde abrir</h3>
+<p>O assistente lê o disco local, portanto precisa saber onde o arquivo está. Há duas formas equivalentes: abrir o terminal já na pasta em que o XML se encontra e iniciar o assistente ali, ou iniciar em qualquer lugar e indicar o caminho completo na primeira mensagem. Quando a pasta contém mais de um XML, a mensagem deve nomear o arquivo; o assistente está instruído a listar os arquivos e perguntar qual usar, nunca a escolher em silêncio.</p>
+<h3>A primeira mensagem</h3>
+<pre>cronoaudit, faça a análise do cronograma entrega-setembro.xml
+cronoaudit, analise o cronograma que está em ~/Cronogramas/2026-09/entrega.xml
+cronoaudit, compare anterior.xml com atual.xml
+cronoaudit, analise entrega.xml e salve os resultados em ~/Relatorios/setembro</pre>
+<p>O nome da skill no início da mensagem garante que o assistente a carregue. A partir daí a linguagem é livre.</p>
+<h3>O que acontece em seguida</h3>
+<p>A análise roda uma vez. Ela e o relatório são o mesmo comando: sempre que a análise roda, o relatório HTML e os arquivos JSON são gravados ao lado do XML, ou na pasta indicada na mensagem. O assistente informa o caminho completo do relatório na primeira resposta. Depois disso a conversa segue sobre os dados já gravados, ponto a ponto, sem rodar de novo. Nada é enviado a lugar nenhum; os arquivos ficam onde foram gravados.</p>
+<p>O relatório não precisa ser aberto para a conversa acontecer. É possível discutir um achado, um ritmo ou um marco durante uma hora e só então abrir o HTML, ou nunca abri-lo. A síntese executiva é escrita apenas quando pedida.</p>
+<h3>Perguntas e pedidos úteis</h3>
+<table>
+<tr><th>Pedido</th><th>O que produz</th></tr>
+<tr><td>salve os resultados em ~/Relatorios/setembro</td><td>grava o relatório e os JSON na pasta indicada, criando-a se preciso</td></tr>
+<tr><td>agrupe por DISCIPLINA</td><td>a visão de avanço por grupo usa o campo personalizado em vez da EAP</td></tr>
+<tr><td>use o perfil perfil.json</td><td>aplica as convenções declaradas da empresa</td></tr>
+<tr><td>relatório em inglês</td><td>força o idioma, ignorando a detecção</td></tr>
+<tr><td>explique o achado A1 antes de qualquer outra coisa</td><td>o assistente lê os pares e explica cada um, sem escrever síntese</td></tr>
+<tr><td>quais atividades do C carregam mais custo de linha de base?</td><td>ordena o achado pelo peso, o que a tabela do relatório não faz</td></tr>
+<tr><td>quando termina segundo o Earned Schedule, e o que essa leitura não enxerga?</td><td>o término independente ao lado do término do cronograma, com o limite declarado</td></tr>
+<tr><td>de onde veio o atraso do marco da linha 412?</td><td>a cadeia condutora e a origem, com número de linha</td></tr>
+<tr><td>quais ritmos estão em evidência fina?</td><td>separa os veredictos sustentados dos que são pergunta</td></tr>
+<tr><td>escreva a síntese executiva e injete no relatório</td><td>quatro a seis parágrafos, com autor e hora, a partir dos JSON</td></tr>
+<tr><td>personalizar padrão da empresa</td><td>a entrevista de perfil, começando pela descoberta de campos</td></tr>
+<tr><td>rode de novo, o arquivo mudou</td><td>nova análise sobre o XML atualizado, sobrescrevendo os resultados</td></tr>
+</table>
+<h3>Planos gratuitos</h3>
+<p>Sem assistente, a ferramenta é integralmente gratuita: Python e o comando produzem o relatório completo com as leituras por regra. Com assistente, depende do plano do assistente. Até a data desta edição, o Claude Code não faz parte do plano gratuito da Anthropic e exige assinatura ou crédito de API; o Gemini CLI e o GitHub Copilot oferecem faixas gratuitas que leem o formato Agent Skills. Planos mudam; confira na hora.</p>
 
 <h2>Verificar a ferramenta antes de confiar nela</h2>
 <pre>python3 ~/.claude/skills/cronoaudit/scripts/test_checks.py</pre>

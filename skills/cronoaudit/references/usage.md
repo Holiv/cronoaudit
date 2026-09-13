@@ -17,8 +17,8 @@ That is Project's own documented interchange format. It carries the tasks, the p
 links with their lags, all eleven baseline slots, the calendars, the custom fields and the
 status date — **nothing this skill needs is lost in the export.**
 
-Ask the contractor to send the XML alongside the `.mpp` and the step disappears entirely from
-your week. It is one extra click in their Save As dialog.
+Ask whoever produces the schedule to send the XML alongside the `.mpp` and the step disappears
+entirely from the routine. It is one extra click in their Save As dialog.
 
 *Optional, if you would rather not export at all:* with `pip install mpxj` and a Java runtime
 available, the scripts read `.mpp` directly, and Primavera P6 XER and P6 XML come in through

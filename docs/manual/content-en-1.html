@@ -1,10 +1,10 @@
 <section class="ch">
 <h1>What cronoaudit does, and for whom</h1>
-<p class="lede">cronoaudit reads a delivered schedule, checks whether it holds together, measures what is done against what was planned, projects what comes next, and writes a report in which every figure says where it came from and how to reproduce it. It looks for one specific kind of failure: the arithmetic is right, every term is right in its own source, the result is plausible, nothing errors, and the number means nothing.</p>
+<p class="lede">cronoaudit reads a schedule, checks whether it holds together, measures what is done against what was planned, projects what comes next, and writes a report in which every figure says where it came from and how to reproduce it. It looks for one specific kind of failure: the arithmetic is right, every term is right in its own source, the result is plausible, nothing errors, and the number means nothing.</p>
 
 <h2>For whom</h2>
-<p>For whoever receives a schedule and has to say whether it is true. The planning engineer on the client side, auditing a contractor's delivery. The contractor's planner, who wants to deliver a schedule that passes. The manager who needs a cycle report for the board without depending on whoever presents it.</p>
-<p>The manual does not assume you know the concepts. Chapter 2 explains each one from scratch. If you already have them, go straight to chapter 3.</p>
+<p>For whoever has a schedule in front of them and has to say whether it holds: the schedule received from another party, the one produced in-house, or the one under their responsibility to update. The reader may sit in a contractor, a supervising body, a regulator, a consultancy, or be studying. The tool does not distinguish the role of whoever uses it; it distinguishes the file. The planner who has to deliver a schedule that passes, the engineer auditing what was received and the manager who needs a cycle report for the board use the same report.</p>
+<p>The manual assumes no prior knowledge of the concepts. Chapter 2 explains each one from scratch. Readers who already have them can go straight to chapter 3.</p>
 
 <h2>What goes in and what comes out</h2>
 <div class="def"><div class="k">Input</div><div class="v">The schedule exported from MS Project as XML, which is Project's own documented format. One file for the critical review; two files, previous and current, for the cycle comparison.</div></div>
@@ -67,7 +67,7 @@
 
 <section class="ch">
 <h1>Installation and first run</h1>
-<p class="lede">cronoaudit is an Agent Skill: a folder with instructions for an assistant and the programs that do the work. It installs by copying that folder to where your assistant looks for skills. The installer does that for every assistant at once.</p>
+<p class="lede">cronoaudit is an Agent Skill: a folder with instructions for an assistant and the programs that do the work. It installs by copying that folder to where the assistant looks for skills. The installer does that for every assistant at once.</p>
 
 <h2>Install with one command</h2>
 <p>On macOS or Linux, in a terminal:</p>
@@ -80,16 +80,16 @@
 <tr><td class="m">~/.claude/skills/cronoaudit</td><td>Claude Code, OpenCode, Cursor</td></tr>
 <tr><td class="m">~/.agents/skills/cronoaudit</td><td>Codex, Gemini CLI, Cursor, GitHub Copilot, VS Code, OpenCode</td></tr>
 </table>
-<p>If you prefer your assistant's native path, each has one: <code>npx skills add Holiv/cronoaudit -g</code> in any client of the format, <code>gemini skills install</code> with the repository URL in Gemini CLI, Codex's skill installer, Cursor's Remote Rule, and the Claude Code plugin. The repository README keeps the table current.</p>
+<p>Each assistant also has a native install path: <code>npx skills add Holiv/cronoaudit -g</code> in any client of the format, <code>gemini skills install</code> with the repository URL in Gemini CLI, Codex's skill installer, Cursor's Remote Rule, and the Claude Code plugin. The repository README keeps the table current.</p>
 
 <h2>With no assistant at all</h2>
-<p>The tool works without artificial intelligence. Clone or download the repository and run the program directly. You get everything except the written executive synthesis and the customisation interview, which are the two parts that depend on an assistant.</p>
+<p>The tool works without artificial intelligence. Clone or download the repository and run the program directly. Everything is produced except the written executive synthesis and the customisation interview, which are the two parts that depend on an assistant.</p>
 <pre>git clone https://github.com/Holiv/cronoaudit
 python3 cronoaudit/skills/cronoaudit/scripts/review.py delivery.xml</pre>
 
 <h2>Exporting the schedule</h2>
 <p>The .mpp file is a closed proprietary format. cronoaudit reads the XML that Project itself exports, which is a documented format and carries everything the analysis needs: tasks, links with lag, the eleven baselines, calendars, custom fields, assignments and the time-phased data.</p>
-<div class="note"><b>In MS Project</b>File, Save As, and under file type choose XML Format. Keep the XML beside the .mpp. If the contractor sends the XML with the .mpp, this step disappears from your routine.</div>
+<div class="note"><b>In MS Project</b>File, Save As, and under file type choose XML Format. Keep the XML beside the .mpp. When the XML is sent with the .mpp by whoever produces the schedule, this step disappears from the routine.</div>
 <p>There is an optional path to read .mpp directly, through a Java library, for whoever has it installed. It is never required.</p>
 
 <h2>First run</h2>
@@ -107,8 +107,37 @@ python3 cronoaudit/skills/cronoaudit/scripts/review.py delivery.xml</pre>
 </table>
 <p>Useful options: <code>--outdir</code> to choose where to write, <code>--group-by</code> to group weight by a custom field, <code>--profile</code> to apply the organisation profile, <code>--lang</code> to force the language, <code>--threshold-days</code> and <code>--tolerance-days</code> to move the thresholds.</p>
 
-<h2>Inside an assistant</h2>
-<p>With the skill installed you do not need to remember commands. Ask in plain language: analyse this schedule, compare these two versions, customise the organisation's conventions. The assistant reads the skill's instructions, runs the programs, reads the results and, when you ask, writes the executive synthesis and injects it into the report. The figures always come from the programs; the assistant orchestrates, interprets and writes.</p>
+<h2>Inside an assistant: how to start the conversation</h2>
+<p>With the skill installed, no command needs to be remembered. The assistant reads the skill's instructions, runs the programs, reads the results and talks about them. The figures always come from the programs; the assistant orchestrates, interprets and writes. What follows is the most direct way to begin.</p>
+<h3>Where to open</h3>
+<p>The assistant reads the local disk, so it has to know where the file is. Two equivalent ways: open the terminal in the folder that holds the XML and start the assistant there, or start anywhere and give the full path in the first message. When the folder holds more than one XML, the message should name the file; the assistant is instructed to list the files and ask which one to use, never to choose silently.</p>
+<h3>The first message</h3>
+<pre>cronoaudit, review the schedule delivery-september.xml
+cronoaudit, analyse the schedule at ~/Schedules/2026-09/delivery.xml
+cronoaudit, compare previous.xml with current.xml
+cronoaudit, analyse delivery.xml and save the results in ~/Reports/september</pre>
+<p>The skill's name at the start of the message makes sure the assistant loads it. From there the language is free.</p>
+<h3>What happens next</h3>
+<p>The analysis runs once. It and the report are the same command: whenever the analysis runs, the HTML report and the JSON files are written beside the XML, or in the folder named in the message. The assistant states the report's full path in its first reply. After that the conversation continues over the data already written, point by point, without running again. Nothing is sent anywhere; the files stay where they were written.</p>
+<p>The report does not have to be opened for the conversation to happen. A finding, a rate or a milestone can be discussed for an hour before the HTML is opened, or it may never be opened. The executive synthesis is written only when asked for.</p>
+<h3>Useful questions and requests</h3>
+<table>
+<tr><th>Request</th><th>What it produces</th></tr>
+<tr><td>save the results in ~/Reports/september</td><td>writes the report and the JSON files in the named folder, creating it if needed</td></tr>
+<tr><td>group by DISCIPLINE</td><td>the progress-by-group view uses the custom field instead of the WBS</td></tr>
+<tr><td>use the profile profile.json</td><td>applies the organisation's declared conventions</td></tr>
+<tr><td>report in Portuguese</td><td>forces the language, ignoring detection</td></tr>
+<tr><td>explain finding A1 before anything else</td><td>the assistant reads the pairs and explains each, writing no synthesis</td></tr>
+<tr><td>which C activities carry the most baseline cost?</td><td>orders the finding by weight, which the report table does not</td></tr>
+<tr><td>when does it finish by Earned Schedule, and what does that reading not see?</td><td>the independent finish beside the schedule's own, with the limit stated</td></tr>
+<tr><td>where did the delay on the milestone in row 412 come from?</td><td>the driving chain and the origin, with row numbers</td></tr>
+<tr><td>which rates are thin evidence?</td><td>separates the supported verdicts from the ones that are questions</td></tr>
+<tr><td>write the executive synthesis and inject it into the report</td><td>four to six paragraphs, with author and time, from the JSON files</td></tr>
+<tr><td>customise the organisation profile</td><td>the profile interview, starting with field discovery</td></tr>
+<tr><td>run it again, the file changed</td><td>a new analysis over the updated XML, overwriting the results</td></tr>
+</table>
+<h3>Free plans</h3>
+<p>Without an assistant the tool is entirely free: Python and the command produce the full report with the rule-built readings. With an assistant it depends on the assistant's plan. As of this edition, Claude Code is not part of Anthropic's free plan and requires a subscription or API credit; Gemini CLI and GitHub Copilot offer free tiers that read the Agent Skills format. Plans change; check at the time.</p>
 
 <h2>Verify the tool before trusting it</h2>
 <pre>python3 ~/.claude/skills/cronoaudit/scripts/test_checks.py</pre>
@@ -179,7 +208,7 @@ python3 cronoaudit/skills/cronoaudit/scripts/review.py delivery.xml</pre>
 <tr><td class="c">FF</td><td>actual finish</td><td>finished after the lag allows</td><td>A1, before lag</td></tr>
 <tr><td class="c">SF</td><td>actual finish</td><td>started after the lag allows</td><td>A1, before lag</td></tr>
 </table>
-<p>Both ends of the violated link are marked, and the report counts three ways: distinct activities, as successors, as predecessors. How many activities have the problem depends on how you count, and diverging from the convention of the other party's tool hands them the argument.</p>
+<p>Both ends of the violated link are marked, and the report counts three ways: distinct activities, as successors, as predecessors. How many activities have the problem depends on how they are counted, and diverging from the convention of the other party's tool hands them the argument.</p>
 <div class="example"><b>To reproduce in Project</b><p>Group by predecessor and filter by Actual Start populated. Mark the pair and inspect the link in the Gantt.</p></div>
 
 <h2>A2 · Total inversion</h2>
