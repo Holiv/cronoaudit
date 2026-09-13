@@ -1,10 +1,10 @@
 ---
-name: schedule-integrity
+name: cronoaudit
 description: Review a delivered construction or infrastructure schedule, compare it with the previous version, and audit the progress and earned-value figures derived from it - finding the failures that produce a plausible wrong number rather than an error. Use for schedule critical analysis of a contractor delivery, the periodic cycle report, computing or reconciling earned value (BCWS/BCWP/SPI/CPI), S-curves and Earned Schedule, productivity and trend by resource, network quality (DCMA-style metrics), delay forensics by driving path, look-ahead and forecasting, comparing two schedule versions, reading a .mpp or MPXJ-parsed schedule programmatically, or explaining why a control indicator disagrees with its source tool. Runs from one command over the schedule tool's own XML export with no dependency beyond Python, in the schedule's own language, and produces a self-contained HTML report with every section opening with a rule-built reading. Also use when asked to customise the organisation profile or the report ("personalizar padrão da empresa", "personalizar relatório").
 user-invocable: true
 ---
 
-# Schedule integrity review
+# cronoaudit — schedule integrity review
 
 A method, and a runnable implementation of it, for auditing a schedule and the indicators
 derived from it. It targets one failure class specifically: **the calculation is arithmetically

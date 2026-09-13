@@ -1,0 +1,17 @@
+{
+  "name": "cronoaudit",
+  "owner": { "name": "Helton da Silva de Oliveira" },
+  "metadata": {
+    "description": "cronoaudit: schedule integrity review for construction and infrastructure programmes."
+  },
+  "plugins": [
+    {
+      "name": "cronoaudit",
+      "source": "./",
+      "description": "Nine integrity checks with stable codes, S-curve from the file's own phasing, productivity by resource, network quality, Earned Schedule, forensics. One command over the scheduling tool's XML export.",
+      "version": "0.6.0",
+      "category": "productivity",
+      "homepage": "https://github.com/Holiv/cronoaudit"
+    }
+  ]
+}

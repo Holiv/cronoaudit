@@ -1,0 +1,11 @@
+{
+  "name": "cronoaudit",
+  "description": "Schedule integrity review for construction and infrastructure programmes: nine checks with stable codes, the S-curve from the file's own phasing, productivity by resource, network quality, Earned Schedule and forensics. From the scheduling tool's XML export, no dependency beyond Python.",
+  "version": "0.6.0",
+  "author": { "name": "Helton da Silva de Oliveira" },
+  "homepage": "https://github.com/Holiv/cronoaudit",
+  "repository": "https://github.com/Holiv/cronoaudit",
+  "license": "Apache-2.0",
+  "keywords": ["schedule", "project-controls", "earned-value", "ms-project", "planning", "construction"],
+  "skills": "./skills/"
+}
