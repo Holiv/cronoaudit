@@ -1,0 +1,242 @@
+<section class="ch">
+<h1>Olhando para frente e olhando para trás</h1>
+<p class="lede">A seção V8 responde quando o contrato termina de verdade e o que as próximas semanas exigem. A V9 responde de onde veio o atraso de cada marco e por qual caminho. As duas usam só o que o arquivo já carrega, e cada leitura diz sobre o que foi construída.</p>
+
+<h2>Earned Schedule</h2>
+<p>O valor agregado clássico mede prazo em dinheiro, e no fim do projeto o indicador vai a 1,0 num projeto atrasado um ano. Earned Schedule mede prazo em tempo. Pega o valor realizado hoje, sobe até a curva de previsto e lê a data em que a curva chegou ali. Essa data é o ES: onde o plano dizia que estaríamos.</p>
+<table>
+<tr><th>Grandeza</th><th>Fórmula</th><th>Lê-se</th></tr>
+<tr><td class="c">ES</td><td>data em que o previsto acumulado igualou o realizado de hoje, interpolada dentro do mês</td><td>onde o plano dizia que estaríamos</td></tr>
+<tr><td class="c">AT</td><td>dias do primeiro dia previsto até a data de status</td><td>tempo decorrido</td></tr>
+<tr><td class="c">SV(t)</td><td>ES menos AT</td><td>dias atrás do plano; negativo é atrás</td></tr>
+<tr><td class="c">SPI(t)</td><td>ES dividido por AT</td><td>eficiência de prazo; 0,90 é dez por cento mais lento que o plano</td></tr>
+<tr><td class="c">PD</td><td>primeiro dia previsto até o último término de linha de base</td><td>duração planejada</td></tr>
+<tr><td class="c">IEAC(t)</td><td>PD dividido por SPI(t), como data a partir do primeiro dia previsto</td><td>término independente nesta eficiência</td></tr>
+<tr><td class="c">TSPI</td><td>(PD menos ES) dividido por (PD menos AT)</td><td>eficiência que o restante precisa para terminar na data</td></tr>
+</table>
+<p>O TSPI é o número da reunião. Acima de 1,0 o restante precisa correr mais que o plano. Acima de 1,10 a literatura trata como irrecuperável, porque nenhuma obra sustenta dez por cento acima do plano por muito tempo. Ele transforma "estamos atrasados" em "precisamos de tanto a mais por semana, e isso é ou não é possível".</p>
+<div class="note"><b>O limite, declarado no relatório</b>É medida agregada, ponderada por custo, e não enxerga o caminho crítico: uma massa de atividades não críticas atrasadas mostra atraso enquanto a data final se sustenta, e o contrário também. Por isso o término independente nunca substitui o término do cronograma. Ele fica ao lado, e a distância entre os dois é a conversa. Herda tudo o que a curva de previsto herda: a gaveta, o método de valor agregado, execução antes da janela de linha de base.</div>
+<div class="example"><b>No cronograma de exemplo</b><p>O realizado está muito atrás do previsto, e o ES cai mais de cem dias antes da data de status. A eficiência de prazo fica abaixo de 0,2 e o TSPI acima de 1,7: o restante precisaria correr setenta por cento mais rápido que o plano. O relatório escreve isso como pergunta sobre o cronograma, não como sentença.</p></div>
+
+<h2>Look-ahead</h2>
+<p>Quatro e oito semanas a partir da data de status: o que precisa começar e o que precisa terminar, por grupo, ponderado pelo custo de linha de base; o ganho que o arquivo planeja para a janela, pró-rata da curva faseada; e o ganho que o ritmo praticado nos últimos dois meses entregaria. Uma palavra diz se a medição planejada da janela é alcançável.</p>
+
+<h2>Ritmos por grupo</h2>
+<p>Percentual ganho por semana até hoje, desde o primeiro ganho do grupo, contra o percentual por semana que o restante precisa para chegar ao último término de linha de base do grupo. A razão necessário sobre praticado dá uma palavra por grupo: no ritmo, esticar, fora de alcance.</p>
+
+<h2>Faixas de marco</h2>
+<p>A distribuição do escorregamento de término, término atual menos término de linha de base em dias corridos, sobre as atividades iniciadas ou devidas neste instantâneo, aplicada ao término atual de cada marco futuro como P50 e P80. É empírico, não simulação com premissa inventada. Uma série de instantâneos substitui isso pelo movimento observado de ciclo a ciclo.</p>
+
+<h2>Exposição à chuva</h2>
+<p>O custo remanescente espalhado uniformemente sobre o período atual de cada atividade a partir da data de status, lido contra os meses que o próprio calendário dela reserva para tempo ruim, um mês com quatro ou mais exceções não úteis. Reportado agora e de novo com tudo deslocado trinta dias, porque escorregar para dentro da reserva é como um atraso pequeno vira grande. A distribuição é inferida; os meses de reserva são medidos.</p>
+
+<h2>Forense: caminho condutor por marco</h2>
+<p>De onde veio o atraso, por qual caminho, e quando começou? A partir de cada marco futuro a ferramenta caminha para trás pela predecessora que de fato conduz cada início, a que tem instante do vínculo mais lag caindo por último no calendário da sucessora, até chegar a uma atividade concluída, porque o passado não conduz nada, ou a uma ponta aberta.</p>
+<p>Cada nó da cadeia carrega a variação de término contra a linha de base em dias úteis. A <strong>origem</strong> é o nó mais fundo da cadeia que ainda carrega pelo menos cinco dias úteis de variação: caminhando do marco para trás, a variação é herdada de quem conduz, então o último nó que ainda a tem é onde ela entrou. O atraso ganha nome e número de linha, não agregado. O relatório também diz quais atividades originam atraso em mais marcos, porque um nome pode ser a raiz de uma dúzia de datas escorregadas, se cada cadeia alcança trabalho iniciado, e se morre numa ponta aberta, que é o achado Q1 visto do lado do marco.</p>
+<div class="note"><b>Não é laudo de atraso</b>Um laudo contratual exige registro contemporâneo e método formal, como as práticas recomendadas da AACE para análise forense de cronograma. Isto reconstrói o mecanismo a partir das datas, vínculos e calendários do arquivo, com evidência reproduzível, para sustentar a reunião e a notificação. A conversa contratual acontece em tempo real, com a realidade de cada organização.</div>
+<div class="example"><b>No cronograma de exemplo</b><p>Há um marco contratual futuro com doze dias úteis de variação. A cadeia condutora tem três nós, e a origem é o próprio marco: a variação não veio de nenhuma predecessora com atraso próprio, o que aponta para uma data digitada ou para uma cadeia rompida antes dele.</p></div>
+
+<h2>Forense de calendário</h2>
+<p>Uma reserva de improdutividade registrada para um ano enquanto as atividades daquele calendário executam em outro embute otimismo que nada no arquivo anuncia: o mês recebe todos os dias úteis em vez dos reais. Por calendário em uso, exceções não úteis por ano contra dias de atividade por ano, com dois sinais: anos com atividades e sem reserva enquanto o calendário tem reserva em outro ano, e anos com reserva e sem atividades.</p>
+
+<h2>Padrão de execução</h2>
+<p>Execução fora de sequência pelo mês em que a sucessora começou, contando os pares do A1 e os pares com as duas concluídas gravados fora dele. E a distribuição do escorregamento de início contra a linha de base nas atividades iniciadas: P20, P50, P80, quantas começaram antes, quantas depois.</p>
+
+<h2>Com um instantâneo anterior</h2>
+<p>Folga consumida por atividade e por grupo, folga total antes menos folga total agora, em dias úteis: folga que some enquanto as datas se sustentam é atraso ainda invisível. Atividades que viraram críticas neste ciclo. E o movimento de cada marco entre os instantâneos, atribuído ao que se moveu na cadeia condutora dele pelos três sinais do comparador: execução, replanejamento ou referência movida, com a leitura majoritária como atribuição.</p>
+</section>
+
+<section class="ch">
+<h1>Comparação de ciclo</h1>
+<p class="lede">A análise de um arquivo pergunta se o cronograma se sustenta por dentro. A comparação de dois pergunta outra coisa: o que se moveu desde a última entrega, e foi a obra que se moveu ou o plano?</p>
+
+<h2>Entrada</h2>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py anterior.xml atual.xml</pre>
+<p>Dois instantâneos do mesmo cronograma: a entrega anterior e a atual. Não dois cronogramas diferentes, e não um cronograma contra o banco de dados de um aplicativo. Cada contratada comparada consigo mesma, que é o que torna a leitura defensável. Com dois arquivos você recebe a comparação e a análise do arquivo atual, de propósito: comparar dois arquivos que não se sustentam é comparar duas respostas erradas.</p>
+<p>Cada instantâneo precisa de data de status e de linha de base salva. Sem linha de base não há metade prevista e a decomposição do desvio fica sem denominador.</p>
+
+<h2>Casar uma atividade entre versões</h2>
+<p>Primeiro pelo identificador único estável, não pelo número de linha, que renumera livremente. Se falhar, por nome mais caminho na EAP. O que não casa entra em duas classes, e só duas: <strong>inserida</strong>, presente na atual sem par na anterior, e <strong>removida</strong>, presente na anterior e nunca casada. Uma atividade renomeada que também mudou de ramo é indistinguível de remoção mais inserção, e fingir o contrário fabrica uma terceira categoria que não se verifica. O relatório mostra a contagem para o leitor julgar.</p>
+<div class="note"><b>Um falso par é pior que um par perdido</b>Um par que não casa cai na lista de não casadas, onde alguém olha. Um par casado errado produz movimento de data, desvio e entrada de tendência para duas atividades que nada têm a ver uma com a outra, todos plausíveis. Resumos e marcos ficam fora do desvio e da tendência: resumos contariam os filhos duas vezes, e marcos não têm duração.</div>
+
+<h2>Os três sinais</h2>
+<table>
+<tr><th>Sinal</th><th>Leitura</th></tr>
+<tr><td>datas se moveram <strong>e</strong> há datas reais</td><td class="c">execução</td></tr>
+<tr><td>datas se moveram, <strong>sem</strong> datas reais</td><td class="c">replanejamento</td></tr>
+<tr><td>datas de <strong>linha de base</strong> se moveram</td><td class="c">referência movida</td></tr>
+</table>
+<p>O terceiro é o que se olha primeiro. Quando a linha de base muda entre dois ciclos, a base da comparação se moveu por baixo dela, e todo desvio que atravessa a mudança está medido contra duas referências. Reporte como achado sobre o relatório, não como desempenho. O segundo é onde a conversa com a contratada se decide: uma tendência reescrita sem execução por trás é mudança de plano, legítima, mas tem de ser visível como tal, senão o próximo ciclo parte de uma referência que ninguém acordou.</p>
+
+<h2>A decomposição do desvio</h2>
+<p>Para cada atividade folha com custo de linha de base acima de zero, a contribuição é a diferença entre realizado e previsto dela dividida pelo custo total de linha de base, em pontos percentuais. As contribuições somam o agregado, e as que arredondam a zero são descartadas, porque uma lista de zeros esconde as que importam. Quando a soma não bate com o movimento, o resíduo aparece como <strong>não explicado</strong>, com o número, em vez de sumir. O denominador é declarado: total do resumo ou soma das folhas.</p>
+<p>É a resposta operacional ao problema do agregado. Um avanço agregado positivo pode ser trabalho fora de sequência cobrindo atividades que deveriam estar concluídas e estão a zero; a decomposição é o que permite ler isso na hora.</p>
+
+<h2>Uma função, chamada duas vezes</h2>
+<p>Os indicadores dos dois instantâneos são calculados pela mesma função, chamada duas vezes, e não por dois caminhos que por acaso concordam. Se a cifra do ciclo anterior fosse calculada de um jeito diferente da atual, a diferença entre elas seria artefato de referência, e leria como desempenho. Não se verifica que as duas metades concordam; constrói-se de modo que não possam discordar.</p>
+
+<h2>O que sai</h2>
+<p>Um relatório de ciclo e um JSON, nomeados com os dois arquivos. Dentro: os indicadores gerais dos dois instantâneos pela regra idêntica, o movimento em pontos, a decomposição por atividade que soma a ele, o resíduo não explicado, a tendência com a leitura de três sinais por atividade, as linhas de base movidas, as inseridas e removidas, e os avisos: uma linha de base que mudou de gaveta entre ciclos, por exemplo, sai como aviso.</p>
+<div class="example"><b>No par de exemplo</b><p>Duas atividades moveram datas: uma com datas reais, lida como execução; outra sem, lida como replanejamento. Uma teve a linha de base alterada, e o relatório emite aviso de referência movida antes de qualquer número de desempenho. A decomposição tem uma linha, que soma ao movimento.</p></div>
+</section>
+
+<section class="ch">
+<h1>Perfil e personalização</h1>
+<p class="lede">Tudo o que uma empresa pode declarar em vez de ter codificado. Cada chave tem um padrão que funciona sem perfil nenhum; um perfil só estreita. O mapeamento de uma empresa é ativo dela e não pertence ao método genérico. O que é genérico é que ele pode ser declarado.</p>
+
+<h2>Descobrir antes de perguntar</h2>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/discover_fields.py entrega-review.json</pre>
+<p>Lista todo campo personalizado que de fato carrega valores, com o tipo inferido dos valores, a taxa de preenchimento, quantos valores distintos há, se é conjunto fechado, e uma amostra. Depois agrupa por papel provável: disciplina, frente, trecho, contratada, fase, justificativa, quantidade, unidade. Existe para ninguém responder de memória. Perguntar qual campo guarda a disciplina faz a pessoa recordar; mostrar três campos preenchidos com os valores faz reconhecer. Um campo que existe e está quase vazio sai à parte, como achado: uma justificativa em branco em 96% das atividades é pendência de conformidade, não campo a ignorar.</p>
+
+<h2>As chaves do perfil</h2>
+<table>
+<tr><th>Chave</th><th>Padrão</th><th>Efeito</th></tr>
+<tr><td class="m">organisation</td><td>vazio</td><td>nome exibido na capa do relatório</td></tr>
+<tr><td class="m">lang</td><td>segue o cronograma</td><td>força pt ou en</td></tr>
+<tr><td class="m">ev_method</td><td>o que o arquivo declara</td><td>physical ou percent; registrado como forçado</td></tr>
+<tr><td class="m">baseline_slot</td><td>eleita por cobertura</td><td>0 a 10; registrado como forçado</td></tr>
+<tr><td class="m">threshold_days</td><td>30</td><td>E e C, em dias úteis do calendário da atividade</td></tr>
+<tr><td class="m">tolerance_days</td><td>1</td><td>G</td></tr>
+<tr><td class="m">checks_optional</td><td>nenhum</td><td>B e F promovidos a achado</td></tr>
+<tr><td class="m">grouping</td><td>wbs</td><td>campo personalizado por alias, nome ou id</td></tr>
+<tr><td class="m">fields.*</td><td>nenhum</td><td>disciplina, serviço, trecho, frente, justificativa, quantidade, unidade, produtividade contratada, código do regulador</td></tr>
+<tr><td class="m">productivity.*</td><td>30 · 10 · 0,02</td><td>janela do ritmo recente; limiares de evidência fina</td></tr>
+<tr><td class="m">rain.reserve_days_per_month</td><td>4</td><td>exceções que fazem de um mês reserva</td></tr>
+<tr><td class="m">lookahead_weeks</td><td>4, 8</td><td>janelas do look-ahead</td></tr>
+<tr><td class="m">theme.*</td><td>paleta padrão</td><td>cor de destaque, severidades, fontes, texto do cabeçalho</td></tr>
+<tr><td class="m">template</td><td>o padrão</td><td>caminho de um template personalizado</td></tr>
+<tr><td class="m">sections_hidden</td><td>nenhuma</td><td>ids de seções a ocultar, como v6 ou v9</td></tr>
+</table>
+<p>Um campo declarado que o arquivo não tem é reportado no topo do relatório, nunca ignorado em silêncio.</p>
+
+<h2>Criar e editar</h2>
+<pre>python3 scripts/profile_tool.py init --out perfil.json --organisation "..."
+python3 scripts/profile_tool.py discover entrega-review.json
+python3 scripts/profile_tool.py set perfil.json grouping=DISCIPLINA fields.discipline=DISCIPLINA
+python3 scripts/profile_tool.py show perfil.json entrega-review.json
+python3 scripts/review.py entrega.xml --profile perfil.json</pre>
+<p>O perfil é escrito pela ferramenta, nunca à mão, e validado a cada gravação. O comando de exibição resolve cada campo declarado contra o arquivo e diz quais foram encontrados. Um exemplo preenchido acompanha a skill, para copiar.</p>
+
+<h2>As duas entrevistas no assistente</h2>
+<p>Com a skill num assistente, diga <strong>personalizar padrão da empresa</strong>. Ele roda a descoberta primeiro, mostra o que o arquivo tem, e faz uma pergunta de cada vez só sobre o que o arquivo não resolveu: qual campo é a disciplina, o trecho, a justificativa, a produtividade contratada; se o método de valor agregado declarado é o praticado; se B e F contam como achado; o limiar; a gaveta, só se a eleita estiver errada. Diga <strong>personalizar relatório</strong> para cores, fontes, cabeçalho, idioma e seções a ocultar. Mudanças mais profundas vão numa cópia do template, que tem precedência e sobrevive a atualizações.</p>
+
+<h2>A síntese executiva</h2>
+<pre>python3 scripts/inject_narrative.py entrega-review.html sintese.txt --who "seu nome"</pre>
+<p>A leitura de cada seção é gerada por regra. A síntese é diferente: um texto redigido por quem roda a análise, ou pelo assistente a pedido, injetado no relatório sob rótulo próprio, com autor e hora. O relatório é reconstruído dos próprios dados embutidos, então os números não podem divergir do que o texto foi escrito contra. Dentro de um assistente, peça a síntese e ele a escreve a partir dos JSON e a injeta; o que ele escreve é interpretação, e vai marcado como tal.</p>
+</section>
+
+<section class="ch">
+<h1>Os arquivos JSON</h1>
+<p class="lede">Cada análise grava os dados ao lado do relatório. Servem para planilha, painel, série histórica ou para um assistente ler e redigir. Os nomes das chaves estão em inglês e são estáveis entre versões.</p>
+
+<h2>Análise de um arquivo</h2>
+<div class="def"><div class="k">-review</div><div class="v"><span class="m">blocking</span>, o que impediu a análise; <span class="m">conventions</span>, limiar, gaveta e base da eleição, calendários em uso, tipos de vínculo avaliados, lag honrado, pares ignorados; <span class="m">counts</span>, as três contagens por achado; <span class="m">findings</span>, as atividades por achado com linha, nome, datas, variação, folga; <span class="m">pairs</span>, os pares explícitos de A1 e A2; <span class="m">ignored</span>, os pares com as duas concluídas.</div></div>
+<div class="def"><div class="k">-scurve</div><div class="v"><span class="m">totals</span>, previsto e realizado até a data, o método alternativo, SV e IDP; <span class="m">reconciliation</span>, quantas tarefas o faseamento fecha contra o custo, contra o previsto do arquivo e contra o realizado do arquivo, e blocos de época descartados; <span class="m">periods</span>, a série mensal com acumulados; <span class="m">by_group</span>, uma curva por grupo; <span class="m">provenance</span>, de onde vem cada série.</div></div>
+<div class="def"><div class="k">-productivity</div><div class="v"><span class="m">resources</span>, ritmos global e recente por recurso; <span class="m">activities</span>, por atividade em andamento os três ritmos, as quatro datas, o veredicto e as marcas de evidência fina e executado inferido; <span class="m">summary</span>, contagens por veredicto e atribuições sem recurso.</div></div>
+<div class="def"><div class="k">-quality</div><div class="v"><span class="m">metrics</span>, as catorze com contagem, população, percentual, limiar, situação e itens; <span class="m">indices</span>, índice de execução da linha de base, atividades críticas, se a cadeia crítica chega ao marco final; <span class="m">qualitative</span>, resumos com vínculo e marcos sem data limite; <span class="m">soft_constraints</span>, as restrições flexíveis contadas.</div></div>
+<div class="def"><div class="k">-forecast</div><div class="v"><span class="m">earned_schedule</span>, todas as grandezas do capítulo 8; <span class="m">lookahead</span>, uma entrada por janela; <span class="m">rates_by_group</span>; <span class="m">milestone_bands</span>, amostra, P50, P80 e um registro por marco; <span class="m">rain_exposure</span>, remanescente na reserva agora e com trinta dias de escorregamento.</div></div>
+<div class="def"><div class="k">-forensics</div><div class="v"><span class="m">milestones</span>, a cadeia condutora de cada marco futuro com a origem; <span class="m">summary</span>, origens recorrentes e cadeias abertas; <span class="m">calendars</span>, reserva por ano contra dias de atividade, com sinais; <span class="m">execution</span>, fora de sequência por mês e escorregamento de início; <span class="m">cycle</span>, com dois arquivos, folga consumida, viraram críticas, movimento de marcos atribuído.</div></div>
+
+<h2>Comparação de ciclo</h2>
+<div class="def"><div class="k">-cycle</div><div class="v"><span class="m">previous</span> e <span class="m">current</span>, os indicadores gerais de cada instantâneo pela mesma regra; <span class="m">movement_points</span>, <span class="m">decomposition_sums_to_points</span> e <span class="m">movement_unexplained_points</span>; <span class="m">trend</span>, por atividade, dias movidos e a leitura de três sinais; <span class="m">baseline_moved</span>; <span class="m">unmatched</span>, inseridas e removidas; <span class="m">decomposition</span>; <span class="m">warnings</span>; <span class="m">conventions</span>, casamento, população, denominador.</div></div>
+
+<h2>Dois identificadores, sempre juntos</h2>
+<p>Nos JSON cada atividade carrega o identificador único estável, que é o que junta dados entre versões, e o número de linha visível, que é o único que uma pessoa encontra na tela. No relatório só o segundo aparece. Uma lista de achados em identificador único é inutilizável numa reunião; uma lista em número de linha é inutilizável para cruzar versões. Por isso os dois viajam juntos nos dados.</p>
+
+<h2>Relendo o relatório como dado</h2>
+<p>O HTML carrega os próprios dados embutidos num bloco no fim do arquivo. É o que permite reconstruí-lo para injetar a síntese, e é o que faz o relatório de um ciclo servir de entrada para o próximo sem banco de dados: a série histórica viaja dentro do arquivo gerado. O custo é que a cadeia quebra se o arquivo de um ciclo se perde, então o arquivo é o ativo. Guarde-o.</p>
+</section>
+
+<section class="ch">
+<h1>Limites, rótulos e o que a ferramenta não decide</h1>
+<p class="lede">Um relatório defensável diz o que não sabe. Este capítulo reúne os limites da ferramenta, os rótulos que ela usa para separar medição de inferência, e os julgamentos que ficam com a pessoa.</p>
+
+<h2>Os três rótulos</h2>
+<table>
+<tr><th>Rótulo</th><th>Significa</th><th>Exemplo</th></tr>
+<tr><td class="c">medido</td><td>lido diretamente do arquivo, reproduzível por qualquer um com o mesmo arquivo</td><td>a contagem de A1, a curva de previsto, o número de calendários em uso</td></tr>
+<tr><td class="c">inferido</td><td>derivado por uma regra declarada, sobre dado medido</td><td>executado derivado de percentual físico; a distribuição uniforme do remanescente na exposição à chuva</td></tr>
+<tr><td class="c">reportado</td><td>vem de registro documentado, não de medição desta análise</td><td>resultados de uso em produção citados nas referências do método</td></tr>
+</table>
+<p>O rótulo acompanha o número no relatório e nos JSON, e um número inferido nunca é apresentado como medido.</p>
+
+<h2>O que a ferramenta se recusa a fazer</h2>
+<ul>
+<li><strong>Assumir a data de hoje</strong> quando o arquivo não tem data de status. A análise para e diz por quê.</li>
+<li><strong>Inventar a metade prevista</strong> quando nenhuma gaveta de linha de base carrega custo. Sem linha de base não há aderência.</li>
+<li><strong>Aproximar as duas métricas de qualidade</strong> que um arquivo não responde. Q12 e Q13 saem como não computáveis.</li>
+<li><strong>Adivinhar distribuição.</strong> A faixa de marco é empírica, do escorregamento observado; a exposição à chuva usa distribuição uniforme e diz isso.</li>
+<li><strong>Casar atividades por semelhança.</strong> Só identificador estável ou nome mais caminho. O resto é inserida ou removida.</li>
+<li><strong>Substituir o término do cronograma</strong> pelo término independente do Earned Schedule. Os dois ficam lado a lado.</li>
+</ul>
+
+<h2>Julgamentos que ficam com a pessoa</h2>
+<p>G é termômetro: use para escolher o que inspecionar, nunca reporte sozinho. O percentual físico pode ter sido digitado, e tudo calculado a partir dele herda isso; o relatório diz qual campo usou. A gaveta de linha de base é eleita do dado, porque o campo que deveria declará-la não é confiável; confira com quem é dono do cronograma. Se a tabela de calendários mostrar jornada ou semana diferente do que a obra pratica, toda data herda o erro. Um ritmo em evidência fina é pergunta. Uma origem forense que cai no próprio marco aponta para data digitada ou cadeia rompida, e alguém tem de abrir o arquivo.</p>
+
+<h2>Formatos e escopo</h2>
+<p>O XML do MS Project é o formato medido. A leitura de .mpp e de Primavera P6 por biblioteca Java é opcional e não verificada. A ferramenta não gera laudo contratual, não certifica contra norma, e não substitui a reunião: entrega o que a reunião precisa para não virar discussão sobre a conta.</p>
+</section>
+
+<section class="ch">
+<h1>Perguntas frequentes</h1>
+
+<h2>O relatório acusa zero em tudo num arquivo que sei que tem problema</h2>
+<p>Olhe a linha de população nas convenções. Arquivos só de resumos, ou com tudo marcado como externo, não têm folhas para testar. E rode o teste interno: se o positivo não acusa, a instalação está quebrada.</p>
+
+<h2>A contagem da cronoaudit não bate com a da minha macro</h2>
+<p>Primeiro confira a convenção: atividades distintas, como sucessoras ou como predecessoras dão três números para o mesmo problema, e o relatório mostra os três. Depois confira a gaveta de linha de base e o limiar. Por fim, os pares com as duas concluídas: a cronoaudit os deixa fora do A1 e os grava à parte. A implementação em macros segue a mesma especificação, e no mesmo arquivo as contagens têm de bater, convenção a convenção.</p>
+
+<h2>O valor agregado não bate com o Project</h2>
+<p>A conciliação no rodapé da curva S diz em quantas tarefas bate e classifica as que não batem. A causa comum é execução antes da janela de linha de base: o Project só credita o custo faseado quando a data de status alcança a janela, e o método credita custo vezes físico na hora. Os dois estão certos contra o próprio instante. Se a diferença for outra, a gaveta pode estar errada.</p>
+
+<h2>Por que o relatório está em inglês se o cronograma é meu</h2>
+<p>O idioma é detectado do conteúdo do arquivo: nomes de atividades, calendários, título. Um cronograma com nomes em inglês gera relatório em inglês. Force com a opção de idioma ou pelo perfil.</p>
+
+<h2>Posso mudar o limiar de 30 dias</h2>
+<p>Sim, pela opção de linha de comando ou pelo perfil. O relatório passa a declarar o novo valor nas convenções. Ele conta em dias úteis do calendário da atividade, então trinta dias úteis numa semana de seis dias são cerca de 35 corridos.</p>
+
+<h2>O E acusou atividades que só foram reprogramadas</h2>
+<p>É o que E procura: término puxado para antes sem execução. Reprogramar para antes pode ser legítimo, mas tem de ter motivo, e o E é a lista de perguntas. Se o motivo existe, fica registrado; se não, a tendência está otimista.</p>
+
+<h2>Tem dados sensíveis saindo da máquina</h2>
+<p>Não. A ferramenta não acessa rede. O relatório é um arquivo local sem referência externa. Um assistente só vê o que você mostra a ele, e a síntese é a única parte em que ele redige.</p>
+
+<h2>Como atualizo</h2>
+<p>Rode o instalador de novo. Ele substitui a skill e mantém um template personalizado, se houver. O perfil da empresa fica onde você o gravou e não é tocado.</p>
+
+<h2>Funciona com Primavera P6</h2>
+<p>O método transfere, mas nada foi medido nesse formato. A leitura por biblioteca Java existe como caminho opcional e o resultado deve ser tratado como não verificado.</p>
+</section>
+
+<section class="ch">
+<h1>Glossário</h1>
+<p class="lede">Os termos como o relatório os usa, em português, com o equivalente em inglês.</p>
+<dl class="gloss">
+<dt>Atividade folha <i>leaf activity</i></dt><dd>Atividade sem filhos na EAP. É a única que a análise conta; resumos são agregações dela.</dd>
+<dt>Caminho condutor <i>driving path</i></dt><dd>Cadeia de predecessoras que de fato determina a data de um marco, escolhida vínculo a vínculo pela que cai por último.</dd>
+<dt>Caminho crítico <i>critical path</i></dt><dd>Cadeia de atividades com folga total zero, do início ao fim. Qualquer atraso nela move o término.</dd>
+<dt>Convenção de contagem <i>counting convention</i></dt><dd>Como se conta atividades num achado de rede: distintas, como sucessoras ou como predecessoras.</dd>
+<dt>Curva S <i>S-curve</i></dt><dd>Acumulado de previsto e realizado ao longo do tempo. A distância entre as curvas é o atraso em dinheiro.</dd>
+<dt>Data de status <i>status date</i></dt><dd>Data até a qual o apontamento é válido. Todo previsto contra realizado é medido nela.</dd>
+<dt>Data limite <i>deadline</i></dt><dd>Campo do marco que revela escorregão sem mover nenhuma data. Não é restrição.</dd>
+<dt>Decomposição <i>decomposition</i></dt><dd>Contribuição de cada atividade ao desvio agregado, em pontos percentuais, que soma ao total.</dd>
+<dt>Earned Schedule <i>ES</i></dt><dd>Data em que a curva de previsto alcançou o realizado de hoje. Prazo medido em tempo.</dd>
+<dt>Evidência fina <i>thin evidence</i></dt><dd>Ritmo construído sobre menos de dez dias ou menos de dois por cento do previsto. Reportado com marca.</dd>
+<dt>Folga total <i>total float</i></dt><dd>Quanto uma atividade pode atrasar sem mover o término do projeto.</dd>
+<dt>Gaveta de linha de base <i>baseline slot</i></dt><dd>Uma das onze cópias do plano que o Project guarda, de 0 a 10. Eleita pela cobertura de custo.</dd>
+<dt>IDP <i>SPI</i></dt><dd>Índice de desempenho de prazo: realizado dividido por previsto, em dinheiro.</dd>
+<dt>Lag e lead <i>lag, lead</i></dt><dd>Espera obrigatória e sobreposição permitida num vínculo. O lead é lag negativo.</dd>
+<dt>Linha de base <i>baseline</i></dt><dd>Cópia do plano guardada num instante, contra a qual se mede variação.</dd>
+<dt>Look-ahead</dt><dd>O que precisa começar e terminar nas próximas semanas, e se o ritmo alcança.</dd>
+<dt>Origem <i>origin</i></dt><dd>Nó mais fundo do caminho condutor que ainda carrega variação. Onde o atraso entrou.</dd>
+<dt>Percentual físico <i>physical percent complete</i></dt><dd>Quanto do serviço saiu, declarado. Distinto do percentual de duração.</dd>
+<dt>Perfil <i>profile</i></dt><dd>Arquivo que declara as convenções e campos de uma empresa em vez de codificá-los.</dd>
+<dt>Previsto e realizado <i>planned value, earned value</i></dt><dd>O que deveria ter sido ganho até a data de status, e o que foi ganho.</dd>
+<dt>Referência <i>datum, reference</i></dt><dd>Gaveta, instante, população e unidade contra os quais um número é medido. Duas metades contra referências diferentes não se comparam.</dd>
+<dt>Reserva de improdutividade <i>weather reserve</i></dt><dd>Dias não úteis registrados no calendário para chuva. Um mês com quatro ou mais é mês de reserva.</dd>
+<dt>Tendência <i>trend, forecast dates</i></dt><dd>Datas atuais do cronograma vivo, calculadas pela rede a partir do que foi apontado.</dd>
+<dt>TI, II, TT, IT <i>FS, SS, FF, SF</i></dt><dd>Término-início, início-início, término-término, início-término: os quatro tipos de vínculo.</dd>
+<dt>TSPI</dt><dd>Eficiência que o restante precisa para terminar na data planejada. Acima de 1,10, tratado como irrecuperável.</dd>
+<dt>Variação de término <i>finish variance</i></dt><dd>Término atual menos término de linha de base, em dias úteis do calendário da atividade.</dd>
+</dl>
+</section>

@@ -75,6 +75,20 @@ schedule*, *compare these two versions*, *customise the organisation profile*.
 The whole process, the report section by section, and the judgement the tool cannot make for
 you: [`skills/cronoaudit/references/usage.md`](skills/cronoaudit/references/usage.md).
 
+## Manual
+
+A complete technical manual, written for someone who receives a schedule and has to say whether
+it is true. Fourteen chapters: concepts from scratch, installation, the report section by section,
+the nine checks, network quality, productivity, forecast and forensics, cycle comparison, profile,
+the JSON files, limits and labels, FAQ and a bilingual glossary. Every example uses the synthetic
+fixtures.
+
+- Português: [`docs/manual/manual-pt.pdf`](docs/manual/manual-pt.pdf)
+- English: [`docs/manual/manual-en.pdf`](docs/manual/manual-en.pdf)
+
+Rebuild from source with `python3 docs/manual/build.py` and `node docs/manual/topdf.js` (needs
+`puppeteer-core` and a local Chrome).
+
 ## What it does not do
 
 It does not read Primavera P6 (the method transfers; nothing was measured there). It does not

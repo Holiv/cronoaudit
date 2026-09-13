@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>cronoaudit — technical manual 0.6.0</title>
+<meta name="author" content="Helton da Silva de Oliveira">
+<link rel="stylesheet" href="style.css">
+</head><body>
+<div class="cover">
+  <p class="kicker">Technical manual · version 0.6.0</p>
+  <h1>crono<em>audit</em></h1>
+  <p class="sub">Schedule critical analysis, from the file to the verdict. How to install, how to use, how to read the report, and how to reproduce every figure.</p>
+  <svg viewBox="0 0 520 150" aria-hidden="true">
+  <line x1="10" y1="120" x2="510" y2="120" stroke="#B3261E" stroke-width="2"/>
+  <text x="14" y="136" font-family="Source Code Pro" font-size="9" fill="#B3261E">BASELINE · REFERENCE</text>
+  <line x1="120" y1="120" x2="120" y2="40" stroke="#17191C" stroke-width="1"/><circle cx="120" cy="40" r="3.5" fill="#17191C"/>
+  <text x="128" y="44" font-family="Source Code Pro" font-size="9" fill="#17191C">planned</text>
+  <line x1="330" y1="120" x2="330" y2="70" stroke="#17191C" stroke-width="1"/><circle cx="330" cy="70" r="3.5" fill="#17191C"/>
+  <text x="338" y="74" font-family="Source Code Pro" font-size="9" fill="#17191C">actual</text>
+  <line x1="10" y1="96" x2="510" y2="96" stroke="#B3261E" stroke-width="1" stroke-dasharray="3 4" opacity=".7"/>
+  <text x="14" y="92" font-family="Source Code Pro" font-size="8" fill="#B3261E" opacity=".8">another reference: the same measurement, another result</text>
+  <path d="M120 40 L330 70" stroke="#6B6E74" stroke-width="1" stroke-dasharray="2 3"/>
+  <text x="180" y="42" font-family="Fraunces" font-style="italic" font-size="11" fill="#6B6E74">the difference only exists if the reference is the same</text>
+</svg>
+  <div class="meta">
+    <span>Author<b>Helton da Silva de Oliveira</b></span>
+    <span>Format<b>Agent Skill · Apache 2.0</b></span>
+    <span>Edition<b>English</b></span>
+  </div>
+</div>
+<div class="front">
+  <h2>About this manual</h2>
+  <p>This manual accompanies version 0.6.0 of cronoaudit. It was written for whoever receives a schedule and has to say whether it is true, and it does not assume the reader knows the concepts: every chapter starts from the concept, then shows what the tool does with it.</p>
+<p>Every example uses the synthetic schedules shipped with the tool. No real contract, contractor or person appears here.</p>
+<p>The tool follows the open Agent Skills format and works with any agent that reads it, and with no agent at all. Source, licence and the latest version are at github.com/Holiv/cronoaudit.</p>
+  <h2 style="margin-top:12mm">Contents</h2>
+  <ol class="toc">
+  <li class=""><span class="n">1</span><a href="#ch1">What cronoaudit does, and for whom</a></li>
+<li class="sub"><span class="n">1.1</span><a href="#ch1-1">For whom</a></li>
+<li class="sub"><span class="n">1.2</span><a href="#ch1-2">What goes in and what comes out</a></li>
+<li class="sub"><span class="n">1.3</span><a href="#ch1-3">The eight answers in the report</a></li>
+<li class="sub"><span class="n">1.4</span><a href="#ch1-4">What it does not do</a></li>
+<li class=""><span class="n">2</span><a href="#ch2">Concepts this manual assumes</a></li>
+<li class=""><span class="n">3</span><a href="#ch3">Installation and first run</a></li>
+<li class="sub"><span class="n">3.1</span><a href="#ch3-1">Install with one command</a></li>
+<li class="sub"><span class="n">3.2</span><a href="#ch3-2">With no assistant at all</a></li>
+<li class="sub"><span class="n">3.3</span><a href="#ch3-3">Exporting the schedule</a></li>
+<li class="sub"><span class="n">3.4</span><a href="#ch3-4">First run</a></li>
+<li class="sub"><span class="n">3.5</span><a href="#ch3-5">Inside an assistant</a></li>
+<li class="sub"><span class="n">3.6</span><a href="#ch3-6">Verify the tool before trusting it</a></li>
+<li class="sub"><span class="n">3.7</span><a href="#ch3-7">An equivalent implementation inside Project</a></li>
+<li class=""><span class="n">4</span><a href="#ch4">The report, section by section</a></li>
+<li class="sub"><span class="n">4.1</span><a href="#ch4-1">Cover and verdict</a></li>
+<li class="sub"><span class="n">4.2</span><a href="#ch4-2">Cards and index</a></li>
+<li class="sub"><span class="n">4.3</span><a href="#ch4-3">The views, V0 to V9</a></li>
+<li class="sub"><span class="n">4.4</span><a href="#ch4-4">The findings</a></li>
+<li class="sub"><span class="n">4.5</span><a href="#ch4-5">Conventions</a></li>
+<li class="sub"><span class="n">4.6</span><a href="#ch4-6">The reading layer</a></li>
+<li class=""><span class="n">5</span><a href="#ch5">The nine checks</a></li>
+<li class="sub"><span class="n">5.1</span><a href="#ch5-1">Population and cross-cutting rules</a></li>
+<li class="sub"><span class="n">5.2</span><a href="#ch5-2">A1 · Out-of-sequence execution</a></li>
+<li class="sub"><span class="n">5.3</span><a href="#ch5-3">A2 · Total inversion</a></li>
+<li class="sub"><span class="n">5.4</span><a href="#ch5-4">H · Forecast elapsed with no actual</a></li>
+<li class="sub"><span class="n">5.5</span><a href="#ch5-5">E · Pulled forward and never started</a></li>
+<li class="sub"><span class="n">5.6</span><a href="#ch5-6">C · Delayed beyond the threshold</a></li>
+<li class="sub"><span class="n">5.7</span><a href="#ch5-7">G · Duration inconsistent with the window</a></li>
+<li class="sub"><span class="n">5.8</span><a href="#ch5-8">B · Milestone with no deadline</a></li>
+<li class="sub"><span class="n">5.9</span><a href="#ch5-9">F · In progress at zero percent</a></li>
+<li class="sub"><span class="n">5.10</span><a href="#ch5-10">P · Pending reporting</a></li>
+<li class=""><span class="n">6</span><a href="#ch6">Network quality</a></li>
+<li class="sub"><span class="n">6.1</span><a href="#ch6-1">How to read it</a></li>
+<li class=""><span class="n">7</span><a href="#ch7">Productivity and trend by resource</a></li>
+<li class="sub"><span class="n">7.1</span><a href="#ch7-1">Where the quantities live</a></li>
+<li class="sub"><span class="n">7.2</span><a href="#ch7-2">Three rates, not one</a></li>
+<li class="sub"><span class="n">7.3</span><a href="#ch7-3">Four dates, three verdicts</a></li>
+<li class="sub"><span class="n">7.4</span><a href="#ch7-4">Thin evidence</a></li>
+<li class="sub"><span class="n">7.5</span><a href="#ch7-5">Contracted productivity</a></li>
+<li class=""><span class="n">8</span><a href="#ch8">Looking forward and looking back</a></li>
+<li class="sub"><span class="n">8.1</span><a href="#ch8-1">Earned Schedule</a></li>
+<li class="sub"><span class="n">8.2</span><a href="#ch8-2">Look-ahead</a></li>
+<li class="sub"><span class="n">8.3</span><a href="#ch8-3">Rates by group</a></li>
+<li class="sub"><span class="n">8.4</span><a href="#ch8-4">Milestone bands</a></li>
+<li class="sub"><span class="n">8.5</span><a href="#ch8-5">Rain exposure</a></li>
+<li class="sub"><span class="n">8.6</span><a href="#ch8-6">Forensics: driving path per milestone</a></li>
+<li class="sub"><span class="n">8.7</span><a href="#ch8-7">Calendar forensics</a></li>
+<li class="sub"><span class="n">8.8</span><a href="#ch8-8">Execution pattern</a></li>
+<li class="sub"><span class="n">8.9</span><a href="#ch8-9">With a previous snapshot</a></li>
+<li class=""><span class="n">9</span><a href="#ch9">Cycle comparison</a></li>
+<li class="sub"><span class="n">9.1</span><a href="#ch9-1">Input</a></li>
+<li class="sub"><span class="n">9.2</span><a href="#ch9-2">Matching an activity across versions</a></li>
+<li class="sub"><span class="n">9.3</span><a href="#ch9-3">The three signals</a></li>
+<li class="sub"><span class="n">9.4</span><a href="#ch9-4">The deviation decomposition</a></li>
+<li class="sub"><span class="n">9.5</span><a href="#ch9-5">One function, called twice</a></li>
+<li class="sub"><span class="n">9.6</span><a href="#ch9-6">What comes out</a></li>
+<li class=""><span class="n">10</span><a href="#ch10">Profile and customisation</a></li>
+<li class="sub"><span class="n">10.1</span><a href="#ch10-1">Discover before asking</a></li>
+<li class="sub"><span class="n">10.2</span><a href="#ch10-2">The profile keys</a></li>
+<li class="sub"><span class="n">10.3</span><a href="#ch10-3">Create and edit</a></li>
+<li class="sub"><span class="n">10.4</span><a href="#ch10-4">The two interviews in the assistant</a></li>
+<li class="sub"><span class="n">10.5</span><a href="#ch10-5">The executive synthesis</a></li>
+<li class=""><span class="n">11</span><a href="#ch11">The JSON files</a></li>
+<li class="sub"><span class="n">11.1</span><a href="#ch11-1">Single-file review</a></li>
+<li class="sub"><span class="n">11.2</span><a href="#ch11-2">Cycle comparison</a></li>
+<li class="sub"><span class="n">11.3</span><a href="#ch11-3">Two identifiers, always together</a></li>
+<li class="sub"><span class="n">11.4</span><a href="#ch11-4">Re-reading the report as data</a></li>
+<li class=""><span class="n">12</span><a href="#ch12">Limits, labels and what the tool does not decide</a></li>
+<li class="sub"><span class="n">12.1</span><a href="#ch12-1">The three labels</a></li>
+<li class="sub"><span class="n">12.2</span><a href="#ch12-2">What the tool refuses to do</a></li>
+<li class="sub"><span class="n">12.3</span><a href="#ch12-3">Judgements that stay with the person</a></li>
+<li class="sub"><span class="n">12.4</span><a href="#ch12-4">Formats and scope</a></li>
+<li class=""><span class="n">13</span><a href="#ch13">Frequently asked questions</a></li>
+<li class="sub"><span class="n">13.1</span><a href="#ch13-1">The report flags zero on everything in a file I know has problems</a></li>
+<li class="sub"><span class="n">13.2</span><a href="#ch13-2">cronoaudit's count does not match my macro's</a></li>
+<li class="sub"><span class="n">13.3</span><a href="#ch13-3">Earned value does not match Project</a></li>
+<li class="sub"><span class="n">13.4</span><a href="#ch13-4">Why is the report in English when the schedule is mine</a></li>
+<li class="sub"><span class="n">13.5</span><a href="#ch13-5">Can I change the 30-day threshold</a></li>
+<li class="sub"><span class="n">13.6</span><a href="#ch13-6">E flagged activities that were only reprogrammed</a></li>
+<li class="sub"><span class="n">13.7</span><a href="#ch13-7">Does sensitive data leave the machine</a></li>
+<li class="sub"><span class="n">13.8</span><a href="#ch13-8">How do I update</a></li>
+<li class="sub"><span class="n">13.9</span><a href="#ch13-9">Does it work with Primavera P6</a></li>
+<li class=""><span class="n">14</span><a href="#ch14">Glossary</a></li>
+  </ol>
+</div>
+<section class="ch">
+<p class="chno">1</p><h1 class="ch" id="ch1">What cronoaudit does, and for whom</h1>
+<p class="lede">cronoaudit reads a delivered schedule, checks whether it holds together, measures what is done against what was planned, projects what comes next, and writes a report in which every figure says where it came from and how to reproduce it. It looks for one specific kind of failure: the arithmetic is right, every term is right in its own source, the result is plausible, nothing errors, and the number means nothing.</p>
+
+<h2 id="ch1-1">For whom</h2>
+<p>For whoever receives a schedule and has to say whether it is true. The planning engineer on the client side, auditing a contractor's delivery. The contractor's planner, who wants to deliver a schedule that passes. The manager who needs a cycle report for the board without depending on whoever presents it.</p>
+<p>The manual does not assume you know the concepts. Chapter 2 explains each one from scratch. If you already have them, go straight to chapter 3.</p>
+
+<h2 id="ch1-2">What goes in and what comes out</h2>
+<div class="def"><div class="k">Input</div><div class="v">The schedule exported from MS Project as XML, which is Project's own documented format. One file for the critical review; two files, previous and current, for the cycle comparison.</div></div>
+<div class="def"><div class="k">Output</div><div class="v">A self-contained HTML report with no external reference, which opens in any browser and prints to PDF. Beside it, one JSON file per analysis, for whoever wants the data outside the report.</div></div>
+<div class="def"><div class="k">Language</div><div class="v">The schedule's. The tool detects it from the content and writes the report in Portuguese or English. It can be forced.</div></div>
+<div class="def"><div class="k">Requirements</div><div class="v">Python 3.9 or later. Nothing else. No data leaves the machine.</div></div>
+
+<h2 id="ch1-3">The eight answers in the report</h2>
+<table>
+<tr><th>Section</th><th>Question it answers</th></tr>
+<tr><td>Verdict and findings</td><td>Does the logic hold? Which dates have elapsed, moved, or are misreported?</td></tr>
+<tr><td>S-curve</td><td>Where should the contract be, where is it, and does the tool's figure match Project's?</td></tr>
+<tr><td>Progress by group</td><td>Did progress happen where the money is?</td></tr>
+<tr><td>Productivity</td><td>At three rates, when does each activity in progress finish, and does it enter the critical path?</td></tr>
+<tr><td>Network quality</td><td>Does the schedule work as a model, before any discussion of dates?</td></tr>
+<tr><td>Looking forward</td><td>When does it really finish, what do the next weeks demand, and where does the pace fall short?</td></tr>
+<tr><td>Forensics</td><td>Where did each milestone's delay come from, by which path, and when did it start?</td></tr>
+<tr><td>Cycle comparison</td><td>What changed since the last delivery: execution, replanning, or the reference itself?</td></tr>
+</table>
+
+<h2 id="ch1-4">What it does not do</h2>
+<p>It does not read Primavera P6: the method transfers, but nothing was measured in that format. It does not produce a contractual delay claim: the forensics reconstruct the mechanism, and a claim needs contemporaneous records and a formal method. It does not certify against the DCMA standard: the fourteen metrics are implemented and labelled as an implementation. And it never invents a distribution, a default value or a figure the file does not carry. Chapter 12 covers this in detail.</p>
+</section>
+
+<section class="ch">
+<p class="chno">2</p><h1 class="ch" id="ch2">Concepts this manual assumes</h1>
+<p class="lede">Every concept below appears in the report. If one is new, read its box before going on. If all are familiar, this chapter is a vocabulary reference.</p>
+
+<div class="concept"><div class="k">The schedule as a network</div>
+<p>A schedule is not a list of dates. It is a network: each activity has predecessors, which must happen before it, and successors, which depend on it. The link type says how: finish-to-start is the common one, the successor only starts when the predecessor finishes; start-to-start, finish-to-finish and start-to-finish are the other three. A link can carry a lag, a mandatory wait, or a lead, a permitted overlap.</p>
+<p>When the scheduling tool recalculates dates, it walks this network. If the network says one thing and the works do another, every calculated date rests on logic that is not being followed. That is why the report checks the network before any date.</p></div>
+
+<div class="concept"><div class="k">Baseline</div>
+<p>The baseline is a copy of the plan saved at a certain moment: dates, durations and costs as they were when the plan was approved. Everything the report calls variance, delay or pull-forward is measured against it. MS Project keeps up to eleven baselines, numbered 0 to 10, and a schedule that has grown may hold the current one in a slot that is not the default. Which slot counts is a choice, and cronoaudit makes it from the data, not from a field that declares and is not confirmed.</p></div>
+
+<div class="concept"><div class="k">Status date</div>
+<p>The date up to which progress is valid: the schedule's "today". Every comparison of planned against actual is made at it. A file without a status date cannot be analysed honestly, and cronoaudit refuses to assume today's date instead, because that would change the answer every day the analysis was repeated.</p></div>
+
+<div class="concept"><div class="k">Calendar and working day</div>
+<p>Each activity has a calendar, which says which days and hours are working time. That is where holidays, the shift, the five- or six-day week and the weather reserve live, the days the works do not work because of rain. Two activities in the same schedule can have different calendars. Every duration, variance and window in the report is counted on the activity's own calendar, because counting in calendar days, or on the project calendar, gives wrong numbers in silence.</p></div>
+
+<div class="concept"><div class="k">Physical percent and percent complete</div>
+<p>They are two different fields. Percent complete is duration: how much of the activity's time has passed, and Project computes it on its own from actual dates. Physical percent is declared by a person and measures how much of the work is out. One says how much time passed; the other, how much was delivered. Earned value uses the physical one. Swapping one for the other changes the result with nothing changed on site.</p></div>
+
+<div class="concept"><div class="k">Earned value and the S-curve</div>
+<p>Earned value is each activity's baseline cost multiplied by its physical percent. Summed, it is how much of the budget has been "earned". Planned value is how much should have been earned by the status date, according to the time-phased baseline. The S-curve is the cumulative chart of both over time: planned and earned, and the gap between the curves is the delay in money. The schedule performance index, SPI, is earned divided by planned.</p></div>
+
+<div class="concept"><div class="k">Float and critical path</div>
+<p>An activity's total float is how much it can slip without moving the project finish. Zero float means any delay there pushes the end: the activity is critical. The critical path is the chain of critical activities from start to finish. An activity with float can slip until it consumes it; after that, it enters the critical path. Project computes float, early and late dates and the critical flag; cronoaudit reads those fields rather than recomputing them.</p></div>
+
+<div class="concept"><div class="k">Earned Schedule</div>
+<p>Classic earned value measures schedule in money, and that has a defect: at the end of the project earned always reaches the budget, so the schedule indicator goes to 1.0 even on a project a year late. Earned Schedule measures schedule in time: it asks on what date the planned curve reached the value earned today. That date, compared with the time elapsed, gives a schedule efficiency and an independent finish, which is set against the finish the schedule projects. Chapter 8 details the formulas.</p></div>
+
+<div class="concept"><div class="k">Productivity by resource</div>
+<p>A material resource, such as cubic metres of cut, has planned, executed and remaining quantities per activity. Productivity is quantity per working day. Comparing the practised rate with the required one says whether the activity finishes when the schedule says. cronoaudit reads the quantities from the file's own assignments, with no custom field.</p></div>
+
+<div class="concept"><div class="k">The reference question</div>
+<p>An indicator that compares planned with actual has two halves. If they are measured against different references, another baseline slot, another instant, another population, another unit, the difference between them means nothing, and the number comes out plausible. It is the failure cronoaudit looks for everywhere. The question that finds it: are all the terms of this calculation measured against the same reference?</p></div>
+</section>
+
+<section class="ch">
+<p class="chno">3</p><h1 class="ch" id="ch3">Installation and first run</h1>
+<p class="lede">cronoaudit is an Agent Skill: a folder with instructions for an assistant and the programs that do the work. It installs by copying that folder to where your assistant looks for skills. The installer does that for every assistant at once.</p>
+
+<h2 id="ch3-1">Install with one command</h2>
+<p>On macOS or Linux, in a terminal:</p>
+<pre>curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash</pre>
+<p>On Windows, in PowerShell:</p>
+<pre>irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex</pre>
+<p>The installer downloads the package, copies the skill to the two directories that, together, every assistant reads, and runs the tool's internal test as proof of installation. At the end it shows where the skill went and how to invoke it. Restart the assistant after installing, because skills are read at the start of each session.</p>
+<table>
+<tr><th>Directory</th><th>Who reads it</th></tr>
+<tr><td class="m">~/.claude/skills/cronoaudit</td><td>Claude Code, OpenCode, Cursor</td></tr>
+<tr><td class="m">~/.agents/skills/cronoaudit</td><td>Codex, Gemini CLI, Cursor, GitHub Copilot, VS Code, OpenCode</td></tr>
+</table>
+<p>If you prefer your assistant's native path, each has one: <code>npx skills add Holiv/cronoaudit -g</code> in any client of the format, <code>gemini skills install</code> with the repository URL in Gemini CLI, Codex's skill installer, Cursor's Remote Rule, and the Claude Code plugin. The repository README keeps the table current.</p>
+
+<h2 id="ch3-2">With no assistant at all</h2>
+<p>The tool works without artificial intelligence. Clone or download the repository and run the program directly. You get everything except the written executive synthesis and the customisation interview, which are the two parts that depend on an assistant.</p>
+<pre>git clone https://github.com/Holiv/cronoaudit
+python3 cronoaudit/skills/cronoaudit/scripts/review.py delivery.xml</pre>
+
+<h2 id="ch3-3">Exporting the schedule</h2>
+<p>The .mpp file is a closed proprietary format. cronoaudit reads the XML that Project itself exports, which is a documented format and carries everything the analysis needs: tasks, links with lag, the eleven baselines, calendars, custom fields, assignments and the time-phased data.</p>
+<div class="note"><b>In MS Project</b>File, Save As, and under file type choose XML Format. Keep the XML beside the .mpp. If the contractor sends the XML with the .mpp, this step disappears from your routine.</div>
+<p>There is an optional path to read .mpp directly, through a Java library, for whoever has it installed. It is never required.</p>
+
+<h2 id="ch3-4">First run</h2>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py delivery.xml</pre>
+<p>On a schedule of six thousand activities the run takes under a minute. The terminal shows the summary: baseline slot used, threshold, population, counting convention, and the list of nine findings with each one's activity count. Next to the input file sit the results.</p>
+<table>
+<tr><th>File</th><th>What it is for</th></tr>
+<tr><td class="m">delivery-review.html</td><td>the report, to open, present and print to PDF</td></tr>
+<tr><td class="m">delivery-review.json</td><td>the findings as data</td></tr>
+<tr><td class="m">delivery-review-scurve.json</td><td>the monthly and per-group S-curve</td></tr>
+<tr><td class="m">delivery-review-productivity.json</td><td>rates by resource and by activity</td></tr>
+<tr><td class="m">delivery-review-quality.json</td><td>the fourteen metrics with their items</td></tr>
+<tr><td class="m">delivery-review-forecast.json</td><td>Earned Schedule, look-ahead, bands, rain</td></tr>
+<tr><td class="m">delivery-review-forensics.json</td><td>driving chains and execution pattern</td></tr>
+</table>
+<p>Useful options: <code>--outdir</code> to choose where to write, <code>--group-by</code> to group weight by a custom field, <code>--profile</code> to apply the organisation profile, <code>--lang</code> to force the language, <code>--threshold-days</code> and <code>--tolerance-days</code> to move the thresholds.</p>
+
+<h2 id="ch3-5">Inside an assistant</h2>
+<p>With the skill installed you do not need to remember commands. Ask in plain language: analyse this schedule, compare these two versions, customise the organisation's conventions. The assistant reads the skill's instructions, runs the programs, reads the results and, when you ask, writes the executive synthesis and injects it into the report. The figures always come from the programs; the assistant orchestrates, interprets and writes.</p>
+
+<h2 id="ch3-6">Verify the tool before trusting it</h2>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/test_checks.py</pre>
+<p>The test runs the tool over two synthetic schedules. On the positive one every check must fire. On the negative one every check must stay silent. Without the second half a clean result is worth nothing: a probe that cannot fire reports zero findings on a broken file as readily as on a sound one.</p>
+
+<h2 id="ch3-7">An equivalent implementation inside Project</h2>
+<p>The same method exists as macros that run inside MS Project, marking activities in the schedule itself and generating the same report. It is a separate product by the same author, and cronoaudit does not depend on it. The two implementations follow the same rule specification, and one's count has to match the other's on the same file.</p>
+</section>
+
+<section class="ch">
+<p class="chno">4</p><h1 class="ch" id="ch4">The report, section by section</h1>
+<p class="lede">The report is a single HTML file. It opens in any browser, works offline, prints to PDF with one button, and switches between light and dark themes. Activity tables are collapsed, so the report does not open as a wall of rows; printing expands them.</p>
+
+<h2 id="ch4-1">Cover and verdict</h2>
+<p>The cover carries the file, the number of leaf activities, the status date and the baseline cost. The verdict shows cumulative physical progress weighted by cost, beside a fixed text on how to read those numbers, and the first <strong>Reading</strong> block: sentences generated by rule from this analysis's figures. A red notice appears when activities sit in violated logic, and says to settle that before discussing any date.</p>
+<p>When an executive synthesis has been injected, it appears right below the cover, with the name of whoever wrote it and the time, so prose is never mistaken for measurement.</p>
+
+<h2 id="ch4-2">Cards and index</h2>
+<p>One card per finding, with the count and the severity colour. The index lists the views and the findings with code, title, subtitle, count and severity, and each row leads to its section.</p>
+<table>
+<tr><th>Severity</th><th>Findings</th><th>Reads as</th></tr>
+<tr><td class="c">critical</td><td>A1, A2</td><td>invalidates every date below until settled</td></tr>
+<tr><td class="c">high</td><td>H, E, C, B</td><td>affects the deadline or the control of it</td></tr>
+<tr><td class="c">check</td><td>G, F</td><td>a symptom to inspect, not a finding to report</td></tr>
+<tr><td class="c">pending</td><td>P</td><td>a reporting defect, not an execution one</td></tr>
+</table>
+
+<h2 id="ch4-3">The views, V0 to V9</h2>
+<div class="def"><div class="k">V0</div><div class="v">S-curve from the file's own phasing: planned, earned, and the other earned-value method as sensitivity. Monthly table with cumulatives, variance and SPI. The task-by-task reconciliation against the file at the foot.</div></div>
+<div class="def"><div class="k">V1</div><div class="v">Progress by group: planned against earned in each group, weighted by the group's own cost, and one column per finding. The group is the WBS branch by default or a custom field.</div></div>
+<div class="def"><div class="k">V2 to V4</div><div class="v">Starts per month, finish variance in eight bands, total float in five bands.</div></div>
+<div class="def"><div class="k">V5</div><div class="v">Calendars that carry the work: activities per calendar, shift, days per week and non-working exceptions.</div></div>
+<div class="def"><div class="k">V6</div><div class="v">Productivity and trend by resource. Chapter 7.</div></div>
+<div class="def"><div class="k">V7</div><div class="v">Network quality, the fourteen metrics. Chapter 6.</div></div>
+<div class="def"><div class="k">V8</div><div class="v">Looking forward: Earned Schedule, look-ahead, rates by group, milestones with bands, rain exposure. Chapter 8.</div></div>
+<div class="def"><div class="k">V9</div><div class="v">Forensics: driving path per milestone, calendar forensics, execution pattern. Chapter 8.</div></div>
+
+<h2 id="ch4-4">The findings</h2>
+<p>Each finding is a block with code, severity, title and plain-language subtitle. Inside, three fixed blocks: problem, impact and solution. Then the criterion with the counting convention, where it came from, with the Project columns, and how to reproduce it in the tool. Finally the activity table, collapsed. Only the visible row number identifies an activity, because it is the only identifier a person can find on screen. In the network findings the table shows the explicit pair, successor and predecessor, with the link type and the reason.</p>
+
+<h2 id="ch4-5">Conventions</h2>
+<p>The last section lists what the report assumed: the baseline slot and why it was chosen, the threshold and its unit, the tolerance, the population, the counting convention, how working days were counted, where the percentage comes from, the detected language and how confident the detection was. Nobody has to guess anything.</p>
+
+<h2 id="ch4-6">The reading layer</h2>
+<p>Every section opens with sentences generated by rule from its own figures. They say what the data supports and nothing more; if a figure is missing, the sentence does not appear. It is what lets the report be handed to someone who was not in the room. The executive synthesis is something else: a written text, injected with author and time, which chapter 10 explains.</p>
+</section>
+
+<section class="ch">
+<p class="chno">5</p><h1 class="ch" id="ch5">The nine checks</h1>
+<p class="lede">Each check has a stable code, which stays the same when the implementation changes. Without that a problem cannot be discussed across weeks. The order matters: network first, then dates, then reporting.</p>
+
+<h2 id="ch5-1">Population and cross-cutting rules</h2>
+<p>Every check looks only at leaf activities, active and not external. Summaries stay out, because they would count their children twice. Milestones are in everything except G.</p>
+<div class="note"><b>Pending reporting migrates first</b>A predecessor at 100% physical with no actual finish is a reporting defect, finding P. Its links are not evaluated for A1 or A2. Without this rule, a reporting problem would be reported as an execution problem, and the conversation with whoever executes would start by accusing the wrong thing.</div>
+
+<h2 id="ch5-2">A1 · Out-of-sequence execution</h2>
+<p>A successor started while the predecessor had not finished, or finished after the successor's start beyond what the link allows.</p>
+<div class="def"><div class="k">Problem</div><div class="v">The network describes an order that execution does not practise.</div></div>
+<div class="def"><div class="k">Impact</div><div class="v">Every forecast date is computed on a false premise. And the delay of stalled predecessors stops propagating to milestones, because the successors have already been delivered: the plan looks healthy at the end because it is broken in the middle.</div></div>
+<div class="def"><div class="k">Solution</div><div class="v">Settle before discussing any date. Either the link is wrong, or the sequence was broken on site and the consequence enters the forecast. Do not delete the link to silence the warning: it is the only record that the order was not followed.</div></div>
+<p>The criterion evaluates the four link types, with actual dates, on the successor's calendar, honouring lag. An overlap covered by a lead is not flagged. Pairs with both activities complete leave the count, by decision, and are recorded in the data with the overlap in days, because the history of out-of-order execution is evidence for the forensics.</p>
+<table>
+<tr><th>Link</th><th>Successor</th><th>Predecessor</th><th>Result</th></tr>
+<tr><td class="c">FS</td><td>actual start, not complete</td><td>no actual finish</td><td>A1, predecessor not finished</td></tr>
+<tr><td class="c">FS</td><td>actual start, not complete</td><td>finished after the start, beyond the lead</td><td>A1, overlap beyond lead</td></tr>
+<tr><td class="c">FS</td><td>complete</td><td>complete</td><td>outside the count, recorded</td></tr>
+<tr><td class="c">SS</td><td>actual start</td><td>started after the lag allows</td><td>A1, before lag</td></tr>
+<tr><td class="c">FF</td><td>actual finish</td><td>finished after the lag allows</td><td>A1, before lag</td></tr>
+<tr><td class="c">SF</td><td>actual finish</td><td>started after the lag allows</td><td>A1, before lag</td></tr>
+</table>
+<p>Both ends of the violated link are marked, and the report counts three ways: distinct activities, as successors, as predecessors. How many activities have the problem depends on how you count, and diverging from the convention of the other party's tool hands them the argument.</p>
+<div class="example"><b>To reproduce in Project</b><p>Group by predecessor and filter by Actual Start populated. Mark the pair and inspect the link in the Gantt.</p></div>
+
+<h2 id="ch5-3">A2 · Total inversion</h2>
+<p>A successor is complete and the predecessor never started. It is the extreme form of a broken sequence, and it is unanswerable in a meeting. Either the sequence was invented for the plan, or the progress landed on the wrong activity. Check pair by pair and record which, because the answer varies between pairs.</p>
+<div class="example"><b>To reproduce</b><p>Filter by Actual Finish populated and check the Actual Start of each predecessor.</p></div>
+
+<h2 id="ch5-4">H · Forecast elapsed with no actual</h2>
+<p>A forecast start is in the past with no actual start, or a forecast finish is in the past with no actual finish. The plan says it happened; nothing in the file says it happened. Every successor is projected from a date that already failed to hold. Two possibilities with different answers: the work happened and was not recorded, or it did not happen and the forecast must move. Leaving it is the only wrong option.</p>
+
+<h2 id="ch5-5">E · Pulled forward and never started</h2>
+<p>The forecast finish moved earlier than the baseline by 30 working days or more, on the activity's calendar, and the activity never started. Progress pulled earlier with no execution behind it is a plan change dressed as performance, and in aggregate it can offset real delay elsewhere. Ask what changed to justify the date. If nothing did, the forecast is optimistic and should go back.</p>
+
+<h2 id="ch5-6">C · Delayed beyond the threshold</h2>
+<p>The forecast finish moved later than the baseline by 30 working days or more, on the activity's calendar. Completed activities stay in the list on purpose: consummated delay is information. It is the finding the other party expects and the easiest to contest, which is why it needs the reproduction attached. Read it with the weight distribution: the same number of delayed activities means different things depending on the budget share they carry. The float column says how much margin is left.</p>
+<div class="note"><b>Threshold in working days</b>The 30 days are counted on the activity's own calendar, not in calendar days nor on the project shift. On a six-day week, 30 working days are about 35 calendar days. The unit is declared in the conventions section and adjustable through the profile.</div>
+
+<h2 id="ch5-7">G · Duration inconsistent with the window</h2>
+<p>The duration does not match the working time between start and finish, measured on the activity's own calendar, with partial first and last days. G is a thermometer, not a finding: it says something was edited inconsistently, not what. Start anchored on the actual date with the remainder pushed, a typed date over a computed one, a constraint fighting the logic. Use it to choose what to inspect, looking at the largest differences first. Never report it alone.</p>
+
+<h2 id="ch5-8">B · Milestone with no deadline</h2>
+<p>The milestone has no Deadline set, so nothing in the file makes its date binding. Without it the milestone shows comfortable float even with the contractual date passed, because the schedule was never told the date mattered. A deadline is not a constraint: it moves nothing, it only reveals slippage. Register contractual dates on the milestones that have them; it changes no calculation and makes every following report tell the truth about float. B is optional by default, because not every organisation practises it; the profile promotes it to a finding.</p>
+
+<h2 id="ch5-9">F · In progress at zero percent</h2>
+<p>Actual start, no actual finish, and duration percent complete at zero. On a schedule reported by physical percent this fires a lot, because the duration percent is not maintained; that is why it is treated as a check. On a schedule reported by duration, it is the real signal of a stalled activity.</p>
+
+<h2 id="ch5-10">P · Pending reporting</h2>
+<p>One hundred percent physical with no actual finish date. It is a reporting defect, and the distinction decides who the conversation is with. Kept among the network findings, it would accuse the team of executing out of sequence when the work was done and only the date is missing. Enter the actual finish. Until then the activity stays deliberately out of the network findings.</p>
+</section>
+
+<section class="ch">
+<p class="chno">6</p><h1 class="ch" id="ch6">Network quality</h1>
+<p class="lede">Does this schedule hold as a model, before any discussion of dates? Section V7 answers with the mechanical metrics of the DCMA 14-point model, each with its formula in words, declared population and quoted threshold so it can be contested, plus what a planner asks of any schedule.</p>
+<div class="note"><b>Implementation, not certification</b>The thresholds come from a published model and are quoted so they can be discussed. Two of the fourteen metrics cannot be computed from a file and the report says so instead of approximating: the critical path test requires perturbing the schedule, and the critical path length index is 1.0 by construction without a deadline on the final milestone.</div>
+
+<table>
+<tr><th>Code</th><th>Metric</th><th>Population</th><th>Threshold</th><th>Reads as</th></tr>
+<tr><td class="c">Q1</td><td>Missing logic</td><td>incomplete, non-milestone</td><td>≤ 5%</td><td>no predecessor or no successor: delay that does not propagate</td></tr>
+<tr><td class="c">Q2</td><td>Leads</td><td>links</td><td>0%</td><td>negative lag hides overlap the logic should model</td></tr>
+<tr><td class="c">Q3</td><td>Lags</td><td>links</td><td>≤ 5%</td><td>positive lag is time with no owner</td></tr>
+<tr><td class="c">Q4</td><td>Link types</td><td>links</td><td>≤ 10% non-FS</td><td>every link that is not finish-to-start deserves a reason</td></tr>
+<tr><td class="c">Q5</td><td>Hard constraints</td><td>incomplete</td><td>≤ 5%</td><td>must start, must finish, finish no later than: a pinned date fights the logic; soft ones are counted, not failed</td></tr>
+<tr><td class="c">Q6</td><td>High float</td><td>incomplete</td><td>≤ 5%</td><td>over 44 working days: usually a milestone nobody constrained</td></tr>
+<tr><td class="c">Q7</td><td>Negative float</td><td>incomplete</td><td>0%</td><td>a date the logic cannot reach</td></tr>
+<tr><td class="c">Q8</td><td>High duration</td><td>incomplete, non-milestone</td><td>≤ 5%</td><td>over 44 working days remaining: too coarse to control</td></tr>
+<tr><td class="c">Q9</td><td>Invalid dates</td><td>all leaves</td><td>0%</td><td>actual date after the status date</td></tr>
+<tr><td class="c">Q10</td><td>Unassigned</td><td>incomplete with duration</td><td>count</td><td>nothing to trend</td></tr>
+<tr><td class="c">Q11</td><td>Missed activities</td><td>due by the status date</td><td>≤ 5%</td><td>did not finish on time</td></tr>
+<tr><td class="c">Q12</td><td>Critical path test</td><td>—</td><td>—</td><td>not computable from a file</td></tr>
+<tr><td class="c">Q13</td><td>Critical path length index</td><td>—</td><td>—</td><td>only with a deadline on the final milestone</td></tr>
+<tr><td class="c">Q14</td><td>Baseline execution index</td><td>due by the status date</td><td>≥ 0.95</td><td>finished on time divided by due</td></tr>
+</table>
+
+<h2 id="ch6-1">How to read it</h2>
+<p>Read Q1, Q2, Q5 and Q7 before any date. A schedule that fails them is not a model of the works, and every date it produces is a number with no basis. Q6 and Q8 say whether it can be controlled. Q11 and Q14 say whether it was met. Beyond the fourteen, the report shows summaries with links, which should not exist, milestones with no deadline, the number of incomplete critical activities, and whether the critical chain reaches the final milestone, which is the test of the network being whole.</p>
+<div class="example"><b>On the example schedule</b><p>An activity pinned by a must-finish-on constraint appears in Q5. A link with a three-day lag appears in Q3. A summary carrying a link is flagged. The baseline execution index falls below the floor because a due activity did not finish.</p></div>
+</section>
+
+<section class="ch">
+<p class="chno">7</p><h1 class="ch" id="ch7">Productivity and trend by resource</h1>
+<p class="lede">Section V6 answers, for every activity in progress with a quantity, when it finishes at the actual rate, and what that does to the baseline and the critical path. Everything comes from the file's own assignments; no custom field is required.</p>
+
+<h2 id="ch7-1">Where the quantities live</h2>
+<p>For a material resource, Project stores the quantity in the work fields, as hours of a duration. An assignment with 10,567 hours of work on a resource labelled m³ is 10,567 m³. The same rule gives executed, remaining, baseline planned and executed per day. An assignment with no resource cannot be trended, and the report counts how many there are.</p>
+
+<h2 id="ch7-2">Three rates, not one</h2>
+<p>One rate alone is not a fair reading: a cut activity hit by a fortnight of rain shows a rate that says nothing about the crew.</p>
+<table>
+<tr><th>Rate</th><th>How</th><th>What it answers</th></tr>
+<tr><td class="c">own</td><td>executed on this activity divided by working days elapsed since its actual start, on its calendar</td><td>what is happening here, rain included</td></tr>
+<tr><td class="c">global</td><td>everything executed by the resource on all fronts divided by the working days those assignments took</td><td>the fair scenario, which dilutes a bad fortnight</td></tr>
+<tr><td class="c">recent</td><td>the last 30 days of the resource's executed blocks divided by the window's working days</td><td>the pace now, not the average of months</td></tr>
+</table>
+<p>The own rate divides by elapsed days, including days when nothing came out. A crew that produced on eight of ten days practised the ten-day rate. The planned rate also comes out, baseline quantity over baseline duration, and two required rates: remaining over working days to the forecast finish, and to the late finish.</p>
+
+<h2 id="ch7-3">Four dates, three verdicts</h2>
+<p>The remainder runs over each rate, in working days of the activity's calendar from the status date, and lands against four dates: forecast finish, baseline finish, late finish, which the file already carries with the float built in, and the projected finish.</p>
+<table>
+<tr><th>Projected lands</th><th>Verdict</th><th>Meaning</th></tr>
+<tr><td>by the forecast</td><td class="c">ahead</td><td>nothing to do</td></tr>
+<tr><td>after the forecast, by the baseline</td><td class="c">reprogram</td><td>the forecast is wrong, the baseline is not threatened</td></tr>
+<tr><td>after the baseline, by the late finish</td><td class="c">baseline delay, float absorbs</td><td>no impact on the end date yet; the column says how many float days remain</td></tr>
+<tr><td>after the late finish</td><td class="c">enters the critical path</td><td>on the date shown, before the schedule shows it</td></tr>
+</table>
+<div class="example"><b>One case read end to end</b><p>Baseline on 30 September, forecast on the 26th, twenty days of float. If the rate projects 28 September, it is reprogram: the forecast slips, the baseline does not. If it projects 2 October, the baseline slips two days and eighteen days of float remain: no impact on the end date. If it projects more than twenty days beyond the forecast, it enters the critical path, and the date that happens appears in the table.</p></div>
+
+<h2 id="ch7-4">Thin evidence</h2>
+<p>A rate built on a few days, or on a tiny share of the planned quantity, projects absurdity with complete ease: a resource at two percent executed "finishes" in 2031. The rate is reported, because it is what the data says, but it is flagged as thin evidence when it has under ten days of data or under two percent of the planned quantity, and the verdict carries the flag. Executed derived from physical percent, rather than posted quantity, is also flagged as inferred. Read those as a question, not a verdict. The thresholds are adjustable through the profile.</p>
+
+<h2 id="ch7-5">Contracted productivity</h2>
+<p>If the organisation keeps a contracted productivity per crew in a custom field, the profile can point to it and it appears as a comparison column beside the rates. It is an optional layer, never a requirement.</p>
+</section>
+
+<section class="ch">
+<p class="chno">8</p><h1 class="ch" id="ch8">Looking forward and looking back</h1>
+<p class="lede">Section V8 answers when the contract really finishes and what the next weeks demand. Section V9 answers where each milestone's delay came from and by which path. Both use only what the file already carries, and every reading says what it was built on.</p>
+
+<h2 id="ch8-1">Earned Schedule</h2>
+<p>Classic earned value measures schedule in money, and at the end of the project the indicator goes to 1.0 on a project a year late. Earned Schedule measures schedule in time. Take today's earned value, go up to the planned curve and read the date the curve got there. That date is ES: where the plan said we would be.</p>
+<table>
+<tr><th>Quantity</th><th>Formula</th><th>Reads as</th></tr>
+<tr><td class="c">ES</td><td>date at which cumulative planned equalled today's earned, interpolated inside the month</td><td>where the plan said we would be</td></tr>
+<tr><td class="c">AT</td><td>days from the first planned day to the status date</td><td>time elapsed</td></tr>
+<tr><td class="c">SV(t)</td><td>ES minus AT</td><td>days behind the plan; negative is behind</td></tr>
+<tr><td class="c">SPI(t)</td><td>ES divided by AT</td><td>schedule efficiency; 0.90 is ten percent slower than the plan</td></tr>
+<tr><td class="c">PD</td><td>first planned day to the last baseline finish</td><td>planned duration</td></tr>
+<tr><td class="c">IEAC(t)</td><td>PD divided by SPI(t), as a date from the first planned day</td><td>independent finish at this efficiency</td></tr>
+<tr><td class="c">TSPI</td><td>(PD minus ES) divided by (PD minus AT)</td><td>efficiency the remainder needs to finish on the date</td></tr>
+</table>
+<p>TSPI is the meeting number. Above 1.0 the remainder must run faster than the plan. Above 1.10 the literature treats it as unrecoverable, because no works sustains ten percent above plan for long. It turns "we are late" into "we need this much more per week, and that is or is not possible".</p>
+<div class="note"><b>The limit, stated in the report</b>It is an aggregate, cost-weighted measure, and it does not see the critical path: a mass of non-critical activities late shows behind while the end date holds, and the reverse too. So the independent finish never replaces the schedule's own finish. It sits beside it, and the gap between the two is the conversation. It inherits everything the planned curve inherits: the slot, the earned-value method, execution ahead of the baseline window.</div>
+<div class="example"><b>On the example schedule</b><p>Earned is far behind planned, and ES falls more than a hundred days before the status date. Schedule efficiency is below 0.2 and TSPI above 1.7: the remainder would need to run seventy percent faster than the plan. The report writes that as a question about the schedule, not as a sentence.</p></div>
+
+<h2 id="ch8-2">Look-ahead</h2>
+<p>Four and eight weeks from the status date: what must start and what must finish, by group, weighted by baseline cost; the earning the file plans for the window, pro-rata from the phased curve; and the earning the last two months' practised rate would deliver. One word says whether the planned measurement of the window is reachable.</p>
+
+<h2 id="ch8-3">Rates by group</h2>
+<p>Percent earned per week to date, from the group's first earning, against the percent per week the remainder needs to land on the group's last baseline finish. The ratio required over practised gives one word per group: on pace, stretch, out of reach.</p>
+
+<h2 id="ch8-4">Milestone bands</h2>
+<p>The distribution of finish slippage, current finish minus baseline finish in calendar days, across started or due activities in this snapshot, applied to each future milestone's current finish as P50 and P80. Empirical, not a simulation with an invented premise. A series of snapshots replaces it with observed cycle-to-cycle movement.</p>
+
+<h2 id="ch8-5">Rain exposure</h2>
+<p>Remaining cost spread evenly over each activity's current span from the status date, read against the months its own calendar reserves for bad weather, a month with four or more non-working exceptions. Reported now and again with everything slipped thirty days, because slipping into the reserve is how a small delay becomes a large one. The spread is inferred; the reserve months are measured.</p>
+
+<h2 id="ch8-6">Forensics: driving path per milestone</h2>
+<p>Where did the delay come from, by which path, and when did it start? From each future milestone the tool walks back through the predecessor that actually drives each start, the one whose link instant plus lag lands latest on the successor's calendar, until it reaches a finished activity, because the past drives nothing, or an open end.</p>
+<p>Each node on the chain carries its finish variance against the baseline in working days. The <strong>origin</strong> is the deepest node on the chain still carrying at least five working days of variance: walking back from the milestone, variance is inherited from the driver, so the last node that still has it is where it entered. The delay gets a name and a row number, not an aggregate. The report also says which activities originate delay on the most milestones, because one name can be the root of a dozen slipped dates, whether each chain reaches started work, and whether it dies on an open end, which is finding Q1 seen from the milestone's side.</p>
+<div class="note"><b>Not a delay claim</b>A contractual claim needs contemporaneous records and a formal method, such as the AACE recommended practices on forensic schedule analysis. This reconstructs the mechanism from the file's dates, links and calendars, with reproducible evidence, to sustain the meeting and the notification. The contractual conversation happens in real time, with each organisation's reality.</div>
+<div class="example"><b>On the example schedule</b><p>There is a future contractual milestone with twelve working days of variance. The driving chain has three nodes, and the origin is the milestone itself: the variance did not come from any predecessor with delay of its own, which points to a typed date or to a chain broken before it.</p></div>
+
+<h2 id="ch8-7">Calendar forensics</h2>
+<p>A weather reserve registered for one year while the activities on that calendar execute in another embeds optimism nothing in the file announces: the month gets its full working days instead of its real ones. Per calendar in use, non-working exceptions per year against activity-days per year, with two flags: years with activities and no reserve while the calendar has reserve in another year, and years with reserve and no activities.</p>
+
+<h2 id="ch8-8">Execution pattern</h2>
+<p>Out-of-sequence execution by the month the successor started, counting the A1 pairs and the both-complete pairs recorded outside it. And the distribution of start slippage against the baseline across started activities: P20, P50, P80, how many started early, how many late.</p>
+
+<h2 id="ch8-9">With a previous snapshot</h2>
+<p>Float consumed per activity and per group, total float before minus total float now, in working days: float that disappears while dates hold is delay still invisible. Activities that became critical this cycle. And each milestone's movement between the snapshots, attributed to what moved on its driving chain through the comparator's three signals: execution, replan or moved reference, with the majority reading as the attribution.</p>
+</section>
+
+<section class="ch">
+<p class="chno">9</p><h1 class="ch" id="ch9">Cycle comparison</h1>
+<p class="lede">The single-file review asks whether the schedule holds together inside. Comparing two asks something else: what moved since the last delivery, and was it the works that moved or the plan?</p>
+
+<h2 id="ch9-1">Input</h2>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py previous.xml current.xml</pre>
+<p>Two snapshots of the same schedule: the previous delivery and the current one. Not two different schedules, and not a schedule against an application's database. Each contractor compared against itself, which is what makes the reading defensible. With two files you get the comparison and the review of the current file, deliberately: comparing two files that do not hold together is comparing two wrong answers.</p>
+<p>Each snapshot needs a status date and a saved baseline. Without a baseline there is no planned half and the deviation decomposition has no denominator.</p>
+
+<h2 id="ch9-2">Matching an activity across versions</h2>
+<p>First by the stable unique identifier, not the row number, which renumbers freely. Failing that, by name plus WBS path. What does not match falls into two classes, and only two: <strong>inserted</strong>, present in the current with no pair in the previous, and <strong>removed</strong>, present in the previous and never matched. A renamed activity that also moved branch is indistinguishable from a removal plus an insertion, and pretending otherwise manufactures a third category that cannot be verified. The report shows the count for the reader to judge.</p>
+<div class="note"><b>A false pair is worse than a missed pair</b>A pair that does not match lands in the unmatched list, where somebody looks. A pair matched wrongly produces a date movement, a deviation and a trend entry for two activities that have nothing to do with each other, all plausible. Summaries and milestones stay out of deviation and trend: summaries would double-count their children, and milestones have no duration.</div>
+
+<h2 id="ch9-3">The three signals</h2>
+<table>
+<tr><th>Signal</th><th>Reading</th></tr>
+<tr><td>dates moved <strong>and</strong> actual dates are present</td><td class="c">execution</td></tr>
+<tr><td>dates moved, <strong>no</strong> actual dates</td><td class="c">replan</td></tr>
+<tr><td><strong>baseline</strong> dates moved</td><td class="c">reference moved</td></tr>
+</table>
+<p>The third is the one to look at first. When the baseline changes between two cycles, the basis of the comparison moved underneath it, and every deviation that straddles the change is measured against two references. Report it as a finding about the report, not as performance. The second is where the conversation with the contractor is decided: a forecast rewritten with no execution behind it is a plan change, legitimate, but it has to be visible as one, otherwise the next cycle starts from a reference nobody agreed to.</p>
+
+<h2 id="ch9-4">The deviation decomposition</h2>
+<p>For each leaf activity with baseline cost above zero, the contribution is its earned minus planned divided by total baseline cost, in percentage points. The contributions sum to the aggregate, and those that round to zero are dropped, because a list of zeros hides the ones that matter. When the sum does not match the movement, the residue appears as <strong>unexplained</strong>, with the number, instead of vanishing. The denominator is declared: summary total or sum of the leaves.</p>
+<p>It is the operational answer to the aggregate problem. A positive aggregate progress can be out-of-sequence work covering activities that should be complete and sit at zero; the decomposition is what lets that be read on the spot.</p>
+
+<h2 id="ch9-5">One function, called twice</h2>
+<p>Both snapshots' indicators are computed by the same function, called twice, and not by two paths that happen to agree. If the previous cycle's figure were computed differently from the current one, the difference between them would be a reference artefact, and it would read as performance. You do not verify that the two halves agree; you build them so they cannot disagree.</p>
+
+<h2 id="ch9-6">What comes out</h2>
+<p>A cycle report and a JSON, named after both files. Inside: both snapshots' general indicators by the identical rule, the movement in points, the per-activity decomposition that sums to it, the unexplained residue, the trend with the three-signal reading per activity, the moved baselines, the inserted and removed, and the warnings: a baseline that changed slot between cycles, for instance, comes out as a warning.</p>
+<div class="example"><b>On the example pair</b><p>Two activities moved dates: one with actual dates, read as execution; another without, read as replan. One had its baseline changed, and the report issues a moved-reference warning before any performance figure. The decomposition has one row, which sums to the movement.</p></div>
+</section>
+
+<section class="ch">
+<p class="chno">10</p><h1 class="ch" id="ch10">Profile and customisation</h1>
+<p class="lede">Everything an organisation may declare instead of having it coded. Every key has a default that works with no profile at all; a profile only narrows. An organisation's mapping is its own asset and does not belong in the generic method. What is generic is that it can be declared.</p>
+
+<h2 id="ch10-1">Discover before asking</h2>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/discover_fields.py delivery-review.json</pre>
+<p>It lists every custom field that actually carries values, with the type inferred from the values, the fill rate, how many distinct values there are, whether it is a closed set, and a sample. Then it groups them by likely role: discipline, work front, chainage, contractor, phase, justification, quantity, unit. It exists so nobody answers from memory. Asking which field holds the discipline makes a person recall; showing three populated fields with their values makes them recognise. A field that exists and is almost empty comes out separately, as a finding: a justification blank on 96% of activities is a compliance issue, not a field to ignore.</p>
+
+<h2 id="ch10-2">The profile keys</h2>
+<table>
+<tr><th>Key</th><th>Default</th><th>Effect</th></tr>
+<tr><td class="m">organisation</td><td>empty</td><td>name shown on the report cover</td></tr>
+<tr><td class="m">lang</td><td>follows the schedule</td><td>forces pt or en</td></tr>
+<tr><td class="m">ev_method</td><td>as the file declares</td><td>physical or percent; recorded as forced</td></tr>
+<tr><td class="m">baseline_slot</td><td>elected by coverage</td><td>0 to 10; recorded as forced</td></tr>
+<tr><td class="m">threshold_days</td><td>30</td><td>E and C, in working days of the activity's calendar</td></tr>
+<tr><td class="m">tolerance_days</td><td>1</td><td>G</td></tr>
+<tr><td class="m">checks_optional</td><td>none</td><td>B and F promoted to findings</td></tr>
+<tr><td class="m">grouping</td><td>wbs</td><td>a custom field by alias, name or id</td></tr>
+<tr><td class="m">fields.*</td><td>none</td><td>discipline, service, section, work front, justification, quantity, unit, contracted productivity, regulator code</td></tr>
+<tr><td class="m">productivity.*</td><td>30 · 10 · 0.02</td><td>recent-rate window; thin-evidence thresholds</td></tr>
+<tr><td class="m">rain.reserve_days_per_month</td><td>4</td><td>exceptions that make a month a reserve month</td></tr>
+<tr><td class="m">lookahead_weeks</td><td>4, 8</td><td>the look-ahead windows</td></tr>
+<tr><td class="m">theme.*</td><td>shipped palette</td><td>accent, severity colours, fonts, header text</td></tr>
+<tr><td class="m">template</td><td>shipped</td><td>path to a customised template</td></tr>
+<tr><td class="m">sections_hidden</td><td>none</td><td>section ids to hide, such as v6 or v9</td></tr>
+</table>
+<p>A declared field the file does not have is reported at the top of the report, never silently ignored.</p>
+
+<h2 id="ch10-3">Create and edit</h2>
+<pre>python3 scripts/profile_tool.py init --out profile.json --organisation "..."
+python3 scripts/profile_tool.py discover delivery-review.json
+python3 scripts/profile_tool.py set profile.json grouping=DISCIPLINE fields.discipline=DISCIPLINE
+python3 scripts/profile_tool.py show profile.json delivery-review.json
+python3 scripts/review.py delivery.xml --profile profile.json</pre>
+<p>The profile is written by the tool, never by hand, and validated on every write. The show command resolves every declared field against the file and says which were found. A filled example ships with the skill, to copy.</p>
+
+<h2 id="ch10-4">The two interviews in the assistant</h2>
+<p>With the skill in an assistant, say <strong>customise the organisation profile</strong>. It runs discovery first, shows what the file has, and asks one question at a time only about what the file could not settle: which field is the discipline, the section, the justification, the contracted productivity; whether the declared earned-value method is the practised one; whether B and F count as findings; the threshold; the slot, only if the elected one is wrong. Say <strong>customise the report</strong> for colours, fonts, header, language and sections to hide. Deeper changes go in a copy of the template, which takes precedence and survives updates.</p>
+
+<h2 id="ch10-5">The executive synthesis</h2>
+<pre>python3 scripts/inject_narrative.py delivery-review.html synthesis.txt --who "your name"</pre>
+<p>Each section's reading is generated by rule. The synthesis is different: a text written by whoever runs the analysis, or by the assistant on request, injected into the report under its own label, with author and time. The report is rebuilt from its own embedded data, so the figures cannot drift from what the text was written against. Inside an assistant, ask for the synthesis and it writes it from the JSON files and injects it; what it writes is interpretation, and is labelled as such.</p>
+</section>
+
+<section class="ch">
+<p class="chno">11</p><h1 class="ch" id="ch11">The JSON files</h1>
+<p class="lede">Every analysis writes its data beside the report. They serve a spreadsheet, a dashboard, a historical series, or an assistant reading and writing. Key names are in English and stable across versions.</p>
+
+<h2 id="ch11-1">Single-file review</h2>
+<div class="def"><div class="k">-review</div><div class="v"><span class="m">blocking</span>, what prevented the analysis; <span class="m">conventions</span>, threshold, slot and election basis, calendars in use, link types evaluated, lag honoured, ignored pairs; <span class="m">counts</span>, the three counts per finding; <span class="m">findings</span>, the activities per finding with row, name, dates, variance, float; <span class="m">pairs</span>, the explicit A1 and A2 pairs; <span class="m">ignored</span>, the both-complete pairs.</div></div>
+<div class="def"><div class="k">-scurve</div><div class="v"><span class="m">totals</span>, planned and earned to date, the alternative method, SV and SPI; <span class="m">reconciliation</span>, how many tasks the phasing closes against cost, against the file's planned and against the file's earned, and epoch blocks dropped; <span class="m">periods</span>, the monthly series with cumulatives; <span class="m">by_group</span>, one curve per group; <span class="m">provenance</span>, where each series comes from.</div></div>
+<div class="def"><div class="k">-productivity</div><div class="v"><span class="m">resources</span>, global and recent rates per resource; <span class="m">activities</span>, per activity in progress the three rates, the four dates, the verdict and the thin-evidence and inferred-executed flags; <span class="m">summary</span>, counts per verdict and unassigned assignments.</div></div>
+<div class="def"><div class="k">-quality</div><div class="v"><span class="m">metrics</span>, the fourteen with count, population, share, threshold, status and items; <span class="m">indices</span>, baseline execution index, critical activities, whether the critical chain reaches the final milestone; <span class="m">qualitative</span>, summaries with links and milestones with no deadline; <span class="m">soft_constraints</span>, the soft constraints counted.</div></div>
+<div class="def"><div class="k">-forecast</div><div class="v"><span class="m">earned_schedule</span>, every quantity from chapter 8; <span class="m">lookahead</span>, one entry per window; <span class="m">rates_by_group</span>; <span class="m">milestone_bands</span>, sample, P50, P80 and one record per milestone; <span class="m">rain_exposure</span>, remaining in reserve now and with thirty days of slip.</div></div>
+<div class="def"><div class="k">-forensics</div><div class="v"><span class="m">milestones</span>, each future milestone's driving chain with its origin; <span class="m">summary</span>, recurring origins and open chains; <span class="m">calendars</span>, reserve per year against activity-days, with flags; <span class="m">execution</span>, out-of-sequence by month and start slippage; <span class="m">cycle</span>, with two files, float consumed, became critical, attributed milestone movement.</div></div>
+
+<h2 id="ch11-2">Cycle comparison</h2>
+<div class="def"><div class="k">-cycle</div><div class="v"><span class="m">previous</span> and <span class="m">current</span>, each snapshot's general indicators by the same rule; <span class="m">movement_points</span>, <span class="m">decomposition_sums_to_points</span> and <span class="m">movement_unexplained_points</span>; <span class="m">trend</span>, per activity, days moved and the three-signal reading; <span class="m">baseline_moved</span>; <span class="m">unmatched</span>, inserted and removed; <span class="m">decomposition</span>; <span class="m">warnings</span>; <span class="m">conventions</span>, matching, population, denominator.</div></div>
+
+<h2 id="ch11-3">Two identifiers, always together</h2>
+<p>In the JSON files each activity carries the stable unique identifier, which is what joins data across versions, and the visible row number, which is the only one a person finds on screen. In the report only the second appears. A finding list in unique identifiers is unusable in a meeting; a list in row numbers is unusable for joining versions. So both travel together in the data.</p>
+
+<h2 id="ch11-4">Re-reading the report as data</h2>
+<p>The HTML carries its own data embedded in a block at the end of the file. That is what allows rebuilding it to inject the synthesis, and what lets one cycle's report serve as input to the next with no database: the historical series travels inside the generated file. The cost is that the chain breaks if a cycle's file is lost, so the file is the asset. Keep it.</p>
+</section>
+
+<section class="ch">
+<p class="chno">12</p><h1 class="ch" id="ch12">Limits, labels and what the tool does not decide</h1>
+<p class="lede">A defensible report says what it does not know. This chapter gathers the tool's limits, the labels it uses to separate measurement from inference, and the judgements that stay with the person.</p>
+
+<h2 id="ch12-1">The three labels</h2>
+<table>
+<tr><th>Label</th><th>Means</th><th>Example</th></tr>
+<tr><td class="c">measured</td><td>read directly from the file, reproducible by anyone with the same file</td><td>the A1 count, the planned curve, the number of calendars in use</td></tr>
+<tr><td class="c">inferred</td><td>derived by a declared rule, from measured data</td><td>executed derived from physical percent; the even spread of the remainder in the rain exposure</td></tr>
+<tr><td class="c">reported</td><td>comes from a documented record, not from this analysis's measurement</td><td>production-use results cited in the method references</td></tr>
+</table>
+<p>The label travels with the figure in the report and the JSON files, and an inferred figure is never presented as measured.</p>
+
+<h2 id="ch12-2">What the tool refuses to do</h2>
+<ul>
+<li><strong>Assume today's date</strong> when the file has no status date. The analysis stops and says why.</li>
+<li><strong>Invent the planned half</strong> when no baseline slot carries cost. Without a baseline there is no adherence.</li>
+<li><strong>Approximate the two quality metrics</strong> a file cannot answer. Q12 and Q13 come out as not computable.</li>
+<li><strong>Guess a distribution.</strong> The milestone band is empirical, from observed slippage; the rain exposure uses an even spread and says so.</li>
+<li><strong>Match activities by similarity.</strong> Only stable identifier or name plus path. The rest is inserted or removed.</li>
+<li><strong>Replace the schedule's finish</strong> with Earned Schedule's independent finish. The two sit side by side.</li>
+</ul>
+
+<h2 id="ch12-3">Judgements that stay with the person</h2>
+<p>G is a thermometer: use it to choose what to inspect, never report it alone. The physical percent may have been typed, and everything computed from it inherits that; the report says which field it used. The baseline slot is elected from the data, because the field that should declare it is not dependable; check it with whoever owns the schedule. If the calendar table shows a shift or week different from what the works practise, every date inherits the error. A thin-evidence rate is a question. A forensic origin that lands on the milestone itself points to a typed date or a broken chain, and someone has to open the file.</p>
+
+<h2 id="ch12-4">Formats and scope</h2>
+<p>MS Project XML is the measured format. Reading .mpp and Primavera P6 through a Java library is optional and unverified. The tool does not produce a contractual claim, does not certify against a standard, and does not replace the meeting: it delivers what the meeting needs so it does not turn into an argument about the arithmetic.</p>
+</section>
+
+<section class="ch">
+<p class="chno">13</p><h1 class="ch" id="ch13">Frequently asked questions</h1>
+
+<h2 id="ch13-1">The report flags zero on everything in a file I know has problems</h2>
+<p>Look at the population line in the conventions. Summary-only files, or files with everything marked external, have no leaves to test. And run the internal test: if the positive fixture does not fire, the installation is broken.</p>
+
+<h2 id="ch13-2">cronoaudit's count does not match my macro's</h2>
+<p>First check the convention: distinct activities, as successors or as predecessors give three numbers for the same problem, and the report shows all three. Then check the baseline slot and the threshold. Finally, the both-complete pairs: cronoaudit leaves them out of A1 and records them separately. The macro implementation follows the same specification, and on the same file the counts have to match, convention by convention.</p>
+
+<h2 id="ch13-3">Earned value does not match Project</h2>
+<p>The reconciliation at the foot of the S-curve says on how many tasks it matches and classifies those that do not. The common cause is execution ahead of the baseline window: Project only credits the phased cost when the status date reaches the window, and the method credits cost times physical at once. Both are right against their own instant. If the difference is something else, the slot may be wrong.</p>
+
+<h2 id="ch13-4">Why is the report in English when the schedule is mine</h2>
+<p>The language is detected from the file's content: activity names, calendars, title. A schedule with English names produces an English report. Force it with the language option or through the profile.</p>
+
+<h2 id="ch13-5">Can I change the 30-day threshold</h2>
+<p>Yes, through the command-line option or the profile. The report then declares the new value in the conventions. It counts in working days of the activity's calendar, so thirty working days on a six-day week are about 35 calendar days.</p>
+
+<h2 id="ch13-6">E flagged activities that were only reprogrammed</h2>
+<p>That is what E looks for: finish pulled earlier with no execution. Reprogramming earlier can be legitimate, but it needs a reason, and E is the list of questions. If the reason exists, it gets recorded; if not, the forecast is optimistic.</p>
+
+<h2 id="ch13-7">Does sensitive data leave the machine</h2>
+<p>No. The tool does not access the network. The report is a local file with no external reference. An assistant only sees what you show it, and the synthesis is the only part it writes.</p>
+
+<h2 id="ch13-8">How do I update</h2>
+<p>Run the installer again. It replaces the skill and keeps a customised template, if there is one. The organisation profile stays where you saved it and is not touched.</p>
+
+<h2 id="ch13-9">Does it work with Primavera P6</h2>
+<p>The method transfers, but nothing was measured in that format. Reading through a Java library exists as an optional path and the result should be treated as unverified.</p>
+</section>
+
+<section class="ch">
+<p class="chno">14</p><h1 class="ch" id="ch14">Glossary</h1>
+<p class="lede">The terms as the report uses them, in English, with the Portuguese equivalent.</p>
+<dl class="gloss">
+<dt>Baseline <i>linha de base</i></dt><dd>Copy of the plan saved at an instant, against which variance is measured.</dd>
+<dt>Baseline slot <i>gaveta de linha de base</i></dt><dd>One of the eleven copies of the plan Project keeps, 0 to 10. Elected by cost coverage.</dd>
+<dt>Counting convention <i>convenção de contagem</i></dt><dd>How activities are counted in a network finding: distinct, as successors or as predecessors.</dd>
+<dt>Critical path <i>caminho crítico</i></dt><dd>Chain of activities with zero total float, from start to finish. Any delay on it moves the end.</dd>
+<dt>Deadline <i>data limite</i></dt><dd>Milestone field that reveals slippage without moving any date. Not a constraint.</dd>
+<dt>Decomposition <i>decomposição</i></dt><dd>Each activity's contribution to the aggregate deviation, in percentage points, summing to the total.</dd>
+<dt>Driving path <i>caminho condutor</i></dt><dd>Chain of predecessors that actually sets a milestone's date, chosen link by link by the one that lands latest.</dd>
+<dt>Earned Schedule <i>ES</i></dt><dd>Date at which the planned curve reached today's earned value. Schedule measured in time.</dd>
+<dt>Finish variance <i>variação de término</i></dt><dd>Current finish minus baseline finish, in working days of the activity's calendar.</dd>
+<dt>FS, SS, FF, SF <i>TI, II, TT, IT</i></dt><dd>Finish-to-start, start-to-start, finish-to-finish, start-to-finish: the four link types.</dd>
+<dt>Lag and lead <i>lag, lead</i></dt><dd>Mandatory wait and permitted overlap on a link. A lead is negative lag.</dd>
+<dt>Leaf activity <i>atividade folha</i></dt><dd>Activity with no children in the WBS. The only one the analysis counts; summaries are aggregations of it.</dd>
+<dt>Look-ahead</dt><dd>What must start and finish in the coming weeks, and whether the pace reaches it.</dd>
+<dt>Origin <i>origem</i></dt><dd>Deepest node on the driving path still carrying variance. Where the delay entered.</dd>
+<dt>Physical percent complete <i>percentual físico</i></dt><dd>How much of the work is out, declared. Distinct from duration percent.</dd>
+<dt>Planned and earned value <i>previsto e realizado</i></dt><dd>What should have been earned by the status date, and what was earned.</dd>
+<dt>Profile <i>perfil</i></dt><dd>File that declares an organisation's conventions and fields instead of coding them.</dd>
+<dt>Reference <i>referência, datum</i></dt><dd>Slot, instant, population and unit against which a figure is measured. Two halves against different references do not compare.</dd>
+<dt>S-curve <i>curva S</i></dt><dd>Cumulative planned and earned over time. The gap between the curves is the delay in money.</dd>
+<dt>SPI <i>IDP</i></dt><dd>Schedule performance index: earned divided by planned, in money.</dd>
+<dt>Status date <i>data de status</i></dt><dd>Date up to which progress is valid. Every planned against actual is measured at it.</dd>
+<dt>Thin evidence <i>evidência fina</i></dt><dd>Rate built on under ten days or under two percent of the planned quantity. Reported with a flag.</dd>
+<dt>Total float <i>folga total</i></dt><dd>How much an activity can slip without moving the project finish.</dd>
+<dt>Trend, forecast dates <i>tendência</i></dt><dd>Current dates of the live schedule, computed by the network from what was reported.</dd>
+<dt>TSPI</dt><dd>Efficiency the remainder needs to finish on the planned date. Above 1.10, treated as unrecoverable.</dd>
+<dt>Weather reserve <i>reserva de improdutividade</i></dt><dd>Non-working days registered in the calendar for rain. A month with four or more is a reserve month.</dd>
+</dl>
+</section>
+
+</body></html>

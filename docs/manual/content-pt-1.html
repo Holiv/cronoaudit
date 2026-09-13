@@ -1,0 +1,273 @@
+<section class="ch">
+<h1>O que a cronoaudit faz, e para quem</h1>
+<p class="lede">A cronoaudit lê um cronograma entregue, verifica se ele se sustenta, mede o que está feito contra o que estava previsto, projeta o que vem, e escreve um relatório em que cada número diz de onde saiu e como reproduzir. Ela procura um tipo específico de falha: a conta está certa, cada parcela está certa na própria fonte, o resultado é plausível, nada dá erro, e o número não significa nada.</p>
+
+<h2>Para quem</h2>
+<p>Para quem recebe um cronograma e precisa dizer se aquilo é verdade. O engenheiro de planejamento do lado contratante, que audita a entrega de uma contratada. O planejador da contratada, que quer entregar um cronograma que passe. O gerente que precisa de um relatório de ciclo para a diretoria sem depender de quem o apresenta.</p>
+<p>O manual não assume que você conheça os conceitos. O capítulo 2 explica cada um do zero. Se você já os domina, vá direto ao capítulo 3.</p>
+
+<h2>O que entra e o que sai</h2>
+<div class="def"><div class="k">Entrada</div><div class="v">O cronograma exportado do MS Project em formato XML, que é o formato documentado do próprio Project. Um arquivo para a análise crítica; dois arquivos, anterior e atual, para a comparação de ciclo.</div></div>
+<div class="def"><div class="k">Saída</div><div class="v">Um relatório HTML autossuficiente, sem nenhuma referência externa, que abre em qualquer navegador e imprime em PDF. Ao lado dele, um arquivo JSON por análise, para quem quer usar os dados fora do relatório.</div></div>
+<div class="def"><div class="k">Idioma</div><div class="v">O do cronograma. A ferramenta detecta pelo conteúdo e escreve o relatório em português ou inglês. Dá para forçar.</div></div>
+<div class="def"><div class="k">Exigências</div><div class="v">Python 3.9 ou mais recente. Nada mais. Nenhum dado sai da máquina.</div></div>
+
+<h2>As oito respostas do relatório</h2>
+<table>
+<tr><th>Seção</th><th>Pergunta que responde</th></tr>
+<tr><td>Veredito e achados</td><td>A lógica se sustenta? Quais datas venceram, se moveram ou estão mal apontadas?</td></tr>
+<tr><td>Curva S</td><td>Onde o contrato deveria estar, onde está, e o número da ferramenta bate com o do Project?</td></tr>
+<tr><td>Avanço por grupo</td><td>O avanço aconteceu onde está o dinheiro?</td></tr>
+<tr><td>Produtividade</td><td>Em três ritmos, quando cada atividade em andamento termina, e ela entra no caminho crítico?</td></tr>
+<tr><td>Qualidade da rede</td><td>O cronograma serve como modelo, antes de qualquer discussão de data?</td></tr>
+<tr><td>Olhando para frente</td><td>Quando termina de verdade, o que as próximas semanas exigem, e onde o ritmo não alcança?</td></tr>
+<tr><td>Forense</td><td>De onde veio o atraso de cada marco, por qual caminho, e quando começou?</td></tr>
+<tr><td>Comparação de ciclo</td><td>O que mudou desde a última entrega: execução, replanejamento ou a própria referência?</td></tr>
+</table>
+
+<h2>O que ela não faz</h2>
+<p>Não lê Primavera P6: o método transfere, mas nada foi medido nesse formato. Não produz laudo de atraso contratual: a forense reconstrói o mecanismo, e um laudo exige registro contemporâneo e método formal. Não certifica contra a norma DCMA: as catorze métricas são implementadas e rotuladas como implementação. E nunca inventa uma distribuição, um valor padrão ou um número que o arquivo não carregue. O capítulo 12 trata disso em detalhe.</p>
+</section>
+
+<section class="ch">
+<h1>Conceitos que este manual assume</h1>
+<p class="lede">Cada conceito abaixo aparece no relatório. Se algum for novo, leia a caixa dele antes de seguir. Se todos forem conhecidos, este capítulo serve de referência de vocabulário.</p>
+
+<div class="concept"><div class="k">Cronograma como rede</div>
+<p>Um cronograma não é uma lista de datas. É uma rede: cada atividade tem predecessoras, que precisam acontecer antes, e sucessoras, que dependem dela. O tipo de vínculo diz como: término-início é o comum, a sucessora só começa quando a predecessora termina; início-início, término-término e início-término são os outros três. Um vínculo pode ter um lag, uma espera obrigatória, ou um lead, uma sobreposição permitida.</p>
+<p>Quando a ferramenta de cronograma recalcula as datas, ela percorre essa rede. Se a rede diz uma coisa e a obra faz outra, toda data calculada passa a se apoiar numa lógica que não é seguida. Por isso o relatório verifica a rede antes de qualquer data.</p></div>
+
+<div class="concept"><div class="k">Linha de base</div>
+<p>A linha de base é uma cópia do plano guardada num certo momento: datas, durações e custos como estavam quando o plano foi aprovado. Tudo o que o relatório chama de variação, atraso ou antecipação é medido contra ela. O MS Project guarda até onze linhas de base, numeradas de 0 a 10, e um cronograma que cresceu pode ter a atual numa gaveta que não é a padrão. Qual gaveta vale é uma escolha, e a cronoaudit a faz pelo dado, não por um campo que se declara e não se confirma.</p></div>
+
+<div class="concept"><div class="k">Data de status</div>
+<p>É a data até a qual o apontamento é válido: o "hoje" do cronograma. Toda comparação entre previsto e realizado é feita nela. Um arquivo sem data de status não tem como ser analisado com honestidade, e a cronoaudit se recusa a assumir a data de hoje no lugar, porque isso mudaria a resposta a cada dia em que a análise fosse repetida.</p></div>
+
+<div class="concept"><div class="k">Calendário e dia útil</div>
+<p>Cada atividade tem um calendário, que diz quais dias e horas são de trabalho. É nele que ficam os feriados, a jornada, a semana de cinco ou seis dias e a reserva de improdutividade, os dias que a obra não trabalha por chuva. Duas atividades no mesmo cronograma podem ter calendários diferentes. Toda duração, variação e janela do relatório é contada no calendário da própria atividade, porque contar em dias corridos, ou no calendário do projeto, dá números errados em silêncio.</p></div>
+
+<div class="concept"><div class="k">Percentual físico e percentual concluído</div>
+<p>São dois campos diferentes. O percentual concluído é de duração: quanto do tempo da atividade já passou, e o Project o calcula sozinho a partir das datas reais. O percentual físico é declarado por uma pessoa e mede quanto do serviço saiu. Um diz quanto tempo passou; o outro, quanto foi entregue. O valor agregado usa o físico. Trocar um pelo outro muda o resultado sem que nada tenha mudado na obra.</p></div>
+
+<div class="concept"><div class="k">Valor agregado e curva S</div>
+<p>Valor agregado é o custo de linha de base de cada atividade multiplicado pelo percentual físico dela. Somado, é quanto do orçamento já foi "ganho". O valor previsto é quanto deveria ter sido ganho até a data de status, segundo a linha de base distribuída no tempo. A curva S é o gráfico acumulado dos dois ao longo do tempo: previsto e realizado, e a distância entre as curvas é o atraso em dinheiro. O índice de desempenho de prazo, IDP ou SPI, é realizado dividido por previsto.</p></div>
+
+<div class="concept"><div class="k">Folga e caminho crítico</div>
+<p>A folga total de uma atividade é quanto ela pode atrasar sem mover o término do projeto. Folga zero significa que qualquer atraso ali empurra o fim: a atividade é crítica. O caminho crítico é a cadeia de atividades críticas que vai do início ao fim. Uma atividade com folga pode atrasar até consumi-la; depois disso, entra no caminho crítico. O Project calcula folga, datas cedo e tarde, e o sinalizador de crítica; a cronoaudit lê esses campos em vez de recalculá-los.</p></div>
+
+<div class="concept"><div class="k">Earned Schedule</div>
+<p>O valor agregado clássico mede prazo em dinheiro, e isso tem um defeito: no fim do projeto o realizado sempre alcança o orçamento, então o indicador de prazo vai a 1,0 mesmo num projeto atrasado um ano. Earned Schedule mede prazo em tempo: pergunta em que data a curva de previsto alcançou o valor que está realizado hoje. Essa data, comparada com o tempo decorrido, dá uma eficiência de prazo e um término independente, que se confronta com o término que o cronograma projeta. O capítulo 8 detalha as fórmulas.</p></div>
+
+<div class="concept"><div class="k">Produtividade por recurso</div>
+<p>Um recurso de material, como metros cúbicos de corte, tem quantidade prevista, executada e remanescente por atividade. Produtividade é quantidade por dia útil. Comparar a praticada com a necessária diz se a atividade termina quando o cronograma diz. A cronoaudit lê as quantidades das atribuições do próprio arquivo, sem campo personalizado.</p></div>
+
+<div class="concept"><div class="k">A pergunta da referência</div>
+<p>Um indicador que compara previsto com realizado tem duas metades. Se elas forem medidas contra referências diferentes, outra gaveta de linha de base, outro instante, outra população, outra unidade, a diferença entre elas não significa nada, e o número sai plausível. É a falha que a cronoaudit procura em toda parte. A pergunta que a encontra: todas as parcelas deste cálculo estão medidas contra a mesma referência?</p></div>
+</section>
+
+<section class="ch">
+<h1>Instalação e primeira execução</h1>
+<p class="lede">A cronoaudit é uma Agent Skill: uma pasta com instruções para um assistente e os programas que fazem o trabalho. Instala-se copiando essa pasta para onde o seu assistente procura skills. O instalador faz isso para todos os assistentes de uma vez.</p>
+
+<h2>Instalar com um comando</h2>
+<p>No macOS ou Linux, num terminal:</p>
+<pre>curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash</pre>
+<p>No Windows, no PowerShell:</p>
+<pre>irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex</pre>
+<p>O instalador baixa o pacote, copia a skill para os dois diretórios que, juntos, todos os assistentes leem, e roda o teste interno da ferramenta como prova de instalação. Ao fim, mostra onde a skill ficou e como invocá-la. Reinicie o assistente depois de instalar, porque as skills são lidas no início de cada sessão.</p>
+<table>
+<tr><th>Diretório</th><th>Quem lê</th></tr>
+<tr><td class="m">~/.claude/skills/cronoaudit</td><td>Claude Code, OpenCode, Cursor</td></tr>
+<tr><td class="m">~/.agents/skills/cronoaudit</td><td>Codex, Gemini CLI, Cursor, GitHub Copilot, VS Code, OpenCode</td></tr>
+</table>
+<p>Se preferir instalar pelo caminho nativo do seu assistente, cada um tem o seu: <code>npx skills add Holiv/cronoaudit -g</code> em qualquer cliente do formato, <code>gemini skills install</code> com a URL do repositório no Gemini CLI, o instalador de skills do Codex, o Remote Rule do Cursor, e o plugin do Claude Code. O README do repositório mantém a tabela atualizada.</p>
+
+<h2>Sem assistente nenhum</h2>
+<p>A ferramenta funciona sem inteligência artificial. Clone ou baixe o repositório e rode o programa diretamente. Você recebe tudo, exceto a síntese executiva redigida e a entrevista de personalização, que são as duas partes que dependem de um assistente.</p>
+<pre>git clone https://github.com/Holiv/cronoaudit
+python3 cronoaudit/skills/cronoaudit/scripts/review.py entrega.xml</pre>
+
+<h2>Exportar o cronograma</h2>
+<p>O arquivo .mpp é um formato proprietário fechado. A cronoaudit lê o XML que o próprio Project exporta, que é um formato documentado e carrega tudo o que a análise precisa: tarefas, vínculos com lag, as onze linhas de base, calendários, campos personalizados, atribuições e o faseamento no tempo.</p>
+<div class="note"><b>No MS Project</b>Arquivo, Salvar como, e no tipo de arquivo escolha Formato XML. Guarde o XML ao lado do .mpp. Se a contratada enviar o XML junto com o .mpp, esse passo desaparece da sua rotina.</div>
+<p>Há um caminho opcional para ler o .mpp diretamente, por uma biblioteca Java, para quem a tiver instalada. Ele nunca é exigido.</p>
+
+<h2>Primeira execução</h2>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py entrega.xml</pre>
+<p>Em um cronograma de seis mil atividades a execução leva menos de um minuto. O terminal mostra o resumo: gaveta de linha de base usada, limiar, população, convenção de contagem, e a lista dos nove achados com a contagem de atividades de cada um. Ao lado do arquivo de entrada ficam os resultados.</p>
+<table>
+<tr><th>Arquivo</th><th>Para que serve</th></tr>
+<tr><td class="m">entrega-review.html</td><td>o relatório, para abrir, apresentar e imprimir em PDF</td></tr>
+<tr><td class="m">entrega-review.json</td><td>os achados como dados</td></tr>
+<tr><td class="m">entrega-review-scurve.json</td><td>a curva S mensal e por grupo</td></tr>
+<tr><td class="m">entrega-review-productivity.json</td><td>ritmos por recurso e por atividade</td></tr>
+<tr><td class="m">entrega-review-quality.json</td><td>as catorze métricas com os itens</td></tr>
+<tr><td class="m">entrega-review-forecast.json</td><td>Earned Schedule, look-ahead, faixas, chuva</td></tr>
+<tr><td class="m">entrega-review-forensics.json</td><td>cadeias condutoras e padrão de execução</td></tr>
+</table>
+<p>Opções úteis: <code>--outdir</code> para escolher onde gravar, <code>--group-by</code> para agrupar o peso por um campo personalizado, <code>--profile</code> para aplicar o perfil da empresa, <code>--lang</code> para forçar o idioma, <code>--threshold-days</code> e <code>--tolerance-days</code> para mover os limiares.</p>
+
+<h2>Dentro de um assistente</h2>
+<p>Com a skill instalada, você não precisa lembrar comandos. Peça em linguagem natural: analise este cronograma, compare estas duas versões, personalize o padrão da empresa. O assistente lê as instruções da skill, roda os programas, lê os resultados e, quando você pede, redige a síntese executiva e a injeta no relatório. Os números vêm sempre dos programas; o assistente orquestra, interpreta e escreve.</p>
+
+<h2>Verificar a ferramenta antes de confiar nela</h2>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/test_checks.py</pre>
+<p>O teste roda a ferramenta sobre dois cronogramas sintéticos. No positivo, cada verificação tem de acusar. No negativo, cada uma tem de ficar calada. Sem a segunda metade, um resultado limpo não vale nada: uma sonda que não consegue disparar reporta zero achados num arquivo quebrado com a mesma naturalidade de um arquivo bom.</p>
+
+<h2>Uma implementação equivalente dentro do Project</h2>
+<p>O mesmo método existe como macros para rodar dentro do MS Project, marcando as atividades no próprio cronograma e gerando o mesmo relatório. É um produto separado, do mesmo autor, e a cronoaudit não depende dele. As duas implementações seguem a mesma especificação de regras, e a contagem de uma tem de bater com a da outra no mesmo arquivo.</p>
+</section>
+
+<section class="ch">
+<h1>O relatório, seção por seção</h1>
+<p class="lede">O relatório é um único arquivo HTML. Abre em qualquer navegador, funciona sem internet, imprime em PDF com um botão, e alterna entre tema claro e escuro. As tabelas de atividades ficam recolhidas, para o relatório não abrir como um paredão de linhas; a impressão as expande.</p>
+
+<h2>Capa e veredito</h2>
+<p>A capa traz o arquivo, o número de atividades folha, a data de status e o custo de linha de base. O veredito mostra o avanço físico acumulado ponderado por custo, ao lado de um texto fixo sobre como ler esses números, e do primeiro bloco de <strong>Leitura</strong>: frases geradas por regra a partir dos números desta análise. Um aviso vermelho aparece quando há atividades em lógica violada, e diz para resolver isso antes de discutir qualquer data.</p>
+<p>Quando uma síntese executiva foi injetada, ela aparece logo abaixo da capa, com o nome de quem a escreveu e a hora, para prosa nunca ser confundida com medição.</p>
+
+<h2>Cartões e índice</h2>
+<p>Um cartão por achado, com a contagem e a cor da severidade. O índice lista as visões e os achados com código, título, subtítulo, contagem e severidade, e cada linha leva à seção correspondente.</p>
+<table>
+<tr><th>Severidade</th><th>Achados</th><th>Lê-se</th></tr>
+<tr><td class="c">crítico</td><td>A1, A2</td><td>invalida toda data abaixo até ser resolvido</td></tr>
+<tr><td class="c">alto</td><td>H, E, C, B</td><td>afeta prazo ou o controle dele</td></tr>
+<tr><td class="c">verificação</td><td>G, F</td><td>sintoma para inspecionar, não achado para reportar</td></tr>
+<tr><td class="c">pendência</td><td>P</td><td>defeito de registro, não de execução</td></tr>
+</table>
+
+<h2>As visões, de V0 a V9</h2>
+<div class="def"><div class="k">V0</div><div class="v">Curva S do faseamento do próprio arquivo: previsto, realizado, e o outro método de valor agregado como sensibilidade. Tabela mensal com acumulados, variação e IDP. A conciliação contra o arquivo, tarefa a tarefa, no rodapé.</div></div>
+<div class="def"><div class="k">V1</div><div class="v">Avanço por grupo: previsto contra realizado em cada grupo, ponderado pelo custo do próprio grupo, e uma coluna por achado. O grupo é o ramo da EAP por padrão ou um campo personalizado.</div></div>
+<div class="def"><div class="k">V2 a V4</div><div class="v">Partidas por mês, variação de término em oito faixas, folga total em cinco faixas.</div></div>
+<div class="def"><div class="k">V5</div><div class="v">Calendários que carregam o trabalho: atividades por calendário, jornada, dias por semana e exceções não úteis.</div></div>
+<div class="def"><div class="k">V6</div><div class="v">Produtividade e tendência por recurso. Capítulo 7.</div></div>
+<div class="def"><div class="k">V7</div><div class="v">Qualidade da rede, as catorze métricas. Capítulo 6.</div></div>
+<div class="def"><div class="k">V8</div><div class="v">Olhando para frente: Earned Schedule, look-ahead, ritmos por grupo, marcos com faixa, exposição à chuva. Capítulo 8.</div></div>
+<div class="def"><div class="k">V9</div><div class="v">Forense: caminho condutor por marco, forense de calendário, padrão de execução. Capítulo 8.</div></div>
+
+<h2>Os achados</h2>
+<p>Cada achado é um bloco com código, severidade, título e subtítulo em linguagem simples. Dentro, três blocos fixos: problema, impacto e solução. Depois, o critério com a convenção de contagem, de onde saiu, com as colunas do Project, e como reproduzir na ferramenta. Por fim a tabela de atividades, recolhida. Só o número de linha visível identifica uma atividade, porque é o único identificador que uma pessoa encontra na tela. Nos achados de rede, a tabela mostra o par explícito, sucessora e predecessora, com o tipo de vínculo e o motivo.</p>
+
+<h2>Convenções</h2>
+<p>A última seção lista o que o relatório assumiu: a gaveta de linha de base e por que ela foi escolhida, o limiar e a unidade, a tolerância, a população, a convenção de contagem, como os dias úteis foram contados, de onde vem o percentual, o idioma detectado e com que confiança. Ninguém precisa adivinhar nada.</p>
+
+<h2>A camada de leitura</h2>
+<p>Cada seção abre com frases geradas por regra a partir dos próprios números dela. Elas dizem o que o dado sustenta e nada mais; se um número falta, a frase não aparece. É o que permite entregar o relatório a alguém que não estava na sala. A síntese executiva é outra coisa: um texto redigido, injetado com autor e hora, que o capítulo 10 explica.</p>
+</section>
+
+<section class="ch">
+<h1>As nove verificações</h1>
+<p class="lede">Cada verificação tem um código estável, que continua o mesmo quando a implementação muda. Sem isso não se discute um problema ao longo das semanas. A ordem importa: rede primeiro, depois datas, depois apontamento.</p>
+
+<h2>Universo e regras transversais</h2>
+<p>Todas as verificações olham só atividades folha, ativas e não externas. Resumos não entram, porque contariam os filhos duas vezes. Marcos entram em tudo, exceto no G.</p>
+<div class="note"><b>Apontamento pendente migra primeiro</b>Uma predecessora com 100% físico e sem término real é um defeito de registro, o achado P. Os vínculos dela não são avaliados para A1 nem A2. Sem esta regra, um problema de apontamento seria reportado como problema de execução, e a conversa com quem executa começaria acusando a coisa errada.</div>
+
+<h2>A1 · Execução fora de sequência</h2>
+<p>Uma sucessora começou enquanto a predecessora não terminou, ou terminou depois do início da sucessora além do que o vínculo permite.</p>
+<div class="def"><div class="k">Problema</div><div class="v">A rede descreve uma ordem que a execução não pratica.</div></div>
+<div class="def"><div class="k">Impacto</div><div class="v">Toda data de tendência é calculada sobre premissa falsa. E o atraso das predecessoras paradas deixa de propagar aos marcos, porque as sucessoras já foram entregues: o plano parece saudável no fim porque está quebrado no meio.</div></div>
+<div class="def"><div class="k">Solução</div><div class="v">Resolver antes de discutir qualquer data. Ou o vínculo está errado, ou a sequência foi quebrada em campo e a consequência entra na tendência. Não apague o vínculo para calar o aviso: é o único registro de que a ordem não foi cumprida.</div></div>
+<p>O critério avalia os quatro tipos de vínculo, com datas reais, no calendário da sucessora, respeitando o lag. Uma sobreposição coberta por um lead não é acusada. Pares com as duas atividades concluídas ficam fora da contagem, por decisão, e são gravados nos dados com a sobreposição em dias, porque a história de execução fora de ordem é evidência para a forense.</p>
+<table>
+<tr><th>Vínculo</th><th>Sucessora</th><th>Predecessora</th><th>Resultado</th></tr>
+<tr><td class="c">TI</td><td>início real, não concluída</td><td>sem término real</td><td>A1, predecessora não terminou</td></tr>
+<tr><td class="c">TI</td><td>início real, não concluída</td><td>terminou depois do início, além do lead</td><td>A1, sobreposição além do lead</td></tr>
+<tr><td class="c">TI</td><td>concluída</td><td>concluída</td><td>fora da contagem, gravado</td></tr>
+<tr><td class="c">II</td><td>início real</td><td>começou depois do lag permitir</td><td>A1, antes do lag</td></tr>
+<tr><td class="c">TT</td><td>término real</td><td>terminou depois do lag permitir</td><td>A1, antes do lag</td></tr>
+<tr><td class="c">IT</td><td>término real</td><td>começou depois do lag permitir</td><td>A1, antes do lag</td></tr>
+</table>
+<p>As duas pontas do vínculo violado são marcadas, e o relatório conta de três formas: atividades distintas, como sucessoras, como predecessoras. Quantas atividades têm o problema depende de como se conta, e divergir da convenção da ferramenta da outra parte é entregar a discussão.</p>
+<div class="example"><b>Para reproduzir no Project</b><p>Agrupe por predecessora e filtre por Início Real preenchido. Marque o par e inspecione o vínculo no Gantt.</p></div>
+
+<h2>A2 · Inversão total</h2>
+<p>Uma sucessora está concluída e a predecessora nunca começou. É a forma extrema de sequência quebrada, e é irrespondível numa reunião. Ou a sequência foi inventada para o plano, ou o apontamento caiu na atividade errada. Confira par por par e registre qual das duas, porque a resposta varia entre os pares.</p>
+<div class="example"><b>Para reproduzir</b><p>Filtre por Término Real preenchido e confira o Início Real de cada predecessora.</p></div>
+
+<h2>H · Tendência vencida sem realização</h2>
+<p>Um início de tendência está no passado sem início real, ou um término de tendência está no passado sem término real. O plano diz que aconteceu; nada no arquivo diz que aconteceu. Toda sucessora é projetada a partir de uma data que já não se sustentou. Duas possibilidades com respostas diferentes: o serviço aconteceu e não foi apontado, ou não aconteceu e a tendência tem de andar. Deixar como está é a única opção errada.</p>
+
+<h2>E · Antecipada e nunca iniciada</h2>
+<p>O término de tendência andou para antes da linha de base em 30 dias úteis ou mais, no calendário da atividade, e a atividade nunca começou. Avanço puxado para antes sem execução por trás é mudança de plano vestida de desempenho, e agregado pode compensar atraso real em outro lugar. Pergunte o que mudou para justificar a data. Se nada mudou, a tendência está otimista e deve voltar.</p>
+
+<h2>C · Atrasada além do limiar</h2>
+<p>O término de tendência andou para depois da linha de base em 30 dias úteis ou mais, no calendário da atividade. Atividades concluídas ficam na lista de propósito: atraso consumado é informação. É o achado que a outra parte espera e o mais fácil de contestar, por isso precisa da reprodução anexada. Leia junto com a distribuição de peso: o mesmo número de atividades atrasadas significa coisas diferentes conforme a fatia de orçamento que carregam. A coluna de folga diz quanta margem resta.</p>
+<div class="note"><b>Limiar em dias úteis</b>Os 30 dias são contados no calendário da própria atividade, não em dias corridos nem na jornada do projeto. Num cronograma com semana de seis dias, 30 dias úteis são cerca de 35 corridos. A unidade vai declarada na seção de convenções e é ajustável pelo perfil.</div>
+
+<h2>G · Duração incompatível com a janela</h2>
+<p>A duração não casa com o tempo útil entre início e término, medido no calendário da própria atividade, com primeiro e último dia parciais. G é termômetro, não achado: diz que algo foi editado de forma inconsistente, não diz o quê. Início ancorado na data real com o remanescente empurrado, data digitada sobre data calculada, restrição brigando com a lógica. Use para escolher o que inspecionar, olhando primeiro as maiores diferenças. Nunca reporte sozinho.</p>
+
+<h2>B · Marco sem data limite</h2>
+<p>O marco não tem Data Limite preenchida, então nada no arquivo torna a data dele vinculante. Sem ela, o marco exibe folga confortável mesmo com a data contratual vencida, porque o cronograma nunca foi informado de que a data importava. Data Limite não é restrição: não move nada, só revela escorregão. Cadastre as datas contratuais nos marcos que as têm; não muda nenhum cálculo e faz todo relatório seguinte dizer a verdade sobre folga. B é opcional por padrão, porque nem toda empresa pratica; o perfil o promove a achado.</p>
+
+<h2>F · Em andamento com zero por cento</h2>
+<p>Início real, sem término real, e percentual concluído de duração igual a zero. Num cronograma apontado por percentual físico este achado dispara muito, porque o percentual de duração não é mantido; por isso ele é tratado como verificação. Em cronograma apontado por duração, é o sinal real de atividade parada.</p>
+
+<h2>P · Apontamento pendente</h2>
+<p>Cem por cento físico sem data de término real. É defeito de registro, e a distinção decide com quem é a conversa. Mantida entre os achados de rede, acusaria a equipe de executar fora de sequência quando o serviço foi feito e só falta a data. Lance o término real. Até lá, a atividade fica deliberadamente fora dos achados de rede.</p>
+</section>
+
+<section class="ch">
+<h1>Qualidade da rede</h1>
+<p class="lede">Este cronograma se sustenta como modelo, antes de qualquer discussão de data? A seção V7 responde com as métricas mecânicas do modelo DCMA de 14 pontos, cada uma com fórmula em palavras, população declarada e limiar citado para poder ser contestado, mais o que um planejador pergunta de qualquer cronograma.</p>
+<div class="note"><b>Implementação, não certificação</b>Os limiares vêm de um modelo publicado e são citados para que possam ser discutidos. Duas das catorze métricas não são computáveis a partir de um arquivo e o relatório diz isso em vez de aproximar: o teste de caminho crítico exige perturbar o cronograma, e o índice de comprimento do caminho crítico é 1,0 por construção sem data limite no marco final.</div>
+
+<table>
+<tr><th>Código</th><th>Métrica</th><th>População</th><th>Limiar</th><th>Lê-se</th></tr>
+<tr><td class="c">Q1</td><td>Lógica ausente</td><td>incompletas, não marco</td><td>≤ 5%</td><td>sem predecessora ou sem sucessora: atraso que não propaga</td></tr>
+<tr><td class="c">Q2</td><td>Leads</td><td>vínculos</td><td>0%</td><td>lag negativo esconde sobreposição que a lógica deveria modelar</td></tr>
+<tr><td class="c">Q3</td><td>Lags</td><td>vínculos</td><td>≤ 5%</td><td>lag positivo é tempo sem dono</td></tr>
+<tr><td class="c">Q4</td><td>Tipos de vínculo</td><td>vínculos</td><td>≤ 10% não TI</td><td>cada vínculo que não é término-início merece um motivo</td></tr>
+<tr><td class="c">Q5</td><td>Restrições rígidas</td><td>incompletas</td><td>≤ 5%</td><td>deve iniciar, deve terminar, não depois de: data presa briga com a lógica; as flexíveis são contadas, não reprovadas</td></tr>
+<tr><td class="c">Q6</td><td>Folga alta</td><td>incompletas</td><td>≤ 5%</td><td>mais de 44 dias úteis: normalmente marco que ninguém restringiu</td></tr>
+<tr><td class="c">Q7</td><td>Folga negativa</td><td>incompletas</td><td>0%</td><td>data que a lógica não alcança</td></tr>
+<tr><td class="c">Q8</td><td>Duração longa</td><td>incompletas, não marco</td><td>≤ 5%</td><td>mais de 44 dias úteis remanescentes: grossa demais para controlar</td></tr>
+<tr><td class="c">Q9</td><td>Datas inválidas</td><td>todas as folhas</td><td>0%</td><td>data real depois da data de status</td></tr>
+<tr><td class="c">Q10</td><td>Sem recurso</td><td>incompletas com duração</td><td>contagem</td><td>nada para tendenciar</td></tr>
+<tr><td class="c">Q11</td><td>Atividades perdidas</td><td>devidas até a data de status</td><td>≤ 5%</td><td>não terminaram no prazo</td></tr>
+<tr><td class="c">Q12</td><td>Teste de caminho crítico</td><td>—</td><td>—</td><td>não computável de um arquivo</td></tr>
+<tr><td class="c">Q13</td><td>Índice de comprimento do caminho crítico</td><td>—</td><td>—</td><td>só com data limite no marco final</td></tr>
+<tr><td class="c">Q14</td><td>Índice de execução da linha de base</td><td>devidas até a data de status</td><td>≥ 0,95</td><td>terminadas no prazo dividido por devidas</td></tr>
+</table>
+
+<h2>Como ler</h2>
+<p>Leia Q1, Q2, Q5 e Q7 antes de qualquer data. Um cronograma que falha nelas não é modelo da obra, e toda data que ele produz é número sem base. Q6 e Q8 dizem se ele pode ser controlado. Q11 e Q14 dizem se foi cumprido. Além das catorze, o relatório mostra resumos com vínculo, que não deveriam existir, marcos sem data limite, o número de atividades críticas incompletas, e se a cadeia crítica chega ao marco final, que é o teste de a rede estar inteira.</p>
+<div class="example"><b>No cronograma de exemplo</b><p>Uma atividade presa por restrição de deve terminar em aparece em Q5. Um vínculo com lag de três dias aparece em Q3. Um resumo que carrega vínculo é sinalizado. O índice de execução da linha de base fica abaixo do piso porque uma atividade devida não terminou.</p></div>
+</section>
+
+<section class="ch">
+<h1>Produtividade e tendência por recurso</h1>
+<p class="lede">A seção V6 responde, para cada atividade em andamento com quantidade, quando ela termina no ritmo real, e o que isso faz com a linha de base e com o caminho crítico. Tudo vem das atribuições do próprio arquivo; nenhum campo personalizado é exigido.</p>
+
+<h2>Onde as quantidades vivem</h2>
+<p>Para um recurso de material, o Project guarda a quantidade nos campos de trabalho, como horas de uma duração. Uma atribuição com trabalho de 10.567 horas num recurso rotulado m³ são 10.567 m³. A mesma regra dá o executado, o remanescente, o previsto de linha de base e o executado por dia. Uma atribuição sem recurso não pode ser tendenciada, e o relatório conta quantas há.</p>
+
+<h2>Três ritmos, não um</h2>
+<p>Um ritmo só não é leitura justa: uma atividade de corte atingida por uma quinzena de chuva mostra um ritmo que não diz nada sobre a equipe.</p>
+<table>
+<tr><th>Ritmo</th><th>Como</th><th>O que responde</th></tr>
+<tr><td class="c">próprio</td><td>executado nesta atividade dividido pelos dias úteis decorridos desde o início real dela, no calendário dela</td><td>o que está acontecendo aqui, chuva incluída</td></tr>
+<tr><td class="c">global</td><td>tudo executado do recurso em todas as frentes dividido pelos dias úteis que essas atribuições levaram</td><td>o cenário justo, que dilui uma quinzena ruim</td></tr>
+<tr><td class="c">recente</td><td>os últimos 30 dias de blocos executados do recurso divididos pelos dias úteis da janela</td><td>o ritmo de agora, não a média de meses</td></tr>
+</table>
+<p>O ritmo próprio divide pelos dias decorridos, incluindo os dias em que nada saiu. Uma equipe que produziu em oito de dez dias praticou o ritmo de dez dias. Também saem o ritmo previsto, quantidade de linha de base pela duração de linha de base, e dois ritmos necessários: remanescente pelos dias úteis até a tendência, e até o término tarde.</p>
+
+<h2>Quatro datas, três veredictos</h2>
+<p>O remanescente roda sobre cada ritmo, em dias úteis do calendário da atividade a partir da data de status, e cai contra quatro datas: término de tendência, término de linha de base, término tarde, que o arquivo já traz com a folga embutida, e o término projetado.</p>
+<table>
+<tr><th>Projetado cai</th><th>Veredicto</th><th>Significado</th></tr>
+<tr><td>até a tendência</td><td class="c">adiantada</td><td>nada a fazer</td></tr>
+<tr><td>depois da tendência, até a linha de base</td><td class="c">reprogramar</td><td>a tendência está errada, a linha de base não está ameaçada</td></tr>
+<tr><td>depois da linha de base, até o término tarde</td><td class="c">atrasa a LB, folga absorve</td><td>sem impacto no prazo final ainda; a coluna diz quantos dias de folga sobram</td></tr>
+<tr><td>depois do término tarde</td><td class="c">entra no caminho crítico</td><td>na data mostrada, antes de o cronograma mostrar</td></tr>
+</table>
+<div class="example"><b>Um caso lido de ponta a ponta</b><p>Linha de base em 30 de setembro, tendência em 26, folga de 20 dias. Se o ritmo projetar 28 de setembro, é reprogramar: atrasa a tendência, não a linha de base. Se projetar 2 de outubro, atrasa a linha de base em dois dias e sobram dezoito de folga: sem impacto no prazo. Se projetar mais de vinte dias além da tendência, entra no caminho crítico, e a data em que isso acontece aparece na tabela.</p></div>
+
+<h2>Evidência fina</h2>
+<p>Um ritmo construído sobre poucos dias, ou sobre uma fatia mínima do previsto, projeta absurdo com a maior naturalidade: um recurso com dois por cento executado "termina" em 2031. O ritmo é reportado, porque é o que o dado diz, mas vai marcado como evidência fina quando tem menos de dez dias de dado ou menos de dois por cento do previsto, e o veredicto carrega a marca. Executado derivado de percentual físico, em vez de quantidade lançada, também vai marcado como inferido. Leia esses como pergunta, não como veredicto. Os limiares são ajustáveis pelo perfil.</p>
+
+<h2>Produtividade contratada</h2>
+<p>Se a empresa mantém uma produtividade contratada por equipe num campo personalizado, o perfil pode apontá-lo e ela aparece como coluna de comparação ao lado dos ritmos. É camada opcional, nunca exigência.</p>
+</section>

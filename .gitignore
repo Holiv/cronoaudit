@@ -5,3 +5,6 @@ __pycache__/
 .real-file
 profile.json
 *.local.json
+docs/manual/node_modules/
+docs/manual/package-lock.json
+docs/manual/package.json
