@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="pt"><head><meta charset="utf-8">
-<title>cronoaudit — manual técnico 0.6.0</title>
+<title>cronoaudit — manual técnico 0.6.1</title>
 <meta name="author" content="Helton da Silva de Oliveira">
 <link rel="stylesheet" href="style.css">
 </head><body>
 <div class="cover">
-  <p class="kicker">Manual técnico · versão 0.6.0</p>
+  <p class="kicker">Manual técnico · versão 0.6.1</p>
   <h1>crono<em>audit</em></h1>
   <p class="sub">Análise crítica de cronograma, do arquivo ao veredito. Como instalar, como usar, como ler o relatório e como reproduzir cada número.</p>
   <svg viewBox="0 0 520 150" aria-hidden="true">
@@ -28,7 +28,7 @@
 </div>
 <div class="front">
   <h2>Sobre este manual</h2>
-  <p>Este manual acompanha a versão 0.6.0 da cronoaudit. Ele foi escrito para quem recebe um cronograma e precisa dizer se aquilo é verdade, e não assume que o leitor conheça os conceitos: cada capítulo começa pelo conceito, depois mostra o que a ferramenta faz com ele.</p>
+  <p>Este manual acompanha a versão 0.6.1 da cronoaudit. Ele foi escrito para quem recebe um cronograma e precisa dizer se aquilo é verdade, e não assume que o leitor conheça os conceitos: cada capítulo começa pelo conceito, depois mostra o que a ferramenta faz com ele.</p>
 <p>Todos os exemplos usam os cronogramas sintéticos que acompanham a ferramenta. Nenhum dado real de contrato, contratada ou pessoa aparece aqui.</p>
 <p>A ferramenta segue o formato aberto Agent Skills e funciona com qualquer agente que o leia, e também sem agente nenhum. O código-fonte, a licença e a versão mais recente estão em github.com/Holiv/cronoaudit.</p>
   <h2 style="margin-top:12mm">Sumário</h2>
@@ -225,6 +225,7 @@ python3 cronoaudit/skills/cronoaudit/scripts/review.py entrega.xml</pre>
 <tr><td class="m">entrega-review-quality.json</td><td>as catorze métricas com os itens</td></tr>
 <tr><td class="m">entrega-review-forecast.json</td><td>Earned Schedule, look-ahead, faixas, chuva</td></tr>
 <tr><td class="m">entrega-review-forensics.json</td><td>cadeias condutoras e padrão de execução</td></tr>
+<tr><td class="m">entrega-review-readings.json</td><td>as leituras por regra de cada seção, para citar sem redigir</td></tr>
 </table>
 <p>Opções úteis: <code>--outdir</code> para escolher onde gravar, <code>--group-by</code> para agrupar o peso por um campo personalizado, <code>--profile</code> para aplicar o perfil da empresa, <code>--lang</code> para forçar o idioma, <code>--threshold-days</code> e <code>--tolerance-days</code> para mover os limiares.</p>
 
@@ -560,6 +561,8 @@ python3 scripts/review.py entrega.xml --profile perfil.json</pre>
 <div class="def"><div class="k">-quality</div><div class="v"><span class="m">metrics</span>, as catorze com contagem, população, percentual, limiar, situação e itens; <span class="m">indices</span>, índice de execução da linha de base, atividades críticas, se a cadeia crítica chega ao marco final; <span class="m">qualitative</span>, resumos com vínculo e marcos sem data limite; <span class="m">soft_constraints</span>, as restrições flexíveis contadas.</div></div>
 <div class="def"><div class="k">-forecast</div><div class="v"><span class="m">earned_schedule</span>, todas as grandezas do capítulo 8; <span class="m">lookahead</span>, uma entrada por janela; <span class="m">rates_by_group</span>; <span class="m">milestone_bands</span>, amostra, P50, P80 e um registro por marco; <span class="m">rain_exposure</span>, remanescente na reserva agora e com trinta dias de escorregamento.</div></div>
 <div class="def"><div class="k">-forensics</div><div class="v"><span class="m">milestones</span>, a cadeia condutora de cada marco futuro com a origem; <span class="m">summary</span>, origens recorrentes e cadeias abertas; <span class="m">calendars</span>, reserva por ano contra dias de atividade, com sinais; <span class="m">execution</span>, fora de sequência por mês e escorregamento de início; <span class="m">cycle</span>, com dois arquivos, folga consumida, viraram críticas, movimento de marcos atribuído.</div></div>
+
+<div class="def"><div class="k">-readings</div><div class="v"><span class="m">readings</span>, as frases por regra de cada seção, na língua do relatório, exatamente como o HTML as mostra; <span class="m">language</span>, o idioma detectado, a pontuação e a confiança. É o arquivo que um assistente cita em vez de redigir leituras próprias.</div></div>
 
 <h2 id="ch11-2">Comparação de ciclo</h2>
 <div class="def"><div class="k">-cycle</div><div class="v"><span class="m">previous</span> e <span class="m">current</span>, os indicadores gerais de cada instantâneo pela mesma regra; <span class="m">movement_points</span>, <span class="m">decomposition_sums_to_points</span> e <span class="m">movement_unexplained_points</span>; <span class="m">trend</span>, por atividade, dias movidos e a leitura de três sinais; <span class="m">baseline_moved</span>; <span class="m">unmatched</span>, inseridas e removidas; <span class="m">decomposition</span>; <span class="m">warnings</span>; <span class="m">conventions</span>, casamento, população, denominador.</div></div>

@@ -160,7 +160,14 @@ def do_review(model, path, outdir, threshold, tolerance, quiet,
         with open(base + "-forecast.json", "w", encoding="utf-8") as fh:
             json.dump(fc, fh, indent=2, ensure_ascii=False)
     with open(base + "-quality.json", "w", encoding="utf-8") as fh:
-        json.dump(quality, fh, indent=2, ensure_ascii=False)
+        # Labelled so a reader of the sidecar alone knows what Q6 or Q14 is.
+        json.dump(report_data.localize_quality(quality, effective_lang), fh, indent=2,
+                  ensure_ascii=False)
+    with open(base + "-readings.json", "w", encoding="utf-8") as fh:
+        # The rule-built sentences the report shows, so an assistant can quote them
+        # instead of composing its own.
+        json.dump({"lang": effective_lang, "language": payload.get("language"),
+                   "readings": payload.get("readings")}, fh, indent=2, ensure_ascii=False)
     if curve is not None:
         with open(base + "-scurve.json", "w", encoding="utf-8") as fh:
             json.dump(curve, fh, indent=2, ensure_ascii=False)

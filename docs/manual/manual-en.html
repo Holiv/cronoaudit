@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
-<title>cronoaudit — technical manual 0.6.0</title>
+<title>cronoaudit — technical manual 0.6.1</title>
 <meta name="author" content="Helton da Silva de Oliveira">
 <link rel="stylesheet" href="style.css">
 </head><body>
 <div class="cover">
-  <p class="kicker">Technical manual · version 0.6.0</p>
+  <p class="kicker">Technical manual · version 0.6.1</p>
   <h1>crono<em>audit</em></h1>
   <p class="sub">Schedule critical analysis, from the file to the verdict. How to install, how to use, how to read the report, and how to reproduce every figure.</p>
   <svg viewBox="0 0 520 150" aria-hidden="true">
@@ -28,7 +28,7 @@
 </div>
 <div class="front">
   <h2>About this manual</h2>
-  <p>This manual accompanies version 0.6.0 of cronoaudit. It was written for whoever receives a schedule and has to say whether it is true, and it does not assume the reader knows the concepts: every chapter starts from the concept, then shows what the tool does with it.</p>
+  <p>This manual accompanies version 0.6.1 of cronoaudit. It was written for whoever receives a schedule and has to say whether it is true, and it does not assume the reader knows the concepts: every chapter starts from the concept, then shows what the tool does with it.</p>
 <p>Every example uses the synthetic schedules shipped with the tool. No real contract, contractor or person appears here.</p>
 <p>The tool follows the open Agent Skills format and works with any agent that reads it, and with no agent at all. Source, licence and the latest version are at github.com/Holiv/cronoaudit.</p>
   <h2 style="margin-top:12mm">Contents</h2>
@@ -225,6 +225,7 @@ python3 cronoaudit/skills/cronoaudit/scripts/review.py delivery.xml</pre>
 <tr><td class="m">delivery-review-quality.json</td><td>the fourteen metrics with their items</td></tr>
 <tr><td class="m">delivery-review-forecast.json</td><td>Earned Schedule, look-ahead, bands, rain</td></tr>
 <tr><td class="m">delivery-review-forensics.json</td><td>driving chains and execution pattern</td></tr>
+<tr><td class="m">delivery-review-readings.json</td><td>each section's rule-built readings, to quote without composing</td></tr>
 </table>
 <p>Useful options: <code>--outdir</code> to choose where to write, <code>--group-by</code> to group weight by a custom field, <code>--profile</code> to apply the organisation profile, <code>--lang</code> to force the language, <code>--threshold-days</code> and <code>--tolerance-days</code> to move the thresholds.</p>
 
@@ -560,6 +561,8 @@ python3 scripts/review.py delivery.xml --profile profile.json</pre>
 <div class="def"><div class="k">-quality</div><div class="v"><span class="m">metrics</span>, the fourteen with count, population, share, threshold, status and items; <span class="m">indices</span>, baseline execution index, critical activities, whether the critical chain reaches the final milestone; <span class="m">qualitative</span>, summaries with links and milestones with no deadline; <span class="m">soft_constraints</span>, the soft constraints counted.</div></div>
 <div class="def"><div class="k">-forecast</div><div class="v"><span class="m">earned_schedule</span>, every quantity from chapter 8; <span class="m">lookahead</span>, one entry per window; <span class="m">rates_by_group</span>; <span class="m">milestone_bands</span>, sample, P50, P80 and one record per milestone; <span class="m">rain_exposure</span>, remaining in reserve now and with thirty days of slip.</div></div>
 <div class="def"><div class="k">-forensics</div><div class="v"><span class="m">milestones</span>, each future milestone's driving chain with its origin; <span class="m">summary</span>, recurring origins and open chains; <span class="m">calendars</span>, reserve per year against activity-days, with flags; <span class="m">execution</span>, out-of-sequence by month and start slippage; <span class="m">cycle</span>, with two files, float consumed, became critical, attributed milestone movement.</div></div>
+
+<div class="def"><div class="k">-readings</div><div class="v"><span class="m">readings</span>, each section's rule-built sentences, in the report's language, exactly as the HTML shows them; <span class="m">language</span>, the detected language, its score and confidence. It is the file an assistant quotes instead of composing readings of its own.</div></div>
 
 <h2 id="ch11-2">Cycle comparison</h2>
 <div class="def"><div class="k">-cycle</div><div class="v"><span class="m">previous</span> and <span class="m">current</span>, each snapshot's general indicators by the same rule; <span class="m">movement_points</span>, <span class="m">decomposition_sums_to_points</span> and <span class="m">movement_unexplained_points</span>; <span class="m">trend</span>, per activity, days moved and the three-signal reading; <span class="m">baseline_moved</span>; <span class="m">unmatched</span>, inserted and removed; <span class="m">decomposition</span>; <span class="m">warnings</span>; <span class="m">conventions</span>, matching, population, denominator.</div></div>

@@ -17,15 +17,20 @@ covers what goes wrong silently when you compute it on a real file.
 Export the schedule once from the tool (`File > Save As > XML Format`), then:
 
 ```
-python3 scripts/review.py delivery.xml                       # review one delivery
-python3 scripts/review.py previous.xml current.xml           # the periodic cycle
-python3 scripts/review.py delivery.xml --profile profile.json --group-by DISCIPLINA
+S=~/.claude/skills/cronoaudit/scripts          # or ~/.agents/skills/cronoaudit/scripts
+python3 $S/review.py delivery.xml                       # review one delivery
+python3 $S/review.py previous.xml current.xml           # the periodic cycle
+python3 $S/review.py delivery.xml --profile profile.json --group-by DISCIPLINA
+python3 $S/review.py delivery.xml --outdir reports --lang pt
 ```
 
-Nothing to install beyond Python. Out come one self-contained HTML report in the schedule's
-own language and one JSON sidecar per analysis. Verify the tool itself first:
-`python3 scripts/test_checks.py`. The whole process, flags, failure messages and the judgement
-the tool cannot make for you: `references/usage.md`.
+Always call the scripts by their absolute path; the person's working directory is wherever
+the schedule is, not the skill's folder. Nothing to install beyond Python. Out come one
+self-contained HTML report in the schedule's own language and the JSON sidecars: `-review`,
+`-scurve`, `-productivity`, `-quality`, `-forecast`, `-forensics`, `-readings`. The self-test
+`python3 $S/test_checks.py` proves the installation once; it is not part of every
+conversation. The whole process, flags, failure messages and the judgement the tool cannot
+make for you: `references/usage.md`.
 
 ## How a conversation starts
 
@@ -33,14 +38,26 @@ The person may be on any side of the schedule: the one who received it, the one 
 it, the one responsible for updating it, a regulator, or someone studying. Never assume a role.
 
 1. **Locate the file.** If the request names a path, use it. If it names a folder, or nothing,
-   look in the folder (or the working directory) for `.xml` files: exactly one, propose it and
-   confirm; more than one, list them and ask which; none, ask for the path. Never pick silently.
+   look in the folder (or the working directory) for `.xml` files: exactly one, use it and name
+   it in the reply; more than one, list them and ask which, offering the cycle comparison when
+   two look like versions of the same schedule; none, ask for the path. Never pick silently
+   among several.
 2. **Run the analysis once.** `review.py <file>` writes the report and the JSON sidecars beside
-   the XML; `--outdir` when the person names a folder. The analysis and the report are the same
-   command, so the report always exists after the first run.
-3. **State the full path of the report in the first reply**, then answer from the JSON
-   sidecars, point by point. Do not rerun unless asked or the file changed.
-4. **The report need not be opened.** A conversation about one finding, one rate or one
+   the XML; `--outdir <folder>` when the person names a folder (it is created if missing,
+   relative to the working directory). The analysis and the report are the same command, so
+   the report always exists after the first run.
+3. **Language.** The report follows the schedule. When the detection says `confidence: low`
+   (too little text to judge), run with `--lang` in the language the person writes, and say
+   so. Never leave a low-confidence default unmentioned.
+4. **State the full path of the report in the first reply**, then read the sidecars in the
+   report's own order: blocking notices, `conventions`, `counts` (network first), scurve
+   totals and reconciliation, quality metrics that fail, forecast, forensics, productivity
+   verdicts. The `-readings.json` sidecar holds the rule-built sentences the report shows;
+   quote those rather than composing your own. Do not rerun unless asked or the file changed.
+5. **Counts.** The `counts` block of `-review.json` is the official figure (distinct
+   activities, as successors, as predecessors); the `findings` lists carry one row per link
+   end and are longer by design.
+6. **The report need not be opened.** A conversation about one finding, one rate or one
    milestone is a complete use of the skill. Write the executive synthesis only when asked, or
    when the person asks for a report to hand over.
 
@@ -97,7 +114,7 @@ forensics name; what the next four weeks demand. Quote figures from the files, s
 `inferred`, add nothing the files do not support. Then:
 
 ```
-python3 scripts/inject_narrative.py <name>-review.html synthesis.txt --who "Claude, via the skill"
+python3 $S/inject_narrative.py <name>-review.html synthesis.txt --who "Claude, via the skill"
 ```
 
 ## Customising: two conversational flows
@@ -107,8 +124,8 @@ The skill runs ready-to-use with no profile. A profile only narrows, and it is w
 file has**, because recognition is reliable and recall is not.
 
 **"Customise the organisation profile" · "Personalizar padrão da empresa".** Run
-`python3 scripts/parse_mspdi.py <xml> -o model.json` then
-`python3 scripts/profile_tool.py discover model.json`, and show the candidates. Then ask, one at
+`python3 $S/parse_mspdi.py <xml> -o model.json` then
+`python3 $S/profile_tool.py discover model.json`, and show the candidates. Then ask, one at
 a time, only what the file could not settle: which field is the discipline, the section, the
 justification, the contracted productivity; whether the earned-value method the file declares is
 the one the organisation practises; whether B (milestones without deadline) and F (in progress

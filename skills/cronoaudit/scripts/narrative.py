@@ -22,6 +22,7 @@ R = {
         "recon_gap": "The skill's earned value differs from the file's on {u} leaves without explanation; check the baseline slot and the earned-value method before trusting either figure.",
         "spi": "Cumulative SPI is {s}: the works has earned {pct}% of what the plan expected by now.",
         "method_gap": "The other earned-value method would read {alt}% instead of {e}%, a gap of {g} points. Switching method changes the curve, not the works.",
+        "earned_before_plan": "{v} ({pct}% of the baseline cost) was earned before the first planned day, {d}: execution ahead of its baseline window, which the tool credits only when the status date reaches the window.",
         "weight_top": "{g} carries {w}% of the budget and stands at {e}% earned against {p}% planned.",
         "weight_behind": "{n} groups are more than {d} points behind their own plan; the largest is {g}.",
         "weight_flat": "Everything sits in one group, so the weight distribution says nothing yet; group by a discovered field.",
@@ -62,6 +63,7 @@ R = {
         "recon_gap": "O valor agregado da skill difere do arquivo em {u} folhas sem explicação; confira a gaveta de linha de base e o método antes de confiar em qualquer dos dois.",
         "spi": "O IDP acumulado é {s}: a obra agregou {pct}% do que o plano esperava até agora.",
         "method_gap": "O outro método de valor agregado leria {alt}% em vez de {e}%, diferença de {g} pontos. Trocar o método muda a curva, não a obra.",
+        "earned_before_plan": "{v} ({pct}% do custo de linha de base) foi agregado antes do primeiro dia previsto, {d}: execução antes da janela de linha de base, que a ferramenta só credita quando a data de status alcança a janela.",
         "weight_top": "{g} carrega {w}% do orçamento e está em {e}% realizado contra {p}% previsto.",
         "weight_behind": "{n} grupos estão mais de {d} pontos atrás do próprio previsto; o maior é {g}.",
         "weight_flat": "Tudo está num único grupo, então a distribuição de peso ainda não diz nada; agrupe por um campo descoberto.",
@@ -138,6 +140,13 @@ def build(payload: dict, lang: str) -> dict:
     if T_.get("method_gap_points") is not None and T_.get("earned_alt_pct") is not None:
         add("scurve", "method_gap", alt=_n(T_["earned_alt_pct"], 2), e=_n(T_.get("earned_pct"), 2),
             g=_n(abs(T_["method_gap_points"]), 2))
+    periods = s.get("periods") or []
+    first_planned = next((p["period"] for p in periods if (p.get("planned") or 0) > 0), None)
+    if first_planned:
+        before = sum((p.get("earned") or 0) for p in periods if p["period"] < first_planned)
+        if before > 0 and s.get("bac"):
+            add("scurve", "earned_before_plan", v=_n(before, 0), pct=_n(before / s["bac"] * 100, 2),
+                d=first_planned)
 
     # ---- groups
     g = (payload.get("charts") or {}).get("by_group") or []
