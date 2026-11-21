@@ -226,6 +226,156 @@ def render_checks() -> dict:
     return out
 
 
+def example_checks() -> dict:
+    """The fictitious road-works pair under examples/: every planted problem is found.
+
+    The example is what a reader runs first, and its README lists what was planted
+    so the report can be checked against it. This holds the two together: if the
+    generator, the files or the engine drift apart, the list in the README stops
+    being true and this fails. An installed copy of the skill does not carry the
+    examples folder; there the check is skipped, and says so.
+    """
+    failures = []
+    folder = os.path.join(os.path.dirname(os.path.dirname(ROOT)), "examples")
+    gen_path = os.path.join(folder, "make_exemplo.py")
+    if not os.path.exists(gen_path):
+        return {"failures": failures, "skipped": True}
+
+    import importlib.util
+    import compare_snapshots
+    import forecast as forecast_mod
+    import forensics as forensics_mod
+    import network_quality as quality_mod
+    import parse_mspdi
+    import phasing as phasing_mod
+    import report_data
+    import run_checks
+
+    spec = importlib.util.spec_from_file_location("make_exemplo", gen_path)
+    gen = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(gen)
+    out = gen.generate()
+    paths = {}
+    for name, body in out["files"].items():
+        paths[name[-9:-4]] = path = os.path.join(folder, name)
+        on_disk = None
+        if os.path.exists(path):
+            with open(path, encoding="utf-8", newline="") as fh:
+                on_disk = fh.read().replace("\r\n", "\n")   # a checkout may convert line ends
+        if on_disk != body:
+            failures.append(f"example: {name} is not what make_exemplo.py generates; run the generator")
+    if failures:
+        return {"failures": failures, "skipped": False}
+    if gen.generate()["files"] != out["files"]:
+        failures.append("example: the generator is not deterministic")
+
+    P = gen.PLANTED
+    uid = {r.key: r.uid for rev in out["snaps"] for r in out["snaps"][rev]["rows"]}
+    prev, curr = parse_mspdi.parse(paths["rev03"]), parse_mspdi.parse(paths["rev04"])
+    if not 150 <= prev["counts"]["tasks"] <= 250 or prev["counts"]["links"] < 150:
+        failures.append(f"example: unexpected size {prev['counts']}")
+
+    def fail(msg):
+        failures.append("example: " + msg)
+
+    # ---- each delivery on its own
+    res_p = run_checks.run(prev, run_checks.DEFAULT_THRESHOLD_DAYS, run_checks.DEFAULT_TOLERANCE_DAYS)
+    res_c = run_checks.run(curr, run_checks.DEFAULT_THRESHOLD_DAYS, run_checks.DEFAULT_TOLERANCE_DAYS)
+    if res_p["blocking"] or res_c["blocking"]:
+        fail("a blocking notice on a file built with a status date and a costed baseline")
+    if any(c["marked_rows"] for c in res_p["counts"].values()):
+        fail(f"rev03 should be clean on A1 to P, got {res_p['counts']}")
+    oos = P["out_of_sequence"]["task"]
+    pairs = [(a["successor_uid"], a["link_type"]) for a in res_c["pairs"]["A1"]]
+    if pairs != [(uid[oos], "FS")]:
+        fail(f"out of sequence: expected one A1 pair on the planted activity, got {res_c['pairs']['A1']}")
+    if any(res_c["counts"][c]["marked_rows"] for c in CODES if c != "A1"):
+        fail(f"rev04 should raise A1 only, got {res_c['counts']}")
+
+    curve = phasing_mod.build(paths["rev04"], None)
+    rec, tot = curve["reconciliation"], curve["totals"]
+    if not curve["inputs"]["planned_available"] or tot["planned_to_date"] is None or tot["spi"] is None:
+        fail("the planned curve is not available: the baseline cost is not read as time-phased")
+    if rec["phasing_sum_equals_cost"] != rec["with_cost"] \
+            or rec["phasing_to_status_equals_bcws"] != rec["bcws_comparable"] \
+            or rec["earned_equals_bcwp"] != rec["bcwp_comparable"]:
+        fail(f"the phasing does not reconcile with the file's own totals: {rec}")
+    odd = next(t for t in curr["tasks"] if t["uid"] == uid[P["percent_vs_physical"]["task"]])
+    if not odd["percent_complete"] - odd["physical_percent_complete"] >= 20 \
+            or abs(tot["method_gap_points"] or 0) < 0.01:
+        fail("percent complete against physical percent: the disagreement did not reach the method gap")
+
+    quality = quality_mod.build(curr, paths["rev04"])
+    by_code = {m["code"]: m for m in quality["metrics"]}
+    for model, q in ((prev, None), (curr, quality)):
+        if report_data.network_state(model, q)["state"] != "linked":
+            fail(f"network state of {model['source']} is not 'linked'")
+    open_ends = {uid[k] for k in P["no_successor"]}
+    if {i["uid"] for i in by_code["Q1"]["items"]} != open_ends \
+            or any(i["missing"] != "successor" for i in by_code["Q1"]["items"]):
+        fail(f"missing logic: Q1 is not the planted open ends: {by_code['Q1']['items']}")
+    if not open_ends <= {i["uid"] for i in by_code["Q6"]["items"]}:
+        fail("high float: the open-ended activities are not in Q6")
+    if by_code["Q7"]["count"] or by_code["Q9"]["count"] or by_code["Q5"]["count"]:
+        fail("negative float, invalid dates or hard constraints in a schedule meant to be mostly healthy")
+
+    fc = forecast_mod.build(curr, curve, None, None)
+    rain = fc["rain_exposure"]
+    if not fc["earned_schedule"]["available"] or not rain["readable"] \
+            or not (rain["share_in_reserve_pct"] or 0) > 10:
+        fail(f"earned schedule or rain exposure not readable: {fc['earned_schedule']} {rain}")
+
+    # ---- the cycle
+    cyc = compare_snapshots.compare(prev, curr)
+    trend = {t["uid"]: t for t in cyc["trend"]}
+    if sum(1 for t in cyc["trend"] if t["reading"] == "execution") < 5:
+        fail("execution: fewer than five activities moved with actuals behind them")
+    rp = P["replan"]["task"]
+    if trend.get(uid[rp], {}).get("reading") != "replan" \
+            or [r["uid"] for r in cyc["logic"]["constraints_added"]] != [uid[rp]]:
+        fail("replan: the pushed forecast is not read as a replan with a constraint added")
+    dc = cyc["duration_changed"]
+    if [(r["uid"], r["duration_before_days"], r["duration_after_days"]) for r in dc] != \
+            [(uid[P["duration"]["task"]], float(P["duration"]["before"]), float(P["duration"]["after"]))]:
+        fail(f"duration: expected the one planted change, got {dc}")
+    past = cyc["past_rewritten"]
+    if [r["uid"] for r in past["actual_finish"]] != [uid[P["past_rewritten"]["task"]]] \
+            or past["actual_start"] or past["percent_decreased"]:
+        fail(f"past rewritten: expected one actual finish, got {past}")
+    if [r["uid"] for r in cyc["baseline_moved"]] != [uid[P["rebaselined"]["task"]]]:
+        fail(f"rebaselined: got {cyc['baseline_moved']}")
+    if [r["uid"] for r in cyc["unmatched"]["inserted"]] != [uid[P["inserted"]]] \
+            or [r["uid"] for r in cyc["unmatched"]["removed"]] != [uid[P["removed"]]]:
+        fail(f"scope: got {cyc['unmatched']}")
+    lg = cyc["logic"]
+    if [(r["uid"], r["predecessor_uid"]) for r in lg["links_added"]] != \
+            [(uid[P["link_added"][0]], uid[P["link_added"][1]])] \
+            or [(r["uid"], r["predecessor_uid"]) for r in lg["links_removed"]] != \
+            [(uid[P["link_removed"][0]], uid[P["link_removed"][1]])]:
+        fail(f"links: added {lg['links_added']} removed {lg['links_removed']}")
+    pf = cyc["project_finish"]
+    viaduct = {u for k, u in uid.items() if k.startswith("oae.") or k == "ms.oae"}
+    if not 7 <= (pf["delta_days"] or 0) <= 45 or len(viaduct & {n["uid"] for n in pf["current"]["chain"]}) < 5 \
+            or uid[P["duration"]["task"]] not in {n["uid"] for n in pf["current"]["chain"]}:
+        fail(f"project finish: not slipping some days along the viaduct: {pf['delta_days']}")
+    fell = {r["uid"]: r for r in cyc["critical_path"]["float_fell_top"]}
+    ms = fell.get(uid["ms.s3"])
+    if not ms or ms["float_fell_days"] < 5 or ms["float_after_days"] < 0:
+        fail(f"float erosion: the segment 3 milestone did not lose float: {ms}")
+    codes = {w["code"] for w in cyc["warning_codes"]}
+    if not {"baseline_moved", "scope", "past_rewritten", "residue"} <= codes \
+            or codes & {"same_status_date", "status_date_backwards", "slot_differs"}:
+        fail(f"cycle warnings: {sorted(codes)}")
+
+    fx = forensics_mod.build(curr, res_c, prev, cyc)
+    trp = next((m for m in fx["milestones"] if m["id"] and m["name"].startswith("Termo de Recebimento")), None)
+    if not trp or not trp["origin"] or not trp["amplifier"] \
+            or trp["amplifier"]["id"] != next(t["id"] for t in curr["tasks"]
+                                               if t["uid"] == uid[P["duration"]["task"]]):
+        fail(f"forensics: the final milestone's delay is not traced to the viaduct: {trp and trp['amplifier']}")
+    return {"failures": failures, "skipped": False}
+
+
 def main() -> int:
     failures = []
 
@@ -997,6 +1147,11 @@ def main() -> int:
     rendered = render_checks()
     failures.extend(rendered["failures"])
 
+    # ---- the worked example a reader runs first: what its README lists as planted
+    # is what the engine finds.
+    example = example_checks()
+    failures.extend(example["failures"])
+
     if failures:
         print("FAIL")
         for f in failures:
@@ -1018,6 +1173,10 @@ def main() -> int:
         print("  report render: SKIPPED (node not installed) -- the blank-page guard did not run")
     else:
         print("  report render: both reports executed and produced every expected section")
+    if example["skipped"]:
+        print("  example: SKIPPED (no examples folder beside this copy of the skill)")
+    else:
+        print("  example: the fictitious road pair is what its generator writes; every planted problem found")
     print("  calendars: 9h six-day week and its holiday applied; consistent task not flagged")
     print("  language: pt and en detected from content; every label present in both")
     print("  fields: discovery typed and ranked them; grouping by alias and by a missing name")
