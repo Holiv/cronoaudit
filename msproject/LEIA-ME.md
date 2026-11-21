@@ -25,12 +25,16 @@ A rota pelo terminal continua valendo: `Arquivo > Salvar como > XML` e
 Mede o que decide se o plugin funciona nesta máquina: se o Project grava XML por macro, qual
 documento fica ativo depois, se a macro consegue executar um processo e se acha o Python.
 
-1. Abra um cronograma **salvo** no Project.
-2. `Alt+F11` abre o editor do VBA. No painel da esquerda, clique em `VBAProject (<seu arquivo>)`.
+1. Abra um cronograma **salvo** no Project. De preferência uma cópia.
+2. `Alt+F11` abre o editor do VBA. No painel da esquerda, clique em `ProjectGlobal (Global.MPT)`,
+   **não** no `VBAProject` do seu arquivo. Importar dentro do arquivo deixa o cronograma com
+   alteração não salva, o teste recusa rodar, e quem salva grava a macro dentro do cronograma.
 3. `Arquivo > Importar arquivo...` e escolha `CronoauditTeste.bas`.
 4. Feche o editor. `Alt+F8`, escolha `CronoauditTeste`, `Executar`.
 5. O Bloco de Notas abre com o resultado (`%TEMP%\cronoaudit-teste\resultado.txt`).
-6. Feche o cronograma **sem salvar**, para o módulo de teste não ficar no arquivo.
+6. Remova o módulo de teste: `Alt+F11`, botão direito em `modCronoauditTeste` (dentro de
+   `ProjectGlobal`) > `Remover`, sem exportar. Se o Project perguntar ao fechar se salva o
+   Global, pode salvar: o módulo já saiu.
 
 Como ler o resultado:
 
