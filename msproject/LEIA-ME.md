@@ -1,28 +1,76 @@
 # cronoaudit dentro do MS Project
 
-Três botões no Project, sobre o arquivo aberto:
+A cronoaudit é uma **skill**: o agente (Claude Code, Codex, GitHub Copilot CLI, Gemini CLI) lê o
+cronograma por ela, conversa com você, interpreta e personaliza o relatório quando você pede. O
+motor em Python é o instrumento da skill: é dele que saem os números, para o agente nunca
+inventar um.
+
+O suplemento é só o **atalho de entrada**. Ele exporta o XML do arquivo aberto e abre um terminal
+com a skill já iniciada sobre ele. Tudo o que ele faz você pode fazer à mão (seção 7).
+
+**Estado: v0.2.** A exportação por macro, a execução de processo e a descoberta do Python foram
+medidas em duas máquinas Windows com a v0.1. A abertura do agente pela macro é nova e ainda não
+foi medida em máquina real.
+
+## 1. Os botões
 
 | Botão (macro) | O que faz | O dado sai da máquina? |
 |---|---|---|
-| **Auditar** (`CronoauditAuditar`) | exporta o XML, roda a cronoaudit, abre o relatório | não |
-| **Comparar** (`CronoauditComparar`) | pede a outra versão (.mpp ou .xml), exporta por trás, roda a comparação | não |
-| **Conversar** (`CronoauditConversar`) | abre o agente (Claude Code, Copilot, Codex, Gemini) na pasta da última auditoria | sim, o que o agente ler |
+| **Analisar** (`CronoauditAnalisar`) | exporta o XML, grava o `pedido.md` e abre o agente na pasta, já com a skill iniciada | **sim**: o que o agente ler (o XML, os resultados, a conversa) vai para o provedor do agente |
+| **Comparar** (`CronoauditComparar`) | pede a outra versão (.mpp ou .xml), exporta as duas e abre o agente com o pedido de comparação | **sim**, idem |
+| **Exportar XML** (`CronoauditExportarXml`) | só exporta o XML e abre a pasta no Explorer | **não**. Nada é enviado e nada roda. O que você fizer com o XML depois é com você |
+| **Sem IA** (`CronoauditSemIA`) | exporta, roda o motor da cronoaudit e abre o relatório HTML | **não**. Tudo roda nesta máquina |
+| **Comparar sem IA** (`CronoauditCompararSemIA`) | o mesmo, para a comparação de duas versões | **não** |
+| **Configurar** (`CronoauditConfigurar`) | agente, pasta dos relatórios, Python, `review.py`, redefinir | não |
 
-A rota pelo terminal continua valendo: `Arquivo > Salvar como > XML` e
-`python review.py arquivo.xml`. O plugin só tira esses passos da frente.
+Sobre o "sim": o suplemento não envia nada. Quem envia é o agente, ao provedor dele, nas condições
+da sua conta ou da conta da empresa. Na primeira vez que você usa Analisar ou Comparar aparece um
+aviso dizendo isso, com a opção de não mostrar de novo. **Se a política da empresa não permite
+IA, use os dois botões "sem IA"**: o relatório é o mesmo, só não há conversa.
 
-**Estado: v0.1, não testado em máquina real.** Rode primeiro o teste de viabilidade (passo 2).
+Se Analisar ou Comparar não encontrarem nenhum agente instalado, eles oferecem rodar sem IA em
+vez de falhar.
 
-## 1. Pré-requisitos
+### O que acontece no Analisar
+
+1. Confere o arquivo: está aberto, salvo em disco, sem alteração pendente (oferece salvar), e
+   avisa se for um mestre com subprojetos.
+2. Cria a pasta da rodada e exporta o XML para ela.
+3. Grava `pedido.md` (UTF-8) na pasta: a tarefa, o nome do XML, o idioma (pt-BR), o comando do
+   motor que já funciona nesta máquina, e a regra de que todo número vem do motor.
+4. Abre um terminal **visível** nessa pasta, com o agente iniciado numa frase curta em ASCII:
+   `Use the cronoaudit skill. Read pedido.md in this folder and follow it.` O pedido de verdade
+   está no arquivo; a frase curta evita problema de acento na linha de comando.
+
+O terminal fica aberto. A conversa segue ali: peça o que quiser aprofundar, ou peça para
+personalizar o relatório.
+
+### O agente
+
+| Agente | Comando que o suplemento usa |
+|---|---|
+| Claude Code | `claude "…"` |
+| Codex CLI | `codex "…"` |
+| GitHub Copilot CLI | `copilot -i "…"` |
+| Gemini CLI | `gemini -i "…"` |
+
+Por padrão o suplemento abre o primeiro que encontrar no PATH, nessa ordem. Para fixar um, use
+`CronoauditConfigurar`, opção 1. O Copilot dentro do VS Code não é aberto pelo suplemento: use
+Exportar XML e abra a pasta no VS Code.
+
+## 2. Pré-requisitos
 
 - Windows com MS Project (desktop).
-- Python 3.9 ou mais novo.
-- A cronoaudit instalada (`install.ps1`, ver o README principal). O plugin procura o `review.py`
-  em `%USERPROFILE%\.claude\skills\cronoaudit` e `%USERPROFILE%\.agents\skills\cronoaudit`.
+- A cronoaudit instalada pelo `install.ps1` (ver o README principal). O instalador traz um Python
+  próprio quando a máquina não tem um. O suplemento procura o `review.py` em
+  `%USERPROFILE%\.claude\skills\cronoaudit` e `%USERPROFILE%\.agents\skills\cronoaudit`, e o
+  Python nesta ordem: `py -3`, `python`, `python3`, `%LOCALAPPDATA%\cronoaudit\python\python.exe`.
+- Para Analisar e Comparar: um dos quatro agentes instalado e com login feito. Sem agente, os
+  botões "sem IA" e o Exportar XML funcionam do mesmo jeito.
 
-## 2. Teste de viabilidade (5 minutos, antes de tudo)
+## 3. Teste de viabilidade (5 minutos, uma vez por máquina)
 
-Mede o que decide se o plugin funciona nesta máquina: se o Project grava XML por macro, qual
+Mede o que decide se o suplemento funciona nesta máquina: se o Project grava XML por macro, qual
 documento fica ativo depois, se a macro consegue executar um processo e se acha o Python.
 
 1. Abra um cronograma **salvo** no Project. De preferência uma cópia.
@@ -40,22 +88,20 @@ Como ler o resultado:
 
 | Linha | Bom | Ruim, e o que significa |
 |---|---|---|
-| `[1] XML gravado` | SIM | NÃO: a máquina bloqueia gravação por macro. O plugin não serve aqui; use o terminal. |
+| `[1] XML gravado` | SIM | NÃO: a máquina bloqueia gravação por macro. O suplemento não serve aqui; use o terminal (seção 7). |
 | `documento ativo depois` | qualquer um, desde que `ativo agora` volte ao original | o original não reabriu: anote o erro |
-| `[2] cmd` | código de saída 0 | BLOQUEADO: a política (ASR) impede a macro de abrir processos |
-| `[3] Python` | alguma linha com código 0 e versão ≥ 3.9 | todas ≠ 0: instale o Python, ou só a exportação funciona |
+| `[2] cmd` | código de saída 0 | BLOQUEADO: a política (ASR) impede a macro de abrir processos. Só o Exportar XML funciona |
+| `[3] Python` | alguma linha com código 0 e versão ≥ 3.9 | todas ≠ 0: rode o `install.ps1` de novo, ele traz o Python |
 
-Mande o `resultado.txt` de volta: é ele que decide a arquitetura.
+## 4. Instalação do suplemento
 
-## 3. Instalação do plugin
-
-As macros moram no `Global.MPT`, que guarda as macros pessoais de cada um. Por isso o plugin
+As macros moram no `Global.MPT`, que guarda as macros pessoais de cada um. Por isso o suplemento
 **nunca substitui o Global**: importa um módulo dentro dele.
 
 1. Feche todos os cronogramas e abra o Project vazio.
 2. `Alt+F11`. No painel da esquerda, selecione `ProjectGlobal (Global.MPT)`.
-3. Se já existir um módulo `Cronoaudit`, remova antes (botão direito > Remover, sem exportar).
-   Senão o novo nasce como `Cronoaudit1`.
+3. Se já existir um módulo `Cronoaudit` (a v0.1, por exemplo), remova antes (botão direito >
+   Remover, sem exportar). Senão o novo nasce como `Cronoaudit1` e as macros ficam duplicadas.
 4. `Arquivo > Importar arquivo...` e escolha `Cronoaudit.bas`.
 5. `Depurar > Compilar ProjectGlobal`. Não pode aparecer erro.
 6. Com `ProjectGlobal` selecionado, `Ctrl+S`. Ao fechar o Project, aceite salvar o Global.
@@ -63,42 +109,62 @@ As macros moram no `Global.MPT`, que guarda as macros pessoais de cada um. Por i
 Se aparecer um erro do VBA durante o uso, **não clique em "Fim"** com uma janela da macro
 aberta: isso pode fechar o Project. Use "Depurar" ou feche a mensagem.
 
-## 4. Botões na faixa de opções
+## 5. Botões na faixa de opções
 
 1. `Arquivo > Opções > Personalizar Faixa de Opções`.
-2. `Nova Guia`, renomeie para `cronoaudit`. Dentro dela, `Novo Grupo`, renomeie para `Auditoria`.
-3. Em "Escolher comandos em", selecione `Macros`. Adicione ao grupo:
-   `CronoauditAuditar`, `CronoauditComparar`, `CronoauditConversar`, `CronoauditConfigurar`.
-4. Renomeie cada um (Auditar, Comparar, Conversar, Configurar) e escolha um ícone.
+2. `Nova Guia`, renomeie para `cronoaudit`. Dentro dela, `Novo Grupo`, renomeie para `Skill`.
+3. Em "Escolher comandos em", selecione `Macros`. Adicione ao grupo, nesta ordem, as cinco
+   macros de trabalho: `CronoauditAnalisar`, `CronoauditComparar`, `CronoauditExportarXml`,
+   `CronoauditSemIA`, `CronoauditCompararSemIA`. `CronoauditConfigurar` pode ir num segundo grupo.
+4. Renomeie cada um (Analisar, Comparar, Exportar XML, Sem IA, Comparar sem IA) e escolha um
+   ícone.
 
-## 5. Onde ficam os relatórios
+Quem tinha botões da v0.1: `CronoauditAuditar` e `CronoauditConversar` não existem mais. Remova
+esses botões e aponte os novos para as macros acima. Sem a faixa, tudo funciona por `Alt+F8`.
 
-Em `%LOCALAPPDATA%\cronoaudit\relatorios\<data>_<arquivo>\`, uma pasta por rodada, com o XML,
-o relatório HTML e os JSON. **A pasta é local de propósito**: fica fora do OneDrive, porque o
-XML e o relatório carregam o dado da obra. Troque em `CronoauditConfigurar`.
+## 6. Onde ficam os arquivos
 
-## 6. Como cada botão se comporta
+Em `%LOCALAPPDATA%\cronoaudit\relatorios\<data>_<arquivo>\`, uma pasta por rodada, com o XML, o
+`pedido.md` e, depois que o motor rodar, o relatório HTML e os JSON. **A pasta é local de
+propósito**: fica fora do OneDrive, porque o XML e o relatório carregam o dado da obra. Troque em
+`CronoauditConfigurar`, opção 2.
 
-- **Antes de exportar**, o plugin confere: há arquivo aberto, ele está salvo em disco, não tem
-  alteração pendente (oferece salvar), e avisa se for um mestre com subprojetos. Alteração
-  pendente importa porque o "Salvar como" pode trocar o documento ativo, e o original é reaberto
-  do disco.
-- **Comparar** pergunta se o arquivo aberto é a versão mais nova e abre a janela para escolher a
-  outra. Um `.mpp` é aberto só para leitura, exportado e fechado sem salvar. As tarefas são
-  casadas pelo UID e depois pelo nome e caminho da EAP. O "Salvar como" troca o GUID, não o UID.
-- **Conversar** avisa que, a partir dali, o agente envia ao provedor dele o que ler, copia para a
-  área de transferência um pedido inicial e abre o agente que encontrar no PATH. Claude Code e
-  Codex já recebem o pedido; Copilot e Gemini abrem e você cola com `Ctrl+V`; sem agente de
-  linha de comando, abre o VS Code na pasta para usar o Copilot de lá.
+No nome da pasta e do XML, os caracteres que atrapalham caminho ou linha de comando viram `_`, e
+o nome é cortado em 60 caracteres.
 
-## 7. Problemas conhecidos e o que fazer
+## 7. A rota só pelo terminal continua valendo
+
+O suplemento não é necessário. À mão:
+
+1. No Project: `Arquivo > Salvar como > Formato XML`.
+2. Abra um terminal na pasta do XML e inicie o seu agente (`claude`, `codex`, `copilot`,
+   `gemini`).
+3. Peça: *use a skill cronoaudit e analise este cronograma*.
+
+Sem agente: `python "%USERPROFILE%\.claude\skills\cronoaudit\scripts\review.py" arquivo.xml`.
+Para comparar, passe os dois XML, o anterior primeiro.
+
+## 8. Como a comparação se comporta
+
+Comparar pergunta se o arquivo aberto é a versão mais nova e abre a janela para escolher a
+outra. Um `.mpp` é aberto só para leitura, exportado e fechado sem salvar; um `.xml` é copiado.
+As tarefas são casadas pelo UID e depois pelo nome e caminho da EAP. O "Salvar como" troca o
+GUID, não o UID. A outra versão não pode estar aberta no Project.
+
+## 9. Problemas conhecidos e o que fazer
 
 | Sintoma | Causa provável | Saída |
 |---|---|---|
-| "Não consegui gravar o XML" | política da máquina bloqueia gravação por macro | `Salvar como > XML` e terminal |
-| "executar o Python" falhou | regra ASR que impede o Office de abrir processos | terminal |
-| "Não achei Python" | Python ausente ou só o atalho da Microsoft Store | instalar Python, ou `CronoauditConfigurar` |
-| "Não achei a cronoaudit" | skill não instalada | `install.ps1` |
-| a janela de escolher arquivo não abre | `Shell.Application` bloqueado | o plugin pede o caminho por digitação |
+| "Não encontrei nenhum agente no PATH" | agente não instalado, ou instalado com o Project aberto (o Project herda o PATH ao abrir) | feche e abra o Project; ou aceite rodar sem IA |
+| o terminal abre e o agente reclama da opção `-i` | versão antiga do Copilot CLI ou do Gemini CLI | atualize o agente; ou digite o nome dele no terminal e cole a frase que o terminal mostra |
+| o agente abre mas diz que não conhece a skill | skill não instalada para esse agente | rode o `install.ps1`; no agente, peça para listar as skills |
+| o agente pede para confiar na pasta ou para rodar um comando | comportamento normal do agente | confirme: a pasta é a da rodada e o comando é o do `pedido.md` |
+| "Não consegui gravar o XML" | política da máquina bloqueia gravação por macro | `Salvar como > XML` e terminal (seção 7) |
+| "abrir o agente" ou "executar o Python" falhou | regra ASR que impede o Office de abrir processos | use Exportar XML e abra o terminal à mão |
+| "Não achei Python" | Python ausente ou só o atalho da Microsoft Store | rode o `install.ps1` de novo; ou `CronoauditConfigurar`, opção 3 |
+| "Não achei a skill cronoaudit" | skill não instalada | `install.ps1`; ou `CronoauditConfigurar`, opção 4 |
+| a janela de escolher arquivo não abre | `Shell.Application` bloqueado | o suplemento pede o caminho por digitação |
 | "Salve em disco" com o arquivo salvo | arquivo aberto do OneDrive/SharePoint pelo navegador ou Recentes, o Project devolve uma URL | abra pela pasta sincronizada; o teste mostra isso na linha `[0]` |
-| o original voltou sem o desfazer e na exibição padrão | o "Salvar como" troca o documento ativo e o original é reaberto do disco | comportamento esperado da v0.1 |
+| o original voltou sem o desfazer | quando o "Salvar como" troca o documento ativo, o original é reaberto do disco | esperado; nas máquinas medidas o ativo continuou sendo o `.mpp` |
+| o aviso de dados não aparece mais e você quer rever | foi marcado para não mostrar | `CronoauditConfigurar`, opção 5 |
+| `Cronoaudit1` na lista de módulos, macros em dobro | a versão anterior não foi removida antes de importar | remova os dois módulos e importe de novo |
