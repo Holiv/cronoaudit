@@ -820,6 +820,30 @@ def main() -> int:
         if pay2["profile"]["forced"].get("baseline_slot") != "1":
             failures.append("profile: a forced baseline slot was not declared in the payload")
 
+    # ---- every entry script must run by path on an ISOLATED interpreter, from a
+    # directory that is not its own. The embeddable Windows package ships a ._pth
+    # file, which puts Python in isolated mode with no site and without the
+    # script's folder on sys.path; -I -S reproduces exactly those three conditions.
+    # A script that leans on the implicit path works on every developer machine
+    # and fails on the one that needed the bundled interpreter.
+    entry = sorted(f for f in os.listdir(HERE) if f.endswith(".py") and not f.startswith("test_")
+                   and "__main__" in open(os.path.join(HERE, f), encoding="utf-8").read())
+    with tempfile.TemporaryDirectory() as tmp:
+        for f in entry:
+            r = subprocess.run([sys.executable, "-I", "-S", os.path.join(HERE, f), "--help"],
+                               capture_output=True, text=True, cwd=tmp)
+            if r.returncode != 0:
+                failures.append(f"isolated run: {f} does not start on an isolated interpreter: "
+                                f"{(r.stderr.strip().splitlines() or ['?'])[-1]}")
+        r = subprocess.run([sys.executable, "-I", "-S", os.path.join(HERE, "review.py"),
+                            os.path.join(ROOT, "fixtures", "cycle_prev.xml"),
+                            os.path.join(ROOT, "fixtures", "cycle_curr.xml"),
+                            "--outdir", os.path.join(tmp, "out"), "--quiet"],
+                           capture_output=True, text=True, cwd=tmp)
+        made = os.listdir(os.path.join(tmp, "out")) if os.path.isdir(os.path.join(tmp, "out")) else []
+        if r.returncode != 0 or sum(1 for f in made if f.endswith(".html")) != 2:
+            failures.append("isolated run: review.py did not produce both reports on an isolated interpreter")
+
     # ---- the report must actually render. A valid file that runs to a blank page
     # is the failure mode this guards; see scripts/test_render.js for the real bug.
     rendered = render_checks()
@@ -839,6 +863,7 @@ def main() -> int:
     print("  cycle model: finish and driver, critical path, logic, duration, rewritten past, quality")
     print("  cycle control: a file against itself is silent; no path, raw date or negative zero shown")
     print("  report: no external references, so it works offline")
+    print(f"  isolated run: {len(entry)} entry scripts start with -I -S from another folder; review end to end")
     if rendered["skipped"]:
         print("  report render: SKIPPED (node not installed) -- the blank-page guard did not run")
     else:

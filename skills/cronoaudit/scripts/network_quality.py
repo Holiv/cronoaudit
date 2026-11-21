@@ -22,6 +22,15 @@ import sys
 import xml.etree.ElementTree as ET
 from datetime import datetime
 
+import os
+
+# Run by path from anywhere, on any interpreter: an isolated Python (-I), and the
+# embeddable Windows package with its ._pth file, do not put the script's own
+# folder on sys.path, so the sibling modules below would not be found.
+_HERE = os.path.dirname(os.path.abspath(__file__))
+if _HERE not in sys.path:
+    sys.path.insert(0, _HERE)
+
 import calendars as cal_mod
 
 NS = "{http://schemas.microsoft.com/project}"

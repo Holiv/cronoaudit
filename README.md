@@ -39,10 +39,40 @@ curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | 
 irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex
 ```
 
-Then restart your agent and ask it to review a schedule. Needs Python 3.9 or later. Nothing is
-sent anywhere; the only network access is the download. The PowerShell installer was written
-to mirror the shell one and has not yet been exercised on a Windows machine; if it misbehaves,
-the `git clone` route below works everywhere.
+`irm` exists only inside PowerShell. Pasted into the Command Prompt (cmd) it answers
+*'irm' is not recognized* (*'irm' não é reconhecido*). From cmd, use this line instead:
+
+```
+powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex"
+```
+
+Then restart your agent and ask it to review a schedule.
+
+**Python.** The skill needs Python 3.9 or later and nothing else. On macOS and Linux the
+installer uses the one on the machine and stops if there is none. On Windows it looks for a
+Python that actually runs (`py -3`, `python`, `python3`, each one executed, because on a
+Windows without Python those names are Microsoft Store shortcuts that exist and do nothing).
+If none runs, it brings its own: the official CPython 3.13.17 *embeddable package* from
+python.org, checked against a SHA-256 pinned in the installer before it is unpacked, placed
+in `%LOCALAPPDATA%\cronoaudit\python`. No administrator rights, no registry entry, no PATH
+change; deleting that folder removes it. It is used only by cronoaudit.
+
+| Before running the Windows installer | Effect |
+|---|---|
+| `$env:CRONOAUDIT_NO_PYTHON = "1"` | never download Python; stop with a message if none is found |
+| `$env:CRONOAUDIT_EMBED_PYTHON = "1"` | use the bundled Python even when the machine has one |
+
+**Network access, all of it.** The installer downloads this repository's zip from GitHub and,
+on Windows only when no working Python is found (or when asked), the Python package from
+python.org. Nothing else is fetched and nothing is sent anywhere. The skill itself never
+touches the network.
+
+The bundled Python is the standard library only. That is everything the skill needs; the one
+thing it cannot do is the optional direct reading of `.mpp` files, which needs a library and
+a Java runtime. Export to XML, as the skill recommends anyway.
+
+The Windows installer's Python detection and download have not yet been exercised end to end
+on a Windows machine; if it misbehaves, the `git clone` route below works everywhere.
 
 ### Or use your agent's own installer
 

@@ -36,6 +36,15 @@ import sys
 from collections import defaultdict
 from datetime import datetime, timedelta
 
+import os
+
+# Run by path from anywhere, on any interpreter: an isolated Python (-I), and the
+# embeddable Windows package with its ._pth file, do not put the script's own
+# folder on sys.path, so the sibling modules below would not be found.
+_HERE = os.path.dirname(os.path.abspath(__file__))
+if _HERE not in sys.path:
+    sys.path.insert(0, _HERE)
+
 import calendars as cal_mod
 
 RESERVE_DAYS_PER_MONTH = 4   # a month with this many non-working exceptions is a reserve month
