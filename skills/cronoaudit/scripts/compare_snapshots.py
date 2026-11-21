@@ -155,6 +155,9 @@ def project_finish(model: dict) -> dict:
 
     out["end"] = brief(end)
     out["driver"] = brief(driver)
+    # With no predecessor behind it, nothing drives that row: the date is the
+    # row's own. It is then the last date in the file, not the end of a path.
+    out["driver_linked"] = bool(driver.get("predecessors")) or len(chain) > 1
     out["chain"] = [{"uid": n["uid"], "id": n["id"], "name": n["name"], "finish": n["finish"],
                      "critical": n["critical"], "via": n.get("via"),
                      "started": n["started"]} for n in chain[:15]]
@@ -420,6 +423,13 @@ def quality_side_by_side(prev: dict, curr: dict) -> dict:
     }
 
 
+def baseline_name(slot) -> str:
+    """The baseline as the scheduling tool names it, for the English sentences."""
+    if slot is None:
+        return "no baseline"
+    return "Baseline" if str(slot) == "0" else f"Baseline {slot}"
+
+
 def snapshot_aggregate(model: dict) -> dict:
     """The aggregate figures for ONE snapshot.
 
@@ -447,6 +457,7 @@ def snapshot_aggregate(model: dict) -> dict:
         earned += bcost * (phys / 100.0)
     return {
         "baseline_slot": slot,
+        "baseline_name": baseline_name(slot),
         "budget_at_completion": round(planned, 2),
         "earned": round(earned, 2),
         "percent_earned": round(earned / planned * 100, 4) if planned else None,
@@ -585,9 +596,10 @@ def compare(prev: dict, curr: dict) -> dict:
         warning_codes.append({"code": "slot_differs", "a": agg_prev["baseline_slot"],
                               "b": agg_curr["baseline_slot"]})
         warnings.append(
-            f"The prevailing baseline slot differs between snapshots "
-            f"({agg_prev['baseline_slot']} then {agg_curr['baseline_slot']}). The two "
-            "aggregate figures are not comparable until one slot is chosen for both."
+            f"The baseline in force differs between snapshots "
+            f"({baseline_name(agg_prev['baseline_slot'])} then "
+            f"{baseline_name(agg_curr['baseline_slot'])}). The two "
+            "aggregate figures are not comparable until one is chosen for both."
         )
     if inserted or removed:
         warning_codes.append({"code": "scope", "i": len(inserted), "r": len(removed)})
@@ -595,6 +607,25 @@ def compare(prev: dict, curr: dict) -> dict:
             f"{len(inserted)} activities inserted and {len(removed)} removed. Scope "
             "changed, so the aggregate movement is not purely progress."
         )
+    # Two deliveries of a cycle are two moments. The same status date in both, or
+    # the second one earlier than the first, is a doubt about the INPUT, raised
+    # before any figure below is read as movement between cycles.
+    sd_prev, sd_curr = agg_prev["status_date"], agg_curr["status_date"]
+    if not sd_prev or not sd_curr:
+        warning_codes.append({"code": "status_date_missing"})
+        warnings.append("A status date is missing in one of the deliveries, so the two moments "
+                        "being compared cannot be confirmed.")
+    elif sd_prev[:10] == sd_curr[:10]:
+        warning_codes.append({"code": "same_status_date", "d": sd_curr})
+        warnings.append(
+            f"Both deliveries carry the same status date ({sd_curr[:10]}). A cycle comparison "
+            "expects two different moments: confirm that the first file really is the previous "
+            "cycle, and not another save of the same one.")
+    elif sd_curr < sd_prev:
+        warning_codes.append({"code": "status_date_backwards", "a": sd_prev, "b": sd_curr})
+        warnings.append(
+            f"The second file's status date ({sd_curr[:10]}) is EARLIER than the first one's "
+            f"({sd_prev[:10]}). The files may be in the wrong order: the previous delivery goes first.")
     if agg_curr["leaves_with_baseline_cost"] == 0:
         warning_codes.append({"code": "no_weight"})
         warnings.append("No leaf carries baseline cost, so there is no weight to decompose.")
@@ -685,7 +716,7 @@ def compare(prev: dict, curr: dict) -> dict:
         if abs(gap) >= 0.01:
             result["warning_codes"].append({"code": "residue", "gap": gap})
             result["warnings"].append(
-                f"{gap:+.4f} percentage points of the movement are NOT explained by "
+                f"{gap:+.2f} percentage points of the movement are NOT explained by "
                 "per-activity progress. Something other than work done moved the "
                 "aggregate: scope changing the denominator, a rebased baseline, or a "
                 "different baseline slot. Do not report the headline movement as "
@@ -699,10 +730,13 @@ def report(r: dict) -> str:
     L.append(f"  previous  {r['previous']['source']}  status {r['previous']['status_date']}")
     L.append(f"  current   {r['current']['source']}  status {r['current']['status_date']}")
     L.append("")
-    L.append(f"  earned    {r['previous']['percent_earned']}%  ->  {r['current']['percent_earned']}%")
-    L.append(f"  movement  {r['movement_points']} percentage points")
-    L.append(f"  decomposition sums to {r['decomposition_sums_to_points']} points")
-    L.append(f"  unexplained residue  {r['movement_unexplained_points']} points")
+    def two(v):
+        return "n/a" if v is None else f"{zero(v, 2):.2f}"
+
+    L.append(f"  earned    {two(r['previous']['percent_earned'])}%  ->  {two(r['current']['percent_earned'])}%")
+    L.append(f"  movement  {two(r['movement_points'])} percentage points")
+    L.append(f"  decomposition sums to {two(r['decomposition_sums_to_points'])} points")
+    L.append(f"  unexplained residue  {two(r['movement_unexplained_points'])} points")
     L.append("")
     exec_n = sum(1 for t in r["trend"] if t["reading"] == "execution")
     replan_n = sum(1 for t in r["trend"] if t["reading"] == "replan")
@@ -739,7 +773,7 @@ def report(r: dict) -> str:
         L.append("  largest contributions to the movement:")
         for d in r["decomposition"][:10]:
             L.append(
-                f"    {d['contribution_points']:+8.4f} pp  id {d['id']:<5} "
+                f"    {d['contribution_points']:+8.3f} pp  id {d['id']:<5} "
                 f"{d['percent_previous']:>5.1f}% -> {d['percent_current']:>5.1f}%  {d['name']}"
             )
     return "\n".join(L)

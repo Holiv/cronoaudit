@@ -170,7 +170,10 @@ def do_review(model, path, outdir, threshold, tolerance, quiet,
     with open(base + "-readings.json", "w", encoding="utf-8") as fh:
         # The rule-built sentences the report shows, so an assistant can quote them
         # instead of composing its own.
+        # `inputs` says what each reading needed and whether the file had it.
         json.dump({"lang": effective_lang, "language": payload.get("language"),
+                   "inputs": (payload.get("meta") or {}).get("inputs"),
+                   "baseline": (payload.get("meta") or {}).get("baseline_label"),
                    "readings": payload.get("readings")}, fh, indent=2, ensure_ascii=False)
     if curve is not None:
         with open(base + "-scurve.json", "w", encoding="utf-8") as fh:

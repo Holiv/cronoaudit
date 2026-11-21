@@ -282,7 +282,7 @@ def prevailing_baseline(tasks) -> dict:
     return {
         "slot": slot,
         "leaves_with_cost": dict(sorted(coverage.items(), key=lambda kv: int(kv[0]))),
-        "basis": "slot with the widest leaf-cost coverage, ties to the higher slot; "
+        "basis": "the baseline with the widest leaf-cost coverage, ties to the higher-numbered one; "
                  "summaries and external tasks excluded",
     }
 

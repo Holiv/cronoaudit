@@ -138,6 +138,11 @@ def _phasing(kw):
     bl = kw.get("baseline")
     bcws = 0.0
     six = kw.get("cal") == 2
+    if kw.get("no_phasing"):
+        # A baseline with cost and NO time-phased blocks, and no daily percent
+        # either: what a file looks like after a round trip that kept the
+        # baseline figures and dropped their distribution in time.
+        return [], 0.0
     if bl:
         bstart, bfinish, bcost, _ = bl
         days = [d for d, w in _days(bstart, bfinish, six) if w] or [datetime.fromisoformat(bstart).date()]
@@ -308,7 +313,25 @@ def task(uid, tid, name, **kw):
     return "  <Task>\n" + "\n".join(parts) + "\n  </Task>"
 
 
-def document(name, tasks, finish=None):
+# One calendar, Monday to Friday, eight hours, and not a single exception: no
+# holiday, no weather reserve. Whatever is read about reserved periods from this
+# calendar is read from nothing.
+CALENDARS_PLAIN = (
+    "  <Calendars>\n    <Calendar>\n"
+    "      <UID>1</UID><Name>Standard</Name><IsBaseCalendar>1</IsBaseCalendar>\n"
+    "      <BaseCalendarUID>-1</BaseCalendarUID>\n      <WeekDays>\n"
+    + "".join(
+        f"        <WeekDay><DayType>{d}</DayType><DayWorking>0</DayWorking></WeekDay>\n" if d in (1, 7) else
+        f"        <WeekDay><DayType>{d}</DayType><DayWorking>1</DayWorking><WorkingTimes>\n"
+        "          <WorkingTime><FromTime>08:00:00</FromTime><ToTime>12:00:00</ToTime></WorkingTime>\n"
+        "          <WorkingTime><FromTime>13:00:00</FromTime><ToTime>17:00:00</ToTime></WorkingTime>\n"
+        "        </WorkingTimes></WeekDay>\n"
+        for d in range(1, 8))
+    + "      </WeekDays>\n    </Calendar>\n  </Calendars>\n"
+)
+
+
+def document(name, tasks, finish=None, calendars=None):
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         f'<Project xmlns="{NS}">\n'
@@ -322,7 +345,7 @@ def document(name, tasks, finish=None):
         "  <MinutesPerWeek>2400</MinutesPerWeek>\n"
         "  <DaysPerMonth>20</DaysPerMonth>\n"
         "  <CalendarUID>1</CalendarUID>\n"
-        + CALENDARS + EXT_DEFS +
+        + (calendars or CALENDARS) + EXT_DEFS +
         "  <Tasks>\n" + "\n".join(tasks) + "\n  </Tasks>\n"
         + RESOURCES +
         "  <Assignments>\n" + "\n".join(ASSIGNMENTS) + "\n  </Assignments>\n"
@@ -524,18 +547,56 @@ def negative():
     t.append(task(3, 3, "In progress, future finish",
                   start="2026-06-29T08:00:00", finish="2026-07-03T17:00:00",
                   dur_hours=40, astart="2026-06-29T08:00:00", pct=35,
-                  baseline=("2026-06-29T08:00:00", "2026-07-03T17:00:00", 8000.0, 40)))
+                  baseline=("2026-06-29T08:00:00", "2026-07-03T17:00:00", 8000.0, 40),
+                  preds=[(2, 1, 0)]))
     # Future work, not started, on plan.
     t.append(task(4, 4, "Future work on plan",
                   start="2026-07-06T08:00:00", finish="2026-07-10T17:00:00",
                   dur_hours=40,
-                  baseline=("2026-07-06T08:00:00", "2026-07-10T17:00:00", 9000.0, 40)))
+                  baseline=("2026-07-06T08:00:00", "2026-07-10T17:00:00", 9000.0, 40),
+                  preds=[(3, 1, 0)]))
     # Milestone WITH a deadline.
     t.append(task(5, 5, "Milestone with deadline", milestone=True,
                   start="2026-07-10T17:00:00", finish="2026-07-10T17:00:00",
                   dur_hours=0, deadline="2026-07-10T17:00:00",
-                  baseline=("2026-07-10T17:00:00", "2026-07-10T17:00:00", 500.0, 0)))
+                  baseline=("2026-07-10T17:00:00", "2026-07-10T17:00:00", 500.0, 0),
+                  preds=[(4, 1, 0)]))
     return document("Negative fixture", _decorate(t))
+
+
+def bare():
+    """A schedule that LOOKS complete and is missing the inputs four readings need.
+
+    Every figure in it is plausible and nothing raises an error, which is the
+    point: each of these, read naively, produces a confident sentence about
+    something the file does not contain.
+      * no link at all            -> zero out-of-sequence findings prove nothing
+      * BCWS and BCWP zero on every row (the tool never computed earned value)
+                                  -> zero "matching" zero is not a reconciliation
+      * baseline cost with no time-phased blocks
+                                  -> planned-to-date is unavailable, not zero
+      * a calendar with no exception
+                                  -> no reserved period: exposure unread, not nil
+    """
+    ASSIGNMENTS.clear()
+    off = dict(no_phasing=True, bcwp_override=0.0)
+    t = []
+    t.append(task(1, 1, "Done", **WIN, astart="2026-03-02T08:00:00",
+                  afinish="2026-03-06T17:00:00", pct=100, phys=100, baseline=BL_OK, **off))
+    t.append(task(2, 2, "Under way", start="2026-06-15T08:00:00", finish="2026-07-10T17:00:00",
+                  dur_hours=160, astart="2026-06-15T08:00:00", pct=40, phys=40,
+                  baseline=("2026-06-15T08:00:00", "2026-07-10T17:00:00", 20000.0, 160), **off))
+    t.append(task(3, 3, "Not started, next", start="2026-07-13T08:00:00",
+                  finish="2026-07-24T17:00:00", dur_hours=80, pct=0, phys=0,
+                  baseline=("2026-07-13T08:00:00", "2026-07-24T17:00:00", 10000.0, 80), **off))
+    t.append(task(4, 4, "Not started, later", start="2026-07-27T08:00:00",
+                  finish="2026-08-07T17:00:00", dur_hours=80, pct=0, phys=0,
+                  baseline=("2026-07-27T08:00:00", "2026-08-07T17:00:00", 10000.0, 80), **off))
+    t.append(task(5, 5, "Closing milestone", milestone=True, start="2026-08-07T17:00:00",
+                  finish="2026-08-07T17:00:00", dur_hours=0, deadline="2026-08-07T17:00:00",
+                  pct=0, phys=0,
+                  baseline=("2026-08-07T17:00:00", "2026-08-07T17:00:00", 0.0, 0), **off))
+    return document("Bare fixture", _decorate(t), calendars=CALENDARS_PLAIN)
 
 
 def cycle(which: str):
@@ -667,6 +728,7 @@ def cycle(which: str):
 def main() -> None:
     here = os.path.dirname(os.path.abspath(__file__))
     for fname, body in (("positive.xml", positive()), ("negative.xml", negative()),
+                        ("bare.xml", bare()),
                         ("cycle_prev.xml", cycle("prev")), ("cycle_curr.xml", cycle("curr"))):
         path = os.path.join(here, fname)
         with open(path, "w", encoding="utf-8") as fh:

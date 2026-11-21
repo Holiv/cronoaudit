@@ -21,6 +21,7 @@ import custom_fields as cf_mod
 import explain as ex_mod
 import i18n
 import narrative as narrative_mod
+import network_quality as quality_mod
 import profile as prof_mod
 
 # Severity is a judgement, not a measurement: network breaches invalidate every
@@ -68,6 +69,33 @@ def fmt_date(v, lang):
     if d is None:
         return None
     return d.strftime("%d/%m/%Y") if lang == "pt" else d.strftime("%Y-%m-%d")
+
+
+def network_state(model, quality=None) -> dict:
+    """Whether there is a network for "the network holds" to be said about.
+
+    Zero out-of-sequence findings prove something only when activities are
+    linked. This reads the two figures that decide it from the network-quality
+    implementation (called here when the caller has not run it): the number of
+    links, and the missing-logic metric with its own quoted threshold.
+      none    no activity is linked to another
+      open    linked, but missing logic is above the threshold
+      linked  linked, and missing logic within it
+    """
+    q = quality or quality_mod.build(model)
+    q1 = next((m for m in q.get("metrics", []) if m["code"] == "Q1"), None) or {}
+    links = (q.get("population") or {}).get("links") or 0
+    share, threshold = q1.get("share_pct"), q1.get("threshold_pct")
+    if links == 0:
+        state = "none"
+    elif share is not None and threshold is not None and share > threshold:
+        state = "open"
+    else:
+        state = "linked"
+    return {"state": state, "links": links, "open": q1.get("population") or 0,
+            "unlinked": q1.get("count") or 0, "share_pct": share, "threshold_pct": threshold,
+            "basis": "links between leaf activities; missing logic (Q1) = open activities with "
+                     "no predecessor or no successor, against its quoted threshold"}
 
 
 def leaves(model):
@@ -208,6 +236,11 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
     # ---- earned value: ours, and the tool's own, side by side
     budget = earned = earned_file = planned_file = 0.0
     compared = matches = 0
+    # Zero against zero agrees about nothing: an activity with no earned value on
+    # either side is set apart, never counted as a match. And a file whose own
+    # earned value is zero on EVERY activity did not compute it at all, in which
+    # case there is nothing to reconcile and no gap to explain.
+    both_zero = file_bcwp_nonzero = file_bcws_nonzero = 0
     ahead_of_baseline = []   # executed before the baseline window; the tool credits nothing yet
     unexplained = []
     status = dt(model["project"].get("status_date"))
@@ -218,9 +251,13 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
         budget += cost
         mine = cost * pct_of(t) / 100.0
         earned += mine
-        if t.get("bcwp") is not None:
+        if t.get("bcwp") is not None and mine <= 0.005 and t["bcwp"] <= 0.005:
+            both_zero += 1
+        elif t.get("bcwp") is not None:
             compared += 1
             earned_file += t["bcwp"]
+            if t["bcwp"] > 0.005:
+                file_bcwp_nonzero += 1
             if abs(mine - t["bcwp"]) < 0.01:
                 matches += 1
             else:
@@ -242,6 +279,19 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
                                         "mine": round(mine, 2), "file_bcwp": t["bcwp"]})
         if t.get("bcws") is not None:
             planned_file += t["bcws"]
+            if t["bcws"] > 0.005:
+                file_bcws_nonzero += 1
+    file_computed_ev = file_bcwp_nonzero > 0
+    if not file_computed_ev:
+        # Every difference would be "the file says zero": not a discrepancy to
+        # classify, an input that is not there.
+        ahead_of_baseline, unexplained, matches = [], [], 0
+    ph_inputs = (phasing or {}).get("inputs") or {}
+    # Planned-to-date exists if the tool computed BCWS, or the baseline cost is
+    # time-phased in the file. With neither, a planned figure of zero is a missing
+    # input and is reported as unavailable, not as zero.
+    planned_available = file_bcws_nonzero > 0 or bool(ph_inputs.get("baseline_time_phased"))
+    network = network_state(model, quality)
 
     # ---- findings, enriched with the columns a planner reads
     marked = {code: {f["uid"] for f in res["findings"][code]} for code in ORDER}
@@ -364,7 +414,7 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
         group_rows.append({
             "label": g["label"], "activities": g["activities"], "budget": round(b, 2),
             "weight_pct": round(b / budget * 100, 2) if budget else 0.0,
-            "planned_pct": round(g["planned"] / b * 100, 2) if b else 0.0,
+            "planned_pct": (round(g["planned"] / b * 100, 2) if b else 0.0) if planned_available else None,
             "earned_pct": round(g["earned"] / b * 100, 2) if b else 0.0,
             "findings": g["findings"], "finding_total": sum(g["findings"].values()),
         })
@@ -388,9 +438,21 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
             "tasks": model["counts"]["tasks"], "leaves": len(lv),
             "budget": round(budget, 2),
             "percent_earned": round(earned / budget * 100, 2) if budget else None,
-            "percent_planned_file": round(planned_file / budget * 100, 2) if budget else None,
+            "percent_planned_file": (round(planned_file / budget * 100, 2)
+                                     if (budget and planned_available) else None),
+            # What each reading below needs, and whether the file has it. A reading
+            # whose input is missing is replaced by a sentence saying so.
+            "inputs": {
+                "network": network,
+                "file_earned_value": file_computed_ev,
+                "file_planned_value": file_bcws_nonzero > 0,
+                "baseline_time_phased": ph_inputs.get("baseline_time_phased"),
+                "planned_available": planned_available,
+            },
             "reconciliation": {
                 "leaves_compared": compared, "matches_to_cent": matches,
+                "both_zero_not_compared": both_zero,
+                "file_computed_ev": file_computed_ev,
                 "ahead_of_baseline": len(ahead_of_baseline),
                 "ahead_of_baseline_value": round(sum(x["cost"] for x in ahead_of_baseline), 2),
                 "ahead_of_baseline_items": ahead_of_baseline[:20],
@@ -402,6 +464,7 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
                     model["project"].get("default_ev_method"), "unknown"),
             },
             "baseline_slot": slot,
+            "baseline_label": i18n.baseline_name(lang, slot),
             "with_physical_percent": model["counts"].get("with_physical_percent"),
             "grouping": grp["label"], "grouping_mode": grp["mode"],
             "grouping_uninformative": len(group_rows) < 2,
@@ -419,11 +482,12 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
         "conventions": {
             **conv,
             "threshold_unit": CV["threshold_unit"], "baseline_slot_basis": CV["slot_basis"],
+            "baseline_label": i18n.baseline_name(lang, slot),
             "population": CV["population"], "network_counting": CV["network_counting"],
             "working_days": CV["working_calendar"] if conv.get("calendars_from_file")
             else CV["working_fallback"],
             "percent_source": CV["percent_source"],
-            "tolerance_text": CV["tolerance"].format(n=conv["tolerance_days"]),
+            "tolerance_text": i18n.fmt(CV["tolerance"], n=conv["tolerance_days"]),
         },
         "blocking": res.get("blocking", []),
         "findings": findings,
@@ -467,7 +531,7 @@ def baseline_label(slot, L) -> str | None:
     """
     if slot in (None, "", "0", 0):
         return None
-    return L["baseline_n"].format(n=slot)
+    return i18n.fmt(L["baseline_n"], n=slot)
 
 
 def page_title(kind: str, title: str, lang: str) -> str:
@@ -487,12 +551,14 @@ def _cycle_warnings(cmp_res, C, lang) -> list:
     out = []
     for w in codes:
         args = {k: v for k, v in w.items() if k != "code"}
+        if "status_date" in w["code"]:
+            args = {k: fmt_date(v, lang) for k, v in args.items()}
         if "gap" in args:
             g = narrative_mod.fnum(args["gap"], 2, lang)
             args["gap"] = g if g.startswith("-") else "+" + g
         text = C.get("w_" + w["code"])
         if text:
-            out.append({"text": text.format(**args),
+            out.append({"text": i18n.fmt(text, **args),
                         "severity": "critical" if w["code"] == "past_rewritten" else "high"})
     # The rewritten past leads: it is the one that invalidates what was already reported.
     out.sort(key=lambda x: x["severity"] != "critical")
@@ -593,7 +659,7 @@ def _cycle_sections(cmp_res, lang, C, readings) -> list:
                   "columns": ROW + floats + dates},
                  {"title": C["l_left"], "count": nl, "rows": [cp_row(r) for r in cp["left"]],
                   "columns": ROW + floats + [col("col_completed", "completed")] + dates},
-                 {"title": C["l_fell"].format(n=len(cp["float_fell_top"]), total=nf),
+                 {"title": i18n.fmt(C["l_fell"], n=len(cp["float_fell_top"]), total=nf),
                   "count": len(cp["float_fell_top"]),
                   "rows": [cp_row(r) for r in cp["float_fell_top"]],
                   "columns": ROW + floats + [col("col_float_fell", "fell")] + dates}],

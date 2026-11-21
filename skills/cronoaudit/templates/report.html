@@ -208,7 +208,14 @@ const n = (v,d=0) => {
   if(Number(v.toFixed(d))===0) v=0;
   return v.toLocaleString(loc(),{minimumFractionDigits:d,maximumFractionDigits:d});
 };
-const fill = (s,vals) => String(s==null?"":s).replace(/\{(\w+)\}/g,(_,k)=>vals[k]==null?"":day(vals[k]));
+// `{key?singular|plural}` agrees with the value of `key`: one rule, the same as i18n.fmt.
+// "1", "1,0" and "1.00" are one; "1.000" is a thousand in one language or the other.
+const isOne = v => typeof v==="number" ? v===1 : /^1(?:[.,]0{1,2})?$/.test(String(v==null?"":v).trim());
+// A percentage that does not exist is a dash, never "0%" and never a dash with a sign.
+const pct = (v,d=2) => v==null?"&mdash;":n(v,d)+"%";
+const fill = (s,vals) => String(s==null?"":s)
+  .replace(/\{(\w+)\?([^|{}]*)\|([^{}]*)\}/g,(_,k,one,many)=>isOne(vals[k])?one:many)
+  .replace(/\{(\w+)\}/g,(_,k)=>vals[k]==null?"":day(vals[k]));
 const SEV = {critical:"cr",high:"al",check:"vf",pending:"pd",view:"vs"};
 let L = {};
 
@@ -340,8 +347,12 @@ function renderReview(d){
   out.push(`<div class="tiles">${d.findings.map(f=>`<div class="tile ${SEV[f.severity]}"><div class="c">${esc(f.code)}</div>
     <div class="v${f.count?"":" zero"}">${n(f.count)}</div><div class="t">${esc(f.title)}</div></div>`).join("")}</div>`);
 
+  // "The network holds" is only said of a network that exists.
+  const NW=(m.inputs||{}).network||{};
   out.push(net
     ? `<div class="note bad">${L.net_bad_1} ${n(net)} ${esc(L.net_bad_2)}</div>`
+    : NW.state==="none" ? `<div class="note bad">${L.net_none}</div>`
+    : NW.state==="open" ? `<div class="note">${fill(L.net_open,{u:n(NW.unlinked),o:n(NW.open),s:n(NW.share_pct,1),t:n(NW.threshold_pct,0)})}</div>`
     : `<div class="note good">${L.net_good}</div>`);
 
   const views=[];
@@ -365,21 +376,24 @@ function renderReview(d){
 
   // V0 S-curve
   if(d.scurve){
-    const s=d.scurve, T=s.totals||{}, R=s.reconciliation||{}, rc2=m.reconciliation||{};
+    const s=d.scurve, T=s.totals||{}, R=s.reconciliation||{}, rc2=m.reconciliation||{}, IN=s.inputs||{};
+    const noPlan = IN.planned_available===false && (m.inputs||{}).planned_available===false;
+    const na = `<div class="v zero" style="font-size:20px">${esc(L.not_available)}</div>`;
     const methodWord = s.method==="physical"?L.scurve_method_physical:L.scurve_method_percent;
     const altLabel = s.method==="physical"?L.scurve_alt:L.scurve_alt_physical;
     out.push(`<section id="v0"><div class="sec-h"><span class="eyebrow">V0</span><h2>${esc(L.scurve_title)}</h2></div>
       <p class="sec-d">${esc(L.scurve_sub)}</p>
       <p class="sec-d">${esc(fill(L.scurve_method,{m:methodWord}))} ${s.method_mixed?esc(L.scurve_mixed):""}</p>
       <div class="tiles">
-        <div class="tile"><div class="c">${esc(L.tile_planned)}</div><div class="v">${n(T.planned_pct,2)}%</div><div class="t">${n(T.planned_to_date,0)}</div></div>
+        <div class="tile"><div class="c">${esc(L.tile_planned)}</div>${T.planned_pct==null?na:`<div class="v">${pct(T.planned_pct)}</div><div class="t">${n(T.planned_to_date,0)}</div>`}</div>
         <div class="tile pd"><div class="c">${esc(L.scurve_earned)}</div><div class="v">${n(T.earned_pct,2)}%</div><div class="t">${n(T.earned_to_date,0)}</div></div>
-        <div class="tile ${(T.spi||1)<1?"al":"vs"}"><div class="c">${esc(L.tile_spi)}</div><div class="v">${n(T.spi,3)}</div><div class="t">${esc(L.tile_sv)} ${n(T.sv,0)}</div></div>
+        <div class="tile ${T.spi==null?"":((T.spi<1)?"al":"vs")}"><div class="c">${esc(L.tile_spi)}</div>${T.spi==null?na:`<div class="v">${n(T.spi,3)}</div><div class="t">${esc(L.tile_sv)} ${n(T.sv,0)}</div>`}</div>
         <div class="tile vf"><div class="c">${esc(L.col_alt_pct)}</div><div class="v">${n(T.earned_alt_pct,2)}%</div><div class="t">${esc(altLabel)}</div></div>
       </div>
+      ${noPlan?`<div class="note">${L.planned_na}</div>`:""}
       ${reading("scurve")}
       ${scurveSvg(s.periods||[],altLabel)}
-      <p class="fonte" style="margin-top:8px">${esc(fill(L.scurve_recon,{a:n(R.phasing_sum_equals_cost),c:n(R.with_cost),b:n(R.phasing_to_status_equals_bcws),t:n(R.tasks),e:n(R.earned_equals_bcwp)}))}
+      <p class="fonte" style="margin-top:8px">${(IN.file_bcws===false&&IN.file_bcwp===false)?esc(L.scurve_recon_none):esc(fill(L.scurve_recon,{a:n(R.phasing_sum_equals_cost),c:n(R.with_cost),b:n(R.phasing_to_status_equals_bcws),t:n(R.bcws_comparable),e:n(R.earned_equals_bcwp),f:n(R.bcwp_comparable)}))}
       ${rc2.ahead_of_baseline?" "+esc(fill(L.scurve_ahead,{n:n(rc2.ahead_of_baseline),v:n(rc2.ahead_of_baseline_value,0)})):""}</p>
       ${folded([{label:L.col_period,key:"period"},{label:L.scurve_planned,key:"planned"},{label:L.scurve_earned,key:"earned"},
         {label:L.col_planned_cum,key:"planned_cum"},{label:L.col_earned_cum,key:"earned_cum"},{label:L.col_sv,key:"sv_cum"},{label:L.col_spi,key:"spi_cum"},
@@ -515,10 +529,14 @@ function renderReview(d){
       out.push(`<h3 style="font-size:16px;margin:18px 0 8px">${esc(L.mb_title)}</h3><p class="sec-d">${esc(fill(L.mb_sub,{a:n(MB.p50_days),b:n(MB.p80_days),n:n(MB.sample)}))}</p>
         ${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_fin_baseline,key:"baseline_finish"},{label:L.col_fin_trend,key:"finish"},{label:L.col_slip_now,key:"slip_now_days"},{label:L.col_p50,key:"p50"},{label:L.col_p80,key:"p80"},{label:L.col_deadline,key:"deadline"},{label:L.col_critical,key:"critical"}],MB.milestones,MB.milestones.length)}`);
     }
-    if(RX.available){
+    if(RX.available&&RX.readable===false){
+      // No reserved period on any calendar in use: the exposure is not zero, it is unread.
+      out.push(`<h3 style="font-size:16px;margin:18px 0 8px">${esc(L.rx_title)}</h3>
+        <div class="note soft">${esc(RX.unreadable_reason==="no_exceptions"?L.rx_unreadable_none:L.rx_unreadable_few)}</div>`);
+    } else if(RX.available){
       out.push(`<h3 style="font-size:16px;margin:18px 0 8px">${esc(L.rx_title)}</h3><p class="sec-d">${esc(fill(L.rx_sub,{rule:RX.reserve_rule}))}</p>
-        <div class="tiles"><div class="tile al"><div class="c">${esc(L.rx_now)}</div><div class="v">${n(RX.share_in_reserve_pct,1)}%</div><div class="t">${n(RX.in_reserve,0)} / ${n(RX.remaining_total,0)}</div></div>
-        <div class="tile cr"><div class="c">${esc(L.rx_shift)}</div><div class="v">${n(RX.share_if_slips_30_days_pct,1)}%</div><div class="t"></div></div></div>
+        <div class="tiles"><div class="tile al"><div class="c">${esc(L.rx_now)}</div><div class="v">${pct(RX.share_in_reserve_pct,1)}</div><div class="t">${n(RX.in_reserve,0)} / ${n(RX.remaining_total,0)}</div></div>
+        <div class="tile cr"><div class="c">${esc(L.rx_shift)}</div><div class="v">${pct(RX.share_if_slips_30_days_pct,1)}</div><div class="t"></div></div></div>
         ${chart((RX.months||[]).map(x=>({label:x.period,value:x.share_in_reserve})),{cls:"warn",fmt:v=>n(v,1)+"%"})}
         <p class="fonte">${esc(RX.basis)}</p>`);
     }
@@ -586,7 +604,8 @@ function renderReview(d){
 
   const lg=d.language||{}, rc=m.reconciliation||{};
   out.push(`<section><div class="sec-h"><h2>${esc(L.conventions_title)}</h2></div><dl class="conv">
-    ${[[L.conv_slot,c.baseline_slot],[L.conv_chosen,c.baseline_slot_basis],[L.conv_threshold,c.threshold_days+" "+c.threshold_unit],[L.conv_tolerance,c.tolerance_text],[L.conv_population,c.population],[L.conv_counting,c.network_counting],[L.conv_working,c.working_days],[L.conv_percent,c.percent_source],[L.conv_language,`${d.lang} (${lg.confidence||""})`],[L.conv_lang_basis,lg.basis],
+    ${[[L.conv_slot,c.baseline_label||c.baseline_slot],[L.conv_chosen,c.baseline_slot_basis],[L.conv_threshold,c.threshold_days+" "+c.threshold_unit],[L.conv_tolerance,c.tolerance_text],[L.conv_population,c.population],[L.conv_counting,c.network_counting],[L.conv_working,c.working_days],[L.conv_percent,c.percent_source],[L.conv_language,`${d.lang} (${lg.confidence||""})`],[L.conv_lang_basis,lg.basis],
+      rc.file_computed_ev===false?[L.conv_reconciliation,L.conv_reconciliation_none]:
       [L.conv_reconciliation||"Earned value vs file",rc.leaves_compared?`${n(rc.matches_to_cent)} / ${n(rc.leaves_compared)} · ${n(rc.difference,2)} · ${n(rc.ahead_of_baseline)}`:null]]
       .filter(([,v])=>v!=null&&v!=="").map(([k,v])=>`<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl></section>`);
   return out.join("");

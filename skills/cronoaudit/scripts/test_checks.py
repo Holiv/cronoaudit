@@ -91,7 +91,14 @@ CYCLE_PT_SECTIONS = [
 # a negative zero, the slot jargon. In Portuguese, no ISO date at all.
 FORBID = ["--forbid=/Users/|[A-Za-z]:\\\\|/home/|/tmp/|/var/folders",
           "--forbid=\\d{4}-\\d{2}-\\d{2}T\\d{2}", "--forbid=(^|[^\\d.,])-0([.,]0+)?(?![\\d.,])"]
-FORBID_PT = FORBID + ["--forbid=\\d{4}-\\d{2}-\\d{2}", "--forbid=[Gg]aveta de linha de base usada"]
+FORBID = FORBID + [
+    "--forbid=\\d[.,]\\d{3,}\\s?%",
+    "--forbid=(^|[^\\d.,])1 (atividades|activities|dias|days|grupos|groups|marcos|milestones|v\u00ednculos|links|folhas|leaves)\\b",
+]
+FORBID_PT = FORBID + ["--forbid=\\d{4}-\\d{2}-\\d{2}", "--forbid=[Gg]aveta"]
+BARE_SECTIONS = ["There is no network to hold", "Planned-to-date is unavailable", "unavailable",
+                 "carries no earned value of its own", "absence of data",
+                 "--forbid=Network integrity holds", "--forbid=In reserve months now"]
 
 
 def render_checks() -> dict:
@@ -142,6 +149,17 @@ def render_checks() -> dict:
              "--outdir", os.path.join(tmp, "ptp"), "--quiet", "--lang", "pt"],
             check=True, capture_output=True,
         )
+        # The schedule with the four inputs missing, end to end, in both languages.
+        for lang in ("en", "pt"):
+            subprocess.run(
+                [sys.executable, os.path.join(HERE, "review.py"),
+                 os.path.join(ROOT, "fixtures", "bare.xml"),
+                 "--outdir", os.path.join(tmp, "bare-" + lang), "--quiet", "--lang", lang],
+                check=True, capture_output=True,
+            )
+        pairs.append((os.path.join("bare-en", "bare-review.html"), BARE_SECTIONS + FORBID))
+        pairs.append((os.path.join("bare-pt", "bare-review.html"),
+                      ["N\u00e3o h\u00e1 rede para se sustentar", "indispon\u00edvel"] + FORBID_PT))
         pairs.append((os.path.join("ptp", "positive-review.html"), PT_SECTIONS + FORBID_PT))
         # No path in any file written, sidecars included, and the tab title in the
         # report's own language.
@@ -579,11 +597,15 @@ def main() -> int:
             f"phasing: baseline-cost blocks sum to the baseline cost on only "
             f"{rr['phasing_sum_equals_cost']} of {rr['with_cost']} tasks"
         )
-    if rr["phasing_to_status_equals_bcws"] != rr["tasks"]:
+    # Counted over the tasks where there is something to compare: zero against
+    # zero is not agreement, so it is in neither the numerator nor the denominator.
+    if rr["phasing_to_status_equals_bcws"] != rr["bcws_comparable"] or not rr["bcws_comparable"]:
         failures.append(
             f"phasing: blocks up to the status date equal the file's BCWS on only "
-            f"{rr['phasing_to_status_equals_bcws']} of {rr['tasks']} tasks"
+            f"{rr['phasing_to_status_equals_bcws']} of {rr['bcws_comparable']} comparable tasks"
         )
+    if rr["bcws_comparable"] >= rr["tasks"]:
+        failures.append("phasing: tasks with zero planned on both sides were counted as agreeing")
     T = curve["totals"]
     if T["earned_pct"] is None or T["planned_pct"] is None:
         failures.append("phasing: totals missing")
@@ -724,9 +746,14 @@ def main() -> int:
         m0 = MB["milestones"][0]
         if m0["p80"] < m0["p50"] or m0["p50"] < m0["finish"]:
             failures.append("forecast: milestone band is not ordered finish <= P50 <= P80")
+    # The positive fixture's calendars carry one holiday and no reserved month: the
+    # exposure must be declared unreadable, not reported as zero.
     RX = fc["rain_exposure"]
-    if not RX.get("available") or RX.get("share_in_reserve_pct") is None:
+    if not RX.get("available"):
         failures.append("forecast: rain exposure not computed although calendars exist")
+    if RX.get("readable") is not False or RX.get("unreadable_reason") != "no_reserve_months" \
+            or RX.get("share_in_reserve_pct") is not None:
+        failures.append("forecast: one holiday was read as a weather reserve, or zero was reported as exposure")
 
     # ---- forensics: driving path per milestone with a named origin, calendar
     # forensics, execution pattern; and, with a previous snapshot, float consumed
@@ -844,6 +871,127 @@ def main() -> int:
         if r.returncode != 0 or sum(1 for f in made if f.endswith(".html")) != 2:
             failures.append("isolated run: review.py did not produce both reports on an isolated interpreter")
 
+    # ---- a reading is only stated when the input it needs exists. bare.xml looks
+    # complete and lacks four inputs; each must produce a sentence that says so, and
+    # the confident sentence must be gone. The controls prove each confident
+    # sentence still appears when its input is there.
+    import forecast as fc_mod
+    import i18n as i18n_m
+    import phasing as ph_mod
+    import run_checks as rc_mod
+    bare_path = os.path.join(ROOT, "fixtures", "bare.xml")
+    bm = parse_mspdi.parse(bare_path)
+    bres = analyse_raw(bm)
+    bcurve = ph_mod.build(bare_path, None)
+    bq = quality_mod.build(bm, bare_path)
+    bfc = fc_mod.build(bm, bcurve, None, None)
+    for code in CODES:
+        if code in ("A1", "A2") and bres["counts"][code]["distinct_activities"]:
+            failures.append("bare: a schedule with no links raised a network finding")
+    if bcurve["inputs"]["baseline_time_phased"] or bcurve["totals"]["planned_pct"] is not None \
+            or bcurve["totals"]["spi"] is not None or bcurve["totals"]["sv"] is not None:
+        failures.append("bare: a baseline with no time-phased cost produced a planned figure, SV or SPI")
+    if bcurve["reconciliation"]["bcwp_comparable"] != 2 or bcurve["reconciliation"]["earned_equals_bcwp"] != 0:
+        failures.append("bare: zero against zero was counted in the earned-value reconciliation")
+    brx = bfc["rain_exposure"]
+    if brx.get("readable") is not False or brx.get("unreadable_reason") != "no_exceptions" \
+            or brx.get("share_in_reserve_pct") is not None:
+        failures.append("bare: a calendar with no exception produced a rain-exposure share")
+    for lang, gone, said in (
+            ("en", ("The network holds", " ahead", "matched the file", "of the remaining cost"),
+             ("no network", "Planned-to-date is unavailable", "compares nothing", "absence of data")),
+            ("pt", ("A rede se sustenta", "à frente.", "bateu com", "do custo remanescente"),
+             ("Não há rede", "indisponível", "não compara nada", "ausência de dado"))):
+        bp = report_data.build_review(bm, bres, lang=lang, phasing=bcurve, quality=bq, forecast=bfc)
+        text = " ".join(s for sec in bp["readings"].values() for s in sec)
+        for g in gone:
+            if g in text:
+                failures.append(f"bare ({lang}): a reading without its input is still stated: '{g}'")
+        for s_ in said:
+            if s_ not in text:
+                failures.append(f"bare ({lang}): the missing input is not declared: '{s_}'")
+        mi = bp["meta"]["inputs"]
+        if mi["network"]["state"] != "none" or mi["planned_available"] or mi["file_earned_value"]:
+            failures.append(f"bare ({lang}): the inputs block does not say what is missing")
+        rcb = bp["meta"]["reconciliation"]
+        if rcb["file_computed_ev"] or rcb["matches_to_cent"] or rcb["both_zero_not_compared"] != 2 \
+                or rcb["unexplained"]:
+            failures.append(f"bare ({lang}): zero-against-zero counted as a match, or a missing "
+                            "earned value reported as an unexplained gap")
+        if bp["meta"]["percent_planned_file"] is not None:
+            failures.append(f"bare ({lang}): planned percent is zero instead of unavailable")
+    # Controls. The negative fixture is linked, costed, phased and reconciled: the
+    # confident readings must be there.
+    neg_path = os.path.join(ROOT, "fixtures", "negative.xml")
+    nm = parse_mspdi.parse(neg_path)
+    nres = analyse_raw(nm)
+    ncurve = ph_mod.build(neg_path, None)
+    npay = report_data.build_review(nm, nres, lang="en", phasing=ncurve,
+                                    quality=quality_mod.build(nm, neg_path))
+    ntext = " ".join(s for sec in npay["readings"].values() for s in sec)
+    if "The network holds" not in ntext or npay["meta"]["inputs"]["network"]["state"] != "linked":
+        failures.append("control: a linked, consistent schedule lost the 'network holds' reading")
+    if "matched the file" not in ntext or not npay["meta"]["inputs"]["file_earned_value"]:
+        failures.append("control: a file with its own earned value lost the reconciliation reading")
+    if not npay["meta"]["inputs"]["planned_available"] or ncurve["totals"]["planned_pct"] is None:
+        failures.append("control: a time-phased baseline was declared unavailable")
+    # Linked but incomplete: the positive fixture without its violated pairs.
+    pstate = report_data.network_state(pm, qres)
+    if pstate["state"] != "open" or not pstate["unlinked"]:
+        failures.append("network: missing logic above the threshold was not read as an open network")
+    # A calendar that DOES reserve a month: the share is then a reading.
+    import copy as copy_m
+    wet = copy_m.deepcopy(nm)
+    for day in ("2026-07-06", "2026-07-07", "2026-07-08", "2026-07-09"):
+        for cal in wet["calendars"]["definitions"].values():
+            cal["exception_intervals"][day] = []
+    wrx = fc_mod.rain_exposure(wet)
+    if not wrx.get("readable") or not wrx.get("share_in_reserve_pct"):
+        failures.append("control: a calendar with a reserved month gave no rain-exposure share")
+    # The same status date in both deliveries, and its two neighbours.
+    codes = {w["code"] for w in cyc["warning_codes"]}
+    if "same_status_date" not in codes:
+        failures.append("cycle: two deliveries with the same status date raised no warning")
+    later = copy_m.deepcopy(curr_m)
+    later["project"]["status_date"] = "2026-07-31T17:00:00"
+    codes2 = {w["code"] for w in cs_mod.compare(prev_m, later)["warning_codes"]}
+    if codes2 & {"same_status_date", "status_date_backwards"}:
+        failures.append("cycle: two different status dates in the right order raised a status warning")
+    codes3 = {w["code"] for w in cs_mod.compare(later, curr_m)["warning_codes"]}
+    if "status_date_backwards" not in codes3:
+        failures.append("cycle: a previous delivery dated AFTER the current one raised no warning")
+    for lang in ("en", "pt"):
+        if not any("status" in w["text"].lower() and "30" in w["text"]
+                   for w in rd_mod.build_cycle(cyc, lang=lang)["warnings"]):
+            failures.append(f"cycle ({lang}): the same-status-date warning is not in the report")
+    # A finish that nothing drives is not called the end of a path.
+    bcyc = cs_mod.compare(bm, copy_m.deepcopy(bm))
+    if bcyc["project_finish"]["current"]["driver_linked"] is not False:
+        failures.append("cycle finish: an unlinked last activity was presented as a driving path")
+    if cyc["project_finish"]["current"]["driver_linked"] is not True:
+        failures.append("cycle finish: a linked driver was presented as unlinked")
+    # Number agreement, by the one helper.
+    for tpl, kw, want in (
+            ("{n} {n?atividade|atividades}", {"n": "1"}, "1 atividade"),
+            ("{n} {n?atividade|atividades}", {"n": "2"}, "2 atividades"),
+            ("{n} {n?atividade|atividades}", {"n": "0"}, "0 atividades"),
+            ("{n} {n?dia|dias}", {"n": "1,0"}, "1,0 dia"),
+            ("{n} {n?day|days}", {"n": "1,000"}, "1,000 days"),
+            ("{a} of {n} {n?leaf|leaves}", {"a": 1, "n": 1}, "1 of 1 leaf")):
+        if i18n_m.fmt(tpl, **kw) != want:
+            failures.append(f"plural: {tpl!r} with {kw} did not give {want!r}")
+    one = nar_mod.build({"meta": {}, "findings": [], "quality": {
+        "metrics": [], "indices": {"bei": 1.0, "bei_due": 1, "bei_on_time": 1}}}, "pt")
+    if not any("De 1 atividade devida" in s and "1 terminou" in s for s in one.get("quality", [])):
+        failures.append(f"plural: the BEI reading does not agree with a count of one: {one.get('quality')}")
+    # The baseline is named the way the tool names it, in every language.
+    if i18n_m.baseline_name("pt", "1") != "linha de base 1" or i18n_m.baseline_name("pt", "0") != "linha de base" \
+            or i18n_m.baseline_name("en", "3") != "baseline 3":
+        failures.append("baseline: the name shown to a reader is not the tool's own")
+    console = cs_mod.report(cyc) + "\n" + rc_mod.report(pos, "pt")
+    if re.search(r"\d[.,]\d{3,}\s*%", console) or "aveta" in console:
+        failures.append("console: a percentage with more than two decimals, or the storage word for the baseline")
+
     # ---- the report must actually render. A valid file that runs to a blank page
     # is the failure mode this guards; see scripts/test_render.js for the real bug.
     rendered = render_checks()
@@ -862,6 +1010,8 @@ def main() -> int:
     print("  cycle: execution, replan and rebased-baseline all detected; residue named")
     print("  cycle model: finish and driver, critical path, logic, duration, rewritten past, quality")
     print("  cycle control: a file against itself is silent; no path, raw date or negative zero shown")
+    print("  inputs: no network, no file EV, no time-phased baseline, no reserve -> said, not read as zero")
+    print("  wording: number agreement by one helper; baseline named as the tool names it; two decimals")
     print("  report: no external references, so it works offline")
     print(f"  isolated run: {len(entry)} entry scripts start with -I -S from another folder; review end to end")
     if rendered["skipped"]:

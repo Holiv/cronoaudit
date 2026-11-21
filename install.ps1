@@ -21,7 +21,8 @@
 #   2. www.python.org        the embeddable package (only when no Python is found,
 #                            or when you ask for it), verified against the SHA-256
 #                            pinned below before anything is unpacked
-# Nothing is sent anywhere.
+# The installer and the engine send nothing. An agent that later reads a schedule
+# through the skill sends that content to its own provider.
 #
 # Switches, as environment variables set before running:
 #   $env:CRONOAUDIT_NO_PYTHON = "1"     never download Python; fail if none is found

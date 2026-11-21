@@ -1,10 +1,17 @@
 # cronoaudit
 
-**Schedule integrity review for construction and infrastructure programmes.** An Agent Skill,
-and a runnable method, that audits a schedule and the indicators derived from it —
-hunting the failures that produce a plausible wrong number rather than an error.
+**An Agent Skill for reviewing construction and infrastructure schedules.** You hand a schedule
+to your agent (Claude Code, Codex, GitHub Copilot, Gemini CLI, Cursor); through the skill the
+agent reads it, tells you what deserves attention, answers what you ask, and customises the
+report when you want it different. It hunts the failures that produce a plausible wrong number
+rather than an error.
 
-From the scheduling tool's own XML export, with nothing installed beyond Python:
+The numbers do not come from the agent. They come from the skill's **engine**: a set of Python
+scripts that read the scheduling tool's own XML export and compute every figure the same way
+every time, so the agent quotes measurements instead of inventing them. The engine also runs
+on its own, with no agent, and writes the same report; that is the fallback, not the point.
+
+What the engine measures, from the XML export and with nothing installed beyond Python:
 
 - the **nine integrity checks** with stable codes — network first, then dates, then reporting;
 - the **S-curve read from the file's own phasing**, reconciled task by task against its totals,
@@ -14,12 +21,25 @@ From the scheduling tool's own XML export, with nothing installed beyond Python:
 - the **fourteen network-quality metrics** with quoted thresholds, labelled as implementation;
 - **Earned Schedule**, look-ahead, pace by group, milestone bands, rainy-season exposure;
 - **forensics** that name the activity where each milestone's delay entered;
-- a **cycle comparison** between two snapshots: execution, replan, or a moved reference.
+- a **cycle comparison** between two versions: what changed in the schedule itself (finish,
+  critical path, logic, durations, a rewritten past, network quality) and what moved by
+  execution, by replanning, or because the reference moved.
 
 One self-contained HTML report in the schedule's own language (English or Portuguese), every
-section opening with a rule-built reading, plus a JSON sidecar per analysis. Works with any
-agent that reads the open [Agent Skills](https://agentskills.io) format — and with no agent at
-all.
+section opening with a rule-built reading, plus a JSON sidecar per analysis. When an input a
+reading needs is not in the file, the report says so instead of reading a zero. The skill
+follows the open [Agent Skills](https://agentskills.io) format.
+
+## Where your data goes
+
+- **The engine runs on your machine and sends nothing.** It never touches the network.
+- **The installer downloads** this repository's zip from GitHub and, on Windows only when no
+  working Python is found (or when asked), the Python package from python.org. Nothing else.
+- **The agent is a different matter.** When an agent reads the XML or the report, that content
+  goes to the agent's provider, under the terms of your account or your company's. Check the
+  company policy before pointing an agent at a contract schedule.
+- If the policy forbids it, run the engine without an agent (see [Use](#use)): same report, no
+  conversation, nothing leaves the machine. A private mode for the agent is in development.
 
 ## Install
 
@@ -33,14 +53,19 @@ read between them.
 curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash
 ```
 
-**Windows (PowerShell)**
+**Windows** — the command depends on the window you are typing in:
+
+| In PowerShell | In cmd (Command Prompt) |
+|---|---|
+| `irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 \| iex` | `powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 \| iex"` |
+
+`irm` exists only inside PowerShell: pasted into cmd it answers *'irm' is not recognized*
+(*'irm' não é reconhecido*). Copy the commands from the blocks below, without the table's
+escaping:
 
 ```
 irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex
 ```
-
-`irm` exists only inside PowerShell. Pasted into the Command Prompt (cmd) it answers
-*'irm' is not recognized* (*'irm' não é reconhecido*). From cmd, use this line instead:
 
 ```
 powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex"
@@ -55,24 +80,29 @@ Windows without Python those names are Microsoft Store shortcuts that exist and 
 If none runs, it brings its own: the official CPython 3.13.17 *embeddable package* from
 python.org, checked against a SHA-256 pinned in the installer before it is unpacked, placed
 in `%LOCALAPPDATA%\cronoaudit\python`. No administrator rights, no registry entry, no PATH
-change; deleting that folder removes it. It is used only by cronoaudit.
+change; deleting that folder removes it. It is used only by cronoaudit. The Windows installer
+has been run on two machines, one with a system Python and one with the bundled one.
 
-| Before running the Windows installer | Effect |
-|---|---|
-| `$env:CRONOAUDIT_NO_PYTHON = "1"` | never download Python; stop with a message if none is found |
-| `$env:CRONOAUDIT_EMBED_PYTHON = "1"` | use the bundled Python even when the machine has one |
+**Options for the Windows installer** are environment variables, set in the same window before
+the install command. The syntax is different in each shell, and the wrong one is silently
+ignored: `set X=1` typed in PowerShell sets nothing the installer can see.
 
-**Network access, all of it.** The installer downloads this repository's zip from GitHub and,
-on Windows only when no working Python is found (or when asked), the Python package from
-python.org. Nothing else is fetched and nothing is sent anywhere. The skill itself never
-touches the network.
+| Option | In PowerShell | In cmd |
+|---|---|---|
+| Never download Python; stop if none is found | `$env:CRONOAUDIT_NO_PYTHON="1"` | `set CRONOAUDIT_NO_PYTHON=1` |
+| Use the bundled Python even when the machine has one | `$env:CRONOAUDIT_EMBED_PYTHON="1"` | `set CRONOAUDIT_EMBED_PYTHON=1` |
+| Install from another branch (default `main`) | `$env:CRONOAUDIT_REF="branch-name"` | `set CRONOAUDIT_REF=branch-name` |
+
+To undo one: `Remove-Item Env:CRONOAUDIT_REF` in PowerShell, `set CRONOAUDIT_REF=` in cmd.
 
 The bundled Python is the standard library only. That is everything the skill needs; the one
 thing it cannot do is the optional direct reading of `.mpp` files, which needs a library and
 a Java runtime. Export to XML, as the skill recommends anyway.
 
-The Windows installer's Python detection and download have not yet been exercised end to end
-on a Windows machine; if it misbehaves, the `git clone` route below works everywhere.
+**MS Project add-in (Windows, beta).** A small VBA module adds buttons to Project that export
+the open schedule to XML and open a terminal with the skill already started on it, or run the
+engine alone where AI is not allowed. It is a shortcut, not a requirement. Files and
+instructions: [`msproject/`](msproject/) ([Português](msproject/LEIA-ME.md)).
 
 ### Or use your agent's own installer
 
@@ -101,6 +131,8 @@ python3 ~/.claude/skills/cronoaudit/scripts/review.py delivery.xml --profile pro
 Export the schedule first: **MS Project → File → Save As → XML Format**. That is the tool's own
 documented format; nothing the skill needs is lost in it. Inside an agent, just ask: *review this
 schedule*, *compare these two versions*, *customise the organisation profile*.
+
+The three commands above are the engine on its own: no agent, nothing leaves the machine.
 
 The whole process, the report section by section, and the judgement the tool cannot make for
 you: [`skills/cronoaudit/references/usage.md`](skills/cronoaudit/references/usage.md).

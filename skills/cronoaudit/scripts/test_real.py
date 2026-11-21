@@ -6,7 +6,7 @@
 Reads the path from `.real-file` at the repository root (gitignored: a real
 schedule never enters the repository). If the file is absent the test says so and
 exits 0, loudly, rather than passing as if it had run. The expected figures are the
-ones measured on 12/09/2026; a change in any of them after a code change is a
+ones measured on 12/09/2026 (three re-measured on 21/11/2026, see below); a change in any of them after a code change is a
 regression to explain, not a number to update.
 """
 from __future__ import annotations
@@ -25,8 +25,15 @@ EXPECTED = {
     "tasks": 6484, "leaves": 5251, "links": 6942, "calendars": 107,
     "A1": 120, "A2": 41, "H": 3, "E": 276, "C": 377, "G": 109, "B": 62, "F": 89, "P": 0,
     "ignored_both_complete": 179,
-    "reconciliation_matches": 4676, "reconciliation_compared": 4677, "ahead_of_baseline": 1,
-    "phasing_sum_equals_cost": 4677, "phasing_to_status_equals_bcws": 5249,
+    # Re-measured on 21/11/2026 (0.7.0): zero against zero stopped counting as
+    # agreement. 4,302 leaves with no earned value on either side left the
+    # reconciliation (was 4676 of 4677), and the planned-to-date comparison is
+    # counted over the tasks where either figure is above zero (was 5249 of 5249
+    # tasks, most of them zero equal to zero). Nothing else moved.
+    "reconciliation_matches": 374, "reconciliation_compared": 375, "ahead_of_baseline": 1,
+    "reconciliation_both_zero": 4302,
+    "phasing_sum_equals_cost": 4677, "phasing_to_status_equals_bcws": 425,
+    "phasing_bcws_comparable": 427,
     "earned_pct": 7.7, "planned_pct": 10.76,
     "quality_Q1": 16, "quality_Q6": 3859, "quality_Q11": 305, "bei": 0.27,
     "milestones_future": 57, "milestones_with_origin": 14,
@@ -66,6 +73,8 @@ def main() -> int:
         "reconciliation_matches": payload["meta"]["reconciliation"]["matches_to_cent"],
         "reconciliation_compared": payload["meta"]["reconciliation"]["leaves_compared"],
         "ahead_of_baseline": payload["meta"]["reconciliation"]["ahead_of_baseline"],
+        "reconciliation_both_zero": payload["meta"]["reconciliation"]["both_zero_not_compared"],
+        "phasing_bcws_comparable": curve["reconciliation"]["bcws_comparable"],
         "phasing_sum_equals_cost": curve["reconciliation"]["phasing_sum_equals_cost"],
         "phasing_to_status_equals_bcws": curve["reconciliation"]["phasing_to_status_equals_bcws"],
         "earned_pct": curve["totals"]["earned_pct"], "planned_pct": curve["totals"]["planned_pct"],

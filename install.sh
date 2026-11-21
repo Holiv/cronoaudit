@@ -10,7 +10,8 @@
 #   ~/.agents/skills/cronoaudit   Codex, Gemini CLI, Cursor, GitHub Copilot, VS Code, OpenCode
 #
 # Needs: bash, curl or git, Python 3.9+, tar. Nothing is installed globally and
-# nothing is sent anywhere; the only network access is the download itself.
+# the installer sends nothing; its only network access is the download itself.
+# (An agent that later reads a schedule sends that content to its provider.)
 set -euo pipefail
 
 REPO="Holiv/cronoaudit"

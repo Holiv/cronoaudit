@@ -146,6 +146,11 @@ def build(path: str, group_field: str | None) -> dict:
     sum_eq_cost = 0
     upto_eq_bcws = 0
     earned_eq_bcwp = 0
+    # A comparison of zero with zero agrees about nothing. These count what there
+    # was to compare, so "N of M" never includes an activity where neither the
+    # skill nor the file has a figure.
+    bcws_comparable = bcwp_comparable = 0
+    file_bcws_nonzero = file_bcwp_nonzero = 0
     bac = 0.0
     dropped = 0
     method_votes = defaultdict(int)
@@ -169,8 +174,12 @@ def build(path: str, group_field: str | None) -> dict:
             sum_eq_cost += 1
         cutoff = status.date().isoformat() if status else "9999-12-31"
         s10_upto = sum(v for d, v in rec["planned_by_day"].items() if d <= cutoff)
-        if abs(s10_upto - rec["bcws"]) < 0.5:
-            upto_eq_bcws += 1
+        if rec["bcws"] > 0.005:
+            file_bcws_nonzero += 1
+        if s10_upto > 0.005 or rec["bcws"] > 0.005:
+            bcws_comparable += 1
+            if abs(s10_upto - rec["bcws"]) < 0.5:
+                upto_eq_bcws += 1
 
         for d, v in rec["planned_by_day"].items():
             planned[d] += v
@@ -180,8 +189,13 @@ def build(path: str, group_field: str | None) -> dict:
             for d, v in rec["planned_by_day"].items():
                 g["planned"][d] += v
 
-        if cost > 0 and abs(cost * rec["physical"] / 100.0 - rec["bcwp"]) < 0.01:
-            earned_eq_bcwp += 1
+        mine = cost * rec["physical"] / 100.0 if cost > 0 else 0.0
+        if rec["bcwp"] > 0.005:
+            file_bcwp_nonzero += 1
+        if cost > 0 and (mine > 0.005 or rec["bcwp"] > 0.005):
+            bcwp_comparable += 1
+            if abs(mine - rec["bcwp"]) < 0.01:
+                earned_eq_bcwp += 1
         dropped += rec.get("dropped_epoch", 0)
 
         # Earned, physical method: the file's daily spread of the percent, times cost.
@@ -259,7 +273,23 @@ def build(path: str, group_field: str | None) -> dict:
         groups_out[name] = {"bac": round(g["bac"], 2), "periods": rows}
 
     declared = max(method_votes, key=method_votes.get) if method_votes else 1
+    # Planned-to-date exists only if the baseline cost is distributed in time. A
+    # baseline with cost and no time-phased blocks gives a planned curve of zero
+    # for a structural reason, and zero must not then be read as "nothing was
+    # planned yet": SV, SPI and "ahead" would all be computed against an input
+    # that is not there.
+    planned_available = sum(planned.values()) > 0
     return {
+        "inputs": {
+            "baseline_time_phased": planned_available,
+            "file_bcws": file_bcws_nonzero > 0,
+            "file_bcwp": file_bcwp_nonzero > 0,
+            "planned_available": planned_available,
+            "planned_unavailable_reason": (
+                None if planned_available else
+                "the baseline cost is not distributed in time: the file has no time-phased "
+                "baseline cost, so there is no planned curve"),
+        },
         "source": os.path.basename(path),
         "status_date": status.isoformat() if status else None,
         "granularity": "month",
@@ -267,14 +297,14 @@ def build(path: str, group_field: str | None) -> dict:
         "method_mixed": len(method_votes) > 1,
         "bac": round(bac, 2),
         "totals": {
-            "planned_to_date": round(planned_to_date, 2),
+            "planned_to_date": round(planned_to_date, 2) if planned_available else None,
             "earned_to_date": round(earned_to_date, 2),
             "earned_alt_to_date": round(alt_to_date, 2),
             "earned_phased_after_status": round(earned_after_status, 2),
-            "planned_pct": round(planned_to_date / bac * 100, 2) if bac else None,
+            "planned_pct": round(planned_to_date / bac * 100, 2) if (bac and planned_available) else None,
             "earned_pct": round(earned_to_date / bac * 100, 2) if bac else None,
             "earned_alt_pct": round(alt_to_date / bac * 100, 2) if bac else None,
-            "sv": round(earned_to_date - planned_to_date, 2),
+            "sv": round(earned_to_date - planned_to_date, 2) if planned_available else None,
             "spi": round(earned_to_date / planned_to_date, 4) if planned_to_date else None,
             "method_gap_points": round((earned_to_date - alt_to_date) / bac * 100, 2) if bac else None,
         },
@@ -282,7 +312,13 @@ def build(path: str, group_field: str | None) -> dict:
             "tasks": tasks, "with_cost": with_cost,
             "phasing_sum_equals_cost": sum_eq_cost,
             "phasing_to_status_equals_bcws": upto_eq_bcws,
+            "bcws_comparable": bcws_comparable,
             "earned_equals_bcwp": earned_eq_bcwp,
+            "bcwp_comparable": bcwp_comparable,
+            "file_bcws_nonzero": file_bcws_nonzero,
+            "file_bcwp_nonzero": file_bcwp_nonzero,
+            "note": "comparable = at least one of the two figures is above zero; "
+                    "zero against zero is not counted as agreement",
             "epoch_blocks_dropped": dropped,
         },
         "provenance": {

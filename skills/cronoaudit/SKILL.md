@@ -61,6 +61,33 @@ it, the one responsible for updating it, a regulator, or someone studying. Never
    milestone is a complete use of the skill. Write the executive synthesis only when asked, or
    when the person asks for a report to hand over.
 
+## How to speak about the results
+
+The engine measures; you read, explain and answer. Keep the two apart.
+
+- **Say once, at the start of a first conversation, where the data goes.** What you read (the
+  XML, the reports, the JSON) is sent to your provider under the person's or the company's
+  account; the engine itself runs locally and sends nothing. If that is a problem, the engine
+  runs without an agent and produces the same report.
+- **Every number comes from the engine's files.** Never compute, estimate or round one on your
+  own account. If a figure is not in the files, say it is not there.
+- **Present numbers rounded**: percentages and percentage points with two decimals ("35,56%",
+  not "35,5556%"), in the language's own notation. The JSON keeps full precision; that is for
+  machines.
+- **Name the baseline the way the tool does**: "Baseline" or "Baseline 1" ("linha de base",
+  "linha de base 1"). Never the storage word for where it is kept: no "slot", and in Portuguese
+  never "gaveta". `baseline_slot` is a key in the JSON, not a word for a person.
+- **Explain jargon the first time it appears.** "Population" is the set of activities a figure
+  was counted over; "leaf" is an activity that is not a summary row; a "reading" is a sentence
+  the engine built by rule from its own figures. Do not assume the person knows these.
+- **When an automatic reading contradicts the data, say so and show the data.** The readings
+  are built by rule and a rule can be wrong for a file it did not foresee. Check each one you
+  quote against the figures beside it; if they disagree, quote the reading, state the figures,
+  and say which you believe and why. A reading stated without the input it needs is the very
+  failure this skill hunts.
+- **Mark deductions.** What the files state is `measured`; what you conclude from them is
+  `inferred`, and you say so in the sentence ("inferred: ..." / "inferência: ...").
+
 ## The one question, before anything
 
 > **Are all the inputs to this calculation measured against the same reference?**
@@ -104,6 +131,11 @@ identifies an activity.
 - **Provenance travels with every claim**: `measured`, `inferred`, `reported`. Never promote.
 - **A plausible default returned instead of null disarms the check that would exist.** Test for
   a value known to differ, not for non-null.
+- **A reading is stated only when its input exists.** No links: "the network holds" is not said.
+  No earned value in the file: nothing is reconciled, and zero against zero is never a match.
+  Baseline cost not distributed in time: planned-to-date is unavailable, not zero. No reserved
+  period on any calendar: weather exposure is unread, not nil. The `inputs` block of
+  `-readings.json` and of `-scurve.json` says what the file has.
 
 ## Writing the executive synthesis, when asked
 

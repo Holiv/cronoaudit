@@ -366,6 +366,12 @@
     <ActualStart>2026-06-29T08:00:00</ActualStart>
     <Duration>PT40H0M0S</Duration>
     <PercentComplete>35</PercentComplete>
+    <PredecessorLink>
+      <PredecessorUID>2</PredecessorUID>
+      <Type>1</Type>
+      <LinkLag>0</LinkLag>
+      <LagFormat>7</LagFormat>
+    </PredecessorLink>
     <TimephasedData>
       <Type>10</Type>
       <UID>3</UID>
@@ -446,6 +452,12 @@
     <Start>2026-07-06T08:00:00</Start>
     <Finish>2026-07-10T17:00:00</Finish>
     <Duration>PT40H0M0S</Duration>
+    <PredecessorLink>
+      <PredecessorUID>3</PredecessorUID>
+      <Type>1</Type>
+      <LinkLag>0</LinkLag>
+      <LagFormat>7</LagFormat>
+    </PredecessorLink>
     <TimephasedData>
       <Type>10</Type>
       <UID>4</UID>
@@ -527,6 +539,12 @@
     <Finish>2026-07-10T17:00:00</Finish>
     <Deadline>2026-07-10T17:00:00</Deadline>
     <Duration>PT0H0M0S</Duration>
+    <PredecessorLink>
+      <PredecessorUID>4</PredecessorUID>
+      <Type>1</Type>
+      <LinkLag>0</LinkLag>
+      <LagFormat>7</LagFormat>
+    </PredecessorLink>
     <TimephasedData>
       <Type>10</Type>
       <UID>5</UID>
