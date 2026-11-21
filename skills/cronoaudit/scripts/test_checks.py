@@ -227,6 +227,210 @@ def render_checks() -> dict:
 
 
 def main() -> int:
+    # No test may read or write the real ~/.cronoaudit, and no child run may stop to
+    # ask the mode question when the tests are started from a terminal (the child
+    # inherits it). Every run below sees a throwaway preference of "off"; the mode
+    # tests further down use folders of their own.
+    with tempfile.TemporaryDirectory() as cfg_home:
+        os.environ["CRONOAUDIT_CONFIG_DIR"] = cfg_home
+        with open(os.path.join(cfg_home, "config.json"), "w", encoding="utf-8") as fh:
+            fh.write('{"secret": "off"}\n')
+        return run_all()
+
+
+def mode_checks() -> list:
+    """Modes: the stored preference, and what review.py does with it.
+
+    The point of every case is the same: a run asked to be secret must not read the
+    schedule, and a preference that cannot be read must not become "free, silently".
+    """
+    import io
+
+    import cronoaudit_config as cfg
+    import i18n
+    import review
+
+    failures = []
+    xml = os.path.join(ROOT, "fixtures", "positive.xml")
+    saved = os.environ.get("CRONOAUDIT_CONFIG_DIR")
+
+    def engine(args, home):
+        env = dict(os.environ, CRONOAUDIT_CONFIG_DIR=home)
+        # DEVNULL: not a terminal, whatever started the tests.
+        return subprocess.run([sys.executable, os.path.join(HERE, "review.py")] + args,
+                              capture_output=True, text=True, env=env,
+                              stdin=subprocess.DEVNULL, encoding="utf-8", errors="replace")
+
+    try:
+        with tempfile.TemporaryDirectory() as tmp:
+            home = os.path.join(tmp, "home", ".cronoaudit")   # does not exist yet
+            out = os.path.join(tmp, "out")
+            os.environ["CRONOAUDIT_CONFIG_DIR"] = home
+
+            # ---- the file: missing, set, read back, other keys kept, corrupt, invalid
+            st = cfg.load()
+            if st["secret"] != "ask" or st["status"] != "missing":
+                failures.append(f"modes: a missing file is not the factory default: {st}")
+            if os.path.exists(home):
+                failures.append("modes: reading the preference created the folder")
+            for value in ("on", "off", "ask"):
+                path = cfg.set_secret(value)
+                st = cfg.load()
+                if st["secret"] != value or st["status"] != "ok" or path != cfg.config_path():
+                    failures.append(f"modes: set {value!r} did not read back: {st}")
+            raw = open(cfg.config_path(), "rb").read()
+            if raw.startswith(b"\xef\xbb\xbf") or json.loads(raw.decode("utf-8")) != {"secret": "ask"}:
+                failures.append(f"modes: the file is not plain UTF-8 JSON with the one key: {raw!r}")
+            if [f for f in os.listdir(home) if f != "config.json"]:
+                failures.append(f"modes: the atomic write left a file behind: {os.listdir(home)}")
+            try:
+                cfg.set_secret("maybe")
+                failures.append("modes: an unknown value was stored")
+            except ValueError:
+                pass
+            with open(cfg.config_path(), "w", encoding="utf-8") as fh:
+                fh.write('{"secret": "off", "other": 7}')
+            cfg.set_secret("on")
+            if json.load(open(cfg.config_path(), encoding="utf-8")) != {"secret": "on", "other": 7}:
+                failures.append("modes: storing the preference dropped another key of the file")
+            # A byte-order mark in front, as a Windows editor leaves it, is still readable.
+            with open(cfg.config_path(), "wb") as fh:
+                fh.write(b"\xef\xbb\xbf" + b'{"secret": "OFF"}')
+            if cfg.load()["secret"] != "off":
+                failures.append("modes: a file with a byte-order mark, or an upper-case value, was not read")
+            for bad, want in (("{not json", "corrupt"), ("", "corrupt"), ("[1, 2]", "corrupt"),
+                              ('{"secret": "yes"}', "invalid"), ('{"secret": true}', "invalid"),
+                              ('{"other": 1}', "missing")):
+                with open(cfg.config_path(), "w", encoding="utf-8") as fh:
+                    fh.write(bad)
+                st = cfg.load()
+                if st["secret"] != "ask" or st["status"] != want:
+                    failures.append(f"modes: {bad!r} should be ask/{want}, got {st['secret']}/{st['status']}")
+            # A corrupt file is said, not swallowed, and is replaced by the next set.
+            with open(cfg.config_path(), "w", encoding="utf-8") as fh:
+                fh.write('{"secret": "yes"}')
+            r = engine(["--config", "--lang", "en"], home)
+            if r.returncode != 0 or not r.stdout.startswith("secret: ask\n") or "not ask, on or off" not in r.stdout:
+                failures.append(f"modes: --config did not report an invalid file as ask: {r.stdout!r}")
+            with open(cfg.config_path(), "w", encoding="utf-8") as fh:
+                fh.write("{not json")
+            r = engine([xml, "--outdir", out, "--quiet", "--lang", "en"], home)
+            if r.returncode != 0 or "could not be read" not in r.stderr or "FREE mode" not in r.stderr:
+                failures.append(f"modes: a corrupt file was not said on stderr before going on: {r.stderr!r}")
+            r = engine(["--secret", "off"], home)
+            if r.returncode != 0 or not r.stdout.startswith("secret: off\n") or cfg.load()["status"] != "ok":
+                failures.append(f"modes: --secret off did not replace a corrupt file: {r.stdout!r} {r.stderr!r}")
+
+            # ---- the decision table
+            for (fs, ff, pref, tty), want in {
+                    (True, False, "off", False): "secret", (True, False, "ask", True): "secret",
+                    (False, True, "on", False): "free", (False, True, "ask", True): "free",
+                    (False, False, "on", True): "secret", (False, False, "on", False): "secret",
+                    (False, False, "off", True): "free", (False, False, "off", False): "free",
+                    (False, False, "ask", True): "ask", (False, False, "ask", False): "notice"}.items():
+                got = cfg.decide(fs, ff, pref, tty)
+                if got != want:
+                    failures.append(f"modes: decide(secret={fs}, free={ff}, {pref}, tty={tty}) gave {got}, not {want}")
+
+            # ---- `--secret` must not swallow the schedule that follows it
+            for argv, want in ((["--secret", "a.xml"], ["--secret=run", "a.xml"]),
+                               (["a.xml", "--secreto"], ["a.xml", "--secret=run"]),
+                               (["--secret", "ON"], ["--secret=on"]),
+                               (["--secreto=Ask"], ["--secret=ask"]),
+                               (["a.xml", "--free"], ["a.xml", "--free"])):
+                if review.normalise_mode_args(argv) != want:
+                    failures.append(f"modes: {argv} normalised to {review.normalise_mode_args(argv)}")
+
+            # ---- --secret stops without reading. The file named does not exist: had
+            # the engine gone as far as looking for it, the message would say so.
+            def nothing_written():
+                return not os.path.exists(out) or not os.listdir(out)
+            import shutil
+            shutil.rmtree(out, ignore_errors=True)
+            for args in ([xml, "--secret", "--outdir", out], ["--secret", xml, "--outdir", out],
+                         [xml, "--secreto", "--outdir", out, "--lang", "pt"]):
+                r = engine(args, home)   # the stored preference is "off": the flag wins
+                if r.returncode != review.EXIT_SECRET or r.stdout.strip() or not nothing_written():
+                    failures.append(f"modes: {args[:2]} did not stop clean: rc {r.returncode}, "
+                                    f"stdout {r.stdout[:80]!r}, outdir {os.path.exists(out)}")
+                if "Nothing was read" not in r.stderr and "Nada foi lido" not in r.stderr:
+                    failures.append("modes: the stop message does not say that nothing was read")
+                if "in development" not in r.stderr and "em desenvolvimento" not in r.stderr:
+                    failures.append("modes: the stop message does not say the mode is in development")
+            r = engine([os.path.join(tmp, "no-such-file.xml"), "--secret", "--lang", "en"], home)
+            if r.returncode != review.EXIT_SECRET or "no such file" in (r.stderr + r.stdout):
+                failures.append("modes: --secret looked for the schedule before stopping")
+            if "SECRET mode was requested" not in r.stderr or "SECRETO" in r.stderr:
+                failures.append("modes: with --lang en the stop message is not in English only")
+            r = engine([xml, "--secret", "--free"], home)
+            if r.returncode != 2 or not nothing_written():
+                failures.append("modes: --secret with --free was not rejected")
+
+            # ---- stored "on" behaves as --secret; --free is the only way through it
+            engine(["--secret", "on"], home)
+            r = engine([xml, "--outdir", out, "--quiet"], home)
+            if r.returncode != review.EXIT_SECRET or not nothing_written() or cfg.config_path() not in r.stderr:
+                failures.append(f"modes: a stored 'on' did not stop the run and name the file: rc {r.returncode}")
+            r = engine([xml, "--outdir", out, "--quiet", "--free"], home)
+            if r.returncode != 0 or nothing_written() or r.stderr.strip():
+                failures.append(f"modes: --free did not run, quietly, over a stored 'on': {r.stderr!r}")
+
+            # ---- "ask" with nobody to answer: one line on stderr, then the run
+            shutil.rmtree(out, ignore_errors=True)
+            engine(["--secret", "ask"], home)
+            r = engine([xml, "--outdir", out, "--quiet", "--lang", "en"], home)
+            lines = [ln for ln in r.stderr.splitlines() if ln.strip()]
+            if r.returncode != 0 or nothing_written():
+                failures.append(f"modes: 'ask' with no terminal blocked the run: rc {r.returncode} {r.stderr!r}")
+            if len(lines) != 1 or "FREE mode" not in lines[0] or "--secret" not in lines[0]:
+                failures.append(f"modes: 'ask' with no terminal did not say one line on stderr: {lines}")
+            if "FREE mode" in r.stdout:
+                failures.append("modes: the free-mode line went to stdout, where a program reads results")
+            # "off" says nothing at all.
+            engine(["--secret", "off"], home)
+            r = engine([xml, "--outdir", out, "--quiet"], home)
+            if r.returncode != 0 or r.stderr.strip():
+                failures.append(f"modes: a stored 'off' still spoke: {r.stderr!r}")
+
+            # ---- the question itself, answered. In-process, with the streams swapped.
+            def answer(text):
+                cfg.set_secret("ask")
+                old_in, old_err = sys.stdin, sys.stderr
+                sys.stdin, sys.stderr = io.StringIO(text), io.StringIO()
+                try:
+                    review.ask_mode(cfg.load(), i18n.modes_text("pt"), ["pt"])
+                    return "go", sys.stderr.getvalue()
+                except SystemExit as exc:
+                    return exc.code, sys.stderr.getvalue()
+                finally:
+                    sys.stdin, sys.stderr = old_in, old_err
+            for text, want, pref in (("s\n", "go", "ask"), ("livre\n", "go", "ask"), ("y\n", "go", "ask"),
+                                     ("secreto\n", review.EXIT_SECRET, "ask"), ("n\n", 1, "ask"),
+                                     ("nunca\n", "go", "off"), ("\n\nwhat\n", 1, "ask"), ("", 1, "ask"),
+                                     ("talvez\nsim\n", "go", "ask")):
+                got, shown = answer(text)
+                if got != want or cfg.load()["secret"] != pref:
+                    failures.append(f"modes: answering {text!r} gave {got} with preference "
+                                    f"{cfg.load()['secret']}, not {want} with {pref}")
+                if "Modo LIVRE: o que o agente ler vai para o provedor dele. Continuar?" not in shown:
+                    failures.append("modes: the question is not the agreed sentence")
+
+            # ---- every mode string exists in both languages, with the same placeholders
+            for key, en in i18n.MODES["en"].items():
+                pt = i18n.MODES["pt"].get(key)
+                if pt is None or sorted(re.findall(r"\{(\w+)\}", en)) != sorted(re.findall(r"\{(\w+)\}", pt)):
+                    failures.append(f"modes: the string {key!r} is missing or takes other values in pt")
+            if set(i18n.MODES["pt"]) - set(i18n.MODES["en"]):
+                failures.append("modes: pt has strings en does not")
+    finally:
+        if saved is None:
+            os.environ.pop("CRONOAUDIT_CONFIG_DIR", None)
+        else:
+            os.environ["CRONOAUDIT_CONFIG_DIR"] = saved
+    return failures
+
+
+def run_all() -> int:
     failures = []
 
     pos = analyse("positive.xml")
@@ -997,6 +1201,9 @@ def main() -> int:
     rendered = render_checks()
     failures.extend(rendered["failures"])
 
+    # ---- modes: free and secret. The preference file, and a run that must not read.
+    failures.extend(mode_checks())
+
     if failures:
         print("FAIL")
         for f in failures:
@@ -1030,6 +1237,8 @@ def main() -> int:
     print("  forensics: driving chain through the lag link, origin named, cycle readings")
     print("  readings: every section reads in both languages; synthesis injected without recompute")
     print("  profile: init/set/validate round-trip; grouping, fields, optional checks and hiding applied")
+    print("  modes: preference set, read and survived a corrupt file; --secret and a stored 'on' stop")
+    print("         without reading; 'ask' with no terminal says one line on stderr and goes on")
     return 0
 
 

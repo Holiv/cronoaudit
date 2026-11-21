@@ -1064,6 +1064,101 @@ def ui(lang: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Modes: free and secret. Printed by review.py before any schedule is opened, so
+# these are terminal lines, not report labels. The question is one line on purpose:
+# the skill and the MS Project add-in ask the same thing in the same words.
+# ---------------------------------------------------------------------------
+MODES = {
+    "en": {
+        "question": "FREE mode: whatever the agent reads goes to its provider. Continue? "
+                    "[y] free / [secret] / [never] do not ask again",
+        "question_retry": "Answer y (free), secret, never (do not ask again) or n (cancel).",
+        "cancelled": "cronoaudit: cancelled. Nothing was read and nothing was run.",
+        "no_answer": "cronoaudit: no answer. Nothing was read and nothing was run. "
+                     "To run without the question: --free, or --secret off to stop asking.",
+        "never_saved": "cronoaudit: the question will not be asked again (secret: off, in {path}). "
+                       "To bring it back: --secret ask.",
+        "never_failed": "cronoaudit: could not store the preference in {path} ({error}). "
+                        "This run goes on in free mode; the question will come back.",
+        "notice": "cronoaudit: running in FREE mode (whatever an agent reads goes to its provider). "
+                  "To change: --secret for secret mode (in development), or --secret on|off|ask "
+                  "to store a preference; --free silences this line.",
+        "secret_stop": "cronoaudit: SECRET mode was requested ({origin}), so the run stopped here.\n"
+                       "  Nothing was read and nothing was run.\n"
+                       "  Secret mode is in development. When it exists, the agent will read only an\n"
+                       "  encoded version of the schedule, and the decoding will happen on this machine.\n"
+                       "  Until then cronoaudit does not fall back to free mode on its own.\n"
+                       "  To run in free mode on purpose, add --free. The engine itself sends nothing;\n"
+                       "  in free mode, whatever an agent reads goes to that agent's provider.",
+        "origin_flag": "by --secret",
+        "origin_pref": "the stored preference is \"on\", in {path}",
+        "origin_answer": "answered at the question",
+        "state_ask": "ask before a run in free mode (factory default)",
+        "state_on": "secret mode by default. It is in development, so a run stops unless --free is given",
+        "state_off": "free mode by default, never ask",
+        "config_file": "file: {path}",
+        "config_missing": "no preference stored yet: factory default",
+        "config_corrupt": "the file could not be read ({detail}), so it is treated as \"ask\". "
+                          "--secret on|off|ask writes it again",
+        "config_invalid": "the file holds {detail} for \"secret\", which is not ask, on or off, "
+                          "so it is treated as \"ask\"",
+        "config_how": "change with: --secret on | --secret off | --secret ask",
+        "set_done": "preference stored in {path}",
+        "set_no_run": "No schedule was read: --secret on|off|ask only stores the preference.",
+        "set_failed": "cronoaudit: could not write {path}: {error}",
+        "both_flags": "--secret and --free were both given. Choose one.",
+        "no_files": "Pass one schedule to review, or two to compare (previous first).",
+    },
+    "pt": {
+        "question": "Modo LIVRE: o que o agente ler vai para o provedor dele. Continuar? "
+                    "[s] livre / [secreto] / [nunca] não perguntar mais",
+        "question_retry": "Responda s (livre), secreto, nunca (não perguntar mais) ou n (cancelar).",
+        "cancelled": "cronoaudit: cancelado. Nada foi lido e nada foi executado.",
+        "no_answer": "cronoaudit: sem resposta. Nada foi lido e nada foi executado. "
+                     "Para rodar sem a pergunta: --free, ou --secret off para não perguntar mais.",
+        "never_saved": "cronoaudit: a pergunta não será feita de novo (secret: off, em {path}). "
+                       "Para ela voltar: --secret ask.",
+        "never_failed": "cronoaudit: não foi possível gravar a preferência em {path} ({error}). "
+                        "Esta rodada segue no modo livre; a pergunta vai voltar.",
+        "notice": "cronoaudit: rodando no modo LIVRE (o que um agente ler vai para o provedor dele). "
+                  "Para mudar: --secret para o modo secreto (em desenvolvimento), ou --secret on|off|ask "
+                  "para gravar uma preferência; --free silencia esta linha.",
+        "secret_stop": "cronoaudit: o modo SECRETO foi pedido ({origin}), então a rodada parou aqui.\n"
+                       "  Nada foi lido e nada foi executado.\n"
+                       "  O modo secreto está em desenvolvimento. Quando existir, o agente vai ler só uma\n"
+                       "  versão codificada do cronograma, e a decodificação vai acontecer nesta máquina.\n"
+                       "  Até lá a cronoaudit não cai para o modo livre por conta própria.\n"
+                       "  Para rodar no modo livre de propósito, acrescente --free. O motor em si não envia\n"
+                       "  nada; no modo livre, o que um agente ler vai para o provedor desse agente.",
+        "origin_flag": "por --secret",
+        "origin_pref": "a preferência gravada é \"on\", em {path}",
+        "origin_answer": "respondido na pergunta",
+        "state_ask": "perguntar antes de uma rodada no modo livre (padrão de fábrica)",
+        "state_on": "modo secreto por padrão. Ele está em desenvolvimento, então a rodada para, a não ser com --free",
+        "state_off": "modo livre por padrão, sem perguntar",
+        "config_file": "arquivo: {path}",
+        "config_missing": "nenhuma preferência gravada ainda: padrão de fábrica",
+        "config_corrupt": "o arquivo não pôde ser lido ({detail}), então vale \"ask\". "
+                          "--secret on|off|ask grava de novo",
+        "config_invalid": "o arquivo traz {detail} em \"secret\", que não é ask, on nem off, "
+                          "então vale \"ask\"",
+        "config_how": "mude com: --secret on | --secret off | --secret ask",
+        "set_done": "preferência gravada em {path}",
+        "set_no_run": "Nenhum cronograma foi lido: --secret on|off|ask só grava a preferência.",
+        "set_failed": "cronoaudit: não foi possível gravar {path}: {error}",
+        "both_flags": "--secret e --free foram dados juntos. Escolha um.",
+        "no_files": "Passe um cronograma para analisar, ou dois para comparar (o anterior primeiro).",
+    },
+}
+
+
+def modes_text(lang: str) -> dict:
+    base = dict(MODES["en"])
+    base.update(MODES.get(lang, {}))
+    return base
+
+
+# ---------------------------------------------------------------------------
 # The cycle comparison. Kept apart from UI because these strings belong to one
 # report only; `cycle_text` merges them over the shared interface strings.
 # Every section carries a criterion and the way to reproduce it in the tool,

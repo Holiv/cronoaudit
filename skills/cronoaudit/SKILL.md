@@ -22,7 +22,10 @@ python3 $S/review.py delivery.xml                       # review one delivery
 python3 $S/review.py previous.xml current.xml           # the periodic cycle
 python3 $S/review.py delivery.xml --profile profile.json --group-by DISCIPLINA
 python3 $S/review.py delivery.xml --outdir reports --lang pt
+python3 $S/review.py --config                           # the stored mode preference
 ```
+
+Settle the mode first: see "Modes: free and secret" below.
 
 Always call the scripts by their absolute path; the person's working directory is wherever
 the schedule is, not the skill's folder. Nothing to install beyond Python. Out come one
@@ -31,6 +34,50 @@ self-contained HTML report in the schedule's own language and the JSON sidecars:
 `python3 $S/test_checks.py` proves the installation once; it is not part of every
 conversation. The whole process, flags, failure messages and the judgement the tool cannot
 make for you: `references/usage.md`.
+
+## Modes: free and secret
+
+**Settle this before reading any schedule data and before running the engine.** That means
+before opening an XML, a report or a JSON sidecar, and before quoting anything from one.
+
+- **Free mode** is what exists today. You read the schedule and the results, and whatever you
+  read goes to your provider, under the person's or the company's account.
+- **Secret mode** is in development. When it exists you will read only an encoded version of
+  the schedule, and the decoding will happen on the person's machine. It does not exist yet.
+
+1. **Did the person ask for secret?** If the request carries `--secreto` or `--secret`, or
+   asks for secret or private mode in any words, the mode is secret. Today that means: say
+   that secret mode is in development, say what it will do, say that you read nothing, and
+   **stop**. Do not continue in free mode on your own. The person can then choose free mode
+   in so many words, or run the engine without an agent (`review.py <file> --free`), which
+   sends nothing anywhere.
+2. **Otherwise read the stored preference** with `python3 $S/review.py --config`. It reads only
+   the preference file, never a schedule, and its first line is `secret: ask`, `secret: on` or
+   `secret: off`.
+   - `off`: go on in free mode. Do not ask.
+   - `on`: treat it as a request for secret mode, as in step 1.
+   - `ask`: ask the person this, in their language, **before reading anything**:
+
+     > Modo LIVRE: o que o agente ler vai para o provedor dele. Continuar? [s] livre / [secreto] / [nunca] não perguntar mais
+
+     > FREE mode: whatever the agent reads goes to its provider. Continue? [y] free / [secret] / [never] do not ask again
+
+     "s" or "y": free mode, this time. "secreto" or "secret": step 1. "nunca" or "never": run
+     `python3 $S/review.py --secret off`, tell the person it can be undone with
+     `--secret ask`, and go on in free mode. Any other answer is not a yes: ask again.
+   - If the command fails, or says the file could not be read, treat it as `ask` and say so.
+3. **In free mode, pass `--free` to the engine.** The mode is already settled, so the engine
+   neither repeats the question nor stops.
+4. **A request written by the MS Project add-in** (`pedido.md`) states the mode: there the
+   person was asked by the add-in before you were started. Do not ask again.
+
+The engine holds the same line by itself: `review.py <file> --secret`, or a stored `on`, stops
+with exit code 3 before opening the file, and it never falls back to free mode.
+
+**Be plain about what this question is.** It is you following this skill, not an enforcement:
+nothing technical stops an agent from opening a file it was pointed at. What is enforced by
+code is narrower: the engine's stop on `--secret`, and the add-in's dialog before it starts an
+agent. If the person asks whether the question protects their data, say exactly this.
 
 ## How a conversation starts
 
@@ -42,7 +89,7 @@ it, the one responsible for updating it, a regulator, or someone studying. Never
    it in the reply; more than one, list them and ask which, offering the cycle comparison when
    two look like versions of the same schedule; none, ask for the path. Never pick silently
    among several.
-2. **Run the analysis once.** `review.py <file>` writes the report and the JSON sidecars beside
+2. **Run the analysis once.** `review.py <file> --free` writes the report and the JSON sidecars beside
    the XML; `--outdir <folder>` when the person names a folder (it is created if missing,
    relative to the working directory). The analysis and the report are the same command, so
    the report always exists after the first run.

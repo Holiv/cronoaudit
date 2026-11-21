@@ -47,6 +47,29 @@ Useful flags: `--outdir` to choose where the output lands, `--threshold-days` to
 threshold for the pulled-forward and delayed checks, `--tolerance-days` for the duration
 thermometer, `--quiet` to write the files without the console summary.
 
+### Modes: free and secret
+
+The engine sends nothing. The mode is about what an **agent** reads: in free mode, whatever it
+reads goes to its provider; secret mode, in which the agent reads only an encoded version of
+the schedule, is in development.
+
+| Command | Does |
+|---|---|
+| `review.py delivery.xml --free` | runs in free mode, said explicitly |
+| `review.py delivery.xml --secret` | secret mode: stops with exit code 3 and says the mode is in development. Nothing is read. `--secreto` is the same flag |
+| `review.py --secret on` · `off` · `ask` | stores the preference and exits: secret by default · free, never ask · ask (factory default) |
+| `review.py --config` | prints the stored preference; the first line is `secret: ask`, `on` or `off` |
+
+With neither flag the stored preference decides: `on` behaves as `--secret`, `off` as `--free`.
+With `ask`, at a terminal the engine asks before opening the file (`s` free, `secreto`, `nunca`
+to stop asking, `n` to cancel); when nobody can answer, as when an agent runs it, it writes one
+line to stderr saying the run is in free mode and goes on.
+
+The preference is `~/.cronoaudit/config.json` (`%USERPROFILE%\.cronoaudit\config.json` on
+Windows), key `secret`, shared with the skill and the MS Project add-in. A file that is missing,
+unreadable or holds another value counts as `ask`, and the engine says which. Setting the
+environment variable `CRONOAUDIT_CONFIG_DIR` moves the folder.
+
 ## Step 2b — find out what the organisation keeps in its own fields
 
 Optional, and worth doing once per organisation:

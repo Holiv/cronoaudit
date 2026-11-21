@@ -13,6 +13,18 @@ Two files -> the earlier one is the previous snapshot; you get the cycle compari
 Everything is written next to the input unless you pass --outdir. Nothing is sent
 anywhere, nothing is fetched, and the HTML has no external references, so it opens
 on a machine with no network and looks the same there.
+
+Modes. The engine sends nothing either way; the mode is about what an AGENT reads.
+
+    python3 review.py delivery.xml --free       # free mode, said explicitly
+    python3 review.py delivery.xml --secret     # secret mode: in development, so it stops
+    python3 review.py --secret on|off|ask       # store the preference and exit
+    python3 review.py --config                  # print the stored preference
+
+With neither flag the stored preference decides (~/.cronoaudit/config.json): "on" is
+--secret, "off" is --free, and "ask" asks at a terminal or, when nobody can answer,
+says on stderr that the run is in free mode and goes on. The mode is settled before
+any schedule is opened.
 """
 from __future__ import annotations
 
@@ -25,6 +37,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import compare_snapshots  # noqa: E402
+import cronoaudit_config as cfg_mod  # noqa: E402
 import parse_mspdi  # noqa: E402
 import phasing as phasing_mod  # noqa: E402
 import resources as resources_mod  # noqa: E402
@@ -190,13 +203,153 @@ def do_review(model, path, outdir, threshold, tolerance, quiet,
     return res
 
 
+# The exit code of a run that stopped because secret mode was asked for. Distinct
+# from 1 (an error, or a cancelled question) and 2 (bad arguments), so a caller can
+# tell "refused on purpose" from "failed".
+EXIT_SECRET = 3
+
+SECRET_FLAGS = ("--secret", "--secreto")
+
+
+def normalise_mode_args(argv: list) -> list:
+    """Make `--secret` unambiguous before argparse sees it.
+
+    `--secret` alone runs in secret mode; `--secret on|off|ask` stores a preference.
+    An optional value would swallow the schedule in `--secret delivery.xml`, so the
+    flag is rewritten here to always carry one: the word that follows when it is
+    on, off or ask, and "run" otherwise.
+    """
+    out, i = [], 0
+    while i < len(argv):
+        tok = argv[i]
+        if tok in SECRET_FLAGS:
+            nxt = argv[i + 1].lower() if i + 1 < len(argv) else ""
+            if nxt in cfg_mod.VALUES:
+                out.append("--secret=" + nxt)
+                i += 2
+                continue
+            out.append("--secret=run")
+        elif tok.split("=", 1)[0] in SECRET_FLAGS and "=" in tok:
+            out.append("--secret=" + tok.split("=", 1)[1].lower())
+        else:
+            out.append(tok)
+        i += 1
+    return out
+
+
+def say(text: str, stream=None) -> None:
+    """Print without ever failing on a console that cannot show an accent."""
+    stream = stream or sys.stderr
+    try:
+        print(text, file=stream)
+    except UnicodeEncodeError:
+        enc = getattr(stream, "encoding", None) or "ascii"
+        print(text.encode(enc, "replace").decode(enc), file=stream)
+    stream.flush()
+
+
+def describe_config(state: dict, txt: dict) -> str:
+    """The stored preference, first line stable for a program to read: `secret: ask`."""
+    lines = [f"secret: {state['secret']}", "  " + txt["state_" + state["secret"]],
+             "  " + txt["config_file"].format(path=state["path"])]
+    if state["status"] == "missing":
+        lines.append("  " + txt["config_missing"])
+    elif state["status"] == "corrupt":
+        lines.append("  " + txt["config_corrupt"].format(detail=state["detail"]))
+    elif state["status"] == "invalid":
+        lines.append("  " + txt["config_invalid"].format(detail=state["detail"]))
+    lines.append("  " + txt["config_how"])
+    return "\n".join(lines)
+
+
+def stop_for_secret(origin_key: str, state: dict, langs: list) -> None:
+    """Secret mode was asked for and does not exist yet: stop, having read nothing.
+
+    Never a fallback to free mode. The person who asked for secret and got a free
+    run would have sent the schedule to a provider believing they had not.
+    """
+    import i18n
+    for n, lang in enumerate(langs):
+        txt = i18n.modes_text(lang)
+        if n:
+            say("")
+        say(txt["secret_stop"].format(origin=txt[origin_key].format(path=state["path"])))
+    raise SystemExit(EXIT_SECRET)
+
+
+def ask_mode(state: dict, txt: dict, langs: list) -> None:
+    """The question, at a terminal. Returns to go on in free mode; exits otherwise."""
+    for _attempt in range(3):
+        say(txt["question"])
+        sys.stderr.write("> ")
+        sys.stderr.flush()
+        line = sys.stdin.readline()
+        if not line:  # end of input: nobody is there after all
+            break
+        answer = line.strip().lower()
+        if answer in ("s", "sim", "y", "yes", "l", "livre", "free"):
+            return
+        if answer in ("secreto", "secret"):
+            stop_for_secret("origin_answer", state, langs)
+        if answer in ("nunca", "never"):
+            try:
+                path = cfg_mod.set_secret("off")
+                say(txt["never_saved"].format(path=path))
+            except OSError as exc:
+                say(txt["never_failed"].format(path=state["path"], error=exc))
+            return
+        if answer in ("n", "nao", "não", "no", "c", "cancelar", "cancel"):
+            say(txt["cancelled"])
+            raise SystemExit(1)
+        say(txt["question_retry"])
+    say(txt["no_answer"])
+    raise SystemExit(1)
+
+
+def settle_mode(args, lang_forced) -> None:
+    """Decide the mode of this run. Called before any schedule is opened.
+
+    Returns when the run goes on in free mode; exits when it must not go on.
+    """
+    import i18n
+    lang = lang_forced or cfg_mod.system_lang()
+    txt = i18n.modes_text(lang)
+    # The stop message matters most, and the language is a guess unless --lang was
+    # given: say it in the guessed language and then in the other one.
+    langs = [lang] if lang_forced else [lang, "en" if lang == "pt" else "pt"]
+    state = cfg_mod.load()
+    try:
+        interactive = sys.stdin is not None and sys.stdin.isatty()
+    except (AttributeError, ValueError):
+        interactive = False
+    mode = cfg_mod.decide(args.secret == "run", args.free, state["secret"], interactive)
+    if mode == "secret":
+        stop_for_secret("origin_flag" if args.secret == "run" else "origin_pref", state, langs)
+    if mode == "ask":
+        if state["status"] in ("corrupt", "invalid"):
+            say("cronoaudit: " + txt["config_" + state["status"]].format(detail=state["detail"]))
+        ask_mode(state, txt, langs)
+    elif mode == "notice":
+        if state["status"] in ("corrupt", "invalid"):
+            say("cronoaudit: " + txt["config_" + state["status"]].format(detail=state["detail"]))
+        say(txt["notice"])
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(
         description=__doc__.split("\n")[0],
         epilog="With two files, the first is the previous snapshot.",
     )
-    ap.add_argument("files", nargs="+", metavar="SCHEDULE",
+    ap.add_argument("files", nargs="*", metavar="SCHEDULE",
                     help="one export to review, or two to compare (previous first)")
+    ap.add_argument("--secret", "--secreto", dest="secret", nargs="?", const="run",
+                    choices=["run", "on", "off", "ask"], metavar="on|off|ask",
+                    help="alone: run in secret mode (in development: the run stops, nothing "
+                         "is read). With on, off or ask: store the preference and exit")
+    ap.add_argument("--free", "--livre", dest="free", action="store_true",
+                    help="run in free mode explicitly: whatever an agent reads goes to its provider")
+    ap.add_argument("--config", action="store_true",
+                    help="print the stored mode preference and exit")
     ap.add_argument("--outdir", help="where to write the report (default: next to the input)")
     ap.add_argument("--threshold-days", type=int, default=run_checks.DEFAULT_THRESHOLD_DAYS,
                     help="the E and C threshold, in calendar days (default 30)")
@@ -209,7 +362,29 @@ def main() -> None:
     ap.add_argument("--profile", help="JSON profile with theme and field mappings")
     ap.add_argument("--lang", choices=["en", "pt"],
                     help="force the report language; by default it follows the schedule's own")
-    args = ap.parse_args()
+    args = ap.parse_args(normalise_mode_args(sys.argv[1:]))
+
+    # ---- the mode comes first: nothing below opens a schedule before it is settled.
+    import i18n
+    mode_txt = i18n.modes_text(args.lang or cfg_mod.system_lang())
+    if args.secret and args.free:
+        ap.error(mode_txt["both_flags"])
+    if args.secret in cfg_mod.VALUES:
+        try:
+            path = cfg_mod.set_secret(args.secret)
+        except OSError as exc:
+            raise SystemExit(mode_txt["set_failed"].format(path=cfg_mod.config_path(), error=exc))
+        print(describe_config(cfg_mod.load(), mode_txt))
+        print("  " + mode_txt["set_done"].format(path=path))
+        if args.files:
+            print(mode_txt["set_no_run"])
+        return
+    if args.config:
+        print(describe_config(cfg_mod.load(), mode_txt))
+        return
+    if not args.files:
+        ap.error(mode_txt["no_files"])
+    settle_mode(args, args.lang)
 
     if len(args.files) > 2:
         raise SystemExit("Pass one file to review, or two to compare. More than two is ambiguous.")

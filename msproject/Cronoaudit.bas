@@ -1,5 +1,5 @@
 Attribute VB_Name = "Cronoaudit"
-' cronoaudit para MS Project - v0.2.1 (21/11/2026)
+' cronoaudit para MS Project - v0.3 (21/11/2026)
 '
 ' A cronoaudit e uma SKILL: o agente le o cronograma por ela, conversa com o planejador,
 ' interpreta e personaliza o relatorio. O motor em Python e o instrumento da skill: e dele
@@ -10,20 +10,29 @@ Attribute VB_Name = "Cronoaudit"
 '   CronoauditAnalisar        exporta o XML do arquivo ativo, grava pedido.md na pasta da rodada
 '                             e abre o agente nela: Claude Code, Codex, Copilot CLI ou Gemini CLI
 '                             num terminal; ou o VS Code, com o pedido na area de transferencia.
-'                             O que o agente ler vai para o provedor dele.
+'                             O que o agente ler vai para o provedor dele (modo LIVRE).
+'                             Antes de abrir o agente, a macro confere o modo configurado.
 '   CronoauditComparar        pede a outra versao (.mpp ou .xml), exporta as duas e abre o agente
 '                             com o pedido de comparacao. Idem quanto ao dado.
 '   CronoauditExportarXml     so exporta o XML e abre a pasta. Sem agente, sem motor.
 '   CronoauditSemIA           exporta, roda o motor e abre o relatorio. Nada sai da maquina.
 '   CronoauditCompararSemIA   o mesmo para a comparacao de versoes. Nada sai da maquina.
-'   CronoauditConfigurar      agente, pasta dos relatorios, Python, review.py, redefinir.
+'   CronoauditConfigurar      agente, pasta dos relatorios, Python, review.py, modo, redefinir.
 '
 ' Precisa de Python 3.9+ e da skill instalada pelo install.ps1 da cronoaudit.
 ' Configuracao em HKCU\Software\VB and VBA Program Settings\cronoaudit\config
 '   agente    auto | claude | codex | copilot | gemini | code   pasta   onde as rodadas sao gravadas
 '   python    comando do Python (ex.: py -3)                review  caminho do review.py
-'   aviso_ia  1 = nao mostrar de novo o aviso de dados      ultimo  pasta da ultima rodada
-'   outro     ultima "outra versao" escolhida no Comparar
+'   ultimo    pasta da ultima rodada                        outro   ultima "outra versao" do Comparar
+'
+' O MODO (livre ou secreto) nao fica no registro. Fica no arquivo que o motor e a skill tambem
+' leem, para os tres concordarem:  %USERPROFILE%\.cronoaudit\config.json
+'   "secret": "ask"   perguntar antes de abrir o agente (padrao de fabrica)
+'   "secret": "off"   modo livre, sem perguntar
+'   "secret": "on"    modo secreto por padrao. Ele ainda esta em desenvolvimento: a macro avisa
+'                     e so abre o agente no modo livre se a pessoa escolher isso na hora.
+' A pergunta daqui e feita por codigo, antes de o agente existir. A da skill e o agente seguindo
+' instrucao. Sao coisas diferentes e o LEIA-ME diz isso.
 '
 ' Este arquivo e ASCII puro (subconjunto do cp1252) com fim de linha CRLF: o editor do VBA
 ' importa no codigo de pagina da maquina. Por isso as mensagens nao levam acento.
@@ -77,7 +86,7 @@ Public Sub CronoauditCompararSemIA()
 End Sub
 
 Public Sub CronoauditConfigurar()
-    Dim op As String, v As String
+    Dim op As String, v As String, aviso As String
     ' O estado vai num MsgBox, que cresce com o texto. O InputBox corta o que nao cabe,
     ' entao fica so com o menu, curto. Caminhos longos aparecem com %LOCALAPPDATA% e
     ' %USERPROFILE% no lugar do comeco, cada um na sua linha.
@@ -86,12 +95,11 @@ Public Sub CronoauditConfigurar()
         "2  Pasta das rodadas:" & vbCrLf & "     " & Abreviar(PastaRaiz()) & vbCrLf & _
         "3  Python:" & vbCrLf & "     " & Abreviar(ValorOuAuto(GetSetting(APP, SEC, "python", ""))) & vbCrLf & _
         "4  review.py:" & vbCrLf & "     " & Abreviar(ValorOuAuto(GetSetting(APP, SEC, "review", ""))) & vbCrLf & _
-        "5  Aviso de dados:" & vbCrLf & "     " & _
-        IIf(GetSetting(APP, SEC, "aviso_ia", "") = "1", "nao mostrar de novo", "mostrar") & vbCrLf & vbCrLf & _
+        "5  Modo:" & vbCrLf & "     " & DescreverModo(LerSecret(aviso)) & vbCrLf & vbCrLf & _
         "OK para alterar um item. Cancelar para sair.", vbOKCancel + vbInformation, TITULO) <> vbOK Then Exit Sub
     op = InputBox("Numero do item a alterar:" & vbCrLf & vbCrLf & _
         "1 agente    2 pasta    3 Python" & vbCrLf & _
-        "4 review.py    5 mostrar o aviso" & vbCrLf & _
+        "4 review.py    5 modo" & vbCrLf & _
         "9 redefinir tudo", TITULO, "1")
     If StrPtr(op) = 0 Then Exit Sub
     Select Case Trim$(op)
@@ -132,11 +140,25 @@ Public Sub CronoauditConfigurar()
             If StrPtr(v) = 0 Then Exit Sub
             If Trim$(v) = "" Then DeleteSettingSeguro "review" Else SaveSetting APP, SEC, "review", Trim$(v)
         Case "5"
-            DeleteSettingSeguro "aviso_ia"
-            MsgBox "O aviso de dados volta a aparecer no proximo Analisar ou Comparar.", vbInformation, TITULO
+            v = InputBox("ask, off ou on." & vbCrLf & vbCrLf & _
+                "ask = perguntar antes de abrir o agente" & vbCrLf & _
+                "off = modo livre, sem perguntar" & vbCrLf & _
+                "on  = modo secreto (em desenvolvimento)", TITULO, LerSecret(aviso))
+            If StrPtr(v) = 0 Then Exit Sub
+            v = LCase$(Trim$(v))
+            If v <> "ask" And v <> "off" And v <> "on" Then
+                MsgBox "Modo desconhecido: " & v & vbCrLf & "Use ask, off ou on.", vbExclamation, TITULO
+                Exit Sub
+            End If
+            If GravarSecret(v) Then
+                MsgBox "Modo gravado: " & DescreverModo(v) & vbCrLf & vbCrLf & _
+                    "Vale tambem para o motor e para a skill:" & vbCrLf & Abreviar(ArquivoConfig()), vbInformation, TITULO
+            End If
         Case "9"
-            If MsgBox("Apagar toda a configuracao da cronoaudit neste usuario?" & vbCrLf & vbCrLf & _
-                "Os relatorios ja gravados nao sao apagados.", vbOKCancel + vbExclamation, TITULO) = vbOK Then
+            If MsgBox("Apagar a configuracao deste suplemento neste usuario?" & vbCrLf & vbCrLf & _
+                "Os relatorios ja gravados nao sao apagados." & vbCrLf & _
+                "O modo (item 5) nao muda aqui: ele e compartilhado com o motor e a skill.", _
+                vbOKCancel + vbExclamation, TITULO) = vbOK Then
                 On Error Resume Next
                 DeleteSetting APP, SEC
                 On Error GoTo 0
@@ -268,29 +290,236 @@ Private Function ResolverAgente(ByRef agente As String, ByRef comIA As Boolean) 
         End If
         Exit Function
     End If
-    ResolverAgente = AvisoDeDados(agente)
+    ResolverAgente = ResolverModo(agente)
 End Function
 
-' Aviso unico: com o agente no centro, o dado sai da maquina. Nao e confirmacao a cada clique.
-Private Function AvisoDeDados(ByVal agente As String) As Boolean
-    If GetSetting(APP, SEC, "aviso_ia", "") = "1" Then
-        AvisoDeDados = True
+' ===================== modo: livre ou secreto =====================
+
+' Decide o modo antes de o agente ser aberto e antes de qualquer XML ser exportado.
+' Devolve True para seguir no modo LIVRE, False para nao abrir o agente.
+' Nunca segue no modo livre calada quando o configurado e o secreto: ai a pessoa escolhe na hora.
+Private Function ResolverModo(ByVal agente As String) As Boolean
+    Dim aviso As String, cabeca As String
+    Select Case LerSecret(aviso)
+        Case "off"
+            ResolverModo = True
+        Case "on"
+            ResolverModo = (MsgBox("O modo SECRETO e o padrao configurado, e ele ainda esta em desenvolvimento." & vbCrLf & vbCrLf & _
+                "Quando existir, o agente vai ler so uma versao codificada do cronograma, e a " & _
+                "decodificacao vai acontecer nesta maquina." & vbCrLf & vbCrLf & _
+                "Hoje so existe o modo LIVRE: o que o agente (" & agente & ") ler vai para o provedor dele." & vbCrLf & _
+                "Os botoes Sem IA geram o relatorio nesta maquina e nada sai dela." & vbCrLf & vbCrLf & _
+                "Sim: abrir o agente no modo LIVRE, so desta vez." & vbCrLf & _
+                "Nao: cancelar. Nada foi exportado.", vbYesNo + vbExclamation + vbDefaultButton2, TITULO) = vbYes)
+        Case Else
+            If aviso <> "" Then cabeca = aviso & vbCrLf & "Por isso a pergunta voltou." & vbCrLf & vbCrLf
+            Select Case MsgBox(cabeca & "Modo LIVRE: o que o agente (" & agente & ") ler vai para o provedor dele. Continuar?" & vbCrLf & vbCrLf & _
+                "Isso inclui o XML, os resultados e o que voce escrever, nas condicoes da sua conta ou da " & _
+                "sua empresa. Confira se a politica da empresa permite. Se nao permitir, use os botoes " & _
+                "Sem IA: o relatorio e gerado nesta maquina e nada sai dela." & vbCrLf & vbCrLf & _
+                "O modo SECRETO, em que o agente le so uma versao codificada, esta em desenvolvimento." & vbCrLf & vbCrLf & _
+                "Sim: continuar no modo livre, desta vez." & vbCrLf & _
+                "Nao: continuar no modo livre e nao perguntar mais." & vbCrLf & _
+                "Cancelar: nao abrir o agente.", vbYesNoCancel + vbQuestion, TITULO)
+                Case vbYes
+                    ResolverModo = True
+                Case vbNo
+                    ' Se a gravacao falhar, a mensagem ja apareceu e a pergunta volta na proxima vez.
+                    GravarSecret "off"
+                    ResolverModo = True
+            End Select
+    End Select
+End Function
+
+Private Function DescreverModo(ByVal v As String) As String
+    Select Case v
+        Case "off": DescreverModo = "off - livre, sem perguntar"
+        Case "on": DescreverModo = "on - secreto (em desenvolvimento)"
+        Case Else: DescreverModo = "ask - perguntar antes de abrir o agente"
+    End Select
+End Function
+
+' CRONOAUDIT_CONFIG_DIR troca a pasta, como no motor.
+Private Function PastaConfig() As String
+    Dim p As String
+    p = Environ$("CRONOAUDIT_CONFIG_DIR")
+    If p = "" Then p = Environ$("USERPROFILE") & "\.cronoaudit"
+    Do While Len(p) > 3 And Right$(p, 1) = "\"
+        p = Left$(p, Len(p) - 1)
+    Loop
+    PastaConfig = p
+End Function
+
+Private Function ArquivoConfig() As String
+    ArquivoConfig = PastaConfig() & "\config.json"
+End Function
+
+' Devolve ask, on ou off. Sem arquivo, ou sem a chave: ask, que e o padrao de fabrica, e aviso
+' fica vazio. Arquivo ilegivel ou valor desconhecido: tambem ask, mas com o motivo em aviso.
+' Uma preferencia que nao da para ler nunca vira "livre, sem perguntar".
+Private Function LerSecret(ByRef aviso As String) As String
+    Dim txt As String, soAscii As Boolean, ini As Long, fim As Long, v As String
+    aviso = ""
+    LerSecret = "ask"
+    If Not ArquivoExiste(ArquivoConfig()) Then Exit Function
+    If Not LerTextoAscii(ArquivoConfig(), txt, soAscii) Then
+        aviso = "Nao consegui ler a configuracao do modo:" & vbCrLf & Abreviar(ArquivoConfig())
         Exit Function
     End If
-    Select Case MsgBox("Este botao abre o agente (" & agente & ") sobre o cronograma exportado." & vbCrLf & vbCrLf & _
-        "O que o agente ler (o XML, os resultados, o que voce escrever) e enviado ao provedor dele, " & _
-        "nas condicoes da sua conta ou da sua empresa. Confira se a politica da empresa permite." & vbCrLf & vbCrLf & _
-        "Se nao permitir, use CronoauditSemIA e CronoauditCompararSemIA: o relatorio e gerado " & _
-        "nesta maquina e nada sai dela." & vbCrLf & vbCrLf & _
-        "Sim: continuar e nao mostrar este aviso de novo." & vbCrLf & _
-        "Nao: continuar e mostrar de novo na proxima vez." & vbCrLf & _
-        "Cancelar: nao abrir o agente.", vbYesNoCancel + vbInformation, TITULO)
-        Case vbYes
-            SaveSetting APP, SEC, "aviso_ia", "1"
-            AvisoDeDados = True
-        Case vbNo
-            AvisoDeDados = True
-    End Select
+    If Not PareceObjeto(txt) Then
+        aviso = "A configuracao do modo esta ilegivel:" & vbCrLf & Abreviar(ArquivoConfig())
+        Exit Function
+    End If
+    If InStr(1, txt, """secret""", vbBinaryCompare) = 0 Then Exit Function
+    If Not AcharSecret(txt, ini, fim) Then
+        aviso = "A configuracao do modo esta ilegivel:" & vbCrLf & Abreviar(ArquivoConfig())
+        Exit Function
+    End If
+    v = LCase$(Trim$(Mid$(txt, ini, fim - ini + 1)))
+    If v = "ask" Or v = "on" Or v = "off" Then
+        LerSecret = v
+    Else
+        aviso = "A configuracao do modo tem um valor desconhecido (" & Left$(v, 20) & "):" & vbCrLf & Abreviar(ArquivoConfig())
+    End If
+End Function
+
+' Grava a preferencia no arquivo compartilhado, em UTF-8 sem BOM. Troca so o valor da chave
+' quando o arquivo esta legivel, para nao apagar outra chave que o motor venha a gravar.
+' Grava num temporario e troca o nome: se algo falhar no meio, o pior caso e o arquivo sumir,
+' e arquivo ausente vale "ask".
+Private Function GravarSecret(ByVal valor As String) As Boolean
+    Dim dest As String, tmp As String, txt As String, novo As String, resto As String
+    Dim soAscii As Boolean, ini As Long, fim As Long, p As Long
+    dest = ArquivoConfig()
+    tmp = dest & ".tmp"
+    novo = "{" & vbLf & "  ""secret"": """ & valor & """" & vbLf & "}" & vbLf
+    If ArquivoExiste(dest) Then
+        If LerTextoAscii(dest, txt, soAscii) Then
+            If Not soAscii Then
+                MsgBox "A configuracao do modo tem caracteres que este suplemento nao regrava com seguranca:" & vbCrLf & _
+                    Abreviar(dest) & vbCrLf & vbCrLf & _
+                    "Nada foi alterado. Grave pelo motor, num terminal:" & vbCrLf & _
+                    "  review.py --secret " & valor, vbExclamation, TITULO
+                Exit Function
+            End If
+            If PareceObjeto(txt) Then
+                If AcharSecret(txt, ini, fim) Then
+                    novo = Left$(txt, ini - 1) & valor & Mid$(txt, fim + 1)
+                ElseIf InStr(1, txt, """secret""", vbBinaryCompare) = 0 Then
+                    ' Objeto sem a chave: ela entra na frente do que ja existe.
+                    p = InStr(txt, "{")
+                    resto = Mid$(txt, p + 1)
+                    If Mid$(resto, PularBrancos(resto, 1), 1) <> "}" Then
+                        novo = "{" & vbLf & "  ""secret"": """ & valor & """," & resto
+                    End If
+                End If
+            End If
+        End If
+    End If
+    CriarPastas PastaConfig()
+    If Not GravarUtf8(tmp, novo) Then Exit Function
+    On Error Resume Next
+    If ArquivoExiste(dest) Then Kill dest
+    Err.Clear
+    Name tmp As dest
+    If Err.Number <> 0 Then
+        Falha "gravar " & dest, Err
+        On Error GoTo 0
+        Exit Function
+    End If
+    On Error GoTo 0
+    GravarSecret = True
+End Function
+
+' Leitura minima, de proposito: nao e um leitor de JSON. Acha a chave "secret" e devolve onde
+' comeca e onde termina o valor dela, sem as aspas (posicoes a partir de 1).
+Private Function AcharSecret(ByVal txt As String, ByRef ini As Long, ByRef fim As Long) As Boolean
+    Dim p As Long, q As Long
+    p = InStr(1, txt, """secret""", vbBinaryCompare)
+    If p = 0 Then Exit Function
+    p = PularBrancos(txt, p + 8)
+    If Mid$(txt, p, 1) <> ":" Then Exit Function
+    p = PularBrancos(txt, p + 1)
+    If Mid$(txt, p, 1) <> """" Then Exit Function
+    q = InStr(p + 1, txt, """")
+    If q = 0 Then Exit Function
+    ini = p + 1
+    fim = q - 1
+    AcharSecret = True
+End Function
+
+' Posicao do primeiro caractere, a partir de p, que nao e espaco, tabulacao ou fim de linha.
+Private Function PularBrancos(ByVal txt As String, ByVal p As Long) As Long
+    Do While p <= Len(txt)
+        Select Case Asc(Mid$(txt, p, 1))
+            Case 32, 9, 13, 10
+                p = p + 1
+            Case Else
+                Exit Do
+        End Select
+    Loop
+    PularBrancos = p
+End Function
+
+' O minimo para nao confiar num arquivo truncado: comeca com { e termina com }.
+Private Function PareceObjeto(ByVal txt As String) As Boolean
+    Dim a As Long, z As Long
+    a = PularBrancos(txt, 1)
+    z = Len(txt)
+    Do While z > 0
+        Select Case Asc(Mid$(txt, z, 1))
+            Case 32, 9, 13, 10
+                z = z - 1
+            Case Else
+                Exit Do
+        End Select
+    Loop
+    If z <= a Then Exit Function
+    PareceObjeto = (Mid$(txt, a, 1) = "{" And Mid$(txt, z, 1) = "}")
+End Function
+
+' Le o arquivo byte a byte como ASCII, pulando um BOM de UTF-8 na frente. soAscii = False se
+' houver byte acima de 127; nesse caso o texto serve para ler a chave, mas nao para regravar.
+Private Function LerTextoAscii(ByVal caminho As String, ByRef txt As String, ByRef soAscii As Boolean) As Boolean
+    Dim f As Integer, b() As Byte, n As Long, i As Long, ini As Long
+    txt = ""
+    soAscii = True
+    On Error Resume Next
+    n = FileLen(caminho)
+    If Err.Number <> 0 Or n > 65536 Then
+        Err.Clear
+        On Error GoTo 0
+        Exit Function
+    End If
+    If n = 0 Then
+        On Error GoTo 0
+        LerTextoAscii = True
+        Exit Function
+    End If
+    ReDim b(0 To n - 1)
+    f = FreeFile
+    Open caminho For Binary Access Read As #f
+    If Err.Number = 0 Then Get #f, , b
+    If Err.Number <> 0 Then
+        Err.Clear
+        Close #f
+        On Error GoTo 0
+        Exit Function
+    End If
+    Close #f
+    On Error GoTo 0
+    If n >= 3 Then
+        If b(0) = &HEF And b(1) = &HBB And b(2) = &HBF Then ini = 3
+    End If
+    For i = ini To n - 1
+        If b(i) > 127 Then
+            soAscii = False
+            txt = txt & "?"
+        Else
+            txt = txt & Chr$(b(i))
+        End If
+    Next i
+    LerTextoAscii = True
 End Function
 
 ' Abre um terminal visivel na pasta da rodada, com o agente iniciado sobre o pedido curto.
@@ -436,7 +665,10 @@ Private Function PedidoCabecalho(ByVal tarefa As String) As String
     PedidoCabecalho = "# Pedido para a skill cronoaudit" & vbCrLf & vbCrLf & _
         "Gerado pelo suplemento da cronoaudit para MS Project em " & Format(Now, "dd/mm/yyyy hh:nn") & "." & vbCrLf & vbCrLf & _
         "- Tarefa: " & tarefa & vbCrLf & _
-        "- Idioma: portugues do Brasil (pt-BR). Converse e escreva em pt-BR, com acentuacao normal." & vbCrLf
+        "- Idioma: portugues do Brasil (pt-BR). Converse e escreva em pt-BR, com acentuacao normal." & vbCrLf & _
+        "- Modo: LIVRE. A pessoa confirmou no suplemento do MS Project, antes de este pedido ser gravado, " & _
+        "que o que o agente ler vai para o provedor dele. Nao pergunte o modo de novo. " & _
+        "(O modo secreto esta em desenvolvimento.)" & vbCrLf
 End Function
 
 ' Os nomes exatos que o motor grava, para o agente nao adivinhar. baseAnterior vazio = analise
@@ -469,7 +701,8 @@ End Function
 Private Function PedidoRegras(ByVal linhaDeComando As String, ByVal py As String, ByVal rv As String) As String
     PedidoRegras = vbCrLf & "## Como fazer" & vbCrLf & vbCrLf & _
         "1. Use a skill **cronoaudit**. Leia o SKILL.md dela antes de qualquer coisa e siga o que ele diz." & vbCrLf & _
-        "2. Rode o motor da skill uma unica vez, gravando nesta pasta. O comando que ja funciona nesta maquina:" & vbCrLf & vbCrLf & _
+        "2. Rode o motor da skill uma unica vez, gravando nesta pasta. O comando que ja funciona nesta maquina " & _
+        "(o `--free` no fim diz ao motor que o modo ja foi escolhido):" & vbCrLf & vbCrLf & _
         "   ```" & vbCrLf & _
         "   " & linhaDeComando & vbCrLf & _
         "   ```" & vbCrLf & vbCrLf & _
@@ -487,7 +720,7 @@ End Function
 Private Function PedidoAnalise(ByVal base As String, ByVal pasta As String, ByVal py As String, ByVal rv As String) As String
     PedidoAnalise = PedidoCabecalho("analise critica do cronograma") & _
         "- Arquivo: `" & base & ".xml` (nesta pasta; exportacao XML do MS Project, MSPDI)" & vbCrLf & _
-        PedidoRegras(py & " """ & rv & """ """ & pasta & "\" & base & ".xml"" --outdir """ & pasta & """ --lang pt", py, rv) & _
+        PedidoRegras(py & " """ & rv & """ """ & pasta & "\" & base & ".xml"" --outdir """ & pasta & """ --lang pt --free", py, rv) & _
         PedidoArquivos(base, "")
 End Function
 
@@ -499,7 +732,7 @@ Private Function PedidoComparacao(ByVal baseAnterior As String, ByVal baseAtual 
         "- A ordem importa: no comando, a anterior vem primeiro. O motor gera a analise critica da " & _
         "versao atual e o relatorio de ciclo entre as duas." & vbCrLf & _
         PedidoRegras(py & " """ & rv & """ """ & pasta & "\" & baseAnterior & ".xml"" """ & pasta & "\" & baseAtual & _
-            ".xml"" --outdir """ & pasta & """ --lang pt", py, rv) & _
+            ".xml"" --outdir """ & pasta & """ --lang pt --free", py, rv) & _
         PedidoArquivos(baseAtual, baseAnterior)
 End Function
 
@@ -708,7 +941,9 @@ Private Function RodarMotor(ByVal py As String, ByVal rv As String, ByVal arquiv
         On Error GoTo 0
         Exit Function
     End If
-    cmd = py & " """ & rv & """ " & arquivos & " --outdir """ & pasta & """"
+    ' --free: aqui nao ha agente e nada sai da maquina. Sem a chave, o motor perguntaria o modo
+    ' no terminal, ou pararia quando o configurado e o secreto, que so diz respeito ao agente.
+    cmd = py & " """ & rv & """ " & arquivos & " --outdir """ & pasta & """ --free"
     rc = sh.Run("cmd /c ""title cronoaudit && " & cmd & " || (echo. & echo A cronoaudit terminou com erro. & pause & exit /b 1)""", 1, True)
     If Err.Number <> 0 Then
         Falha "executar o Python (a politica da maquina pode bloquear processos abertos por macro)", Err
@@ -755,6 +990,12 @@ Private Function AcharMotor(ByRef py As String, ByRef rv As String) As Boolean
             Exit Function
         End If
         SaveSetting APP, SEC, "review", rv
+    End If
+    ' A v0.3 passa --free ao motor. Um motor anterior nao conhece a chave e pararia com erro.
+    If Not ArquivoExiste(Left$(rv, InStrRev(rv, "\")) & "cronoaudit_config.py") Then
+        MsgBox "A skill instalada e mais antiga que este suplemento (v0.3):" & vbCrLf & Abreviar(rv) & vbCrLf & vbCrLf & _
+            "Rode de novo o instalador da cronoaudit para atualizar a skill.", vbCritical, TITULO
+        Exit Function
     End If
 
     py = GetSetting(APP, SEC, "python", "")

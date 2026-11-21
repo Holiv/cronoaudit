@@ -8,10 +8,11 @@ inventar um.
 O suplemento é só o **atalho de entrada**. Ele exporta o XML do arquivo aberto e abre um terminal
 com a skill já iniciada sobre ele. Tudo o que ele faz você pode fazer à mão (seção 7).
 
-**Estado: v0.2.1, beta.** A v0.2 foi usada de ponta a ponta em duas máquinas Windows: com o
+**Estado: v0.3, beta.** A v0.2 foi usada de ponta a ponta em duas máquinas Windows: com o
 GitHub Copilot CLI numa e o Claude Code na outra, os dois agentes relataram os mesmos números do
-motor. Novo na v0.2.1 e ainda não medido em máquina real: a rota pelo VS Code, a lista de
-arquivos no `pedido.md` e a tela de configuração.
+motor. Ainda não medido em máquina real: da v0.2.1, a rota pelo VS Code, a lista de arquivos no
+`pedido.md` e a tela de configuração; da v0.3, tudo o que é do modo (ler e gravar o
+`config.json` pela macro, as janelas de pergunta, o `--free` na linha de comando do motor).
 
 ## 1. Os botões
 
@@ -22,12 +23,40 @@ arquivos no `pedido.md` e a tela de configuração.
 | **Exportar XML** (`CronoauditExportarXml`) | só exporta o XML e abre a pasta no Explorer | **não**. Nada é enviado e nada roda. O que você fizer com o XML depois é com você |
 | **Sem IA** (`CronoauditSemIA`) | exporta, roda o motor da cronoaudit e abre o relatório HTML | **não**. Tudo roda nesta máquina |
 | **Comparar sem IA** (`CronoauditCompararSemIA`) | o mesmo, para a comparação de duas versões | **não** |
-| **Configurar** (`CronoauditConfigurar`) | mostra a configuração atual e deixa trocar agente, pasta, Python, `review.py`, o aviso de dados, ou redefinir tudo | não |
+| **Configurar** (`CronoauditConfigurar`) | mostra a configuração atual e deixa trocar agente, pasta, Python, `review.py`, o modo, ou redefinir | não |
 
 Sobre o "sim": o suplemento não envia nada. Quem envia é o agente, ao provedor dele, nas condições
-da sua conta ou da conta da empresa. Na primeira vez que você usa Analisar ou Comparar aparece um
-aviso dizendo isso, com a opção de não mostrar de novo. **Se a política da empresa não permite
-IA, use os dois botões "sem IA"**: o relatório é o mesmo, só não há conversa.
+da sua conta ou da conta da empresa. Antes de abrir o agente, Analisar e Comparar conferem o modo
+(logo abaixo). **Se a política da empresa não permite IA, use os dois botões "sem IA"**: o
+relatório é o mesmo, só não há conversa.
+
+### O modo: livre ou secreto
+
+São dois modos, e hoje só um existe.
+
+- **Livre**: o agente lê o cronograma e os resultados, e o que ele lê vai para o provedor dele.
+- **Secreto**: o agente lê só uma versão codificada do cronograma, e a decodificação acontece na
+  sua máquina. **Está em desenvolvimento.**
+
+A preferência fica num arquivo só, que o motor e a skill também leem:
+`%USERPROFILE%\.cronoaudit\config.json`, chave `secret`. O que Analisar e Comparar fazem com ela,
+antes de exportar qualquer coisa:
+
+| `secret` | O que acontece |
+|---|---|
+| `ask` (padrão de fábrica; vale também se o arquivo não existe ou está ilegível) | uma janela pergunta. **Sim**: modo livre, desta vez. **Não**: modo livre e não perguntar mais (grava `off`). **Cancelar**: não abre o agente |
+| `off` | segue no modo livre, sem perguntar |
+| `on` | avisa que o modo secreto está em desenvolvimento e oferece o modo livre só para esta rodada, ou cancelar. Nunca segue no modo livre calado |
+
+Para trocar: `CronoauditConfigurar`, item 5; ou, num terminal, `review.py --secret ask`, `off`
+ou `on`. Vale para os três de uma vez.
+
+O que essa pergunta garante: aqui ela é código, feita pela macro antes de existir agente. Depois
+de respondida, o `pedido.md` diz ao agente que o modo já foi escolhido e o comando do motor leva
+`--free`, para ninguém perguntar de novo. A mesma pergunta feita por um agente no terminal é o
+agente seguindo a instrução da skill: deixa a escolha visível, mas não é uma trava.
+
+Os botões "sem IA" não perguntam o modo: ali não há agente e nada sai da máquina.
 
 Se Analisar ou Comparar não encontrarem nenhum agente instalado, eles oferecem rodar sem IA em
 vez de falhar.
@@ -176,5 +205,7 @@ GUID, não o UID. A outra versão não pode estar aberta no Project.
 | a janela de escolher arquivo não abre | `Shell.Application` bloqueado | o suplemento pede o caminho por digitação |
 | "Salve em disco" com o arquivo salvo | arquivo aberto do OneDrive/SharePoint pelo navegador ou Recentes, o Project devolve uma URL | abra pela pasta sincronizada; o teste mostra isso na linha `[0]` |
 | o original voltou sem o desfazer | quando o "Salvar como" troca o documento ativo, o original é reaberto do disco | esperado; nas máquinas medidas o ativo continuou sendo o `.mpp` |
-| o aviso de dados não aparece mais e você quer rever | foi marcado para não mostrar | `CronoauditConfigurar`, item 5 |
+| a pergunta do modo não aparece mais e você quer rever | o modo está em `off` | `CronoauditConfigurar`, item 5, e escolha `ask` |
+| "A skill instalada é mais antiga que este suplemento" | a v0.3 passa `--free` ao motor, e a skill instalada ainda não conhece a chave | rode o `install.ps1` de novo |
+| "A configuração do modo está ilegível" | o `config.json` foi editado à mão e quebrou | responda à pergunta; ou `review.py --secret ask` grava de novo |
 | `Cronoaudit1` na lista de módulos, macros em dobro | a versão anterior não foi removida antes de importar | remova os dois módulos e importe de novo |
