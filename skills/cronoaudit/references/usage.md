@@ -118,6 +118,7 @@ Four files per run, written next to the input:
 | `<name>-review.json` | every finding as data, for a spreadsheet or your own dashboard |
 | `<a>--to--<b>-cycle.html` | the cycle report, when you passed two files |
 | `<a>--to--<b>-cycle.json` | the same as data |
+| `<a>--to--<b>-cycle-readings.json` | the rule-built sentences the cycle report shows, by section |
 
 The HTML has **no external references at all** — no CDN, no web font, no image host. It opens
 from a network share, from an email attachment, from a laptop with no connection, and it looks
@@ -245,7 +246,11 @@ block to `scripts/i18n.py` and nothing else, because the template holds no prose
 From the cycle comparison you additionally get the earned figure for both snapshots, the
 movement between them, the per-activity decomposition that sums to that movement, the
 **unexplained residue** when it does not, the three-way execution / replan / reference reading,
-and the inserted and removed activities.
+and the inserted and removed activities. Ahead of those, six readings of the model itself:
+the project finish and what holds it, entries and exits of the critical path with the largest
+float losses, links and constraints edited, durations edited before any start, the **past
+rewritten** (actual dates changed or withdrawn, percents that went down) and the network-quality
+metrics of both files side by side. Detail in `comparing-versions.md`.
 
 ## The three things that make the output defensible
 

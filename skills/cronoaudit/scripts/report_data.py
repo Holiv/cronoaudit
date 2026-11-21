@@ -13,6 +13,7 @@ found, never from a name assumed in advance.
 """
 from __future__ import annotations
 
+import os
 from collections import OrderedDict
 from datetime import datetime
 
@@ -373,12 +374,15 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
     links_text = L["links_evaluated"].format(list=", ".join(
         f"{i18n.link_type(lang, k)} {v}" for k, v in lt.items() if v))
 
+    title = model["project"].get("title") or model["project"].get("name") or "Schedule"
     payload = {
         "kind": "review", "lang": lang, "labels": L, "language": detected,
+        "page_title": page_title("review", title, lang),
         "theme": {**DEFAULT_THEME, **(theme or {})},
         "meta": {
-            "title": model["project"].get("title") or model["project"].get("name") or "Schedule",
-            "file": model.get("source"),
+            "title": title,
+            # The file name only; `source` never carries a path.
+            "file": os.path.basename(model.get("source") or ""),
             "status_date": fmt_date(model["project"].get("status_date"), lang),
             "generated": datetime.now().strftime("%d/%m/%Y %H:%M" if lang == "pt" else "%Y-%m-%d %H:%M"),
             "tasks": model["counts"]["tasks"], "leaves": len(lv),
@@ -454,27 +458,320 @@ def localize_quality(q: dict, lang: str) -> dict:
     return out
 
 
+def baseline_label(slot, L) -> str | None:
+    """The baseline in the words the tool itself uses, or nothing.
+
+    Slot 0 is simply "the baseline": naming it tells a reader nothing and reads as
+    a zero. Any other slot is worth a line, because the comparison is then against
+    a baseline other than the one most people assume.
+    """
+    if slot in (None, "", "0", 0):
+        return None
+    return L["baseline_n"].format(n=slot)
+
+
+def page_title(kind: str, title: str, lang: str) -> str:
+    C = i18n.cycle_text(lang)
+    return C["page_title_cycle" if kind == "cycle" else "page_title_review"].format(title=title)
+
+
+def _cycle_warnings(cmp_res, C, lang) -> list:
+    """The comparison's warnings in the report's language, from their codes.
+
+    A comparison produced by an older engine carries only the English sentences;
+    those are shown as they are rather than dropped.
+    """
+    codes = cmp_res.get("warning_codes")
+    if codes is None:
+        return [{"text": w, "severity": "high"} for w in cmp_res.get("warnings", [])]
+    out = []
+    for w in codes:
+        args = {k: v for k, v in w.items() if k != "code"}
+        if "gap" in args:
+            g = narrative_mod.fnum(args["gap"], 2, lang)
+            args["gap"] = g if g.startswith("-") else "+" + g
+        text = C.get("w_" + w["code"])
+        if text:
+            out.append({"text": text.format(**args),
+                        "severity": "critical" if w["code"] == "past_rewritten" else "high"})
+    # The rewritten past leads: it is the one that invalidates what was already reported.
+    out.sort(key=lambda x: x["severity"] != "critical")
+    return out
+
+
+def _cycle_sections(cmp_res, lang, C, readings) -> list:
+    """The six readings of the model, each as one self-contained block.
+
+    Rows are prepared here in the report's language (dates, link and constraint
+    names); the untouched figures stay in the `-cycle.json` sidecar.
+    """
+    SW = i18n.severity_words(lang)
+    QT = i18n.quality_text(lang)
+
+    def D(v):
+        return fmt_date(v, lang)
+
+    def col(label_key, key, **flags):
+        return {"label": C[label_key], "key": key, **flags}
+
+    def yn(v):
+        return C["yes"] if v else C["no"]
+
+    def lag_text(link_type, lag):
+        if link_type is None:
+            return None
+        s = i18n.link_type(lang, link_type)
+        if lag and lag.get("value"):
+            v = lag["value"]
+            num = narrative_mod.fnum(abs(v), 0 if float(v).is_integer() else 2, lang)
+            unit = "%" if lag.get("unit") == "percent" else " " + C["unit_d"]
+            s += f" {'+' if v > 0 else '−'} {num}{unit}"
+        return s
+
+    def con_text(code, date):
+        s = i18n.constraint(lang, code)
+        return f"{s} {D(date)}" if date else s
+
+    ROW = [col("col_row", "id"), col("col_activity", "name")]
+    out = []
+
+    def section(code, key, severity, badge, tiles, lists, empty):
+        out.append({
+            "code": code, "id": key, "title": C[key + "_title"], "subtitle": C[key + "_sub"],
+            "severity": severity, "severity_word": SW[severity], "badge": badge,
+            "criterion": C[key + "_criterion"], "reproduce": C[key + "_reproduce"],
+            "reading": readings.get(key) or [],
+            "tiles": tiles, "lists": [l for l in lists if l["rows"]], "empty": empty,
+        })
+
+    # ---- C1 project finish
+    pf = cmp_res.get("project_finish")
+    if pf:
+        fp, fc = pf["previous"], pf["current"]
+        d = pf.get("delta_days")
+        drv = fc.get("driver")
+        moved = d is not None and abs(d) >= 0.05
+        tiles = [
+            {"label": C["t_finish_before"], "value": D(fp.get("finish")), "small": True},
+            {"label": C["t_finish_after"], "value": D(fc.get("finish")), "small": True,
+             "sev": "al" if (moved and d > 0) else ""},
+            {"label": C["t_finish_delta"], "value": d, "signed": True, "decimals": 0,
+             "caption": C["t_finish_delta_cap"], "sev": "cr" if (moved and d > 0) else ""},
+        ]
+        if drv:
+            tiles.append({"label": C["t_finish_driver"], "value": drv["name"], "text": True,
+                          "caption": C["t_driver_cap_row"].format(id=drv["id"])})
+        chain = [{"id": n["id"], "name": n["name"], "finish": D(n.get("finish")),
+                  "critical": yn(n.get("critical")),
+                  "via": i18n.link_type(lang, n["via"]) if n.get("via") else None,
+                  "started": yn(n.get("started"))} for n in fc.get("chain") or []]
+        section("C1", "c1", "high" if (moved and d > 0) else "view",
+                None, tiles,
+                [{"title": C["l_chain"], "count": len(chain), "rows": chain,
+                  "columns": ROW + [col("col_finish", "finish"), col("col_critical", "critical"),
+                                    col("col_via", "via"), col("col_started", "started")]}],
+                empty=False)
+
+    # ---- C2 critical path
+    cp = cmp_res.get("critical_path")
+    if cp:
+        def cp_row(r):
+            return {"id": r["id"], "name": r["name"], "fb": r["float_before_days"],
+                    "fa": r["float_after_days"], "fell": r.get("float_fell_days"),
+                    "finb": D(r.get("finish_before")), "fina": D(r.get("finish_after")),
+                    "completed": yn(r["completed"]) if "completed" in r else None}
+        floats = [col("col_float_before", "fb"), col("col_float_after", "fa")]
+        dates = [col("col_finish_before", "finb"), col("col_finish_after", "fina")]
+        ne, nl, nf = len(cp["entered"]), len(cp["left"]), cp["float_fell_count"]
+        section("C2", "c2", "high" if ne else ("check" if (nl or nf) else "view"), ne,
+                [{"label": C["t_entered"], "value": ne, "caption": C["t_entered_cap"],
+                  "sev": "al" if ne else ""},
+                 {"label": C["t_left"], "value": nl, "caption": C["t_left_cap"]},
+                 {"label": C["t_fell"], "value": nf, "caption": C["t_fell_cap"],
+                  "sev": "al" if nf else ""}],
+                [{"title": C["l_entered"], "count": ne, "rows": [cp_row(r) for r in cp["entered"]],
+                  "columns": ROW + floats + dates},
+                 {"title": C["l_left"], "count": nl, "rows": [cp_row(r) for r in cp["left"]],
+                  "columns": ROW + floats + [col("col_completed", "completed")] + dates},
+                 {"title": C["l_fell"].format(n=len(cp["float_fell_top"]), total=nf),
+                  "count": len(cp["float_fell_top"]),
+                  "rows": [cp_row(r) for r in cp["float_fell_top"]],
+                  "columns": ROW + floats + [col("col_float_fell", "fell")] + dates}],
+                empty=not (ne or nl or nf))
+
+    # ---- C3 logic
+    lg = cmp_res.get("logic")
+    if lg:
+        def link_row(r):
+            return {"id": r["id"], "name": r["name"], "pid": r["predecessor_id"],
+                    "pname": r["predecessor_name"],
+                    "before": lag_text(r["type_before"], r["lag_before"]),
+                    "after": lag_text(r["type_after"], r["lag_after"])}
+
+        def con_row(r):
+            return {"id": r["id"], "name": r["name"],
+                    "before": con_text(r["type_before"], r["date_before"]),
+                    "after": con_text(r["type_after"], r["date_after"])}
+        link_cols = ROW + [col("col_pred_row", "pid"), col("col_predecessor", "pname"),
+                           col("col_link_before", "before"), col("col_link_after", "after")]
+        con_cols = ROW + [col("col_constraint_before", "before"),
+                          col("col_constraint_after", "after")]
+        a, rm = len(lg["links_added"]), len(lg["links_removed"])
+        ed = len(lg["lag_changed"]) + len(lg["type_changed"])
+        cn = (len(lg["constraints_added"]) + len(lg["constraints_changed"])
+              + len(lg["constraints_removed"]))
+        total = a + rm + ed + cn
+        lists = [{"title": C[t], "count": len(lg[k]), "rows": [fn(r) for r in lg[k]], "columns": cols}
+                 for t, k, fn, cols in (
+                     ("l_links_added", "links_added", link_row, link_cols),
+                     ("l_links_removed", "links_removed", link_row, link_cols),
+                     ("l_lag", "lag_changed", link_row, link_cols),
+                     ("l_type", "type_changed", link_row, link_cols),
+                     ("l_c_added", "constraints_added", con_row, con_cols),
+                     ("l_c_changed", "constraints_changed", con_row, con_cols),
+                     ("l_c_removed", "constraints_removed", con_row, con_cols))]
+        section("C3", "c3", "check" if total else "view", total,
+                [{"label": C["t_links_added"], "value": a, "caption": C["t_links_cap"]},
+                 {"label": C["t_links_removed"], "value": rm, "caption": C["t_links_cap"]},
+                 {"label": C["t_links_edited"], "value": ed, "caption": C["t_links_edited_cap"]},
+                 {"label": C["t_constraints"], "value": cn, "caption": C["t_constraints_cap"]}],
+                lists, empty=not total)
+
+    # ---- C4 durations edited before any start
+    du = cmp_res.get("duration_changed")
+    if du is not None:
+        rows = [{"id": r["id"], "name": r["name"], "before": r["duration_before_days"],
+                 "after": r["duration_after_days"], "delta": r["delta_days"],
+                 "finb": D(r.get("finish_before")), "fina": D(r.get("finish_after"))} for r in du]
+        section("C4", "c4", "check" if du else "view", len(du),
+                [{"label": C["t_dur"], "value": len(du), "caption": C["t_dur_cap"]},
+                 {"label": C["t_dur_net"], "value": round(sum(r["delta_days"] for r in du), 1),
+                  "signed": True, "decimals": 1, "caption": C["t_dur_net_cap"]}],
+                [{"title": C["l_dur"], "count": len(rows), "rows": rows,
+                  "columns": ROW + [col("col_dur_before", "before"), col("col_dur_after", "after"),
+                                    col("col_delta_d", "delta", signed=True),
+                                    col("col_finish_before", "finb"),
+                                    col("col_finish_after", "fina")]}],
+                empty=not du)
+
+    # ---- C5 past rewritten
+    pr = cmp_res.get("past_rewritten")
+    if pr:
+        def date_row(r):
+            return {"id": r["id"], "name": r["name"], "before": D(r["before"]),
+                    "after": D(r["after"]) if r["after"] else C["withdrawn"],
+                    "moved": r["moved_days"]}
+        date_cols = ROW + [col("col_before", "before"), col("col_after", "after"),
+                           col("col_moved_cal", "moved", signed=True)]
+        pct = [{"id": r["id"], "name": r["name"], "field": C["field_" + r["field"]],
+                "before": r["before"], "after": r["after"], "delta": r["delta_points"]}
+               for r in pr["percent_decreased"]]
+        ns, nf, np_ = len(pr["actual_start"]), len(pr["actual_finish"]), len(pct)
+        section("C5", "c5", "critical" if pr["activities"] else "view", pr["activities"],
+                [{"label": C["t_past_start"], "value": ns, "caption": C["t_past_start_cap"],
+                  "sev": "cr" if ns else ""},
+                 {"label": C["t_past_finish"], "value": nf, "caption": C["t_past_finish_cap"],
+                  "sev": "cr" if nf else ""},
+                 {"label": C["t_past_pct"], "value": np_, "caption": C["t_past_pct_cap"],
+                  "sev": "cr" if np_ else ""}],
+                [{"title": C["l_past_start"], "count": ns, "columns": date_cols,
+                  "rows": [date_row(r) for r in pr["actual_start"]]},
+                 {"title": C["l_past_finish"], "count": nf, "columns": date_cols,
+                  "rows": [date_row(r) for r in pr["actual_finish"]]},
+                 {"title": C["l_past_pct"], "count": np_, "rows": pct,
+                  "columns": ROW + [col("col_field", "field"), col("col_before", "before"),
+                                    col("col_after", "after"),
+                                    col("col_delta_pp", "delta", signed=True)]}],
+                empty=not pr["activities"])
+
+    # ---- C6 network quality, side by side
+    q = cmp_res.get("quality")
+    if q:
+        status = {"pass": C["q_pass"], "fail": C["q_fail"], None: ""}
+        change = {"improved": C["chg_improved"], "worsened": C["chg_worsened"],
+                  "unchanged": C["chg_unchanged"], None: C["chg_na"]}
+        rows = []
+        for m in q["metrics"]:
+            p, c = m["previous"], m["current"]
+            rows.append({
+                "code": m["code"], "metric": QT.get(m["code"], (m["code"], ""))[0],
+                "cb": p["count"] if p["population"] else None,
+                "ca": c["count"] if c["population"] else None,
+                "sb": p["share_pct"], "sa": c["share_pct"], "sd": m["share_delta_points"],
+                "stb": status.get(p["status"], ""), "sta": status.get(c["status"], ""),
+                "change": change.get(m["change"], ""),
+                "_tone": {"worsened": "bad", "improved": "good"}.get(m["change"]),
+            })
+        worse = sum(1 for m in q["metrics"] if m["change"] == "worsened")
+        better = sum(1 for m in q["metrics"] if m["change"] == "improved")
+        crossed = sum(1 for m in q["metrics"] if m.get("crossed") == "pass->fail")
+        section("C6", "c6", "high" if crossed else ("check" if worse else "view"), None,
+                [{"label": C["t_q_worse"], "value": worse, "caption": C["t_q_cap"],
+                  "sev": "al" if worse else ""},
+                 {"label": C["t_q_better"], "value": better, "caption": C["t_q_cap"],
+                  "sev": "vs" if better else ""},
+                 {"label": C["t_q_crossed"], "value": crossed, "caption": C["t_q_cap"],
+                  "sev": "cr" if crossed else ""}],
+                [{"title": C["l_quality"], "count": len(rows), "rows": rows, "open": True,
+                  "columns": [{"label": "", "key": "code"}, col("col_metric", "metric"),
+                              col("col_count_before", "cb"), col("col_count_after", "ca"),
+                              col("col_share_before", "sb", pct=True),
+                              col("col_share_after", "sa", pct=True),
+                              col("col_share_delta", "sd", signed=True),
+                              col("col_status_before", "stb"), col("col_status_after", "sta"),
+                              col("col_change", "change", tone=True)]}],
+                empty=False)
+    return out
+
+
 def build_cycle(cmp_res, theme=None, lang=None, detected=None) -> dict:
     lang = lang or (detected or {}).get("lang") or "en"
+    C = {**i18n.ui(lang), **i18n.cycle_text(lang)}
+    QT = i18n.quality_text(lang)
+    prev, curr = cmp_res["previous"], cmp_res["current"]
+    readings = narrative_mod.build_cycle(
+        cmp_res, lang, fmt_date, metric_title=lambda code: QT.get(code, (code, ""))[0])
+    title = curr.get("title") or prev.get("title") or C["cycle_title"]
+    conv = cmp_res.get("conventions") or {}
+    conventions = [
+        {"label": C["cv_" + k],
+         "text": i18n.conventions(lang)["denominator"] if k == "denominator" else C["cvt_" + k]}
+        for k in ("matching", "population", "logic_population", "denominator", "aggregates",
+                  "critical", "links", "finish_delta", "float_and_duration")
+        if k in conv
+    ]
+    finish = (cmp_res.get("project_finish") or {}).get("current") or {}
     return {
-        "kind": "cycle", "lang": lang, "labels": i18n.ui(lang),
+        "kind": "cycle", "lang": lang, "labels": C,
+        "page_title": page_title("cycle", title, lang),
         "language": detected or {"lang": lang, "confidence": "inherited"},
         "theme": {**DEFAULT_THEME, **(theme or {})},
         "meta": {
             "generated": datetime.now().strftime("%d/%m/%Y %H:%M" if lang == "pt" else "%Y-%m-%d %H:%M"),
-            **{f"previous_{k}": v for k, v in cmp_res["previous"].items()},
-            **{f"current_{k}": v for k, v in cmp_res["current"].items()},
+            "title": title,
+            # File names only. A path is somebody's folder structure.
+            "previous_file": prev.get("source"), "current_file": curr.get("source"),
+            "previous_status_date": fmt_date(prev.get("status_date"), lang),
+            "current_status_date": fmt_date(curr.get("status_date"), lang),
+            "current_finish": fmt_date(finish.get("finish"), lang),
+            "baseline_label": baseline_label(curr.get("baseline_slot"), C),
+            "budget": curr.get("budget_at_completion"),
+            "previous_percent_earned": prev.get("percent_earned"),
+            "current_percent_earned": curr.get("percent_earned"),
             "movement_points": cmp_res.get("movement_points"),
             "explained_points": cmp_res.get("decomposition_sums_to_points"),
             "unexplained_points": cmp_res.get("movement_unexplained_points"),
         },
-        "conventions": {**cmp_res["conventions"],
-                        "denominator": i18n.conventions(lang)["denominator"]},
-        "warnings": cmp_res.get("warnings", []),
-        "readings": {
+        "conventions": {**conv, "denominator": i18n.conventions(lang)["denominator"]},
+        "conventions_list": conventions,
+        "warnings": _cycle_warnings(cmp_res, C, lang),
+        "readings": readings,
+        "sections": _cycle_sections(cmp_res, lang, C, readings),
+        "trend": {
             "execution": [t for t in cmp_res["trend"] if t["reading"] == "execution"],
             "replan": [t for t in cmp_res["trend"] if t["reading"] == "replan"],
             "reference": cmp_res["baseline_moved"],
+            "words": {"execution": C["card_execution"].lower(), "replan": C["card_replan"].lower()},
         },
         "decomposition": cmp_res["decomposition"],
         "unmatched": cmp_res["unmatched"],

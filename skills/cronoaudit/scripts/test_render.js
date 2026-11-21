@@ -8,7 +8,12 @@
 // was empty. Checking that the file exists proves nothing; this runs it.
 const fs = require('fs');
 const file = process.argv[2];
-const required = process.argv.slice(3);
+// Arguments after the file are sections that must be present; `--forbid=<regex>`
+// names a pattern that must NOT appear in what a person reads (a local path, a
+// raw ISO timestamp, a negative zero).
+const rest = process.argv.slice(3);
+const required = rest.filter(a => !a.startsWith('--forbid='));
+const forbidden = rest.filter(a => a.startsWith('--forbid=')).map(a => a.slice(9));
 
 const src = fs.readFileSync(file, 'utf8');
 const m = src.match(/<script>([\s\S]*?)<\/script>\s*<\/body>/);
@@ -41,6 +46,15 @@ if (!html || /^Rendering/.test(html)) {
 const missing = required.filter(s => !html.includes(s));
 if (missing.length) {
   console.error('missing expected sections: ' + JSON.stringify(missing));
+  process.exit(1);
+}
+const text = html.replace(/<[^>]*>/g, ' ');
+const leaked = forbidden
+  .map(p => [p, text.match(new RegExp(p))])
+  .filter(([, hit]) => hit)
+  .map(([p, hit]) => `${p} matched "${hit[0]}"`);
+if (leaked.length) {
+  console.error('forbidden content in the rendered report: ' + leaked.join('; '));
   process.exit(1);
 }
 console.log(`rendered ${html.length} chars, ${required.length} sections present`);

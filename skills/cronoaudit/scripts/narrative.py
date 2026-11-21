@@ -248,3 +248,259 @@ def build(payload: dict, lang: str) -> dict:
         add("forensics", "fx_slip", n=_n(SL["sample"], 0), early=_n(SL["started_early"], 0), late=_n(SL["started_late"], 0),
             p50=_n(abs(p50), 0), dir=T["early"] if p50 < 0 else T["late"])
     return out
+
+
+# ---------------------------------------------------------------------------
+# The cycle comparison. Same contract as above: every sentence is built from the
+# comparison's own figures, and a figure that is missing produces no sentence.
+# ---------------------------------------------------------------------------
+RC = {
+    "en": {
+        "mv": "Weighted progress went from {a}% to {b}%: {m} points. Per-activity progress explains {x} of them and {r} are not explained by work done.",
+        "mv_clean": "Weighted progress went from {a}% to {b}%: {m} points, all of it explained by per-activity progress.",
+        "tr": "{e} activities moved their dates with actual dates behind them and {r} with none; the baseline itself moved on {b}.",
+        "tr_none": "No activity moved its dates between the two deliveries.",
+        "sc": "{i} activities inserted and {r} removed.",
+        "sc_none": "No activity was inserted or removed: the scope is the same in both deliveries.",
+        "fin_later": "The project finish moved from {a} to {b}: {d} calendar days later.",
+        "fin_earlier": "The project finish moved from {a} to {b}: {d} calendar days earlier.",
+        "fin_same": "The project finish did not move: {b} in both deliveries.",
+        "fin_driver": "What holds the current date is row {id}, {name}, finishing on {f}. This is an approximation: the last-finishing open activity, walked back through the predecessor that lands latest; the network was not recalculated.",
+        "fin_driver_flag_no": "The tool does not flag that row as critical, so read the path before quoting it.",
+        "fin_driver_changed": "In the previous delivery the date was held by another activity (row {id}, {name}): the path that drives the finish changed.",
+        "fin_driver_same": "The same activity held the date in the previous delivery.",
+        "cp": "{e} activities entered the critical path and {l} left it, {lc} of those by finishing. Critical now: {n}, against {p} before.",
+        "cp_none": "No activity entered or left the critical path. Critical now: {n}, against {p} before.",
+        "cp_inserted": "{n} of the activities inserted this cycle are critical; they are listed under scope.",
+        "cp_fell": "{n} unfinished activities lost a working day of float or more; the largest loss is {d} days, on row {id}.",
+        "cp_fell_none": "No unfinished activity lost a working day of float or more.",
+        "cp_basis_flag": "Read by the tool's own Critical flag.",
+        "cp_basis_float": "The files carry no Critical flag, so critical here means total float at or below zero.",
+        "cp_basis_mixed": "The two deliveries could not be read by the same criterion (one carries the Critical flag, the other does not); treat entries and exits with care.",
+        "lg": "{a} links added, {r} removed, {l} with the lag changed and {t} with the type changed, between activities present in both deliveries.",
+        "lg_none": "No link between activities present in both deliveries was edited.",
+        "lg_scope": "A further {n} links hang on inserted or removed activities: scope, not edited logic.",
+        "lg_con": "Constraints on unfinished activities: {a} added, {c} changed and {r} removed.",
+        "lg_con_none": "No constraint was added, changed or removed.",
+        "lg_hard": "{n} of them are now hard (must start or finish on, or no later than): the date is pinned and the network stops deciding it.",
+        "du": "{n} activities with no actual start in either delivery had their duration edited: {up} longer and {down} shorter, a net {net} working days. Nothing was executed on them; this is the plan rewritten.",
+        "du_none": "No activity had its duration edited before starting.",
+        "pr": "The past was rewritten on {n} activities: {s} actual starts and {f} actual finishes changed, and {p} percents complete went down.",
+        "pr_removed": "{n} actual dates were withdrawn altogether: work reported as started or finished last cycle is no longer recorded as such.",
+        "pr_time": "{n} of the date changes stay within the same day (time of day only); they are listed last and weigh less.",
+        "pr_ask": "Every figure the previous cycle reported on these activities rested on a record that no longer exists. Ask for each correction to be stated.",
+        "pr_none": "No actual date changed and no percent complete went down: the past reads the same in both deliveries.",
+        "ql": "Of the {t} metrics computable in both deliveries, {w} worsened, {i} improved and {u} did not move.",
+        "ql_bad": "Went from pass to fail: {list}.",
+        "ql_good": "Went from fail to pass: {list}.",
+        "ql_bei": "Baseline execution index: {a} before, {b} now.",
+    },
+    "pt": {
+        "mv": "O avanço ponderado foi de {a}% para {b}%: {m} pontos. O avanço por atividade explica {x} deles e {r} não são explicados por trabalho feito.",
+        "mv_clean": "O avanço ponderado foi de {a}% para {b}%: {m} pontos, todos explicados pelo avanço por atividade.",
+        "tr": "{e} atividades moveram datas com datas reais por trás e {r} sem nenhuma; a própria linha de base se moveu em {b}.",
+        "tr_none": "Nenhuma atividade moveu datas entre as duas entregas.",
+        "sc": "{i} atividades inseridas e {r} removidas.",
+        "sc_none": "Nenhuma atividade foi inserida ou removida: o escopo é o mesmo nas duas entregas.",
+        "fin_later": "O término do projeto foi de {a} para {b}: {d} dias corridos mais tarde.",
+        "fin_earlier": "O término do projeto foi de {a} para {b}: {d} dias corridos mais cedo.",
+        "fin_same": "O término do projeto não se moveu: {b} nas duas entregas.",
+        "fin_driver": "O que segura a data atual é a linha {id}, {name}, com término em {f}. É uma aproximação: a atividade em aberto que termina por último, percorrida para trás pela predecessora que chega mais tarde; a rede não foi recalculada.",
+        "fin_driver_flag_no": "A ferramenta não marca essa linha como crítica, então leia o caminho antes de citá-lo.",
+        "fin_driver_changed": "Na entrega anterior a data era segurada por outra atividade (linha {id}, {name}): o caminho que conduz o término mudou.",
+        "fin_driver_same": "A mesma atividade segurava a data na entrega anterior.",
+        "cp": "{e} atividades entraram no caminho crítico e {l} saíram, {lc} delas por terem sido concluídas. Críticas agora: {n}, contra {p} antes.",
+        "cp_none": "Nenhuma atividade entrou ou saiu do caminho crítico. Críticas agora: {n}, contra {p} antes.",
+        "cp_inserted": "{n} das atividades inseridas neste ciclo são críticas; estão listadas em escopo.",
+        "cp_fell": "{n} atividades não concluídas perderam um dia útil de folga ou mais; a maior perda é de {d} dias, na linha {id}.",
+        "cp_fell_none": "Nenhuma atividade não concluída perdeu um dia útil de folga ou mais.",
+        "cp_basis_flag": "Lido pelo próprio campo Crítica da ferramenta.",
+        "cp_basis_float": "Os arquivos não trazem o campo Crítica, então crítica aqui significa folga total menor ou igual a zero.",
+        "cp_basis_mixed": "As duas entregas não puderam ser lidas pelo mesmo critério (uma traz o campo Crítica, a outra não); trate entradas e saídas com cuidado.",
+        "lg": "{a} vínculos incluídos, {r} removidos, {l} com a latência alterada e {t} com o tipo alterado, entre atividades presentes nas duas entregas.",
+        "lg_none": "Nenhum vínculo entre atividades presentes nas duas entregas foi editado.",
+        "lg_scope": "Outros {n} vínculos estão em atividades inseridas ou removidas: é escopo, não lógica editada.",
+        "lg_con": "Restrições em atividades não concluídas: {a} incluídas, {c} alteradas e {r} removidas.",
+        "lg_con_none": "Nenhuma restrição foi incluída, alterada ou removida.",
+        "lg_hard": "{n} delas agora são rígidas (deve iniciar ou terminar em, ou não depois de): a data fica presa e a rede deixa de decidi-la.",
+        "du": "{n} atividades sem início real em nenhuma das entregas tiveram a duração editada: {up} mais longas e {down} mais curtas, saldo de {net} dias úteis. Nada foi executado nelas; é o plano reescrito.",
+        "du_none": "Nenhuma atividade teve a duração editada antes de iniciar.",
+        "pr": "O passado foi reescrito em {n} atividades: {s} inícios reais e {f} términos reais mudaram, e {p} percentuais concluídos caíram.",
+        "pr_removed": "{n} datas reais foram retiradas por completo: trabalho informado como iniciado ou concluído no ciclo anterior não está mais registrado assim.",
+        "pr_time": "{n} das mudanças de data ficam dentro do mesmo dia (só o horário); estão listadas por último e pesam menos.",
+        "pr_ask": "Todo número que o ciclo anterior informou sobre essas atividades se apoiava num registro que não existe mais. Peça que cada correção seja declarada.",
+        "pr_none": "Nenhuma data real mudou e nenhum percentual concluído caiu: o passado lê igual nas duas entregas.",
+        "ql": "Das {t} métricas calculáveis nas duas entregas, {w} pioraram, {i} melhoraram e {u} não se moveram.",
+        "ql_bad": "Passaram de atende para não atende: {list}.",
+        "ql_good": "Passaram de não atende para atende: {list}.",
+        "ql_bei": "Índice de execução da linha de base: {a} antes, {b} agora.",
+    },
+}
+
+HARD_CONSTRAINT_CODES = {"MSO", "MFO", "SNLT", "FNLT"}
+
+
+def fnum(v, d, lang):
+    """A number the way the report's language writes it; never a negative zero."""
+    if v is None:
+        return "—"
+    v = round(float(v), d)
+    if v == 0:
+        v = 0.0
+    s = f"{v:,.{d}f}"
+    if lang == "pt":
+        s = s.replace(",", " ").replace(".", ",").replace(" ", ".")
+    return s
+
+
+def build_cycle(cmp_res: dict, lang: str, fmt_date, metric_title=None) -> dict:
+    """Readings for the cycle report, keyed by section.
+
+    `fmt_date` is the report's own date formatter, passed in so the sentences and
+    the tables cannot disagree on how a date is written.
+    """
+    T = RC.get(lang, RC["en"])
+    out: dict[str, list] = {}
+
+    def add(section, key, **kw):
+        try:
+            out.setdefault(section, []).append(T[key].format(**kw))
+        except (KeyError, ValueError, TypeError):
+            pass
+
+    def i(v):
+        return fnum(v, 0, lang)
+
+    # ---- movement, trend, scope
+    prev, curr = cmp_res.get("previous") or {}, cmp_res.get("current") or {}
+    mv, gap = cmp_res.get("movement_points"), cmp_res.get("movement_unexplained_points")
+    if mv is not None:
+        args = dict(a=fnum(prev.get("percent_earned"), 2, lang),
+                    b=fnum(curr.get("percent_earned"), 2, lang), m=fnum(mv, 2, lang),
+                    x=fnum(cmp_res.get("decomposition_sums_to_points"), 2, lang),
+                    r=fnum(gap, 2, lang))
+        add("movement", "mv" if abs(gap or 0) >= 0.01 else "mv_clean", **args)
+    trend = cmp_res.get("trend") or []
+    e = sum(1 for t in trend if t["reading"] == "execution")
+    r = sum(1 for t in trend if t["reading"] == "replan")
+    b = len(cmp_res.get("baseline_moved") or [])
+    if e or r or b:
+        add("trend", "tr", e=i(e), r=i(r), b=i(b))
+    else:
+        add("trend", "tr_none")
+    un = cmp_res.get("unmatched") or {}
+    ni, nr = len(un.get("inserted") or []), len(un.get("removed") or [])
+    if ni or nr:
+        add("scope", "sc", i=i(ni), r=i(nr))
+    else:
+        add("scope", "sc_none")
+
+    # ---- C1 project finish
+    pf = cmp_res.get("project_finish") or {}
+    fp, fc = pf.get("previous") or {}, pf.get("current") or {}
+    d = pf.get("delta_days")
+    if fc.get("finish") and fp.get("finish") and d is not None:
+        args = dict(a=fmt_date(fp["finish"], lang), b=fmt_date(fc["finish"], lang),
+                    d=fnum(abs(d), 0 if float(abs(d)).is_integer() else 1, lang))
+        add("c1", "fin_same" if abs(d) < 0.05 else ("fin_later" if d > 0 else "fin_earlier"), **args)
+    drv = fc.get("driver")
+    if drv:
+        add("c1", "fin_driver", id=drv["id"], name=drv["name"], f=fmt_date(drv.get("finish"), lang))
+        if drv.get("critical") is False:
+            add("c1", "fin_driver_flag_no")
+        if pf.get("driver_changed") is True and fp.get("driver"):
+            add("c1", "fin_driver_changed", id=fp["driver"]["id"], name=fp["driver"]["name"])
+        elif pf.get("driver_changed") is False:
+            add("c1", "fin_driver_same")
+
+    # ---- C2 critical path
+    cp = cmp_res.get("critical_path")
+    if cp:
+        ne, nl = len(cp["entered"]), len(cp["left"])
+        if ne or nl:
+            add("c2", "cp", e=i(ne), l=i(nl), lc=i(cp["left_completed"]),
+                n=i(cp["critical_current"]), p=i(cp["critical_previous"]))
+        else:
+            add("c2", "cp_none", n=i(cp["critical_current"]), p=i(cp["critical_previous"]))
+        if cp.get("inserted_critical"):
+            add("c2", "cp_inserted", n=i(cp["inserted_critical"]))
+        if cp["float_fell_count"]:
+            top = cp["float_fell_top"][0]
+            add("c2", "cp_fell", n=i(cp["float_fell_count"]),
+                d=fnum(top["float_fell_days"], 1, lang), id=top["id"])
+        else:
+            add("c2", "cp_fell_none")
+        if cp["criterion_previous"] != cp["criterion_current"]:
+            add("c2", "cp_basis_mixed")
+        else:
+            add("c2", "cp_basis_flag" if cp["criterion_current"] == "flag" else "cp_basis_float")
+
+    # ---- C3 logic
+    lg = cmp_res.get("logic")
+    if lg:
+        a, rm = len(lg["links_added"]), len(lg["links_removed"])
+        l, t = len(lg["lag_changed"]), len(lg["type_changed"])
+        if a or rm or l or t:
+            add("c3", "lg", a=i(a), r=i(rm), l=i(l), t=i(t))
+        else:
+            add("c3", "lg_none")
+        if lg.get("links_from_scope"):
+            add("c3", "lg_scope", n=i(lg["links_from_scope"]))
+        ca, cc, cr = (len(lg["constraints_added"]), len(lg["constraints_changed"]),
+                      len(lg["constraints_removed"]))
+        if ca or cc or cr:
+            add("c3", "lg_con", a=i(ca), c=i(cc), r=i(cr))
+            hard = sum(1 for x in lg["constraints_added"] + lg["constraints_changed"]
+                       if x["type_after"] in HARD_CONSTRAINT_CODES)
+            if hard:
+                add("c3", "lg_hard", n=i(hard))
+        else:
+            add("c3", "lg_con_none")
+
+    # ---- C4 durations
+    du = cmp_res.get("duration_changed")
+    if du is not None:
+        if du:
+            add("c4", "du", n=i(len(du)), up=i(sum(1 for x in du if x["delta_days"] > 0)),
+                down=i(sum(1 for x in du if x["delta_days"] < 0)),
+                net=fnum(sum(x["delta_days"] for x in du), 1, lang))
+        else:
+            add("c4", "du_none")
+
+    # ---- C5 past rewritten
+    pr = cmp_res.get("past_rewritten")
+    if pr:
+        if pr["activities"]:
+            add("c5", "pr", n=i(pr["activities"]), s=i(len(pr["actual_start"])),
+                f=i(len(pr["actual_finish"])), p=i(len(pr["percent_decreased"])))
+            if pr["actual_removed"]:
+                add("c5", "pr_removed", n=i(pr["actual_removed"]))
+            if pr["time_of_day_only"]:
+                add("c5", "pr_time", n=i(pr["time_of_day_only"]))
+            add("c5", "pr_ask")
+        else:
+            add("c5", "pr_none")
+
+    # ---- C6 quality
+    q = cmp_res.get("quality")
+    if q:
+        rows = [m for m in q["metrics"] if m.get("change")]
+        if rows:
+            add("c6", "ql", t=i(len(rows)),
+                w=i(sum(1 for m in rows if m["change"] == "worsened")),
+                i=i(sum(1 for m in rows if m["change"] == "improved")),
+                u=i(sum(1 for m in rows if m["change"] == "unchanged")))
+
+        def names(crossing):
+            return ", ".join(
+                f"{m['code']} {metric_title(m['code'])}" if metric_title else m["code"]
+                for m in q["metrics"] if m.get("crossed") == crossing)
+
+        if names("pass->fail"):
+            add("c6", "ql_bad", list=names("pass->fail"))
+        if names("fail->pass"):
+            add("c6", "ql_good", list=names("fail->pass"))
+        ia, ib = q["indices"]["previous"].get("bei"), q["indices"]["current"].get("bei")
+        if ia is not None and ib is not None:
+            add("c6", "ql_bei", a=fnum(ia, 2, lang), b=fnum(ib, 2, lang))
+    return out

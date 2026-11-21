@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 import xml.etree.ElementTree as ET
@@ -220,6 +221,9 @@ def parse_task(task_el) -> dict:
         "actual_duration_minutes": iso_duration_minutes(text(task_el, "ActualDuration")),
         "remaining_duration_minutes": iso_duration_minutes(text(task_el, "RemainingDuration")),
         "constraint_type": as_int(task_el, "ConstraintType"),
+        # Only meaningful for the dated constraints (types 2 to 7); kept so a
+        # comparison can tell a moved constraint from an unchanged one.
+        "constraint_date": as_date(task_el, "ConstraintDate"),
         "duration_minutes": iso_duration_minutes(text(task_el, "Duration")),
         "percent_complete": as_float(task_el, "PercentComplete"),
         # Different field from percent_complete, and the one earned value needs.
@@ -296,7 +300,12 @@ def parse(path: str) -> dict:
 
     status_date = as_date(root, "StatusDate")
     return {
-        "source": path,
+        # The file NAME is what a person reads, and the only form that may reach a
+        # report or a sidecar: a full path carries somebody's folder structure. The
+        # path is kept apart, for the modules that stream the XML a second time,
+        # and is never rendered nor written by the command line below.
+        "source": os.path.basename(path),
+        "source_path": path,
         "project": {
             "name": text(root, "Name"),
             "title": text(root, "Title"),
@@ -346,6 +355,7 @@ def main() -> None:
     args = ap.parse_args()
 
     model = parse(args.xml)
+    model.pop("source_path", None)
     blob = json.dumps(model, indent=2, ensure_ascii=False)
     if args.out:
         with open(args.out, "w", encoding="utf-8") as fh:

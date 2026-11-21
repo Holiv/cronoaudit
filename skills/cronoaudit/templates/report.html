@@ -163,11 +163,22 @@ td.neg{color:var(--crit)} td.pos{color:var(--good)}
 .conv>div{background:var(--surface);padding:10px 12px}
 .conv dt{font:500 10.5px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px}
 .conv dd{margin:0;font-size:13.5px;color:var(--ink-2)}
+.arquivos{font:500 13px/1.4 var(--mono);color:var(--ink-3);margin:-6px 0 14px;word-break:break-word}
+.arquivos span{color:var(--accent);padding:0 4px}
+.sub-h{font-size:16px;margin:26px 0 6px}
+.lista summary .qtd,.lista-t .qtd{font:600 12px var(--mono);color:var(--ink-3);margin-left:6px}
+.lista-t{font-size:14px;font-weight:600;margin:0 0 8px}
+.cap-print{display:none}
+.achado.quieto{box-shadow:none;margin-top:10px}
+.achado.quieto .achado-in{padding:12px 26px;gap:6px}
+.achado.quieto h3{font-size:15px}
+.quieto-p{margin:0;font-size:14px;color:var(--ink-2)}
 footer{margin-top:44px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-3);max-width:80ch}
 @media print{
   :root{--ground:#fff;--surface:#fff;--surface-2:#f4f4f4;--ink:#000;--ink-2:#222;--ink-3:#444;--line:#bbb;--line-soft:#ddd;--shadow:none}
   .bar{display:none} body{font-size:10.5pt} .wrap{max-width:none;padding-block:0}
   details{border:none} details>summary{display:none} details:not([open])>*{display:block}
+  .cap-print{display:block;font-weight:600;font-size:10pt;margin:10px 0 4px}
   .scroll{overflow:visible} table{font-size:8pt} td,th{white-space:normal} th{position:static}
   .achado,.veredito,.capa{box-shadow:none;break-inside:avoid} section{break-before:auto}
   .fill,.tile,.sev{print-color-adjust:exact;-webkit-print-color-adjust:exact}
@@ -179,10 +190,25 @@ const DATA = /*DATA*/ null;
 
 // The template holds no prose of its own: every word a person reads arrives in
 // DATA.labels, chosen for the schedule's own language.
-const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const loc = () => (DATA&&DATA.lang==="pt")?"pt-BR":"en-US";
-const n = (v,d=0) => v==null?"&mdash;":(typeof v==="number"?v.toLocaleString(loc(),{minimumFractionDigits:d,maximumFractionDigits:d}):esc(v));
-const fill = (s,vals) => String(s==null?"":s).replace(/\{(\w+)\}/g,(_,k)=>vals[k]==null?"":vals[k]);
+// A date reaches a person in the report's language, never as the raw ISO stamp
+// the file stores: dd/mm/yyyy in Portuguese, yyyy-mm-dd otherwise, time dropped.
+// `day` converts a value that IS a date (so an activity name is never touched);
+// `dates` converts the dates inside a sentence this report built itself.
+const ISO_DAY = /^(\d{4})-(\d{2})-(\d{2})(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?)?$/;
+const ISO_IN = /\b(\d{4})-(\d{2})-(\d{2})(?:T\d{2}:\d{2}(?::\d{2})?)?\b/g;
+const ymd = (y,m,d) => (DATA&&DATA.lang==="pt")?`${d}/${m}/${y}`:`${y}-${m}-${d}`;
+const day = v => { if(typeof v!=="string") return v; const m=ISO_DAY.exec(v); return m?ymd(m[1],m[2],m[3]):v; };
+const dates = s => String(s==null?"":s).replace(ISO_IN,(_,y,m,d)=>ymd(y,m,d));
+const esc = s => String(s==null?"":day(s)).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+// A value that rounds to zero is zero: "-0,000" reads as a sign that is not there.
+const n = (v,d=0) => {
+  if(v==null) return "&mdash;";
+  if(typeof v!=="number") return esc(v);
+  if(Number(v.toFixed(d))===0) v=0;
+  return v.toLocaleString(loc(),{minimumFractionDigits:d,maximumFractionDigits:d});
+};
+const fill = (s,vals) => String(s==null?"":s).replace(/\{(\w+)\}/g,(_,k)=>vals[k]==null?"":day(vals[k]));
 const SEV = {critical:"cr",high:"al",check:"vf",pending:"pd",view:"vs"};
 let L = {};
 
@@ -200,7 +226,7 @@ function theme(t){
 function reading(key){
   const r=(DATA.readings||{})[key];
   if(!r||!r.length) return "";
-  return `<div class="leitura"><div class="rot">${esc(L.reading)}</div>${r.map(s=>`<p>${esc(s)}</p>`).join("")}</div>`;
+  return `<div class="leitura"><div class="rot">${esc(L.reading)}</div>${r.map(s=>`<p>${esc(dates(s))}</p>`).join("")}</div>`;
 }
 function bar(){
   return `<div class="bar"><button id="pdf">${esc(L.print)}</button><button id="th">${esc(L.toggle_theme)}</button></div>`;
@@ -257,20 +283,23 @@ function scurveSvg(periods,altLabel){
   <span><i class="sw" style="background:var(--c2)"></i>${esc(L.scurve_earned)}</span>
   <span><i class="sw" style="background:var(--warn)"></i>${esc(altLabel)}</span></div>`;
 }
-function cell(v,key){
+function cell(v,key,col,row){
   if(v==null||v==="") return `<td></td>`;
+  col=col||{};
+  const tone = col.tone&&row&&row._tone ? (row._tone==="bad"?" neg":" pos") : "";
   if(typeof v==="number"){
     const neg = (key==="var_d"||key==="gap_days") && v<0, pos=(key==="var_d")&&v>0;
-    const d = Number.isInteger(v)?0:1;
-    const s = key==="var_d"&&v>0?"+"+n(v,d):n(v,d);
-    return `<td class="num${neg?" pos":""}${pos?" neg":""}">${s}</td>`;
+    const d = col.decimals!=null?col.decimals:(Number.isInteger(v)?0:(col.pct?2:1));
+    const signed = (key==="var_d"||col.signed) && v>0 && Number(v.toFixed(d))!==0;
+    const s = (signed?"+":"")+n(v,d)+(col.pct?"%":"");
+    return `<td class="num${neg?" pos":""}${pos?" neg":""}${tone}">${s}</td>`;
   }
-  return `<td class="${key==="name"?"name":""}">${esc(v)}</td>`;
+  return `<td class="${key==="name"?"name":""}${tone}">${esc(v)}</td>`;
 }
 function table(cols,rows,limit=600){
   if(!rows||!rows.length) return "";
   const head=cols.map(c=>`<th>${esc(c.label)}</th>`).join("");
-  const body=rows.slice(0,limit).map(r=>"<tr>"+cols.map(c=>cell(r[c.key],c.key)).join("")+"</tr>").join("");
+  const body=rows.slice(0,limit).map(r=>"<tr>"+cols.map(c=>cell(r[c.key],c.key,c,r)).join("")+"</tr>").join("");
   const more=rows.length>limit?`<p class="sub" style="padding:8px 12px">${esc(fill(L.showing,{n:limit,total:rows.length}))}</p>`:"";
   return `<div class="scroll"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>${more}`;
 }
@@ -563,37 +592,99 @@ function renderReview(d){
   return out.join("");
 }
 
+function tile(t){
+  let v;
+  if(t.text) v=t.value==null?"&mdash;":esc(t.value);
+  else if(typeof t.value==="number") v=(t.signed&&t.value>0?"+":"")+n(t.value,t.decimals||0);
+  else v=t.value==null?"&mdash;":esc(t.value);
+  const st=t.text?' style="font-size:15px;line-height:1.3;font-weight:600;letter-spacing:0"':(t.small?' style="font-size:22px"':"");
+  return `<div class="tile ${t.sev||""}"><div class="c">${esc(t.label)}</div><div class="v${t.value===0?" zero":""}"${st}>${v}</div>${t.caption?`<div class="t">${esc(t.caption)}</div>`:""}</div>`;
+}
+function titled(title,cols,rows,open){
+  // One list under its own name. Closed by default, so a section with seven
+  // lists is seven lines; the title is repeated for print, where summaries hide.
+  if(!rows||!rows.length) return "";
+  const head=`${esc(title)} <span class="qtd">${n(rows.length)}</span>`;
+  if(open) return `<div class="lista"><div class="lista-t">${head}</div>${table(cols,rows)}</div>`;
+  return `<details class="lista"><summary>${head}</summary><div class="cap-print">${head}</div>${table(cols,rows)}</details>`;
+}
+function cycleSection(s){
+  const sev=SEV[s.severity]||"vs", tone=s.severity==="view"?"":sev;
+  const read=s.reading&&s.reading.length?`<div class="leitura"><div class="rot">${esc(L.reading)}</div>${s.reading.map(x=>`<p>${esc(dates(x))}</p>`).join("")}</div>`:"";
+  if(s.empty){
+    // Nothing found is a result, and it takes one line, not a section.
+    return `<div class="achado quieto" id="${esc(s.id)}"><div class="barra"></div><div class="achado-in">
+      <div class="achado-top"><span class="cod">${esc(s.code)}</span><h3>${esc(s.title)}</h3><span class="sev vs">${esc(L.cy_nothing)}</span></div>
+      ${(s.reading||[]).map(x=>`<p class="quieto-p">${esc(dates(x))}</p>`).join("")}</div></div>`;
+  }
+  return `<div class="achado ${tone}" id="${esc(s.id)}"><div class="barra"></div><div class="achado-in">
+    <div class="achado-top"><span class="cod">${esc(s.code)}</span><h3>${esc(s.title)}</h3><span class="sev ${sev}">${esc(s.severity_word)}</span>${s.badge==null?"":`<span class="badge">${n(s.badge)}</span>`}</div>
+    <p class="sub">${esc(s.subtitle)}</p>
+    ${read}
+    ${s.tiles&&s.tiles.length?`<div class="tiles" style="margin:0">${s.tiles.map(tile).join("")}</div>`:""}
+    ${s.lists.map(l=>titled(l.title,l.columns,l.rows,l.open)).join("")}
+    <div class="levar"><div class="rot">${esc(L.levar)}</div><p>${esc(s.criterion)} ${esc(s.reproduce)}</p></div>
+  </div></div>`;
+}
 function renderCycle(d){
-  const m=d.meta, out=[];
+  const m=d.meta, out=[], t=d.trend, secs=d.sections||[];
+  const sub=(h,p)=>`<h3 class="sub-h">${esc(h)}</h3>${p?`<p class="sec-d">${esc(p)}</p>`:""}`;
   out.push(`<header class="capa"><div class="striping"></div>
-    <div class="chips"><span class="chip forte">${esc(L.cycle_title)}</span><span class="chip">${esc(L.generated)} ${esc(m.generated)}</span></div>
-    <h1>${esc(m.previous_source||"")} &rarr; ${esc(m.current_source||"")}</h1>
-    ${ficha([[L.prev_status,esc(m.previous_status_date)],[L.curr_status,esc(m.current_status_date)],[L.baseline_slot,esc(m.current_baseline_slot)],[L.budget,n(m.current_budget_at_completion,2)]])}${bar()}</header>`);
-  out.push(`<div class="veredito"><div><div class="eyebrow">${esc(L.card_movement)}</div><div class="hero-num">${n(m.movement_points,2)}</div><div class="hero-cap">${esc(L.pp_headline)}</div></div>
+    <div class="chips"><span class="chip forte">${esc(L.cycle_title)}</span>${(d.theme&&d.theme.logo_text)?`<span class="chip forte">${esc(d.theme.logo_text)}</span>`:""}
+      ${m.baseline_label?`<span class="chip">${esc(m.baseline_label)}</span>`:""}
+      <span class="chip">${esc(L.generated)} ${esc(m.generated)}</span></div>
+    <h1>${esc(m.title)}</h1>
+    <p class="arquivos">${esc(m.previous_file||"")} <span>&rarr;</span> ${esc(m.current_file||"")}</p>
+    ${ficha([[L.prev_status,esc(m.previous_status_date||L.not_set)],[L.curr_status,esc(m.current_status_date||L.not_set)],[L.ficha_finish,m.current_finish?esc(m.current_finish):null],[L.budget,n(m.budget,2)]])}${bar()}</header>`);
+
+  (d.warnings||[]).forEach(w=>out.push(`<div class="note${w.severity==="critical"?" bad":""}" style="margin-top:14px"><b>${esc(L.warning)}</b> ${esc(w.text)}</div>`));
+
+  out.push(`<div class="veredito"><div><div class="eyebrow">${esc(L.card_movement)}</div><div class="hero-num">${(m.movement_points>0?"+":"")+n(m.movement_points,2)}</div><div class="hero-cap">${esc(L.pp_headline)}</div></div>
     <div class="contra"><h2>${esc(L.how_to_read)}</h2><p>${L.cycle_read_p1}</p><p>${L.cycle_read_p2}</p></div></div>`);
+  out.push(reading("movement"));
   out.push(`<div class="tiles">
     <div class="tile"><div class="c">${esc(L.card_previous)}</div><div class="v">${n(m.previous_percent_earned,2)}%</div><div class="t">${esc(L.weighted_progress)}</div></div>
     <div class="tile"><div class="c">${esc(L.card_current)}</div><div class="v">${n(m.current_percent_earned,2)}%</div><div class="t">${esc(L.weighted_progress)}</div></div>
-    <div class="tile pd"><div class="c">${esc(L.card_explained)}</div><div class="v">${n(m.explained_points,3)}</div><div class="t">${esc(L.by_progress)}</div></div>
-    <div class="tile cr"><div class="c">${esc(L.card_residue)}</div><div class="v">${n(m.unexplained_points,3)}</div><div class="t">${esc(L.not_work)}</div></div></div>`);
-  (d.warnings||[]).forEach(w=>out.push(`<div class="note"><b>${esc(L.warning)}</b> ${esc(w)}</div>`));
-  const r=d.readings;
-  out.push(`<section><div class="sec-h"><h2>${esc(L.exec_or_plan)}</h2></div><p class="sec-d">${esc(L.exec_or_plan_sub)}</p><div class="tiles">
-    <div class="tile pd"><div class="c">${esc(L.card_execution)}</div><div class="v">${n(r.execution.length)}</div><div class="t">${esc(L.exec_sub)}</div></div>
-    <div class="tile al"><div class="c">${esc(L.card_replan)}</div><div class="v">${n(r.replan.length)}</div><div class="t">${esc(L.replan_sub)}</div></div>
-    <div class="tile cr"><div class="c">${esc(L.card_reference)}</div><div class="v">${n(r.reference.length)}</div><div class="t">${esc(L.reference_sub)}</div></div></div></section>`);
-  if(r.reference.length){
-    out.push(`<section><div class="sec-h"><h2>${esc(L.baseline_moved_title)}</h2></div><p class="sec-d">${esc(L.baseline_moved_sub)}</p>
-      ${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_bl_start,key:"baseline_start_moved_days"},{label:L.col_bl_finish,key:"baseline_finish_moved_days"}],r.reference)}</section>`);
+    <div class="tile pd"><div class="c">${esc(L.card_explained)}</div><div class="v">${n(m.explained_points,2)}</div><div class="t">${esc(L.by_progress)}</div></div>
+    <div class="tile ${Math.abs(m.unexplained_points||0)>=0.01?"cr":""}"><div class="c">${esc(L.card_residue)}</div><div class="v${Math.abs(m.unexplained_points||0)>=0.01?"":" zero"}">${n(m.unexplained_points,2)}</div><div class="t">${esc(L.not_work)}</div></div></div>`);
+
+  // Index: the six readings of the model first, then progress and dates.
+  const nDates=t.execution.length+t.replan.length, nScope=d.unmatched.inserted.length+d.unmatched.removed.length;
+  out.push(`<section id="indice"><div class="sec-h"><span class="eyebrow">${esc(L.roteiro)}</span><h2>${esc(L.index)}</h2></div>
+    <p class="sec-d">${esc(L.cy_index_sub)}</p><nav class="indice">
+    ${secs.map(s=>`<a href="#${esc(s.id)}"><span class="cod">${esc(s.code)}</span><span class="tt">${esc(s.title)}<small>${esc(s.subtitle)}</small></span><span class="qtd">${s.badge==null?"":n(s.badge)}</span><span class="sev ${SEV[s.severity]||"vs"}">${esc(s.severity_word)}</span></a>`).join("")}
+    <a href="#p-mov"><span class="cod">P1</span><span class="tt">${esc(L.movement_from)}</span><span class="qtd">${n(d.decomposition.length)}</span><span class="sev vs">${esc(L.severity_view||"")}</span></a>
+    <a href="#p-datas"><span class="cod">P2</span><span class="tt">${esc(L.exec_or_plan)}</span><span class="qtd">${n(nDates+t.reference.length)}</span><span class="sev vs">${esc(L.severity_view||"")}</span></a>
+    <a href="#p-escopo"><span class="cod">P3</span><span class="tt">${esc(L.scope_changes)}</span><span class="qtd">${n(nScope)}</span><span class="sev vs">${esc(L.severity_view||"")}</span></a>
+    </nav></section>`);
+
+  if(secs.length){
+    out.push(`<section id="modelo"><div class="sec-h"><h2>${esc(L.cy_model_title)}</h2></div><p class="sec-d">${esc(L.cy_model_sub)}</p>
+      ${secs.map(cycleSection).join("")}</section>`);
   }
-  out.push(`<section><div class="sec-h"><h2>${esc(L.movement_from)}</h2></div><p class="sec-d">${esc(fill(L.movement_from_sub,{denom:d.conventions.denominator}))}</p>
-    ${chart(d.decomposition.slice(0,25).map(x=>({label:`${x.id} ${x.name}`,value:x.contribution_points})),{fmt:v=>n(v,3)+" pp"})}
-    ${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_wbs,key:"wbs"},{label:L.col_pct_prev,key:"percent_previous"},{label:L.col_pct_curr,key:"percent_current"},{label:L.col_bl_cost,key:"baseline_cost"},{label:L.col_contribution,key:"contribution_points"}],d.decomposition)}</section>`);
-  out.push(`<section><div class="sec-h"><h2>${esc(L.dates_moved)}</h2></div>
-    ${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_matched,key:"matched_by"},{label:L.col_start_moved,key:"start_moved_days"},{label:L.col_finish_moved,key:"finish_moved_days"},{label:L.col_reading,key:"reading"}],r.execution.concat(r.replan))}</section>`);
-  out.push(`<section><div class="sec-h"><h2>${esc(L.scope_changes)}</h2></div><p class="sec-d">${esc(L.scope_sub)}</p>
-    <h3 style="font-size:15px;margin:8px 0">${esc(L.inserted)} (${n(d.unmatched.inserted.length)})</h3>${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"}],d.unmatched.inserted)}
-    <h3 style="font-size:15px;margin:12px 0 8px">${esc(L.removed)} (${n(d.unmatched.removed.length)})</h3>${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"}],d.unmatched.removed)}</section>`);
+
+  out.push(`<section id="avanco"><div class="sec-h"><h2>${esc(L.cy_progress_title)}</h2></div><p class="sec-d">${esc(L.cy_progress_sub)}</p>`);
+  out.push(`<div id="p-mov">${sub(L.movement_from,fill(L.movement_from_sub,{denom:d.conventions.denominator}))}
+    ${d.decomposition.length?chart(d.decomposition.slice(0,25).map(x=>({label:`${x.id} ${x.name}`,value:x.contribution_points})),{fmt:v=>(v>0?"+":"")+n(v,3)+" pp"}):""}
+    ${titled(L.movement_from,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_wbs,key:"wbs"},{label:L.col_pct_prev,key:"percent_previous"},{label:L.col_pct_curr,key:"percent_current"},{label:L.col_bl_cost,key:"baseline_cost"},{label:L.col_contribution,key:"contribution_points",signed:true,decimals:3}],d.decomposition)||`<p class="quieto-p">${esc(L.cy_nothing)}</p>`}</div>`);
+  const moved=t.execution.concat(t.replan).map(x=>({...x,reading:(t.words||{})[x.reading]||x.reading}));
+  out.push(`<div id="p-datas">${sub(L.exec_or_plan,L.exec_or_plan_sub)}${reading("trend")}
+    <div class="tiles">
+    <div class="tile pd"><div class="c">${esc(L.card_execution)}</div><div class="v${t.execution.length?"":" zero"}">${n(t.execution.length)}</div><div class="t">${esc(L.exec_sub)}</div></div>
+    <div class="tile al"><div class="c">${esc(L.card_replan)}</div><div class="v${t.replan.length?"":" zero"}">${n(t.replan.length)}</div><div class="t">${esc(L.replan_sub)}</div></div>
+    <div class="tile ${t.reference.length?"cr":""}"><div class="c">${esc(L.card_reference)}</div><div class="v${t.reference.length?"":" zero"}">${n(t.reference.length)}</div><div class="t">${esc(L.reference_sub)}</div></div></div>
+    ${titled(L.dates_moved,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_start_moved,key:"start_moved_days",signed:true},{label:L.col_finish_moved,key:"finish_moved_days",signed:true},{label:L.col_reading,key:"reading"},{label:L.col_matched,key:"matched_by"}],moved)}
+    ${t.reference.length?`<div class="note" style="margin:12px 0 8px"><b>${esc(L.baseline_moved_title)}.</b> ${esc(L.baseline_moved_sub)}</div>`:""}
+    ${titled(L.baseline_moved_title,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_bl_start,key:"baseline_start_moved_days",signed:true},{label:L.col_bl_finish,key:"baseline_finish_moved_days",signed:true}],t.reference)}</div>`);
+  out.push(`<div id="p-escopo">${sub(L.scope_changes,nScope?L.scope_sub:"")}${reading("scope")}
+    ${titled(L.inserted,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"}],d.unmatched.inserted)}
+    ${titled(L.removed,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"}],d.unmatched.removed)}</div>`);
+  out.push(`</section>`);
+
+  const lg=d.language||{};
+  out.push(`<section><div class="sec-h"><h2>${esc(L.cy_conv_title)}</h2></div><dl class="conv">
+    ${(d.conventions_list||[]).map(c=>[c.label,c.text]).concat([[L.conv_language,`${d.lang} (${lg.confidence||""})`]])
+      .filter(([,v])=>v!=null&&v!=="").map(([k,v])=>`<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl></section>`);
   return out.join("");
 }
 

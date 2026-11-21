@@ -77,7 +77,21 @@ PT_SECTIONS = [
 CYCLE_SECTIONS = [
     "Was it execution, or was it the plan", "RESIDUE", "the baseline itself moved",
     "Where the movement came from", "Scope changes",
+    "Project finish", "Critical path", "Logic changed", "Duration changed before any start",
+    "Past rewritten", "Network quality, before and after", "To reproduce in the scheduling tool",
+    "Reading", "cycle_prev.xml", "Cycle fixture curr",
 ]
+CYCLE_PT_SECTIONS = [
+    "T\u00e9rmino do projeto", "Caminho cr\u00edtico", "L\u00f3gica alterada",
+    "Dura\u00e7\u00e3o alterada", "Passado reescrito", "Qualidade da rede, antes",
+    "Para reproduzir no Project", "Leitura", "Linha de base 1",
+    "02/10/2026", "16/10/2026", "N\u00e3o Iniciar Antes De 10/08/2026", "TI + 5 d",
+]
+# What a person must never read, in either report: a local path, a raw timestamp,
+# a negative zero, the slot jargon. In Portuguese, no ISO date at all.
+FORBID = ["--forbid=/Users/|[A-Za-z]:\\\\|/home/|/tmp/|/var/folders",
+          "--forbid=\\d{4}-\\d{2}-\\d{2}T\\d{2}", "--forbid=(^|[^\\d.,])-0([.,]0+)?(?![\\d.,])"]
+FORBID_PT = FORBID + ["--forbid=\\d{4}-\\d{2}-\\d{2}", "--forbid=[Gg]aveta de linha de base usada"]
 
 
 def render_checks() -> dict:
@@ -98,8 +112,8 @@ def render_checks() -> dict:
             check=True, capture_output=True,
         )
         pairs = [
-            ("cycle_curr-review.html", REVIEW_SECTIONS),
-            ("cycle_prev--to--cycle_curr-cycle.html", CYCLE_SECTIONS),
+            ("cycle_curr-review.html", REVIEW_SECTIONS + FORBID),
+            ("cycle_prev--to--cycle_curr-cycle.html", CYCLE_SECTIONS + FORBID),
         ]
         # And again in Portuguese, so a missing label is a failing test rather than
         # an English heading appearing in the middle of a Portuguese report.
@@ -110,7 +124,45 @@ def render_checks() -> dict:
              "--outdir", pt_dir, "--quiet", "--lang", "pt"],
             check=True, capture_output=True,
         )
-        pairs.append((os.path.join("pt", "cycle_curr-review.html"), PT_SECTIONS))
+        pairs.append((os.path.join("pt", "cycle_curr-review.html"), PT_SECTIONS + FORBID_PT))
+        # The cycle pair in Portuguese, and the positive fixture too: it is the one
+        # that fills every table of the review, so a raw date has nowhere to hide.
+        subprocess.run(
+            [sys.executable, os.path.join(HERE, "review.py"),
+             os.path.join(ROOT, "fixtures", "cycle_prev.xml"),
+             os.path.join(ROOT, "fixtures", "cycle_curr.xml"),
+             "--outdir", os.path.join(tmp, "ptc"), "--quiet", "--lang", "pt"],
+            check=True, capture_output=True,
+        )
+        pairs.append((os.path.join("ptc", "cycle_prev--to--cycle_curr-cycle.html"),
+                      CYCLE_PT_SECTIONS + FORBID_PT))
+        subprocess.run(
+            [sys.executable, os.path.join(HERE, "review.py"),
+             os.path.join(ROOT, "fixtures", "positive.xml"),
+             "--outdir", os.path.join(tmp, "ptp"), "--quiet", "--lang", "pt"],
+            check=True, capture_output=True,
+        )
+        pairs.append((os.path.join("ptp", "positive-review.html"), PT_SECTIONS + FORBID_PT))
+        # No path in any file written, sidecars included, and the tab title in the
+        # report's own language.
+        for folder, _, names in os.walk(tmp):
+            for name in names:
+                with open(os.path.join(folder, name), encoding="utf-8") as fh:
+                    blob = fh.read()
+                if tmp in blob or ROOT in blob:
+                    out["failures"].append(f"privacy: {name} carries a local path")
+        for rel, want in ((os.path.join("ptc", "cycle_prev--to--cycle_curr-cycle.html"),
+                           "<title>Compara\u00e7\u00e3o de ciclo \u2014 Cycle fixture curr</title>"),
+                          (os.path.join("pt", "cycle_curr-review.html"),
+                           "<title>An\u00e1lise cr\u00edtica \u2014 Cycle fixture curr</title>"),
+                          ("cycle_prev--to--cycle_curr-cycle.html",
+                           "<title>Cycle comparison \u2014 Cycle fixture curr</title>")):
+            with open(os.path.join(tmp, rel), encoding="utf-8") as fh:
+                head = fh.read(600)
+            if want not in head:
+                out["failures"].append(f"report {rel}: the tab title is not in the report's language")
+        if not os.path.exists(os.path.join(tmp, "cycle_prev--to--cycle_curr-cycle-readings.json")):
+            out["failures"].append("cycle: the readings sidecar was not written")
         # Executive synthesis injection: rebuild from embedded data, no recomputation.
         syn = os.path.join(tmp, "syn.txt")
         with open(syn, "w", encoding="utf-8") as fh:
@@ -213,6 +265,135 @@ def main() -> int:
     aggregates_note = cyc["conventions"]["aggregates"]
     if "called twice" not in aggregates_note:
         failures.append("cycle: the shared-reference convention is no longer declared")
+
+    # ---- what changed in the model itself: one positive case per finding.
+    def ids(rows):
+        return sorted(r["id"] for r in rows)
+
+    pf = cyc["project_finish"]
+    if pf["delta_days"] != 14.0 or pf["delta_unit"] != "calendar days":
+        failures.append(f"cycle finish: the project finish moved 14 calendar days, read {pf['delta_days']}")
+    if (pf["current"]["end"] or {}).get("id") != 8 or (pf["current"]["driver"] or {}).get("id") != 7:
+        failures.append("cycle finish: the closing milestone (8) and its driving activity (7) were not named")
+    if [n["id"] for n in pf["current"]["chain"]][:2] != [8, 7]:
+        failures.append("cycle finish: the driving chain does not run from the milestone to its driver")
+    if pf["driver_changed"] is not False or "approximated" not in pf["current"]["driver_basis"]:
+        failures.append("cycle finish: the driver comparison or its declared approximation is missing")
+    cp = cyc["critical_path"]
+    if ids(cp["entered"]) != [9] or ids(cp["left"]) != [10]:
+        failures.append(f"cycle critical: entered {ids(cp['entered'])} / left {ids(cp['left'])}, expected [9] / [10]")
+    if cp["criterion_current"] != "flag":
+        failures.append("cycle critical: the file carries the Critical flag and it was not the criterion")
+    if [r["id"] for r in cp["float_fell_top"]] != [11, 9] or cp["float_fell_top"][0]["float_fell_days"] != 15.0:
+        failures.append("cycle critical: the float ranking is not 11 (15 days) then 9 (10 days)")
+    if any(r["id"] == 10 for r in cp["float_fell_top"]):
+        failures.append("cycle critical: an activity that GAINED float is listed as having lost it")
+    lg = cyc["logic"]
+    got = {k: [(r["id"], r["predecessor_id"]) for r in lg[k]]
+           for k in ("links_added", "links_removed", "lag_changed", "type_changed")}
+    want = {"links_added": [(12, 11)], "links_removed": [(13, 11)],
+            "lag_changed": [(12, 9)], "type_changed": [(12, 10)]}
+    if got != want:
+        failures.append(f"cycle logic: link changes read as {got}")
+    else:
+        lag = lg["lag_changed"][0]
+        if (lag["lag_before"]["value"], lag["lag_after"]["value"]) != (2.0, 5.0):
+            failures.append("cycle logic: the lag did not read 2 then 5 working days")
+        tc = lg["type_changed"][0]
+        if (tc["type_before"], tc["type_after"]) != ("FS", "SS"):
+            failures.append("cycle logic: the link type did not read FS then SS")
+    if ids(lg["constraints_added"]) != [13] or ids(lg["constraints_changed"]) != [14] or lg["constraints_removed"]:
+        failures.append("cycle logic: constraint added on 13 / changed on 14 not read")
+    else:
+        ch = lg["constraints_changed"][0]
+        if (ch["type_before"], ch["type_after"]) != ("SNET", "MSO") or ch["date_before"] == ch["date_after"]:
+            failures.append("cycle logic: the hardened constraint lost its type or its date")
+    # The untouched link 12 <- 7 must appear nowhere: the negative control.
+    if any((r["id"], r["predecessor_id"]) == (12, 7) for k in want for r in lg[k]):
+        failures.append("cycle logic: an unchanged link was reported as edited")
+    du = cyc["duration_changed"]
+    if ids(du) != [7] or du[0]["delta_days"] != 10.0:
+        failures.append(f"cycle duration: expected only activity 7, +10 working days; got {du}")
+    # 16 and 17 changed duration too, but they had started: that is execution.
+    pr = cyc["past_rewritten"]
+    if ids(pr["actual_start"]) != [15] or ids(pr["actual_finish"]) != [16, 17]:
+        failures.append("cycle past: rewritten actual start (15) or finish (16, 17) not detected")
+    if ids(pr["percent_decreased"]) != [15, 17] or pr["activities"] != 3:
+        failures.append("cycle past: a percent that went down was missed, or counted twice")
+    if pr["actual_removed"] != 1:
+        failures.append("cycle past: a withdrawn actual finish was not told apart from a changed one")
+    if any(r["id"] == 2 for k in ("actual_start", "actual_finish", "percent_decreased") for r in pr[k]):
+        failures.append("cycle past: honest progress was accused of rewriting the past")
+    if not any(w["code"] == "past_rewritten" for w in cyc["warning_codes"]):
+        failures.append("cycle past: the rewritten past raised no warning")
+    q = {m["code"]: m for m in cyc["quality"]["metrics"]}
+    if len(q) != 14:
+        failures.append("cycle quality: the fourteen metrics are not side by side")
+    elif q["Q5"]["previous"]["count"] != 0 or q["Q5"]["current"]["count"] != 1 \
+            or q["Q5"]["change"] != "worsened" or q["Q5"]["crossed"] != "pass->fail":
+        failures.append("cycle quality: the hard constraint added this cycle did not move Q5")
+    import network_quality as nq_mod
+    import parse_mspdi as pm_mod
+    curr_q = nq_mod.build(pm_mod.parse(os.path.join(ROOT, "fixtures", "cycle_curr.xml")))
+    for m in curr_q["metrics"]:
+        if m["code"] != "Q10" and q[m["code"]]["current"]["count"] != m["count"]:
+            failures.append(f"cycle quality: {m['code']} differs from the review's own figure")
+    # The float criterion, when the file carries no Critical flag at all.
+    import compare_snapshots as cs_mod
+    import copy as copy_mod
+    bare = []
+    for name in ("cycle_prev.xml", "cycle_curr.xml"):
+        mdl = copy_mod.deepcopy(pm_mod.parse(os.path.join(ROOT, "fixtures", name)))
+        for t in mdl["tasks"]:
+            t["critical"] = None
+        bare.append(mdl)
+    cp2 = cs_mod.compare(*bare)["critical_path"]
+    if cp2["criterion_current"] != "float" or ids(cp2["entered"]) != [9] or ids(cp2["left"]) != [10]:
+        failures.append("cycle critical: without the flag, total float at or below zero was not used")
+    # Comparing a file with itself must find nothing: the silent half.
+    same = pm_mod.parse(os.path.join(ROOT, "fixtures", "cycle_curr.xml"))
+    quiet = cs_mod.compare(same, copy_mod.deepcopy(same))
+    noise = (quiet["critical_path"]["entered"] + quiet["critical_path"]["left"]
+             + quiet["critical_path"]["float_fell_top"] + quiet["duration_changed"]
+             + [r for k in ("links_added", "links_removed", "lag_changed", "type_changed",
+                            "constraints_added", "constraints_changed", "constraints_removed")
+                for r in quiet["logic"][k]])
+    if noise or quiet["past_rewritten"]["activities"] or quiet["project_finish"]["delta_days"] != 0 \
+            or any(m["change"] not in (None, "unchanged") for m in quiet["quality"]["metrics"]):
+        failures.append("cycle: a file compared with itself produced findings")
+    for key in ("movement_points", "decomposition_sums_to_points", "movement_unexplained_points"):
+        if str(quiet[key]).startswith("-"):
+            failures.append(f"cycle: {key} is a negative zero")
+    # No path leaves the engine, and both languages carry every cycle string.
+    if os.sep in (cyc["previous"]["source"] or "") or os.sep in (pm_mod.parse(
+            os.path.join(ROOT, "fixtures", "positive.xml"))["source"]):
+        failures.append("privacy: a source field carries a path instead of a file name")
+    import i18n as i18n_mod
+    import narrative as nar_mod
+    import report_data as rd_mod
+    for table, label in ((i18n_mod.CYCLE, "cycle strings"), (nar_mod.RC, "cycle readings"),
+                         (i18n_mod.CONSTRAINTS, "constraint names")):
+        for lang in table:
+            gap = set(table["en"]) ^ set(table[lang])
+            if gap:
+                failures.append(f"language: {label} differ between en and {lang}: {sorted(gap)}")
+    for lang in ("en", "pt"):
+        pay = rd_mod.build_cycle(cyc, lang=lang)
+        if [s["code"] for s in pay["sections"]] != ["C1", "C2", "C3", "C4", "C5", "C6"]:
+            failures.append(f"cycle report ({lang}): the six sections are not all present, in order")
+        for s in pay["sections"]:
+            if not s["reading"] or not s["criterion"] or not s["reproduce"]:
+                failures.append(f"cycle report ({lang}): {s['code']} lacks its reading or its filter")
+        sev = {s["code"]: s["severity"] for s in pay["sections"]}
+        if sev.get("C5") != "critical":
+            failures.append(f"cycle report ({lang}): a rewritten past is not the critical finding")
+        if pay["meta"]["baseline_label"] is None or "1" not in pay["meta"]["baseline_label"]:
+            failures.append(f"cycle report ({lang}): baseline 1 is not named in plain words")
+    if rd_mod.baseline_label("0", i18n_mod.cycle_text("pt")) is not None:
+        failures.append("cycle report: baseline slot 0 is shown, and it says nothing")
+    quiet_pay = rd_mod.build_cycle(quiet, lang="pt")
+    if not all(s["empty"] for s in quiet_pay["sections"] if s["code"] in ("C2", "C3", "C4", "C5")):
+        failures.append("cycle report: a section with nothing to show is not collapsed to one line")
 
     # ---- the network rules the in-tool implementation taught, each with a control.
     a1_pairs = {(p["successor_id"], p["predecessor_id"]) for p in pos["pairs"]["A1"]}
@@ -655,6 +836,8 @@ def main() -> int:
     print(f"  negative: all {len(CODES)} checks silent on a consistent schedule")
     print("  transversal rule: pending record did not raise a network finding")
     print("  cycle: execution, replan and rebased-baseline all detected; residue named")
+    print("  cycle model: finish and driver, critical path, logic, duration, rewritten past, quality")
+    print("  cycle control: a file against itself is silent; no path, raw date or negative zero shown")
     print("  report: no external references, so it works offline")
     if rendered["skipped"]:
         print("  report render: SKIPPED (node not installed) -- the blank-page guard did not run")

@@ -229,6 +229,10 @@ def task(uid, tid, name, **kw):
     ]
     if kw.get("constraint") is not None:
         parts.append(f"    <ConstraintType>{kw['constraint']}</ConstraintType>")
+    if kw.get("constraint_date"):
+        parts.append(f"    <ConstraintDate>{kw['constraint_date']}</ConstraintDate>")
+    if kw.get("critical") is not None:
+        parts.append(f"    <Critical>{1 if kw['critical'] else 0}</Critical>")
     for tag, key in (
         ("Start", "start"), ("Finish", "finish"),
         ("ActualStart", "astart"), ("ActualFinish", "afinish"),
@@ -304,12 +308,13 @@ def task(uid, tid, name, **kw):
     return "  <Task>\n" + "\n".join(parts) + "\n  </Task>"
 
 
-def document(name, tasks):
+def document(name, tasks, finish=None):
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         f'<Project xmlns="{NS}">\n'
         f"  <Name>{name}</Name>\n"
         f"  <Title>{name}</Title>\n"
+        + (f"  <FinishDate>{finish}</FinishDate>\n" if finish else "") +
         f"  <StatusDate>{STATUS}</StatusDate>\n"
         "  <DefaultTaskEVMethod>1</DefaultTaskEVMethod>\n"
         f"  <CurrentDate>{STATUS}</CurrentDate>\n"
@@ -536,12 +541,25 @@ def negative():
 def cycle(which: str):
     """A pair of snapshots of the SAME schedule, for the comparator.
 
-    Built so each of the three readings has exactly one instance:
+    Built so each of the three readings has an instance:
       uid 2  progressed with actuals behind it        -> execution
       uid 3  finish pushed with NO actuals            -> replan
       uid 4  the BASELINE itself moved                -> the reference moved
       uid 5  present only in current                  -> inserted
       uid 6  present only in previous                 -> removed
+
+    And so each change to the model itself has one too:
+      uid 7  duration stretched, never started        -> duration changed; drives the finish
+      uid 8  final milestone, driven by 7             -> project finish moved 14 days
+      uid 9  float 10 -> 0, flag turned on            -> entered the critical path
+      uid 10 float 0 -> 8, flag turned off            -> left the critical path
+      uid 11 float 20 -> 5                            -> float fell, still not critical
+      uid 12 one link added, one lag and one type changed
+      uid 13 its only link removed, a constraint added
+      uid 14 constraint hardened and moved
+      uid 15 ACTUAL START moved, percent went DOWN    -> past rewritten
+      uid 16 ACTUAL FINISH moved                      -> past rewritten
+      uid 17 actual finish WITHDRAWN, percent down    -> past rewritten
     """
     prev = which == "prev"
     ASSIGNMENTS.clear()
@@ -579,7 +597,71 @@ def cycle(which: str):
                       start="2026-09-07T08:00:00", finish="2026-09-11T17:00:00",
                       dur_hours=40,
                       baseline=("2026-09-07T08:00:00", "2026-09-11T17:00:00", 7000.0, 40)))
-    return document(f"Cycle fixture {which}", _decorate(t))
+    # ---- changes to the model itself ----
+    end = "2026-10-02T17:00:00" if prev else "2026-10-16T17:00:00"
+    t.append(task(7, 7, "Critical driver of the finish",
+                  start="2026-09-14T08:00:00", finish=end,
+                  dur_hours=120 if prev else 200, critical=True, slack_days=0,
+                  baseline=("2026-09-14T08:00:00", "2026-10-02T17:00:00", 30000.0, 120)))
+    t.append(task(8, 8, "Handover", milestone=True, start=end, finish=end, dur_hours=0,
+                  critical=True, slack_days=0, preds=[(7, 1, 0)],
+                  baseline=("2026-10-02T17:00:00", "2026-10-02T17:00:00", 0.0, 0)))
+    t.append(task(9, 9, "Enters the critical path",
+                  start="2026-08-17T08:00:00", finish="2026-08-28T17:00:00", dur_hours=80,
+                  critical=not prev, slack_days=10 if prev else 0,
+                  baseline=("2026-08-17T08:00:00", "2026-08-28T17:00:00", 8000.0, 80)))
+    t.append(task(10, 10, "Leaves the critical path",
+                  start="2026-08-03T08:00:00", finish="2026-08-14T17:00:00", dur_hours=80,
+                  critical=prev, slack_days=0 if prev else 8,
+                  baseline=("2026-08-03T08:00:00", "2026-08-14T17:00:00", 8000.0, 80)))
+    t.append(task(11, 11, "Float eroded",
+                  start="2026-07-20T08:00:00", finish="2026-07-31T17:00:00", dur_hours=80,
+                  critical=False, slack_days=20 if prev else 5,
+                  baseline=("2026-07-20T08:00:00", "2026-07-31T17:00:00", 8000.0, 80)))
+    # Links: 7 untouched; 9 keeps its type and changes lag (2 -> 5 days); 10 keeps
+    # its lag and changes type (FS -> SS); 11 is a new predecessor in current.
+    t.append(task(12, 12, "Logic edited",
+                  start="2026-09-01T08:00:00", finish="2026-09-11T17:00:00", dur_hours=72,
+                  critical=False, slack_days=3,
+                  baseline=("2026-09-01T08:00:00", "2026-09-11T17:00:00", 9000.0, 72),
+                  preds=([(7, 1, 0), (9, 1, 2), (10, 1, 0)] if prev else
+                         [(7, 1, 0), (9, 1, 5), (10, 3, 0), (11, 1, 0)])))
+    t.append(task(13, 13, "Link removed, constraint added",
+                  start="2026-08-10T08:00:00", finish="2026-08-14T17:00:00", dur_hours=40,
+                  critical=False, slack_days=12,
+                  baseline=("2026-08-10T08:00:00", "2026-08-14T17:00:00", 5000.0, 40),
+                  **(dict(preds=[(11, 1, 0)]) if prev else
+                     dict(constraint=4, constraint_date="2026-08-10T08:00:00"))))
+    # Start-no-earlier-than turned into must-start-on, a week later.
+    t.append(task(14, 14, "Constraint hardened",
+                  start="2026-08-17T08:00:00" if prev else "2026-08-24T08:00:00",
+                  finish="2026-08-21T17:00:00" if prev else "2026-08-28T17:00:00",
+                  dur_hours=40, critical=False, slack_days=6,
+                  constraint=4 if prev else 2,
+                  constraint_date="2026-08-17T08:00:00" if prev else "2026-08-24T08:00:00",
+                  baseline=("2026-08-17T08:00:00", "2026-08-21T17:00:00", 5000.0, 40)))
+    # The past, rewritten. Nothing in either file announces any of the three.
+    t.append(task(15, 15, "Actual start rewritten, percent lowered",
+                  start="2026-05-04T08:00:00" if prev else "2026-05-11T08:00:00",
+                  finish="2026-07-31T17:00:00", dur_hours=520 if prev else 480,
+                  astart="2026-05-04T08:00:00" if prev else "2026-05-11T08:00:00",
+                  pct=60 if prev else 45, phys=60 if prev else 45, critical=False, slack_days=4,
+                  baseline=("2026-05-04T08:00:00", "2026-07-31T17:00:00", 26000.0, 520)))
+    t.append(task(16, 16, "Actual finish rewritten",
+                  start="2026-04-06T08:00:00",
+                  finish="2026-04-10T17:00:00" if prev else "2026-04-17T17:00:00",
+                  dur_hours=40 if prev else 80, astart="2026-04-06T08:00:00",
+                  afinish="2026-04-10T17:00:00" if prev else "2026-04-17T17:00:00",
+                  pct=100, phys=100, critical=False,
+                  baseline=("2026-04-06T08:00:00", "2026-04-10T17:00:00", 6000.0, 40)))
+    t.append(task(17, 17, "Finish record withdrawn",
+                  start="2026-04-13T08:00:00",
+                  finish="2026-04-17T17:00:00" if prev else "2026-07-03T17:00:00",
+                  dur_hours=40 if prev else 400, astart="2026-04-13T08:00:00",
+                  afinish="2026-04-17T17:00:00" if prev else None,
+                  pct=100 if prev else 80, phys=100 if prev else 80, critical=False,
+                  baseline=("2026-04-13T08:00:00", "2026-04-17T17:00:00", 6000.0, 40)))
+    return document(f"Cycle fixture {which}", _decorate(t), finish=end)
 
 
 def main() -> None:

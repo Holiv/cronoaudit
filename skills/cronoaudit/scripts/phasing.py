@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import xml.etree.ElementTree as ET
 from collections import defaultdict
@@ -259,7 +260,7 @@ def build(path: str, group_field: str | None) -> dict:
 
     declared = max(method_votes, key=method_votes.get) if method_votes else 1
     return {
-        "source": path,
+        "source": os.path.basename(path),
         "status_date": status.isoformat() if status else None,
         "granularity": "month",
         "method": "physical" if declared == 1 else "percent",

@@ -27,7 +27,7 @@ python3 $S/review.py delivery.xml --outdir reports --lang pt
 Always call the scripts by their absolute path; the person's working directory is wherever
 the schedule is, not the skill's folder. Nothing to install beyond Python. Out come one
 self-contained HTML report in the schedule's own language and the JSON sidecars: `-review`,
-`-scurve`, `-productivity`, `-quality`, `-forecast`, `-forensics`, `-readings`. The self-test
+`-scurve`, `-productivity`, `-quality`, `-forecast`, `-forensics`, `-readings`; with two files, also `-cycle` and `-cycle-readings`. Reports and sidecars name files, never folders. The self-test
 `python3 $S/test_checks.py` proves the installation once; it is not part of every
 conversation. The whole process, flags, failure messages and the judgement the tool cannot
 make for you: `references/usage.md`.
@@ -81,7 +81,7 @@ recognise the fifth: `references/datum.md`.
 | V7 network quality | Does the schedule hold up as a model at all? Fourteen metrics, quoted thresholds, labelled as implementation | `network-quality.md` |
 | V8 looking forward | Earned Schedule with its limits, look-ahead, pace by group, milestone bands, rain exposure | `forecast.md` |
 | V9 forensics | Where each milestone's delay entered, by which path; calendars in the wrong year; execution pattern | `forensics.md` |
-| Cycle comparison | What moved since last time: execution, replan, or the reference itself | `comparing-versions.md` |
+| Cycle comparison | What changed in the schedule itself (finish, critical path, logic, durations, rewritten past, network quality) and what moved: execution, replan, or the reference | `comparing-versions.md` |
 
 Every section opens with a **Reading**: sentences built by rule from its own figures. Every
 finding carries a stable code, problem, impact, solution, and **how to reproduce it** in the
