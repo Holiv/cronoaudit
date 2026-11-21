@@ -1,5 +1,5 @@
 Attribute VB_Name = "Cronoaudit"
-' cronoaudit para MS Project - v0.2 (21/11/2026)
+' cronoaudit para MS Project - v0.2.1 (21/11/2026)
 '
 ' A cronoaudit e uma SKILL: o agente le o cronograma por ela, conversa com o planejador,
 ' interpreta e personaliza o relatorio. O motor em Python e o instrumento da skill: e dele
@@ -8,7 +8,8 @@ Attribute VB_Name = "Cronoaudit"
 '
 ' Macros publicas, da mais usada para a menos:
 '   CronoauditAnalisar        exporta o XML do arquivo ativo, grava pedido.md na pasta da rodada
-'                             e abre o agente (Claude Code, Codex, Copilot CLI, Gemini CLI) nela.
+'                             e abre o agente nela: Claude Code, Codex, Copilot CLI ou Gemini CLI
+'                             num terminal; ou o VS Code, com o pedido na area de transferencia.
 '                             O que o agente ler vai para o provedor dele.
 '   CronoauditComparar        pede a outra versao (.mpp ou .xml), exporta as duas e abre o agente
 '                             com o pedido de comparacao. Idem quanto ao dado.
@@ -19,7 +20,7 @@ Attribute VB_Name = "Cronoaudit"
 '
 ' Precisa de Python 3.9+ e da skill instalada pelo install.ps1 da cronoaudit.
 ' Configuracao em HKCU\Software\VB and VBA Program Settings\cronoaudit\config
-'   agente    auto | claude | codex | copilot | gemini      pasta   onde as rodadas sao gravadas
+'   agente    auto | claude | codex | copilot | gemini | code   pasta   onde as rodadas sao gravadas
 '   python    comando do Python (ex.: py -3)                review  caminho do review.py
 '   aviso_ia  1 = nao mostrar de novo o aviso de dados      ultimo  pasta da ultima rodada
 '   outro     ultima "outra versao" escolhida no Comparar
@@ -33,7 +34,9 @@ Option Explicit
 Private Const APP As String = "cronoaudit"
 Private Const SEC As String = "config"
 Private Const TITULO As String = "cronoaudit"
-Private Const AGENTES As String = "claude codex copilot gemini"
+' Ordem da deteccao automatica. O VS Code fica por ultimo: nao recebe o pedido pela linha de
+' comando, entao depende de colar.
+Private Const AGENTES As String = "claude codex copilot gemini code"
 ' Curto e ASCII de proposito: e a unica frase que atravessa a linha de comando.
 Private Const PROMPT_INICIAL As String = "Use the cronoaudit skill. Read pedido.md in this folder and follow it."
 
@@ -75,28 +78,33 @@ End Sub
 
 Public Sub CronoauditConfigurar()
     Dim op As String, v As String
-    op = InputBox("Configuracao atual:" & vbCrLf & _
-        "  1  agente: " & GetSetting(APP, SEC, "agente", "auto") & vbCrLf & _
-        "  2  pasta: " & PastaRaiz() & vbCrLf & _
-        "  3  Python: " & ValorOuAuto(GetSetting(APP, SEC, "python", "")) & vbCrLf & _
-        "  4  review.py: " & ValorOuAuto(GetSetting(APP, SEC, "review", "")) & vbCrLf & _
-        "  5  mostrar de novo o aviso de dados" & vbCrLf & _
-        "  9  redefinir tudo" & vbCrLf & vbCrLf & _
-        "Digite o numero do que quer mudar:", TITULO, "1")
+    ' O estado vai num MsgBox, que cresce com o texto. O InputBox corta o que nao cabe,
+    ' entao fica so com o menu, curto. Caminhos longos aparecem com %LOCALAPPDATA% e
+    ' %USERPROFILE% no lugar do comeco, cada um na sua linha.
+    If MsgBox("Configuracao atual" & vbCrLf & vbCrLf & _
+        "1  Agente:" & vbCrLf & "     " & GetSetting(APP, SEC, "agente", "auto") & vbCrLf & _
+        "2  Pasta das rodadas:" & vbCrLf & "     " & Abreviar(PastaRaiz()) & vbCrLf & _
+        "3  Python:" & vbCrLf & "     " & Abreviar(ValorOuAuto(GetSetting(APP, SEC, "python", ""))) & vbCrLf & _
+        "4  review.py:" & vbCrLf & "     " & Abreviar(ValorOuAuto(GetSetting(APP, SEC, "review", ""))) & vbCrLf & _
+        "5  Aviso de dados:" & vbCrLf & "     " & _
+        IIf(GetSetting(APP, SEC, "aviso_ia", "") = "1", "nao mostrar de novo", "mostrar") & vbCrLf & vbCrLf & _
+        "OK para alterar um item. Cancelar para sair.", vbOKCancel + vbInformation, TITULO) <> vbOK Then Exit Sub
+    op = InputBox("Numero do item a alterar:" & vbCrLf & vbCrLf & _
+        "1 agente    2 pasta    3 Python" & vbCrLf & _
+        "4 review.py    5 mostrar o aviso" & vbCrLf & _
+        "9 redefinir tudo", TITULO, "1")
     If StrPtr(op) = 0 Then Exit Sub
     Select Case Trim$(op)
         Case "1"
-            v = InputBox("Agente que o Analisar e o Comparar abrem:" & vbCrLf & vbCrLf & _
-                "  auto     o primeiro que existir, nesta ordem: claude, codex, copilot, gemini" & vbCrLf & _
-                "  claude   Claude Code" & vbCrLf & _
-                "  codex    Codex CLI" & vbCrLf & _
-                "  copilot  GitHub Copilot CLI" & vbCrLf & _
-                "  gemini   Gemini CLI", TITULO, GetSetting(APP, SEC, "agente", "auto"))
+            v = InputBox("auto, claude, codex, copilot," & vbCrLf & _
+                "gemini ou code (VS Code)." & vbCrLf & vbCrLf & _
+                "auto = o primeiro instalado," & vbCrLf & _
+                "nessa ordem.", TITULO, GetSetting(APP, SEC, "agente", "auto"))
             If StrPtr(v) = 0 Then Exit Sub
             v = LCase$(Trim$(v))
             If v = "" Then v = "auto"
             If v <> "auto" And Not EhAgente(v) Then
-                MsgBox "Agente desconhecido: " & v & vbCrLf & "Use auto, claude, codex, copilot ou gemini.", vbExclamation, TITULO
+                MsgBox "Agente desconhecido: " & v & vbCrLf & "Use auto, claude, codex, copilot, gemini ou code.", vbExclamation, TITULO
                 Exit Sub
             End If
             SaveSetting APP, SEC, "agente", v
@@ -107,9 +115,8 @@ Public Sub CronoauditConfigurar()
                 End If
             End If
         Case "2"
-            v = InputBox("Pasta onde as rodadas sao gravadas (vazio = voltar ao padrao):" & vbCrLf & vbCrLf & _
-                "O padrao e local, fora de pasta sincronizada, porque o XML e o relatorio carregam o dado da obra.", _
-                TITULO, PastaRaiz())
+            v = InputBox("Pasta das rodadas." & vbCrLf & "Vazio = voltar ao padrao" & vbCrLf & _
+                "(local, fora de pasta sincronizada).", TITULO, PastaRaiz())
             If StrPtr(v) = 0 Then Exit Sub
             v = Trim$(v)
             Do While Len(v) > 3 And Right$(v, 1) = "\"
@@ -117,11 +124,11 @@ Public Sub CronoauditConfigurar()
             Loop
             If v = "" Then DeleteSettingSeguro "pasta" Else SaveSetting APP, SEC, "pasta", v
         Case "3"
-            v = InputBox("Comando do Python (vazio = detectar de novo):", TITULO, GetSetting(APP, SEC, "python", ""))
+            v = InputBox("Comando do Python." & vbCrLf & "Vazio = detectar de novo.", TITULO, GetSetting(APP, SEC, "python", ""))
             If StrPtr(v) = 0 Then Exit Sub
             If Trim$(v) = "" Then DeleteSettingSeguro "python" Else SaveSetting APP, SEC, "python", Trim$(v)
         Case "4"
-            v = InputBox("Caminho do review.py (vazio = detectar de novo):", TITULO, GetSetting(APP, SEC, "review", ""))
+            v = InputBox("Caminho do review.py." & vbCrLf & "Vazio = detectar de novo.", TITULO, GetSetting(APP, SEC, "review", ""))
             If StrPtr(v) = 0 Then Exit Sub
             If Trim$(v) = "" Then DeleteSettingSeguro "review" Else SaveSetting APP, SEC, "review", Trim$(v)
         Case "5"
@@ -159,7 +166,7 @@ Private Sub FluxoAnalise(ByVal comIA As Boolean)
     If Not ExportarXml(xmlAtual, origem, True) Then Exit Sub
     SaveSetting APP, SEC, "ultimo", pasta
     If comIA Then
-        If Not GravarUtf8(pasta & "\pedido.md", PedidoAnalise(base & ".xml", pasta, py, rv)) Then Exit Sub
+        If Not GravarUtf8(pasta & "\pedido.md", PedidoAnalise(base, pasta, py, rv)) Then Exit Sub
         AbrirAgente agente, pasta
     Else
         If RodarMotor(py, rv, """" & xmlAtual & """", pasta) Then
@@ -226,7 +233,7 @@ Private Sub FluxoComparacao(ByVal comIA As Boolean)
     End If
     SaveSetting APP, SEC, "ultimo", pasta
     If comIA Then
-        If Not GravarUtf8(pasta & "\pedido.md", PedidoComparacao(baseAnt & ".xml", baseAtu & ".xml", pasta, py, rv)) Then Exit Sub
+        If Not GravarUtf8(pasta & "\pedido.md", PedidoComparacao(baseAnt, baseAtu, pasta, py, rv)) Then Exit Sub
         AbrirAgente agente, pasta
     Else
         If RodarMotor(py, rv, """" & anterior & """ """ & atual & """", pasta) Then
@@ -245,7 +252,7 @@ Private Function ResolverAgente(ByRef agente As String, ByRef comIA As Boolean) 
     If cfg = "" Or Not (cfg = "auto" Or EhAgente(cfg)) Then cfg = "auto"
     If cfg = "auto" Then
         agente = AcharAgente()
-        motivo = "Nao encontrei nenhum agente no PATH (claude, codex, copilot, gemini)."
+        motivo = "Nao encontrei nenhum agente no PATH (claude, codex, copilot, gemini, code)."
     Else
         If NoPath(cfg) Then agente = cfg Else agente = ""
         motivo = "O agente configurado ('" & cfg & "') nao foi encontrado no PATH."
@@ -270,7 +277,7 @@ Private Function AvisoDeDados(ByVal agente As String) As Boolean
         AvisoDeDados = True
         Exit Function
     End If
-    Select Case MsgBox("Este botao abre o agente '" & agente & "' sobre o cronograma exportado." & vbCrLf & vbCrLf & _
+    Select Case MsgBox("Este botao abre o agente (" & agente & ") sobre o cronograma exportado." & vbCrLf & vbCrLf & _
         "O que o agente ler (o XML, os resultados, o que voce escrever) e enviado ao provedor dele, " & _
         "nas condicoes da sua conta ou da sua empresa. Confira se a politica da empresa permite." & vbCrLf & vbCrLf & _
         "Se nao permitir, use CronoauditSemIA e CronoauditCompararSemIA: o relatorio e gerado " & _
@@ -292,8 +299,13 @@ End Function
 '   codex "PROMPT"         idem
 '   copilot -i "PROMPT"    --interactive: sessao interativa que executa o pedido
 '   gemini -i "PROMPT"     --prompt-interactive: executa o pedido e continua interativo
+'   code "PASTA"           abre a pasta no VS Code; o pedido vai pela area de transferencia
 Private Function AbrirAgente(ByVal agente As String, ByVal pasta As String) As Boolean
     Dim sh As Object, linha As String, cmd As String
+    If agente = "code" Then
+        AbrirAgente = AbrirVSCode(pasta)
+        Exit Function
+    End If
     Select Case agente
         Case "claude", "codex"
             linha = agente & " """ & PROMPT_INICIAL & """"
@@ -324,6 +336,65 @@ Private Function AbrirAgente(ByVal agente As String, ByVal pasta As String) As B
     End If
     On Error GoTo 0
     AbrirAgente = True
+End Function
+
+' O VS Code nao recebe pedido pela linha de comando. A pasta da rodada abre nele e a frase
+' curta vai para a area de transferencia: a pessoa abre o Copilot Chat em modo agente e cola.
+Private Function AbrirVSCode(ByVal pasta As String) As Boolean
+    Dim sh As Object, copiou As Boolean
+    copiou = CopiarParaAreaDeTransferencia(PROMPT_INICIAL)
+    On Error Resume Next
+    Set sh = CreateObject("WScript.Shell")
+    If Err.Number <> 0 Then
+        Falha "abrir o VS Code (WScript.Shell bloqueado)", Err
+        On Error GoTo 0
+        Exit Function
+    End If
+    sh.Run "cmd /c code """ & pasta & """", 0, False
+    If Err.Number <> 0 Then
+        Falha "abrir o VS Code (a politica da maquina pode bloquear processos abertos por macro)", Err
+        On Error GoTo 0
+        Exit Function
+    End If
+    On Error GoTo 0
+    If copiou Then
+        MsgBox "O VS Code vai abrir na pasta da rodada." & vbCrLf & vbCrLf & _
+            "1. Abra o Copilot Chat (Ctrl+Alt+I) e escolha o modo Agente." & vbCrLf & _
+            "2. Cole o pedido com Ctrl+V e envie. Ele ja esta na area de transferencia:" & vbCrLf & vbCrLf & _
+            "   " & PROMPT_INICIAL, vbInformation, TITULO
+    Else
+        MsgBox "O VS Code vai abrir na pasta da rodada." & vbCrLf & vbCrLf & _
+            "1. Abra o Copilot Chat (Ctrl+Alt+I) e escolha o modo Agente." & vbCrLf & _
+            "2. Nao consegui usar a area de transferencia. Digite o pedido:" & vbCrLf & vbCrLf & _
+            "   " & PROMPT_INICIAL, vbInformation, TITULO
+    End If
+    AbrirVSCode = True
+End Function
+
+' Texto ASCII para a area de transferencia, pelo clip do Windows. chcp 1252 antes, para o
+' clip ler o arquivo no mesmo codigo de pagina em que o VBA o gravou.
+Private Function CopiarParaAreaDeTransferencia(ByVal txt As String) As Boolean
+    Dim f As Integer, tmp As String, sh As Object, rc As Long
+    tmp = Environ$("TEMP") & "\cronoaudit-prompt.txt"
+    On Error Resume Next
+    f = FreeFile
+    Open tmp For Output As #f
+    If Err.Number <> 0 Then
+        Err.Clear
+        On Error GoTo 0
+        Exit Function
+    End If
+    Print #f, txt;
+    Close #f
+    Set sh = CreateObject("WScript.Shell")
+    If Err.Number = 0 Then
+        rc = sh.Run("cmd /c ""chcp 1252 >nul & clip < """ & tmp & """""", 0, True)
+        If Err.Number = 0 Then CopiarParaAreaDeTransferencia = (rc = 0)
+    End If
+    Err.Clear
+    Kill tmp
+    Err.Clear
+    On Error GoTo 0
 End Function
 
 Private Function AcharAgente() As String
@@ -368,6 +439,33 @@ Private Function PedidoCabecalho(ByVal tarefa As String) As String
         "- Idioma: portugues do Brasil (pt-BR). Converse e escreva em pt-BR, com acentuacao normal." & vbCrLf
 End Function
 
+' Os nomes exatos que o motor grava, para o agente nao adivinhar. baseAnterior vazio = analise
+' de um arquivo so. Os tres ultimos da analise dependem do que o XML traz.
+Private Function PedidoArquivos(ByVal baseAtual As String, ByVal baseAnterior As String) As String
+    Dim s As String, r As String, c As String
+    r = baseAtual & "-review"
+    s = vbCrLf & "## Arquivos que o motor grava nesta pasta" & vbCrLf & vbCrLf & _
+        "Use estes nomes exatamente. Nao procure outros." & vbCrLf & vbCrLf & _
+        "Analise critica de `" & baseAtual & ".xml`:" & vbCrLf & vbCrLf & _
+        "- `" & r & ".html`: o relatorio para a pessoa abrir" & vbCrLf & _
+        "- `" & r & ".json`: achados e contagens (`counts` e o numero oficial)" & vbCrLf & _
+        "- `" & r & "-readings.json`: as leituras prontas, por secao, e o bloco `inputs`" & vbCrLf & _
+        "- `" & r & "-quality.json`: as quatorze metricas de qualidade da rede" & vbCrLf & _
+        "- `" & r & "-forensics.json`: caminho condutor por marco, calendarios, padrao de execucao" & vbCrLf & _
+        "- `" & r & "-scurve.json`: curva S e conciliacao com o arquivo" & vbCrLf & _
+        "- `" & r & "-forecast.json`: Earned Schedule, look-ahead, ritmo, exposicao a chuva" & vbCrLf & _
+        "- `" & r & "-productivity.json`: produtividade e tendencia por recurso" & vbCrLf
+    If baseAnterior <> "" Then
+        c = baseAnterior & "--to--" & baseAtual & "-cycle"
+        s = s & vbCrLf & "Comparacao de `" & baseAnterior & ".xml` com `" & baseAtual & ".xml`:" & vbCrLf & vbCrLf & _
+            "- `" & c & ".html`: o relatorio de ciclo para a pessoa abrir" & vbCrLf & _
+            "- `" & c & ".json`: a comparacao inteira, como dado" & vbCrLf & _
+            "- `" & c & "-readings.json`: as leituras prontas do ciclo, por secao" & vbCrLf
+    End If
+    s = s & vbCrLf & "Se algum destes nao existir depois de rodar, diga qual falta em vez de supor o conteudo." & vbCrLf
+    PedidoArquivos = s
+End Function
+
 Private Function PedidoRegras(ByVal linhaDeComando As String, ByVal py As String, ByVal rv As String) As String
     PedidoRegras = vbCrLf & "## Como fazer" & vbCrLf & vbCrLf & _
         "1. Use a skill **cronoaudit**. Leia o SKILL.md dela antes de qualquer coisa e siga o que ele diz." & vbCrLf & _
@@ -377,30 +475,32 @@ Private Function PedidoRegras(ByVal linhaDeComando As String, ByVal py As String
         "   ```" & vbCrLf & vbCrLf & _
         "   Python: `" & py & "`  |  review.py: `" & rv & "`" & vbCrLf & _
         "   (no PowerShell, um executavel entre aspas precisa de `&` na frente)" & vbCrLf & _
-        "3. **Todo numero vem do motor.** Leia os arquivos JSON que ele grava e cite as leituras prontas " & _
-        "(`-readings.json`). Nao calcule, nao estime e nao arredonde por conta propria. Se um numero nao " & _
-        "estiver nos arquivos, diga que nao esta." & vbCrLf & _
+        "3. **Todo numero vem do motor.** Leia os arquivos JSON listados abaixo e cite as leituras prontas. " & _
+        "Nao calcule nem estime por conta propria. Se um numero nao estiver nos arquivos, diga que nao esta. " & _
+        "Ao apresentar, percentuais e pontos com duas casas." & vbCrLf & _
         "4. Diga o caminho completo do relatorio HTML gerado e resuma o que merece atencao, comecando " & _
         "pelos avisos que bloqueiam. Depois pergunte o que a pessoa quer aprofundar." & vbCrLf & _
         "5. Nao altere os XML. Nao rode a analise de novo sem que pecam ou sem que o arquivo mude." & vbCrLf & _
         "6. Personalizacao do relatorio ou do padrao da empresa: so quando pedirem, pelo fluxo que o SKILL.md descreve." & vbCrLf
 End Function
 
-Private Function PedidoAnalise(ByVal xmlNome As String, ByVal pasta As String, ByVal py As String, ByVal rv As String) As String
+Private Function PedidoAnalise(ByVal base As String, ByVal pasta As String, ByVal py As String, ByVal rv As String) As String
     PedidoAnalise = PedidoCabecalho("analise critica do cronograma") & _
-        "- Arquivo: `" & xmlNome & "` (nesta pasta; exportacao XML do MS Project, MSPDI)" & vbCrLf & _
-        PedidoRegras(py & " """ & rv & """ """ & pasta & "\" & xmlNome & """ --outdir """ & pasta & """ --lang pt", py, rv)
+        "- Arquivo: `" & base & ".xml` (nesta pasta; exportacao XML do MS Project, MSPDI)" & vbCrLf & _
+        PedidoRegras(py & " """ & rv & """ """ & pasta & "\" & base & ".xml"" --outdir """ & pasta & """ --lang pt", py, rv) & _
+        PedidoArquivos(base, "")
 End Function
 
-Private Function PedidoComparacao(ByVal xmlAnterior As String, ByVal xmlAtual As String, ByVal pasta As String, _
+Private Function PedidoComparacao(ByVal baseAnterior As String, ByVal baseAtual As String, ByVal pasta As String, _
                                   ByVal py As String, ByVal rv As String) As String
     PedidoComparacao = PedidoCabecalho("comparacao de duas versoes do mesmo cronograma (relatorio de ciclo)") & _
-        "- Versao ANTERIOR: `" & xmlAnterior & "` (nesta pasta)" & vbCrLf & _
-        "- Versao ATUAL: `" & xmlAtual & "` (nesta pasta)" & vbCrLf & _
+        "- Versao ANTERIOR: `" & baseAnterior & ".xml` (nesta pasta)" & vbCrLf & _
+        "- Versao ATUAL: `" & baseAtual & ".xml` (nesta pasta)" & vbCrLf & _
         "- A ordem importa: no comando, a anterior vem primeiro. O motor gera a analise critica da " & _
         "versao atual e o relatorio de ciclo entre as duas." & vbCrLf & _
-        PedidoRegras(py & " """ & rv & """ """ & pasta & "\" & xmlAnterior & """ """ & pasta & "\" & xmlAtual & _
-            """ --outdir """ & pasta & """ --lang pt", py, rv)
+        PedidoRegras(py & " """ & rv & """ """ & pasta & "\" & baseAnterior & ".xml"" """ & pasta & "\" & baseAtual & _
+            ".xml"" --outdir """ & pasta & """ --lang pt", py, rv) & _
+        PedidoArquivos(baseAtual, baseAnterior)
 End Function
 
 ' Grava texto em UTF-8 sem BOM, sem depender de ADODB. Trata pares substitutos.
@@ -735,6 +835,26 @@ Private Function AtivarSeAberto(ByVal caminho As String) As Boolean
             Exit Function
         End If
     Next i
+End Function
+
+' Troca o comeco de um caminho pelo nome da variavel de ambiente, para caber numa linha.
+' %LOCALAPPDATA% antes de %USERPROFILE%: o primeiro fica dentro do segundo.
+Private Function Abreviar(ByVal p As String) As String
+    Dim v As Variant, raiz As String, aspa As String
+    If Left$(p, 1) = """" Then
+        aspa = """"
+        p = Mid$(p, 2)
+    End If
+    For Each v In Array("LOCALAPPDATA", "USERPROFILE")
+        raiz = Environ$(CStr(v))
+        If Len(raiz) > 3 Then
+            If LCase$(Left$(p, Len(raiz) + 1)) = LCase$(raiz & "\") Then
+                Abreviar = aspa & "%" & CStr(v) & "%" & Mid$(p, Len(raiz) + 1)
+                Exit Function
+            End If
+        End If
+    Next v
+    Abreviar = aspa & p
 End Function
 
 ' Dir levanta erro em caminho invalido (unidade inexistente, caractere proibido): aqui vira Falso.

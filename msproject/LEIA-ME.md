@@ -1,6 +1,6 @@
 # cronoaudit dentro do MS Project
 
-A cronoaudit é uma **skill**: o agente (Claude Code, Codex, GitHub Copilot CLI, Gemini CLI) lê o
+A cronoaudit é uma **skill**: o agente (Claude Code, Codex, GitHub Copilot, Gemini CLI) lê o
 cronograma por ela, conversa com você, interpreta e personaliza o relatório quando você pede. O
 motor em Python é o instrumento da skill: é dele que saem os números, para o agente nunca
 inventar um.
@@ -8,9 +8,10 @@ inventar um.
 O suplemento é só o **atalho de entrada**. Ele exporta o XML do arquivo aberto e abre um terminal
 com a skill já iniciada sobre ele. Tudo o que ele faz você pode fazer à mão (seção 7).
 
-**Estado: v0.2.** A exportação por macro, a execução de processo e a descoberta do Python foram
-medidas em duas máquinas Windows com a v0.1. A abertura do agente pela macro é nova e ainda não
-foi medida em máquina real.
+**Estado: v0.2.1, beta.** A v0.2 foi usada de ponta a ponta em duas máquinas Windows: com o
+GitHub Copilot CLI numa e o Claude Code na outra, os dois agentes relataram os mesmos números do
+motor. Novo na v0.2.1 e ainda não medido em máquina real: a rota pelo VS Code, a lista de
+arquivos no `pedido.md` e a tela de configuração.
 
 ## 1. Os botões
 
@@ -21,7 +22,7 @@ foi medida em máquina real.
 | **Exportar XML** (`CronoauditExportarXml`) | só exporta o XML e abre a pasta no Explorer | **não**. Nada é enviado e nada roda. O que você fizer com o XML depois é com você |
 | **Sem IA** (`CronoauditSemIA`) | exporta, roda o motor da cronoaudit e abre o relatório HTML | **não**. Tudo roda nesta máquina |
 | **Comparar sem IA** (`CronoauditCompararSemIA`) | o mesmo, para a comparação de duas versões | **não** |
-| **Configurar** (`CronoauditConfigurar`) | agente, pasta dos relatórios, Python, `review.py`, redefinir | não |
+| **Configurar** (`CronoauditConfigurar`) | mostra a configuração atual e deixa trocar agente, pasta, Python, `review.py`, o aviso de dados, ou redefinir tudo | não |
 
 Sobre o "sim": o suplemento não envia nada. Quem envia é o agente, ao provedor dele, nas condições
 da sua conta ou da conta da empresa. Na primeira vez que você usa Analisar ou Comparar aparece um
@@ -37,7 +38,9 @@ vez de falhar.
    avisa se for um mestre com subprojetos.
 2. Cria a pasta da rodada e exporta o XML para ela.
 3. Grava `pedido.md` (UTF-8) na pasta: a tarefa, o nome do XML, o idioma (pt-BR), o comando do
-   motor que já funciona nesta máquina, e a regra de que todo número vem do motor.
+   motor que já funciona nesta máquina, a regra de que todo número vem do motor, e **o nome exato
+   de cada arquivo que o motor vai gravar** (relatório, JSON e leituras), para o agente não
+   adivinhar.
 4. Abre um terminal **visível** nessa pasta, com o agente iniciado numa frase curta em ASCII:
    `Use the cronoaudit skill. Read pedido.md in this folder and follow it.` O pedido de verdade
    está no arquivo; a frase curta evita problema de acento na linha de comando.
@@ -53,10 +56,16 @@ personalizar o relatório.
 | Codex CLI | `codex "…"` |
 | GitHub Copilot CLI | `copilot -i "…"` |
 | Gemini CLI | `gemini -i "…"` |
+| VS Code (Copilot Chat) | `code "<pasta da rodada>"`, com o pedido na área de transferência |
 
 Por padrão o suplemento abre o primeiro que encontrar no PATH, nessa ordem. Para fixar um, use
-`CronoauditConfigurar`, opção 1. O Copilot dentro do VS Code não é aberto pelo suplemento: use
-Exportar XML e abra a pasta no VS Code.
+`CronoauditConfigurar`, item 1.
+
+O VS Code é o último da lista porque não recebe o pedido pela linha de comando. O suplemento abre
+a pasta da rodada nele e copia a frase curta: abra o Copilot Chat (`Ctrl+Alt+I`), escolha o modo
+**Agente** e cole com `Ctrl+V`. Se o Copilot Chat do VS Code lê a skill instalada em
+`~/.agents/skills` ainda não foi medido; se ele disser que não conhece a skill, peça que leia o
+`SKILL.md` em `%USERPROFILE%\.agents\skills\cronoaudit`.
 
 ## 2. Pré-requisitos
 
@@ -127,7 +136,7 @@ esses botões e aponte os novos para as macros acima. Sem a faixa, tudo funciona
 Em `%LOCALAPPDATA%\cronoaudit\relatorios\<data>_<arquivo>\`, uma pasta por rodada, com o XML, o
 `pedido.md` e, depois que o motor rodar, o relatório HTML e os JSON. **A pasta é local de
 propósito**: fica fora do OneDrive, porque o XML e o relatório carregam o dado da obra. Troque em
-`CronoauditConfigurar`, opção 2.
+`CronoauditConfigurar`, item 2.
 
 No nome da pasta e do XML, os caracteres que atrapalham caminho ou linha de comando viram `_`, e
 o nome é cortado em 60 caracteres.
@@ -155,16 +164,17 @@ GUID, não o UID. A outra versão não pode estar aberta no Project.
 
 | Sintoma | Causa provável | Saída |
 |---|---|---|
+| no VS Code, nada acontece depois de abrir | o pedido não é enviado sozinho | abra o Copilot Chat em modo Agente e cole (`Ctrl+V`) |
 | "Não encontrei nenhum agente no PATH" | agente não instalado, ou instalado com o Project aberto (o Project herda o PATH ao abrir) | feche e abra o Project; ou aceite rodar sem IA |
 | o terminal abre e o agente reclama da opção `-i` | versão antiga do Copilot CLI ou do Gemini CLI | atualize o agente; ou digite o nome dele no terminal e cole a frase que o terminal mostra |
 | o agente abre mas diz que não conhece a skill | skill não instalada para esse agente | rode o `install.ps1`; no agente, peça para listar as skills |
 | o agente pede para confiar na pasta ou para rodar um comando | comportamento normal do agente | confirme: a pasta é a da rodada e o comando é o do `pedido.md` |
 | "Não consegui gravar o XML" | política da máquina bloqueia gravação por macro | `Salvar como > XML` e terminal (seção 7) |
 | "abrir o agente" ou "executar o Python" falhou | regra ASR que impede o Office de abrir processos | use Exportar XML e abra o terminal à mão |
-| "Não achei Python" | Python ausente ou só o atalho da Microsoft Store | rode o `install.ps1` de novo; ou `CronoauditConfigurar`, opção 3 |
-| "Não achei a skill cronoaudit" | skill não instalada | `install.ps1`; ou `CronoauditConfigurar`, opção 4 |
+| "Não achei Python" | Python ausente ou só o atalho da Microsoft Store | rode o `install.ps1` de novo; ou `CronoauditConfigurar`, item 3 |
+| "Não achei a skill cronoaudit" | skill não instalada | `install.ps1`; ou `CronoauditConfigurar`, item 4 |
 | a janela de escolher arquivo não abre | `Shell.Application` bloqueado | o suplemento pede o caminho por digitação |
 | "Salve em disco" com o arquivo salvo | arquivo aberto do OneDrive/SharePoint pelo navegador ou Recentes, o Project devolve uma URL | abra pela pasta sincronizada; o teste mostra isso na linha `[0]` |
 | o original voltou sem o desfazer | quando o "Salvar como" troca o documento ativo, o original é reaberto do disco | esperado; nas máquinas medidas o ativo continuou sendo o `.mpp` |
-| o aviso de dados não aparece mais e você quer rever | foi marcado para não mostrar | `CronoauditConfigurar`, opção 5 |
+| o aviso de dados não aparece mais e você quer rever | foi marcado para não mostrar | `CronoauditConfigurar`, item 5 |
 | `Cronoaudit1` na lista de módulos, macros em dobro | a versão anterior não foi removida antes de importar | remova os dois módulos e importe de novo |

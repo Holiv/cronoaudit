@@ -1,6 +1,6 @@
 # cronoaudit inside MS Project
 
-cronoaudit is a **skill**: the agent (Claude Code, Codex, GitHub Copilot CLI, Gemini CLI) reads
+cronoaudit is a **skill**: the agent (Claude Code, Codex, GitHub Copilot, Gemini CLI) reads
 the schedule through it, talks with the planner, interprets, and customises the report on
 request. The Python engine is the skill's instrument: the numbers come from it, so the agent
 never invents one.
@@ -8,8 +8,10 @@ never invents one.
 This VBA module is only the **entry shortcut**. It exports the open schedule to XML and opens a
 terminal with the skill already started on it. Everything it does can be done by hand.
 
-Status: **v0.2.** Export by macro, starting a process and finding Python were measured on two
-Windows machines with v0.1. Launching the agent from the macro is new and not yet measured.
+Status: **v0.2.1, beta.** v0.2 was used end to end on two Windows machines, with GitHub Copilot
+CLI on one and Claude Code on the other; both agents reported the same engine numbers. New in
+v0.2.1 and not yet measured on a real machine: the VS Code route, the list of output files in
+`pedido.md`, and the configuration screen.
 
 | Macro | Does | Data leaves the machine? |
 |---|---|---|
@@ -37,8 +39,14 @@ cronoaudit skill. Read pedido.md in this folder and follow it."* The real reques
 | Codex CLI | `codex "PROMPT"` | CLI reference and source: optional `PROMPT` argument of the interactive command |
 | GitHub Copilot CLI | `copilot -i "PROMPT"` | CLI command reference: `-i PROMPT`, `--interactive=PROMPT` |
 | Gemini CLI | `gemini -i "PROMPT"` | CLI reference: `--prompt-interactive`, `-i` |
+| VS Code (Copilot Chat) | `code "<run folder>"`, prompt on the clipboard | no prompt argument exists; the user opens Copilot Chat in agent mode and pastes |
 
 By default the first one found on PATH is used, in that order; `CronoauditConfigurar` fixes one.
+VS Code comes last because it cannot take the prompt on the command line.
+
+`pedido.md` also lists the exact name of every file the engine will write for that run (the
+review HTML and JSON, each sidecar, and the cycle files when comparing), so the agent does not
+guess a file name.
 
 ## Files
 
