@@ -14,6 +14,7 @@ Template lookup order, so a customised copy always wins over the shipped one:
 """
 from __future__ import annotations
 
+import html
 import json
 import os
 import re
@@ -64,6 +65,17 @@ def write(payload: dict, out_path: str, template: str | None = None) -> str:
     )
     if count == 0:
         filled = tpl.replace(MARKER, blob, 1)
+
+    # The browser tab and the document language are read before any script runs
+    # (and by whoever prints or bookmarks the file), so they are written into the
+    # markup itself rather than left to the renderer. A function replacement, for
+    # the same backslash reason as above.
+    if payload.get("page_title"):
+        tab = "<title>" + html.escape(str(payload["page_title"])) + "</title>"
+        filled = re.sub(r"<title>.*?</title>", lambda _m: tab, filled, count=1, flags=re.S)
+    if payload.get("lang"):
+        tag = '<html lang="' + html.escape(str(payload["lang"])) + '">'
+        filled = re.sub(r"<html lang=\"[^\"]*\">", lambda _m: tag, filled, count=1)
 
     with open(out_path, "w", encoding="utf-8") as fh:
         fh.write(filled)

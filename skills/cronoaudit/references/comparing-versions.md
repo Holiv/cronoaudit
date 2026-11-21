@@ -125,6 +125,46 @@ Aggregating the same contributions by discipline, ordered by magnitude rather th
 alphabetically, puts the discipline that actually moved the number at the top. Ordering a table
 of impacts by name is how the largest item gets missed.
 
+## What changed in the schedule itself
+
+Progress is one question. Before it comes another: **is this still the same model?** Six
+readings, in the order the report shows them. Each opens with a rule-built reading, declares
+its criterion and how to reproduce it in the tool, and collapses to one line when it finds
+nothing, because a clean result is a result.
+
+| Code | Reading | Criterion |
+|---|---|---|
+| C1 | Project finish, before and after | the header's finish date (the latest activity finish when absent); difference in **calendar days** |
+| C2 | Critical path | entered, left, and the largest float losses, in working days of each activity's calendar |
+| C3 | Logic | links added, removed, lag or type changed; constraints added, changed, removed |
+| C4 | Duration edited before any start | no actual start in either file, different duration |
+| C5 | **Past rewritten** | actual start or finish changed or withdrawn; percent complete lower than before |
+| C6 | Network quality, side by side | `network_quality.build` called once per file |
+
+**C5 is the one that outranks the rest.** An actual date is a record and a percent is a
+measurement already reported. When either reads differently in the next delivery, every figure
+the previous cycle reported on that activity rested on a past that no longer exists, and
+neither file says so. It is always a finding about the record, to be answered with a stated
+correction. Changes that stay within the same day (time of day only) are listed and counted
+apart, because a calendar edit can produce them.
+
+Conventions and limits, all declared in the output:
+
+- **Critical** is the tool's own Critical flag when the file carries it, total float at or
+  below zero otherwise; a finished activity is on no path. When the two files cannot be read by
+  the same criterion the reading says so.
+- **A link is its two ends**, each matched like any activity. Only links between activities
+  present in both files count as edited logic; links on inserted or removed activities are
+  counted apart, as scope.
+- **The driving activity of the finish is approximated**: the last-finishing open activity,
+  walked back through the predecessor whose link lands latest (the same walk as the forensics),
+  to the first row that is not a milestone. The network is not recalculated, and the walk does
+  not weigh calendars or constraints. Read it as where to look, not as a computed critical path.
+- **Population** for these readings is leaf, active, non-external, milestones included. The
+  weighted figures keep excluding milestones.
+- **Percentage lags** are shown as the percentage; every other lag in working days of the
+  successor's calendar.
+
 ## Persistence without infrastructure
 
 There is no database. **Report N is the input to report N+1** — the historical series travels

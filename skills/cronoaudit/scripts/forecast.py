@@ -36,6 +36,15 @@ import sys
 from collections import defaultdict
 from datetime import datetime, timedelta
 
+import os
+
+# Run by path from anywhere, on any interpreter: an isolated Python (-I), and the
+# embeddable Windows package with its ._pth file, do not put the script's own
+# folder on sys.path, so the sibling modules below would not be found.
+_HERE = os.path.dirname(os.path.abspath(__file__))
+if _HERE not in sys.path:
+    sys.path.insert(0, _HERE)
+
 import calendars as cal_mod
 
 RESERVE_DAYS_PER_MONTH = 4   # a month with this many non-working exceptions is a reserve month
@@ -208,6 +217,7 @@ def rates_by_group(model: dict, scurve: dict, group_field: str | None) -> list:
     groups = scurve.get("by_group") or {}
     if not groups or status is None:
         return []
+    planned_ok = (scurve.get("inputs") or {}).get("planned_available", True)
     # Baseline finish per group, from the model.
     last_bl = defaultdict(lambda: None)
     for t in model["tasks"]:
@@ -234,7 +244,8 @@ def rates_by_group(model: dict, scurve: dict, group_field: str | None) -> list:
         required = ((100.0 - earned) / weeks_left) if weeks_left else None
         ratio = round(required / practised, 2) if (required and practised) else None
         out.append({
-            "group": name, "bac": g.get("bac"), "earned_pct": earned, "planned_pct": planned,
+            "group": name, "bac": g.get("bac"), "earned_pct": earned,
+            "planned_pct": planned if planned_ok else None,
             "practised_pct_per_week": round(practised, 3) if practised else None,
             "required_pct_per_week": round(required, 3) if required else None,
             "baseline_finish": fmt(bf), "weeks_left": round(weeks_left, 1) if weeks_left else None,
@@ -312,12 +323,14 @@ def rain_exposure(model: dict, reserve_days: int = RESERVE_DAYS_PER_MONTH) -> di
 
     # Reserve months per calendar: months with at least N non-working exceptions.
     reserve = {}
+    exceptions = {}
     for uid, cal in cals.items():
         per_month = defaultdict(int)
         for day, ivs in cal.exception_intervals.items():
             if not ivs:
                 per_month[day.strftime("%Y-%m")] += 1
         reserve[uid] = {m for m, n in per_month.items() if n >= reserve_days}
+        exceptions[uid] = sum(per_month.values())
 
     def spread(t, shift_days=0):
         cost = ((t.get("baselines") or {}).get(slot) or {}).get("cost") or 0.0
@@ -343,10 +356,12 @@ def rain_exposure(model: dict, reserve_days: int = RESERVE_DAYS_PER_MONTH) -> di
     in_reserve = 0.0
     in_reserve_shifted = 0.0
     months = defaultdict(lambda: {"remaining": 0.0, "in_reserve": 0.0})
+    used = set()
     for t in model["tasks"]:
         if not considered(t) or t.get("actual_finish"):
             continue
         cal_uid = t.get("calendar_uid") if t.get("calendar_uid") in cals else default_cal
+        used.add(cal_uid)
         rmonths = reserve.get(cal_uid, set())
         for m, v in spread(t).items():
             total += v
@@ -361,13 +376,26 @@ def rain_exposure(model: dict, reserve_days: int = RESERVE_DAYS_PER_MONTH) -> di
                "in_reserve": round(v["in_reserve"], 2),
                "share_in_reserve": round(v["in_reserve"] / v["remaining"] * 100, 1) if v["remaining"] else 0.0}
               for m, v in sorted(months.items())]
+    # The share is only a reading when the calendars carrying the remaining work
+    # reserve something. With no reserved month anywhere, "0% in reserve" would be
+    # zero for lack of data, which is not zero exposure: it is then not stated.
+    with_reserve = sorted(u for u in used if reserve.get(u))
+    exceptions_in_use = sum(exceptions.get(u, 0) for u in used)
+    readable = bool(with_reserve)
     return {
         "available": True,
+        "readable": readable,
+        "unreadable_reason": (None if readable else
+                              ("no_exceptions" if exceptions_in_use == 0 else "no_reserve_months")),
+        "calendars_in_use": len(used),
+        "calendars_with_reserve": len(with_reserve),
+        "non_working_exceptions_in_use": exceptions_in_use,
         "reserve_rule": f"a month with at least {reserve_days} non-working exceptions on the activity's calendar",
         "remaining_total": round(total, 2),
-        "in_reserve": round(in_reserve, 2),
-        "share_in_reserve_pct": round(in_reserve / total * 100, 2) if total else None,
-        "share_if_slips_30_days_pct": round(in_reserve_shifted / total * 100, 2) if total else None,
+        "in_reserve": round(in_reserve, 2) if readable else None,
+        "share_in_reserve_pct": round(in_reserve / total * 100, 2) if (total and readable) else None,
+        "share_if_slips_30_days_pct": (round(in_reserve_shifted / total * 100, 2)
+                                       if (total and readable) else None),
         "basis": "inferred: remaining cost spread evenly over each activity's current span from "
                  "the status date; reserve months read from each activity's own calendar",
         "months": series[:60],

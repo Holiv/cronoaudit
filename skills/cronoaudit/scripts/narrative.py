@@ -12,85 +12,103 @@ label. See `inject_narrative.py`.
 """
 from __future__ import annotations
 
+import re
+
+import i18n
+
 R = {
     "en": {
         "net_hold": "The network holds: no out-of-sequence execution, so the forecast dates rest on logic the works follows.",
-        "net_broken": "{n} activities sit in violated logic ({a1} out of sequence, {a2} in total inversion). Every forecast date below is derived from a network the works does not follow; settle these before discussing a date.",
-        "progress": "Weighted progress is {e}% against {p}% planned: {d} points behind.",
-        "progress_ahead": "Weighted progress is {e}% against {p}% planned: {d} points ahead.",
-        "recon_ok": "The skill's earned value matched the file's own on {m} of {c} leaves to the cent; the difference is explained.",
-        "recon_gap": "The skill's earned value differs from the file's on {u} leaves without explanation; check the baseline slot and the earned-value method before trusting either figure.",
+        "net_none": "There is no network to read: no activity is linked to another, so no forecast date is driven by logic. Zero out-of-sequence findings prove nothing here, because there is no sequence to break.",
+        "net_open": "No out-of-sequence execution was found, but {u} of {o} {o?open activity has|open activities have} no predecessor or no successor ({s}%, against the {t}% the quality metric quotes). Those dates are not driven by logic; that the network holds can only be said of the part that is linked.",
+        "planned_na": "Planned-to-date is unavailable: the baseline cost is not distributed in time in this file, so there is no \"ahead\" or \"behind\", no SV and no SPI to read. Weighted progress is {e}%.",
+        "recon_none": "The file carries no earned value of its own (BCWP is zero on every activity: the tool did not compute it), so the reconciliation compares nothing. The earned figure here is the skill's alone.",
+        "weight_top_np": "{g} carries {w}% of the budget and stands at {e}% earned; there is no planned figure to set it against.",
+        "rain_none": "The calendars in use carry no non-working exceptions, so no period is reserved for bad weather and the exposure cannot be read from them. That is absence of data, not absence of risk.",
+        "rain_few": "The calendars in use carry non-working exceptions, but no month reaches the reserve rule, so the weather exposure cannot be read from them. That is absence of data, not absence of risk.",
+        "net_broken": "{n} {n?activity sits|activities sit} in violated logic ({a1} out of sequence, {a2} in total inversion). Every forecast date below is derived from a network the works does not follow; settle these before discussing a date.",
+        "progress": "Weighted progress is {e}% against {p}% planned: {d} {d?point|points} behind.",
+        "progress_ahead": "Weighted progress is {e}% against {p}% planned: {d} {d?point|points} ahead.",
+        "recon_ok": "The skill's earned value matched the file's own on {m} of {c} {c?leaf|leaves} to the cent, zero against zero left out; the difference is explained.",
+        "recon_gap": "The skill's earned value differs from the file's on {u} {u?leaf|leaves} without explanation; check which baseline is in use and the earned-value method before trusting either figure.",
         "spi": "Cumulative SPI is {s}: the works has earned {pct}% of what the plan expected by now.",
-        "method_gap": "The other earned-value method would read {alt}% instead of {e}%, a gap of {g} points. Switching method changes the curve, not the works.",
+        "method_gap": "The other earned-value method would read {alt}% instead of {e}%, a gap of {g} {g?point|points}. Switching method changes the curve, not the works.",
         "earned_before_plan": "{v} ({pct}% of the baseline cost) was earned before the first planned day, {d}: execution ahead of its baseline window, which the tool credits only when the status date reaches the window.",
         "weight_top": "{g} carries {w}% of the budget and stands at {e}% earned against {p}% planned.",
-        "weight_behind": "{n} groups are more than {d} points behind their own plan; the largest is {g}.",
+        "weight_behind": "{n} {n?group is|groups are} more than {d} {d?point|points} behind their own plan; the largest is {g}.",
         "weight_flat": "Everything sits in one group, so the weight distribution says nothing yet; group by a discovered field.",
-        "prod_solid": "Of {n} activities in progress with a trend, {s} rest on solid evidence: {ahead} ahead, {rep} to reprogram, {abs} with the baseline missed and the float absorbing it, {crit} that would enter the critical path.",
-        "prod_thin": "{t} projections rest on thin evidence or a percent-derived quantity; read them as questions, not verdicts.",
+        "prod_solid": "Of {n} {n?activity|activities} in progress with a trend, {s} rest on solid evidence: {ahead} ahead, {rep} to reprogram, {abs} with the baseline missed and the float absorbing it, {crit} that would enter the critical path.",
+        "prod_thin": "{t} {t?projection rests|projections rest} on thin evidence or a percent-derived quantity; read them as questions, not verdicts.",
         "rate_falling": "{r} is slowing: planned {p} a day, {g} practised to date, {rc} in the last thirty days.",
         "q_fail": "The network fails {n} of the quantitative metrics: {list}.",
         "q_pass_all": "The network passes every quantitative metric with a threshold.",
-        "bei": "Of {d} activities due by the status date, {a} finished on time: a baseline execution index of {b}.",
-        "float_deadline": "{f}% of incomplete activities carry more than 44 working days of float while {m} of {mm} milestones have no deadline: the float is not slack, it is an unconstrained plan.",
-        "es_behind": "Earned Schedule falls on {es}: the plan reached today's earned value {d} days ago, a schedule efficiency SPI(t) of {spi}.",
-        "es_ahead": "Earned Schedule falls on {es}, {d} days ahead of today: SPI(t) {spi}.",
-        "es_ieac": "At this efficiency the independent finish is {ieac}, {gap} days from the schedule's own {sched}. Either the logic is optimistic or the remainder will run at a pace not yet seen.",
+        "bei": "Of {d} {d?activity|activities} due by the status date, {a} finished on time: a baseline execution index of {b}.",
+        "float_deadline": "{f}% of incomplete activities carry more than 44 working days of float while {m} of {mm} {mm?milestone|milestones} have no deadline: the float is not slack, it is an unconstrained plan.",
+        "es_behind": "Earned Schedule falls on {es}: the plan reached today's earned value {d} {d?day|days} ago, a schedule efficiency SPI(t) of {spi}.",
+        "es_ahead": "Earned Schedule falls on {es}, {d} {d?day|days} ahead of today: SPI(t) {spi}.",
+        "es_ieac": "At this efficiency the independent finish is {ieac}, {gap} {gap?day|days} from the schedule's own {sched}. Either the logic is optimistic or the remainder will run at a pace not yet seen.",
         "es_tspi_easy": "TSPI is {t}: the remainder can finish on the planned date at the plan's own pace.",
         "es_tspi_hard": "TSPI is {t}: the remainder must run {pct}% above the plan to finish on the planned date. Modest because most of the duration is still ahead, not because the lag is small.",
         "es_tspi_no": "TSPI is {t}: the remainder would need {pct}% above the plan, which the literature treats as unrecoverable in practice.",
-        "la_no": "The next {w} weeks plan {p}% of earning; the practised rate delivers {q}%. Not reachable without a change of pace.",
-        "la_yes": "The next {w} weeks plan {p}% of earning and the practised rate delivers {q}%: reachable.",
-        "rg_out": "{n} groups cannot reach their baseline finish at the practised pace; {g} needs {r}× its current rate.",
+        "la_no": "The next {w} {w?week|weeks} plan {p}% of earning; the practised rate delivers {q}%. Not reachable without a change of pace.",
+        "la_yes": "The next {w} {w?week|weeks} plan {p}% of earning and the practised rate delivers {q}%: reachable.",
+        "rg_out": "{n} {n?group|groups} cannot reach their baseline finish at the practised pace; {g} needs {r}× its current rate.",
         "rg_ok": "Every group with a trend is on pace or within a stretch of its baseline finish.",
         "rain": "{s}% of the remaining cost sits in months the calendars reserve for bad weather, {t}% if everything slips thirty days.",
-        "fx_origins": "{o} of {m} future milestones trace to a named origin; activity {id} originates delay on {k} of them.",
+        "fx_origins": "{o} of {m} {m?future milestone|future milestones} trace to a named origin; activity {id} originates delay on {k} of them.",
         "fx_none": "No future milestone carries variance above the threshold, so no origin is named.",
-        "fx_cal": "Calendar forensics flags {n} calendars: {list}.",
-        "fx_oos_rising": "Out-of-sequence execution is rising, from {a} pairs a month to {b}: the practice is accelerating.",
-        "fx_oos_falling": "Out-of-sequence execution is falling, from {a} pairs a month to {b}.",
-        "fx_slip": "Of {n} started activities, {early} started early and {late} late; the median start was {p50} days {dir} the baseline.",
+        "fx_cal": "Calendar forensics flags {n} {n?calendar|calendars}: {list}.",
+        "fx_oos_rising": "Out-of-sequence execution is rising, from {a} {a?pair|pairs} a month to {b}: the practice is accelerating.",
+        "fx_oos_falling": "Out-of-sequence execution is falling, from {a} {a?pair|pairs} a month to {b}.",
+        "fx_slip": "Of {n} {n?started activity|started activities}, {early} started early and {late} late; the median start was {p50} {p50?day|days} {dir} the baseline.",
         "early": "before", "late": "after",
         "syn_label": "Executive synthesis",
         "syn_written": "Written by {who} from the figures in this report, on {when}.",
     },
     "pt": {
         "net_hold": "A rede se sustenta: não há execução fora de sequência, então as datas de tendência se apoiam em lógica que a obra segue.",
-        "net_broken": "{n} atividades estão em lógica violada ({a1} fora de sequência, {a2} em inversão total). Toda data de tendência abaixo deriva de uma rede que a obra não segue; resolva isso antes de discutir uma data.",
-        "progress": "O avanço ponderado é {e}% contra {p}% previsto: {d} pontos atrás.",
-        "progress_ahead": "O avanço ponderado é {e}% contra {p}% previsto: {d} pontos à frente.",
-        "recon_ok": "O valor agregado da skill bateu com o do arquivo em {m} de {c} folhas ao centavo; a diferença está explicada.",
-        "recon_gap": "O valor agregado da skill difere do arquivo em {u} folhas sem explicação; confira a gaveta de linha de base e o método antes de confiar em qualquer dos dois.",
+        "net_none": "Não há rede para ler: nenhuma atividade está ligada a outra, então nenhuma data de tendência é conduzida por lógica. Zero achados de execução fora de sequência não provam nada aqui, porque não há sequência para quebrar.",
+        "net_open": "Não foi encontrada execução fora de sequência, mas {u} de {o} {o?atividade em aberto não tem|atividades em aberto não têm} predecessora ou não {o?tem|têm} sucessora ({s}%, contra os {t}% que a métrica de qualidade cita). Essas datas não são conduzidas por lógica; que a rede se sustenta só pode ser dito da parte que está ligada.",
+        "planned_na": "O previsto até a data está indisponível: o custo de linha de base não está distribuído no tempo neste arquivo, então não há \"à frente\" ou \"atrás\", nem VP, nem IDP para ler. O avanço ponderado é {e}%.",
+        "recon_none": "O arquivo não traz valor agregado próprio (o BCWP é zero em todas as atividades: a ferramenta não calculou), então a conciliação não compara nada. O valor agregado aqui é só o da skill.",
+        "weight_top_np": "{g} carrega {w}% do orçamento e está em {e}% realizado; não há previsto com que comparar.",
+        "rain_none": "Os calendários em uso não têm nenhuma exceção de dia não útil, então nenhum período está reservado para tempo ruim e a exposição não pode ser lida deles. É ausência de dado, não ausência de risco.",
+        "rain_few": "Os calendários em uso têm exceções de dia não útil, mas nenhum mês alcança a regra de reserva, então a exposição ao tempo ruim não pode ser lida deles. É ausência de dado, não ausência de risco.",
+        "net_broken": "{n} {n?atividade está|atividades estão} em lógica violada ({a1} fora de sequência, {a2} em inversão total). Toda data de tendência abaixo deriva de uma rede que a obra não segue; resolva isso antes de discutir uma data.",
+        "progress": "O avanço ponderado é {e}% contra {p}% previsto: {d} {d?ponto|pontos} atrás.",
+        "progress_ahead": "O avanço ponderado é {e}% contra {p}% previsto: {d} {d?ponto|pontos} à frente.",
+        "recon_ok": "O valor agregado da skill bateu com o do arquivo em {m} de {c} {c?folha|folhas} ao centavo, zero contra zero fica fora; a diferença está explicada.",
+        "recon_gap": "O valor agregado da skill difere do arquivo em {u} {u?folha|folhas} sem explicação; confira qual linha de base está em uso e o método antes de confiar em qualquer dos dois.",
         "spi": "O IDP acumulado é {s}: a obra agregou {pct}% do que o plano esperava até agora.",
-        "method_gap": "O outro método de valor agregado leria {alt}% em vez de {e}%, diferença de {g} pontos. Trocar o método muda a curva, não a obra.",
+        "method_gap": "O outro método de valor agregado leria {alt}% em vez de {e}%, diferença de {g} {g?ponto|pontos}. Trocar o método muda a curva, não a obra.",
         "earned_before_plan": "{v} ({pct}% do custo de linha de base) foi agregado antes do primeiro dia previsto, {d}: execução antes da janela de linha de base, que a ferramenta só credita quando a data de status alcança a janela.",
         "weight_top": "{g} carrega {w}% do orçamento e está em {e}% realizado contra {p}% previsto.",
-        "weight_behind": "{n} grupos estão mais de {d} pontos atrás do próprio previsto; o maior é {g}.",
+        "weight_behind": "{n} {n?grupo está|grupos estão} mais de {d} {d?ponto|pontos} atrás do próprio previsto; o maior é {g}.",
         "weight_flat": "Tudo está num único grupo, então a distribuição de peso ainda não diz nada; agrupe por um campo descoberto.",
-        "prod_solid": "Das {n} atividades em andamento com tendência, {s} se apoiam em evidência sólida: {ahead} adiantadas, {rep} para reprogramar, {abs} com a linha de base perdida e a folga absorvendo, {crit} que entrariam no caminho crítico.",
-        "prod_thin": "{t} projeções se apoiam em evidência fina ou em quantidade derivada de percentual; leia como pergunta, não como veredicto.",
+        "prod_solid": "Das {n} {n?atividade em andamento|atividades em andamento} com tendência, {s} se apoiam em evidência sólida: {ahead} adiantadas, {rep} para reprogramar, {abs} com a linha de base perdida e a folga absorvendo, {crit} que entrariam no caminho crítico.",
+        "prod_thin": "{t} {t?projeção se apoia|projeções se apoiam} em evidência fina ou em quantidade derivada de percentual; leia como pergunta, não como veredicto.",
         "rate_falling": "{r} está desacelerando: previsto {p} por dia, {g} praticado até a data, {rc} nos últimos trinta dias.",
         "q_fail": "A rede não atende {n} das métricas quantitativas: {list}.",
         "q_pass_all": "A rede atende todas as métricas quantitativas com limiar.",
-        "bei": "De {d} atividades devidas até a data de status, {a} terminaram no prazo: índice de execução da linha de base de {b}.",
-        "float_deadline": "{f}% das atividades incompletas carregam mais de 44 dias úteis de folga enquanto {m} de {mm} marcos não têm data limite: a folga não é margem, é plano sem restrição.",
-        "es_behind": "O Earned Schedule cai em {es}: o plano alcançou o realizado de hoje há {d} dias, eficiência de prazo SPI(t) de {spi}.",
-        "es_ahead": "O Earned Schedule cai em {es}, {d} dias à frente de hoje: SPI(t) {spi}.",
-        "es_ieac": "Nesta eficiência o término independente é {ieac}, a {gap} dias do término do próprio cronograma, {sched}. Ou a lógica está otimista, ou o restante vai rodar num ritmo que ainda não aconteceu.",
+        "bei": "De {d} {d?atividade devida|atividades devidas} até a data de status, {a} {a?terminou|terminaram} no prazo: índice de execução da linha de base de {b}.",
+        "float_deadline": "{f}% das atividades incompletas carregam mais de 44 dias úteis de folga enquanto {m} de {mm} {mm?marco|marcos} não têm data limite: a folga não é margem, é plano sem restrição.",
+        "es_behind": "O Earned Schedule cai em {es}: o plano alcançou o realizado de hoje há {d} {d?dia|dias}, eficiência de prazo SPI(t) de {spi}.",
+        "es_ahead": "O Earned Schedule cai em {es}, {d} {d?dia|dias} à frente de hoje: SPI(t) {spi}.",
+        "es_ieac": "Nesta eficiência o término independente é {ieac}, a {gap} {gap?dia|dias} do término do próprio cronograma, {sched}. Ou a lógica está otimista, ou o restante vai rodar num ritmo que ainda não aconteceu.",
         "es_tspi_easy": "O TSPI é {t}: o restante termina na data prevista no ritmo do próprio plano.",
         "es_tspi_hard": "O TSPI é {t}: o restante precisa rodar {pct}% acima do plano para terminar na data prevista. Modesto porque quase toda a duração ainda está pela frente, não porque o atraso seja pequeno.",
         "es_tspi_no": "O TSPI é {t}: o restante precisaria de {pct}% acima do plano, o que a literatura trata como irrecuperável na prática.",
-        "la_no": "As próximas {w} semanas preveem {p}% de medição; o ritmo praticado entrega {q}%. Não alcançável sem mudança de ritmo.",
-        "la_yes": "As próximas {w} semanas preveem {p}% de medição e o ritmo praticado entrega {q}%: alcançável.",
-        "rg_out": "{n} grupos não alcançam o término de linha de base no ritmo praticado; {g} precisa de {r}× o ritmo atual.",
+        "la_no": "As próximas {w} {w?semana|semanas} preveem {p}% de medição; o ritmo praticado entrega {q}%. Não alcançável sem mudança de ritmo.",
+        "la_yes": "As próximas {w} {w?semana|semanas} preveem {p}% de medição e o ritmo praticado entrega {q}%: alcançável.",
+        "rg_out": "{n} {n?grupo não alcança|grupos não alcançam} o término de linha de base no ritmo praticado; {g} precisa de {r}× o ritmo atual.",
         "rg_ok": "Todo grupo com tendência está no ritmo ou a um esforço do término de linha de base.",
         "rain": "{s}% do custo remanescente cai em meses que os calendários reservam para tempo ruim, {t}% se tudo escorregar trinta dias.",
-        "fx_origins": "{o} de {m} marcos futuros têm origem nomeada; a atividade {id} origina atraso em {k} deles.",
+        "fx_origins": "{o} de {m} {m?marco futuro|marcos futuros} têm origem nomeada; a atividade {id} origina atraso em {k} deles.",
         "fx_none": "Nenhum marco futuro carrega variação acima do limiar, então nenhuma origem é nomeada.",
-        "fx_cal": "A forense de calendário sinaliza {n} calendários: {list}.",
-        "fx_oos_rising": "A execução fora de sequência está subindo, de {a} pares por mês para {b}: a prática está acelerando.",
-        "fx_oos_falling": "A execução fora de sequência está caindo, de {a} pares por mês para {b}.",
-        "fx_slip": "De {n} atividades iniciadas, {early} começaram cedo e {late} tarde; o início mediano foi {p50} dias {dir} da linha de base.",
+        "fx_cal": "A forense de calendário sinaliza {n} {n?calendário|calendários}: {list}.",
+        "fx_oos_rising": "A execução fora de sequência está subindo, de {a} {a?par|pares} por mês para {b}: a prática está acelerando.",
+        "fx_oos_falling": "A execução fora de sequência está caindo, de {a} {a?par|pares} por mês para {b}.",
+        "fx_slip": "De {n} {n?atividade iniciada|atividades iniciadas}, {early} {early?começou|começaram} cedo e {late} tarde; o início mediano foi {p50} {p50?dia|dias} {dir} da linha de base.",
         "early": "antes", "late": "depois",
         "syn_label": "Síntese executiva",
         "syn_written": "Redigida por {who} a partir dos números deste relatório, em {when}.",
@@ -104,6 +122,17 @@ def _n(v, d=1):
     return f"{v:,.{d}f}" if isinstance(v, float) else f"{v:,}"
 
 
+_ISO_DATE = re.compile(r"\b(\d{4})-(\d{2})-(\d{2})(?:T\d{2}:\d{2}(?::\d{2})?)?\b")
+
+
+def _dates(text: str, lang: str) -> str:
+    """Dates inside a sentence, in the report's language. The sidecar of readings
+    is quoted as it is, so a raw timestamp must not survive into it."""
+    if lang == "pt":
+        return _ISO_DATE.sub(lambda m: f"{m.group(3)}/{m.group(2)}/{m.group(1)}", text)
+    return _ISO_DATE.sub(lambda m: f"{m.group(1)}-{m.group(2)}-{m.group(3)}", text)
+
+
 def build(payload: dict, lang: str) -> dict:
     T = R.get(lang, R["en"])
     m = payload.get("meta") or {}
@@ -111,22 +140,44 @@ def build(payload: dict, lang: str) -> dict:
 
     def add(section, key, **kw):
         try:
-            out.setdefault(section, []).append(T[key].format(**kw))
+            out.setdefault(section, []).append(_dates(i18n.fmt(T[key], **kw), lang))
         except (KeyError, ValueError, TypeError):
             pass
+
+    def _n(v, d=1):
+        # Numbers the way the report's language writes them: "35,56" in Portuguese.
+        # A whole number stays whole whatever precision was asked for.
+        if v is None:
+            return "—"
+        return fnum(v, d if isinstance(v, float) else 0, lang)
 
     # ---- verdict
     f = {x["code"]: x for x in payload.get("findings", [])}
     net = (f.get("A1", {}).get("count") or 0) + (f.get("A2", {}).get("count") or 0)
+    # A reading is stated only when the input it needs exists. `inputs` says what
+    # the file has; where something is missing the sentence says THAT, instead of
+    # reading a zero that is only the absence of data.
+    inputs = m.get("inputs") or {}
+    netw = inputs.get("network") or {}
     if net:
         add("verdict", "net_broken", n=_n(net, 0), a1=_n(f["A1"]["count"], 0), a2=_n(f["A2"]["count"], 0))
+    elif netw.get("state") == "none":
+        add("verdict", "net_none")
+    elif netw.get("state") == "open":
+        add("verdict", "net_open", u=_n(netw["unlinked"], 0), o=_n(netw["open"], 0),
+            s=_n(netw["share_pct"], 1), t=_n(netw["threshold_pct"], 0))
     else:
         add("verdict", "net_hold")
     e, p = m.get("percent_earned"), m.get("percent_planned_file")
-    if e is not None and p is not None:
+    planned_ok = inputs.get("planned_available", True)
+    if e is not None and not planned_ok:
+        add("verdict", "planned_na", e=_n(e, 2))
+    elif e is not None and p is not None:
         add("verdict", "progress_ahead" if e > p else "progress", e=_n(e, 2), p=_n(p, 2), d=_n(abs(e - p), 2))
     rc = m.get("reconciliation") or {}
-    if rc.get("leaves_compared"):
+    if rc.get("file_computed_ev") is False:
+        add("verdict", "recon_none")
+    elif rc.get("leaves_compared"):
         if rc.get("unexplained"):
             add("verdict", "recon_gap", u=_n(rc["unexplained"], 0))
         else:
@@ -137,7 +188,7 @@ def build(payload: dict, lang: str) -> dict:
     T_ = s.get("totals") or {}
     if T_.get("spi") is not None:
         add("scurve", "spi", s=_n(T_["spi"], 3), pct=_n(T_["spi"] * 100, 1))
-    if T_.get("method_gap_points") is not None and T_.get("earned_alt_pct") is not None:
+    if T_.get("earned_alt_pct") is not None and abs(T_.get("method_gap_points") or 0) >= 0.01:
         add("scurve", "method_gap", alt=_n(T_["earned_alt_pct"], 2), e=_n(T_.get("earned_pct"), 2),
             g=_n(abs(T_["method_gap_points"]), 2))
     periods = s.get("periods") or []
@@ -154,9 +205,14 @@ def build(payload: dict, lang: str) -> dict:
         add("groups", "weight_flat")
     elif g:
         top = g[0]
-        add("groups", "weight_top", g=top["label"], w=_n(top["weight_pct"], 1),
-            e=_n(top["earned_pct"], 1), p=_n(top["planned_pct"], 1))
-        behind = [r for r in g if (r["planned_pct"] or 0) - (r["earned_pct"] or 0) > 5]
+        if planned_ok and top.get("planned_pct") is not None:
+            add("groups", "weight_top", g=top["label"], w=_n(top["weight_pct"], 1),
+                e=_n(top["earned_pct"], 1), p=_n(top["planned_pct"], 1))
+        else:
+            add("groups", "weight_top_np", g=top["label"], w=_n(top["weight_pct"], 1),
+                e=_n(top["earned_pct"], 1))
+        behind = [r for r in g if planned_ok
+                  and (r["planned_pct"] or 0) - (r["earned_pct"] or 0) > 5]
         if behind:
             add("groups", "weight_behind", n=_n(len(behind), 0), d=5,
                 g=max(behind, key=lambda r: r["weight_pct"])["label"])
@@ -219,7 +275,9 @@ def build(payload: dict, lang: str) -> dict:
         else:
             add("forecast", "rg_ok")
     RX = fc.get("rain_exposure") or {}
-    if RX.get("share_in_reserve_pct") is not None:
+    if RX.get("available") and RX.get("readable") is False:
+        add("forecast", "rain_none" if RX.get("unreadable_reason") == "no_exceptions" else "rain_few")
+    elif RX.get("share_in_reserve_pct") is not None:
         add("forecast", "rain", s=_n(RX["share_in_reserve_pct"], 0), t=_n(RX.get("share_if_slips_30_days_pct"), 0))
 
     # ---- forensics
@@ -247,4 +305,264 @@ def build(payload: dict, lang: str) -> dict:
         p50 = SL.get("p50") or 0
         add("forensics", "fx_slip", n=_n(SL["sample"], 0), early=_n(SL["started_early"], 0), late=_n(SL["started_late"], 0),
             p50=_n(abs(p50), 0), dir=T["early"] if p50 < 0 else T["late"])
+    return out
+
+
+# ---------------------------------------------------------------------------
+# The cycle comparison. Same contract as above: every sentence is built from the
+# comparison's own figures, and a figure that is missing produces no sentence.
+# ---------------------------------------------------------------------------
+RC = {
+    "en": {
+        "mv": "Weighted progress went from {a}% to {b}%: {m} {m?point|points}. Per-activity progress explains {x} of them and {r} are not explained by work done.",
+        "mv_clean": "Weighted progress went from {a}% to {b}%: {m} {m?point|points}, all of it explained by per-activity progress.",
+        "tr": "{e} {e?activity|activities} moved their dates with actual dates behind them and {r} with none; the baseline itself moved on {b}.",
+        "tr_none": "No activity moved its dates between the two deliveries.",
+        "sc": "{i} {i?activity|activities} inserted and {r} removed.",
+        "sc_none": "No activity was inserted or removed: the scope is the same in both deliveries.",
+        "fin_later": "The project finish moved from {a} to {b}: {d} {d?calendar day|calendar days} later.",
+        "fin_earlier": "The project finish moved from {a} to {b}: {d} {d?calendar day|calendar days} earlier.",
+        "fin_same": "The project finish did not move: {b} in both deliveries.",
+        "fin_driver": "What holds the current date is row {id}, {name}, finishing on {f}. This is an approximation: the last-finishing open activity, walked back through the predecessor that lands latest; the network was not recalculated.",
+        "fin_driver_flag_no": "The tool does not flag that row as critical, so read the path before quoting it.",
+        "fin_driver_unlinked": "The last date in the file is on row {id}, {name}, {f}. No predecessor drives that row, so the date is the row's own and not the end of a logical path.",
+        "fin_driver_changed": "In the previous delivery the date was held by another activity (row {id}, {name}): the path that drives the finish changed.",
+        "fin_driver_same": "The same activity held the date in the previous delivery.",
+        "cp": "{e} {e?activity|activities} entered the critical path and {l} left it, {lc} of those by finishing. Critical now: {n}, against {p} before.",
+        "cp_none": "No activity entered or left the critical path. Critical now: {n}, against {p} before.",
+        "cp_inserted": "{n} of the activities inserted this cycle {n?is|are} critical; {n?it is|they are} listed under scope.",
+        "cp_fell": "{n} {n?unfinished activity|unfinished activities} lost a working day of float or more; the largest loss is {d} {d?day|days}, on row {id}.",
+        "cp_fell_none": "No unfinished activity lost a working day of float or more.",
+        "cp_basis_flag": "Read by the tool's own Critical flag.",
+        "cp_basis_float": "The files carry no Critical flag, so critical here means total float at or below zero.",
+        "cp_basis_mixed": "The two deliveries could not be read by the same criterion (one carries the Critical flag, the other does not); treat entries and exits with care.",
+        "lg": "{a} {a?link|links} added, {r} removed, {l} with the lag changed and {t} with the type changed, between activities present in both deliveries.",
+        "lg_none": "No link between activities present in both deliveries was edited.",
+        "lg_scope": "A further {n} {n?link hangs|links hang} on inserted or removed activities: scope, not edited logic.",
+        "lg_con": "Constraints on unfinished activities: {a} added, {c} changed and {r} removed.",
+        "lg_con_none": "No constraint was added, changed or removed.",
+        "lg_hard": "{n} of them {n?is|are} now hard (must start or finish on, or no later than): the date is pinned and the network stops deciding it.",
+        "du": "{n} {n?activity|activities} with no actual start in either delivery had their duration edited: {up} longer and {down} shorter, a net {net} {net?working day|working days}. Nothing was executed on them; this is the plan rewritten.",
+        "du_none": "No activity had its duration edited before starting.",
+        "pr": "The past was rewritten on {n} {n?activity|activities}: {s} {s?actual start|actual starts} and {f} {f?actual finish|actual finishes} changed, and {p} {p?percent complete|percents complete} went down.",
+        "pr_removed": "{n} {n?actual date was|actual dates were} withdrawn altogether: work reported as started or finished last cycle is no longer recorded as such.",
+        "pr_time": "{n} of the date changes {n?stays|stay} within the same day (time of day only); {n?it is|they are} listed last and {n?weighs|weigh} less.",
+        "pr_ask": "Every figure the previous cycle reported on these activities rested on a record that no longer exists. Ask for each correction to be stated.",
+        "pr_none": "No actual date changed and no percent complete went down: the past reads the same in both deliveries.",
+        "ql": "Of the {t} {t?metric|metrics} computable in both deliveries, {w} worsened, {i} improved and {u} did not move.",
+        "ql_bad": "Went from pass to fail: {list}.",
+        "ql_good": "Went from fail to pass: {list}.",
+        "ql_bei": "Baseline execution index: {a} before, {b} now.",
+    },
+    "pt": {
+        "mv": "O avanço ponderado foi de {a}% para {b}%: {m} {m?ponto|pontos}. O avanço por atividade explica {x} deles e {r} não são explicados por trabalho feito.",
+        "mv_clean": "O avanço ponderado foi de {a}% para {b}%: {m} {m?ponto|pontos}, todos explicados pelo avanço por atividade.",
+        "tr": "{e} {e?atividade moveu|atividades moveram} datas com datas reais por trás e {r} sem nenhuma; a própria linha de base se moveu em {b}.",
+        "tr_none": "Nenhuma atividade moveu datas entre as duas entregas.",
+        "sc": "{i} {i?atividade inserida|atividades inseridas} e {r} {r?removida|removidas}.",
+        "sc_none": "Nenhuma atividade foi inserida ou removida: o escopo é o mesmo nas duas entregas.",
+        "fin_later": "O término do projeto foi de {a} para {b}: {d} {d?dia corrido|dias corridos} mais tarde.",
+        "fin_earlier": "O término do projeto foi de {a} para {b}: {d} {d?dia corrido|dias corridos} mais cedo.",
+        "fin_same": "O término do projeto não se moveu: {b} nas duas entregas.",
+        "fin_driver": "O que segura a data atual é a linha {id}, {name}, com término em {f}. É uma aproximação: a atividade em aberto que termina por último, percorrida para trás pela predecessora que chega mais tarde; a rede não foi recalculada.",
+        "fin_driver_flag_no": "A ferramenta não marca essa linha como crítica, então leia o caminho antes de citá-lo.",
+        "fin_driver_unlinked": "A última data do arquivo está na linha {id}, {name}, {f}. Nenhuma predecessora conduz essa linha, então a data é a da própria linha e não o fim de um caminho lógico.",
+        "fin_driver_changed": "Na entrega anterior a data era segurada por outra atividade (linha {id}, {name}): o caminho que conduz o término mudou.",
+        "fin_driver_same": "A mesma atividade segurava a data na entrega anterior.",
+        "cp": "{e} {e?atividade entrou|atividades entraram} no caminho crítico e {l} {l?saiu|saíram}, {lc} delas por {lc?ter sido concluída|terem sido concluídas}. Críticas agora: {n}, contra {p} antes.",
+        "cp_none": "Nenhuma atividade entrou ou saiu do caminho crítico. Críticas agora: {n}, contra {p} antes.",
+        "cp_inserted": "{n} das atividades inseridas neste ciclo {n?é crítica|são críticas}; {n?está listada|estão listadas} em escopo.",
+        "cp_fell": "{n} {n?atividade não concluída perdeu|atividades não concluídas perderam} um dia útil de folga ou mais; a maior perda é de {d} {d?dia|dias}, na linha {id}.",
+        "cp_fell_none": "Nenhuma atividade não concluída perdeu um dia útil de folga ou mais.",
+        "cp_basis_flag": "Lido pelo próprio campo Crítica da ferramenta.",
+        "cp_basis_float": "Os arquivos não trazem o campo Crítica, então crítica aqui significa folga total menor ou igual a zero.",
+        "cp_basis_mixed": "As duas entregas não puderam ser lidas pelo mesmo critério (uma traz o campo Crítica, a outra não); trate entradas e saídas com cuidado.",
+        "lg": "{a} {a?vínculo incluído|vínculos incluídos}, {r} {r?removido|removidos}, {l} com a latência alterada e {t} com o tipo alterado, entre atividades presentes nas duas entregas.",
+        "lg_none": "Nenhum vínculo entre atividades presentes nas duas entregas foi editado.",
+        "lg_scope": "{n?Outro|Outros} {n} {n?vínculo está|vínculos estão} em atividades inseridas ou removidas: é escopo, não lógica editada.",
+        "lg_con": "Restrições em atividades não concluídas: {a} {a?incluída|incluídas}, {c} {c?alterada|alteradas} e {r} {r?removida|removidas}.",
+        "lg_con_none": "Nenhuma restrição foi incluída, alterada ou removida.",
+        "lg_hard": "{n} delas agora {n?é rígida|são rígidas} (deve iniciar ou terminar em, ou não depois de): a data fica presa e a rede deixa de decidi-la.",
+        "du": "{n} {n?atividade|atividades} sem início real em nenhuma das entregas {n?teve|tiveram} a duração editada: {up} mais {up?longa|longas} e {down} mais {down?curta|curtas}, saldo de {net} {net?dia útil|dias úteis}. Nada foi executado nelas; é o plano reescrito.",
+        "du_none": "Nenhuma atividade teve a duração editada antes de iniciar.",
+        "pr": "O passado foi reescrito em {n} {n?atividade|atividades}: {s} {s?início real|inícios reais} e {f} {f?término real|términos reais} mudaram, e {p} {p?percentual concluído caiu|percentuais concluídos caíram}.",
+        "pr_removed": "{n} {n?data real foi retirada|datas reais foram retiradas} por completo: trabalho informado como iniciado ou concluído no ciclo anterior não está mais registrado assim.",
+        "pr_time": "{n} das mudanças de data {n?fica|ficam} dentro do mesmo dia (só o horário); {n?está listada|estão listadas} por último e {n?pesa|pesam} menos.",
+        "pr_ask": "Todo número que o ciclo anterior informou sobre essas atividades se apoiava num registro que não existe mais. Peça que cada correção seja declarada.",
+        "pr_none": "Nenhuma data real mudou e nenhum percentual concluído caiu: o passado lê igual nas duas entregas.",
+        "ql": "Das {t} {t?métrica|métricas} calculáveis nas duas entregas, {w} {w?piorou|pioraram}, {i} {i?melhorou|melhoraram} e {u} não se {u?moveu|moveram}.",
+        "ql_bad": "Passaram de atende para não atende: {list}.",
+        "ql_good": "Passaram de não atende para atende: {list}.",
+        "ql_bei": "Índice de execução da linha de base: {a} antes, {b} agora.",
+    },
+}
+
+HARD_CONSTRAINT_CODES = {"MSO", "MFO", "SNLT", "FNLT"}
+
+
+def fnum(v, d, lang):
+    """A number the way the report's language writes it; never a negative zero."""
+    if v is None:
+        return "—"
+    v = round(float(v), d)
+    if v == 0:
+        v = 0.0
+    s = f"{v:,.{d}f}"
+    if lang == "pt":
+        s = s.replace(",", " ").replace(".", ",").replace(" ", ".")
+    return s
+
+
+def build_cycle(cmp_res: dict, lang: str, fmt_date, metric_title=None) -> dict:
+    """Readings for the cycle report, keyed by section.
+
+    `fmt_date` is the report's own date formatter, passed in so the sentences and
+    the tables cannot disagree on how a date is written.
+    """
+    T = RC.get(lang, RC["en"])
+    out: dict[str, list] = {}
+
+    def add(section, key, **kw):
+        try:
+            out.setdefault(section, []).append(i18n.fmt(T[key], **kw))
+        except (KeyError, ValueError, TypeError):
+            pass
+
+    def i(v):
+        return fnum(v, 0, lang)
+
+    # ---- movement, trend, scope
+    prev, curr = cmp_res.get("previous") or {}, cmp_res.get("current") or {}
+    mv, gap = cmp_res.get("movement_points"), cmp_res.get("movement_unexplained_points")
+    if mv is not None:
+        args = dict(a=fnum(prev.get("percent_earned"), 2, lang),
+                    b=fnum(curr.get("percent_earned"), 2, lang), m=fnum(mv, 2, lang),
+                    x=fnum(cmp_res.get("decomposition_sums_to_points"), 2, lang),
+                    r=fnum(gap, 2, lang))
+        add("movement", "mv" if abs(gap or 0) >= 0.01 else "mv_clean", **args)
+    trend = cmp_res.get("trend") or []
+    e = sum(1 for t in trend if t["reading"] == "execution")
+    r = sum(1 for t in trend if t["reading"] == "replan")
+    b = len(cmp_res.get("baseline_moved") or [])
+    if e or r or b:
+        add("trend", "tr", e=i(e), r=i(r), b=i(b))
+    else:
+        add("trend", "tr_none")
+    un = cmp_res.get("unmatched") or {}
+    ni, nr = len(un.get("inserted") or []), len(un.get("removed") or [])
+    if ni or nr:
+        add("scope", "sc", i=i(ni), r=i(nr))
+    else:
+        add("scope", "sc_none")
+
+    # ---- C1 project finish
+    pf = cmp_res.get("project_finish") or {}
+    fp, fc = pf.get("previous") or {}, pf.get("current") or {}
+    d = pf.get("delta_days")
+    if fc.get("finish") and fp.get("finish") and d is not None:
+        args = dict(a=fmt_date(fp["finish"], lang), b=fmt_date(fc["finish"], lang),
+                    d=fnum(abs(d), 0 if float(abs(d)).is_integer() else 1, lang))
+        add("c1", "fin_same" if abs(d) < 0.05 else ("fin_later" if d > 0 else "fin_earlier"), **args)
+    drv = fc.get("driver")
+    if drv and fc.get("driver_linked") is False:
+        add("c1", "fin_driver_unlinked", id=drv["id"], name=drv["name"], f=fmt_date(drv.get("finish"), lang))
+    elif drv:
+        add("c1", "fin_driver", id=drv["id"], name=drv["name"], f=fmt_date(drv.get("finish"), lang))
+        if drv.get("critical") is False:
+            add("c1", "fin_driver_flag_no")
+        if pf.get("driver_changed") is True and fp.get("driver"):
+            add("c1", "fin_driver_changed", id=fp["driver"]["id"], name=fp["driver"]["name"])
+        elif pf.get("driver_changed") is False:
+            add("c1", "fin_driver_same")
+
+    # ---- C2 critical path
+    cp = cmp_res.get("critical_path")
+    if cp:
+        ne, nl = len(cp["entered"]), len(cp["left"])
+        if ne or nl:
+            add("c2", "cp", e=i(ne), l=i(nl), lc=i(cp["left_completed"]),
+                n=i(cp["critical_current"]), p=i(cp["critical_previous"]))
+        else:
+            add("c2", "cp_none", n=i(cp["critical_current"]), p=i(cp["critical_previous"]))
+        if cp.get("inserted_critical"):
+            add("c2", "cp_inserted", n=i(cp["inserted_critical"]))
+        if cp["float_fell_count"]:
+            top = cp["float_fell_top"][0]
+            add("c2", "cp_fell", n=i(cp["float_fell_count"]),
+                d=fnum(top["float_fell_days"], 1, lang), id=top["id"])
+        else:
+            add("c2", "cp_fell_none")
+        if cp["criterion_previous"] != cp["criterion_current"]:
+            add("c2", "cp_basis_mixed")
+        else:
+            add("c2", "cp_basis_flag" if cp["criterion_current"] == "flag" else "cp_basis_float")
+
+    # ---- C3 logic
+    lg = cmp_res.get("logic")
+    if lg:
+        a, rm = len(lg["links_added"]), len(lg["links_removed"])
+        l, t = len(lg["lag_changed"]), len(lg["type_changed"])
+        if a or rm or l or t:
+            add("c3", "lg", a=i(a), r=i(rm), l=i(l), t=i(t))
+        else:
+            add("c3", "lg_none")
+        if lg.get("links_from_scope"):
+            add("c3", "lg_scope", n=i(lg["links_from_scope"]))
+        ca, cc, cr = (len(lg["constraints_added"]), len(lg["constraints_changed"]),
+                      len(lg["constraints_removed"]))
+        if ca or cc or cr:
+            add("c3", "lg_con", a=i(ca), c=i(cc), r=i(cr))
+            hard = sum(1 for x in lg["constraints_added"] + lg["constraints_changed"]
+                       if x["type_after"] in HARD_CONSTRAINT_CODES)
+            if hard:
+                add("c3", "lg_hard", n=i(hard))
+        else:
+            add("c3", "lg_con_none")
+
+    # ---- C4 durations
+    du = cmp_res.get("duration_changed")
+    if du is not None:
+        if du:
+            add("c4", "du", n=i(len(du)), up=i(sum(1 for x in du if x["delta_days"] > 0)),
+                down=i(sum(1 for x in du if x["delta_days"] < 0)),
+                net=fnum(sum(x["delta_days"] for x in du), 1, lang))
+        else:
+            add("c4", "du_none")
+
+    # ---- C5 past rewritten
+    pr = cmp_res.get("past_rewritten")
+    if pr:
+        if pr["activities"]:
+            add("c5", "pr", n=i(pr["activities"]), s=i(len(pr["actual_start"])),
+                f=i(len(pr["actual_finish"])), p=i(len(pr["percent_decreased"])))
+            if pr["actual_removed"]:
+                add("c5", "pr_removed", n=i(pr["actual_removed"]))
+            if pr["time_of_day_only"]:
+                add("c5", "pr_time", n=i(pr["time_of_day_only"]))
+            add("c5", "pr_ask")
+        else:
+            add("c5", "pr_none")
+
+    # ---- C6 quality
+    q = cmp_res.get("quality")
+    if q:
+        rows = [m for m in q["metrics"] if m.get("change")]
+        if rows:
+            add("c6", "ql", t=i(len(rows)),
+                w=i(sum(1 for m in rows if m["change"] == "worsened")),
+                i=i(sum(1 for m in rows if m["change"] == "improved")),
+                u=i(sum(1 for m in rows if m["change"] == "unchanged")))
+
+        def names(crossing):
+            return ", ".join(
+                f"{m['code']} {metric_title(m['code'])}" if metric_title else m["code"]
+                for m in q["metrics"] if m.get("crossed") == crossing)
+
+        if names("pass->fail"):
+            add("c6", "ql_bad", list=names("pass->fail"))
+        if names("fail->pass"):
+            add("c6", "ql_good", list=names("fail->pass"))
+        ia, ib = q["indices"]["previous"].get("bei"), q["indices"]["current"].get("bei")
+        if ia is not None and ib is not None:
+            add("c6", "ql_bei", a=fnum(ia, 2, lang), b=fnum(ib, 2, lang))
     return out

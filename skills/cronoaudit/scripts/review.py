@@ -69,6 +69,9 @@ def load(path: str) -> dict:
         model = try_mpxj(path)
         if model is None:
             raise SystemExit(MPP_HELP.strip())
+        # The model was parsed from a temporary conversion; the name a person
+        # recognises is the file they passed.
+        model["source"] = os.path.basename(path)
         return model
     raise SystemExit(
         f"{path}: unrecognised extension {ext!r}. Expected .xml from "
@@ -132,7 +135,8 @@ def do_review(model, path, outdir, threshold, tolerance, quiet,
     curve = None
     prod = None
     quality = None
-    src = model.get("source")
+    # The path, not the display name: `source` is a file name only, by design.
+    src = model.get("source_path")
     if src and src.lower().endswith(".xml") and os.path.exists(src):
         grp = report_data.resolve_grouping(model, grouping)
         curve = phasing_mod.build(src, grp.get("field_id"))
@@ -166,7 +170,10 @@ def do_review(model, path, outdir, threshold, tolerance, quiet,
     with open(base + "-readings.json", "w", encoding="utf-8") as fh:
         # The rule-built sentences the report shows, so an assistant can quote them
         # instead of composing its own.
+        # `inputs` says what each reading needed and whether the file had it.
         json.dump({"lang": effective_lang, "language": payload.get("language"),
+                   "inputs": (payload.get("meta") or {}).get("inputs"),
+                   "baseline": (payload.get("meta") or {}).get("baseline_label"),
                    "readings": payload.get("readings")}, fh, indent=2, ensure_ascii=False)
     if curve is not None:
         with open(base + "-scurve.json", "w", encoding="utf-8") as fh:
@@ -249,10 +256,13 @@ def main() -> None:
         json.dump(res, fh, indent=2, ensure_ascii=False)
     import i18n
     detected = i18n.detect(curr)
-    report_html.write(
-        report_data.build_cycle(res, theme=theme, lang=lang, detected=detected),
-        base + ".html", template,
-    )
+    cycle_payload = report_data.build_cycle(res, theme=theme, lang=lang, detected=detected)
+    with open(base + "-readings.json", "w", encoding="utf-8") as fh:
+        # The rule-built sentences the cycle report shows, section by section, so
+        # an assistant can quote them instead of composing its own.
+        json.dump({"lang": cycle_payload["lang"], "readings": cycle_payload["readings"]},
+                  fh, indent=2, ensure_ascii=False)
+    report_html.write(cycle_payload, base + ".html", template)
     if not args.quiet:
         print("\n=== Cycle comparison ===\n")
         print(compare_snapshots.report(res))

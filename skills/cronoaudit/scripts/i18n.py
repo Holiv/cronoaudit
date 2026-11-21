@@ -94,6 +94,53 @@ def detect(model: dict, sample: int = 1200) -> dict:
     }
 
 
+# ---------------------------------------------------------------------------
+# Number agreement. A sentence built from a count has to agree with it: "1
+# atividades" reads as a tool that does not know what it counted. Any string in
+# the tables below may carry a marker `{key?singular|plural}`, resolved by the
+# value of `key` in the same call; `fmt` is the one place that resolves it, and
+# the report template's `fill` applies the same rule to the strings it fills.
+# ---------------------------------------------------------------------------
+_PLURAL = re.compile(r"\{(\w+)\?([^|{}]*)\|([^{}]*)\}")
+# "1", "1,0" or "1.00" is one; "1.000" and "1,000" are a thousand in one language
+# or the other, so three zeros never count as singular.
+_ONE = re.compile(r"^1(?:[.,]0{1,2})?$")
+
+
+def is_one(value) -> bool:
+    if isinstance(value, bool):
+        return False
+    if isinstance(value, (int, float)):
+        return value == 1
+    return bool(_ONE.match(str(value).strip()))
+
+
+def fmt(template: str, **values) -> str:
+    """`str.format` that also resolves `{key?singular|plural}` markers."""
+    resolved = _PLURAL.sub(
+        lambda m: m.group(2) if is_one(values.get(m.group(1))) else m.group(3), template)
+    return resolved.format(**values)
+
+
+BASELINE_NAMES = {
+    "en": ("baseline", "baseline {n}", "no baseline"),
+    "pt": ("linha de base", "linha de base {n}", "nenhuma linha de base"),
+}
+
+
+def baseline_name(lang: str, slot) -> str:
+    """The baseline the way the scheduling tool itself names it to a person.
+
+    The file keeps eleven of them, numbered 0 to 10; the tool shows the first as
+    "Baseline" and the others as "Baseline 1" to "Baseline 10". A reader is never
+    shown the storage word for where each one lives.
+    """
+    plain, numbered, none = BASELINE_NAMES.get(lang, BASELINE_NAMES["en"])
+    if slot in (None, ""):
+        return none
+    return plain if str(slot) == "0" else numbered.format(n=slot)
+
+
 def strip_accents(text: str) -> str:
     return "".join(
         c for c in unicodedata.normalize("NFD", text) if unicodedata.category(c) != "Mn"
@@ -280,7 +327,7 @@ UI = {
         "fx_paths_sub": "From each future milestone, back through the predecessor that actually "
                         "drives each start, until the chain reaches an activity that has "
                         "started or an open end. The origin is the deepest activity on the "
-                        "chain still carrying at least {n} working days of variance: the delay "
+                        "chain still carrying at least {n} {n?working day|working days} of variance: the delay "
                         "has a name, not an aggregate.",
         "fx_origins": "Activities originating delay on the most milestones",
         "col_milestones_n": "Milestones", "col_origin": "Origin", "col_origin_var": "Origin var. (d)",
@@ -298,7 +345,7 @@ UI = {
         "fx_exec_title": "Execution pattern",
         "fx_exec_sub": "Out-of-sequence execution by the month the successor started, and the "
                        "distribution of start slippage against the baseline: {n} started "
-                       "activities, P50 {p50} days, P80 {p80} days; {early} started early, "
+                       "activities, P50 {p50} {p50?day|days}, P80 {p80} {p80?day|days}; {early} started early, "
                        "{late} late.",
         "col_pairs": "Pairs in the count", "col_ignored": "Both complete, recorded",
         "fx_cycle_title": "This cycle: float consumed and milestone movement",
@@ -324,12 +371,12 @@ UI = {
         "es_ieac": "IEAC(t)", "es_ieac_cap": "independent finish at this efficiency",
         "es_tspi": "TSPI", "es_tspi_cap": "efficiency the remainder needs to finish as planned",
         "es_schedule": "Schedule's own finish", "es_planned": "Planned finish",
-        "es_gap": "The independent finish lands {n} days from the schedule's own finish. The "
+        "es_gap": "The independent finish lands {n} {n?day|days} from the schedule's own finish. The "
                   "gap is the conversation: either the logic is optimistic, or the remainder "
                   "will run at a pace not yet seen.",
         "es_limits": "Limits.",
         "tspi_recoverable": "recoverable", "tspi_hard": "hard", "tspi_unrecoverable": "unrecoverable in practice",
-        "la_title": "Look-ahead", "la_window": "{w} weeks, {a} to {b}",
+        "la_title": "Look-ahead", "la_window": "{w} {w?week|weeks}, {a} to {b}",
         "la_start": "Must start", "la_finish": "Must finish", "la_planned": "Planned earning",
         "la_projected": "At the practised rate", "la_reachable": "reachable", "la_not_reachable": "not reachable",
         "col_starts": "Starts", "col_finishes": "Finishes", "col_start": "Start",
@@ -341,8 +388,8 @@ UI = {
         "col_weeks_left": "Weeks left", "rg_on_pace": "on pace", "rg_stretch": "stretch", "rg_out": "out of reach",
         "mb_title": "Milestones with a confidence band",
         "mb_sub": "The distribution of finish slippage already observed in this snapshot, "
-                  "applied to each future milestone's current finish: P50 {a} days, P80 {b} "
-                  "days, from {n} activities. Not a simulation with an invented premise.",
+                  "applied to each future milestone's current finish: P50 {a} {a?day|days}, P80 {b} "
+                  "days, from {n} {n?activity|activities}. Not a simulation with an invented premise.",
         "col_slip_now": "Slip now (d)", "col_p50": "P50", "col_p80": "P80", "col_deadline": "Deadline",
         "col_critical": "Critical",
         "rx_title": "Exposure to the rainy season",
@@ -363,19 +410,19 @@ UI = {
         "tile_bei": "Baseline execution index", "tile_cpli": "Critical path length index",
         "tile_critical_n": "Critical activities, incomplete", "tile_open_ends": "Open ends",
         "bei_cap": "{a} on time of {d} due", "cpli_cap_na": "no deadline on the finish milestone",
-        "cpli_cap": "critical path {d} days",
+        "cpli_cap": "critical path {d} {d?day|days}",
         "crit_reaches": "The critical chain reaches the final milestone.",
         "crit_not_reaches": "The critical chain does not reach the final milestone: the network "
                             "is not whole, or the finish is constrained elsewhere.",
-        "soft_constraints": "{n} soft constraints (start or finish no earlier than) also present; "
+        "soft_constraints": "{n} {n?soft constraint|soft constraints} (start or finish no earlier than) also present; "
                             "counted, not failed.",
-        "summaries_links": "{n} summary tasks carry links. Logic belongs on activities.",
-        "show_items": "Show the {n} items",
+        "summaries_links": "{n} {n?summary task carries|summary tasks carry} links. Logic belongs on activities.",
+        "show_items": "Show the {n} {n?item|items}",
         "prod_title": "Productivity and trend by resource",
         "prod_sub": "Quantities come from the file's own assignments: for a material resource "
                     "the tool stores the quantity in the work fields. Three rates per activity, "
                     "because one is not a fair reading: what this activity has practised, what "
-                    "the resource has practised everywhere, and the resource's last {n} days. "
+                    "the resource has practised everywhere, and the resource's last {n} {n?day|days}. "
                     "The projection runs the remaining quantity over each rate on the activity's "
                     "own calendar and reads the result against four dates.",
         "prod_verdict_intro": "Three verdicts, in order of gravity. After the trend finish but not "
@@ -400,7 +447,7 @@ UI = {
         "src_actual": "actual quantity", "src_inferred": "percent (inferred)",
         "col_evidence": "Evidence", "ev_thin": "thin", "ev_ok": "ok", "col_exec_days": "Days of data",
         "tile_thin": "Verdicts on thin evidence",
-        "prod_unassigned": "{n} assignments carry no resource, so they cannot be trended.",
+        "prod_unassigned": "{n} {n?assignment carries|assignments carry} no resource, so {n?it|they} cannot be trended.",
         "scurve_title": "S-curve from the file's own phasing",
         "scurve_sub": "Planned is the baseline cost the file phases by period; earned is the "
                       "file's daily spread of physical percent times baseline cost; the third "
@@ -416,22 +463,24 @@ UI = {
         "scurve_method_percent": "percent complete (duration)",
         "scurve_mixed": "Tasks in this file declare different methods; the majority rules the "
                         "curve and the mix is a finding.",
-        "scurve_gap": "The two methods differ by {n} points of progress at the status date. "
+        "scurve_gap": "The two methods differ by {n} {n?point|points} of progress at the status date. "
                       "Switching method changes the curve, not the works.",
         "scurve_recon": "Reconciliation against the file: phasing equals baseline cost on "
                         "{a} of {c} tasks with cost; phasing to the status date equals the "
-                        "file's BCWS on {b} of {t}; cost × physical equals the file's BCWP on "
-                        "{e}.",
-        "scurve_ahead": "{n} activities were executed ahead of their baseline window; the tool "
+                        "file's BCWS on {b} of {t} tasks where either figure is above zero; cost × "
+                        "physical equals the file's BCWP on {e} of {f}. Activities where both "
+                        "sides are zero are not counted as agreement.",
+        "scurve_ahead": "{n} {n?activity was|activities were} executed ahead of their baseline window; the tool "
                         "credits nothing for them until the status date reaches the window, "
                         "the method credits them now. Worth {v}.",
         "tile_spi": "SPI", "tile_sv": "SV", "tile_planned": "Planned to date",
         "severity_view": "view",
-        "conv_reconciliation": "Earned value against the file's own (matches / compared · difference · ahead of baseline window)",
+        "conv_reconciliation": "Earned value against the file's own (matches / compared, zero against zero left out · difference · ahead of baseline window)",
+        "conv_reconciliation_none": "the file carries no earned value of its own; nothing to compare",
         "ficha_file": "File", "ficha_leaves": "Leaf activities",
         "ficha_status": "Status date", "ficha_budget": "Baseline cost",
         "hero_label": "Accumulated physical progress",
-        "hero_cap": "weighted by baseline cost, {n} activities",
+        "hero_cap": "weighted by baseline cost, {n} {n?activity|activities}",
         "roteiro": "Route", "index_sub": "Each line leads to its section, with the detail and "
                                           "the list of activities.",
         "view_group": "Progress by {group}", "view_group_sub": "where the money is and where "
@@ -447,13 +496,13 @@ UI = {
         "col_actual_pct": "Actual %",
         "problem": "Problem", "impact": "Impact", "solution": "Solution",
         "levar": "To reproduce in the scheduling tool", "fonte": "Where it came from:",
-        "show_rows": "Show the {n} activities", "hide_rows": "Hide the activities",
+        "show_rows": "Show the {n} {n?activity|activities}", "hide_rows": "Hide the activities",
         "col_pred": "Pred.", "col_succ": "Succ.", "col_service": "Service",
         "col_discipline": "Discipline", "col_section": "Section",
         "col_term_lb": "Baseline finish", "col_term": "Finish", "col_var": "Var. (d)",
         "col_float": "Float (d)", "col_real_pct": "Actual %", "col_why": "Why",
         "col_pair": "Pair", "pair_fmt": "{succ} after {pred}",
-        "ignored_pairs": "{n} pairs with both activities complete were left out of the "
+        "ignored_pairs": "{n} {n?pair|pairs} with both activities complete were left out of the "
                          "count, by decision: they no longer change a forecast. They are in "
                          "the data file for the forensics.",
         "links_evaluated": "Relationships evaluated: {list}. Lags honoured.",
@@ -465,7 +514,7 @@ UI = {
         "print": "Print / save as PDF",
         "toggle_theme": "Toggle theme",
         "source_file": "Source file",
-        "baseline_slot": "Baseline slot used",
+        "baseline_slot": "Baseline used",
         "budget": "Budget at completion",
         "weighted_progress": "Weighted progress",
         "threshold": "Threshold",
@@ -492,6 +541,29 @@ UI = {
                      "before discussing a single date.",
         "net_good": "<b>Network integrity holds.</b> No out-of-sequence execution was found, so "
                     "the forecast dates below rest on logic the works is actually following.",
+        "net_none": "<b>There is no network to hold.</b> No activity is linked to another, so no "
+                    "date below is the result of logic: each one is whatever was typed. Zero "
+                    "out-of-sequence findings prove nothing here, because there is no sequence.",
+        "net_open": "<b>No out-of-sequence execution was found, but the network is incomplete.</b> "
+                    "{u} of {o} open activities have no predecessor or no successor ({s}%, against "
+                    "the {t}% the quality metric quotes). Their dates are not driven by logic, and "
+                    "the reading above covers only the part that is linked.",
+        "planned_na": "<b>Planned-to-date is unavailable.</b> The baseline cost is not distributed "
+                      "in time in this file (no time-phased baseline cost, and the tool's own "
+                      "planned value is zero on every activity). So there is no planned curve, and "
+                      "no SV, SPI, \"ahead\" or \"behind\" to read: a planned figure of zero here "
+                      "would be a missing input, not a plan.",
+        "rx_unreadable_none": "The calendars in use carry no non-working exceptions at all, so no "
+                              "period is reserved for bad weather and the exposure cannot be read "
+                              "from them. That is absence of data, not absence of risk.",
+        "rx_unreadable_few": "The calendars in use carry non-working exceptions, but no month "
+                             "reaches the reserve rule, so no period counts as reserved for bad "
+                             "weather and the exposure cannot be read from them. That is absence "
+                             "of data, not absence of risk.",
+        "scurve_recon_none": "The file carries no earned value of its own (BCWS and BCWP are zero "
+                             "on every activity: the tool did not compute it), so there is nothing "
+                             "to reconcile against. The figures here are the skill's alone.",
+        "not_available": "unavailable",
         "findings": "Findings",
         "counting_convention": "<b>Counting convention.</b>",
         "counting_tail": "Each card shows distinct activities; the tables show one row per marked "
@@ -538,11 +610,11 @@ UI = {
                   "of the network findings above. Without that rule a reporting problem gets "
                   "reported as an execution problem, and the conversation with the people doing "
                   "the work starts by accusing the wrong thing.",
-        "counted_three": "Counted three defensible ways: {d} distinct activities, {s} as "
+        "counted_three": "Counted three defensible ways: {d} {d?distinct activity|distinct activities}, {s} as "
                          "successors, {p} as predecessors. Align with whatever convention the "
                          "other party's tool shows.",
         "conventions_title": "Conventions this report used",
-        "conv_slot": "Baseline slot", "conv_chosen": "Chosen by", "conv_threshold": "Threshold",
+        "conv_slot": "Baseline used", "conv_chosen": "Chosen by", "conv_threshold": "Threshold",
         "conv_tolerance": "Tolerance", "conv_population": "Population",
         "conv_counting": "Network counting", "conv_working": "Working days",
         "conv_percent": "Percent source", "conv_language": "Report language",
@@ -554,7 +626,7 @@ UI = {
                          "schedule, so everything landed in one bucket. Check the name:",
         "no_activities": "No activities in this finding.",
         "no_data": "No data for this chart.",
-        "showing": "Showing {n} of {total} rows; the full set is in the JSON beside this file.",
+        "showing": "Showing {n} of {total} {total?row|rows}; the full set is in the JSON beside this file.",
         "footer": "Generated by the <b>cronoaudit</b> skill from the schedule's own XML "
                   "export. Every finding states the filter that reproduces it, so any number "
                   "here can be checked in the source file without trusting this report. No data "
@@ -623,7 +695,7 @@ UI = {
         "fx_paths_sub": "De cada marco futuro, para trás pela predecessora que de fato empurra "
                         "cada início, até a cadeia chegar a uma atividade iniciada ou a uma "
                         "ponta aberta. A origem é a atividade mais profunda da cadeia que ainda "
-                        "carrega ao menos {n} dias úteis de variação: o atraso tem nome, não "
+                        "carrega ao menos {n} {n?dia útil|dias úteis} de variação: o atraso tem nome, não "
                         "agregado.",
         "fx_origins": "Atividades que originam atraso no maior número de marcos",
         "col_milestones_n": "Marcos", "col_origin": "Origem", "col_origin_var": "Var. da origem (d)",
@@ -641,7 +713,7 @@ UI = {
         "fx_exec_title": "Padrão de execução",
         "fx_exec_sub": "Execução fora de sequência pelo mês em que a sucessora começou, e a "
                        "distribuição de escorregão de início contra a linha de base: {n} "
-                       "atividades iniciadas, P50 {p50} dias, P80 {p80} dias; {early} começaram "
+                       "atividades iniciadas, P50 {p50} {p50?dia|dias}, P80 {p80} {p80?dia|dias}; {early} começaram "
                        "cedo, {late} tarde.",
         "col_pairs": "Pares na contagem", "col_ignored": "Ambas concluídas, gravadas",
         "fx_cycle_title": "Este ciclo: folga consumida e movimento dos marcos",
@@ -667,12 +739,12 @@ UI = {
         "es_ieac": "IEAC(t)", "es_ieac_cap": "término independente nesta eficiência",
         "es_tspi": "TSPI", "es_tspi_cap": "eficiência que o restante precisa para terminar no previsto",
         "es_schedule": "Término do próprio cronograma", "es_planned": "Término previsto",
-        "es_gap": "O término independente cai a {n} dias do término do próprio cronograma. A "
+        "es_gap": "O término independente cai a {n} {n?dia|dias} do término do próprio cronograma. A "
                   "diferença é a conversa: ou a lógica está otimista, ou o restante vai rodar "
                   "num ritmo que ainda não aconteceu.",
         "es_limits": "Limites.",
         "tspi_recoverable": "recuperável", "tspi_hard": "difícil", "tspi_unrecoverable": "irrecuperável na prática",
-        "la_title": "Look-ahead", "la_window": "{w} semanas, de {a} a {b}",
+        "la_title": "Look-ahead", "la_window": "{w} {w?semana|semanas}, de {a} a {b}",
         "la_start": "Devem iniciar", "la_finish": "Devem terminar", "la_planned": "Medição prevista",
         "la_projected": "No ritmo praticado", "la_reachable": "alcançável", "la_not_reachable": "não alcançável",
         "col_starts": "Inícios", "col_finishes": "Términos", "col_start": "Início",
@@ -684,8 +756,8 @@ UI = {
         "col_weeks_left": "Semanas restantes", "rg_on_pace": "no ritmo", "rg_stretch": "esticado", "rg_out": "fora de alcance",
         "mb_title": "Marcos com faixa de confiança",
         "mb_sub": "A distribuição de escorregão de término já observada neste snapshot, "
-                  "aplicada ao término atual de cada marco futuro: P50 {a} dias, P80 {b} dias, "
-                  "de {n} atividades. Não é simulação com premissa inventada.",
+                  "aplicada ao término atual de cada marco futuro: P50 {a} {a?dia|dias}, P80 {b} {b?dia|dias}, "
+                  "de {n} {n?atividade|atividades}. Não é simulação com premissa inventada.",
         "col_slip_now": "Escorregão hoje (d)", "col_p50": "P50", "col_p80": "P80", "col_deadline": "Data limite",
         "col_critical": "Crítico",
         "rx_title": "Exposição ao período chuvoso",
@@ -706,14 +778,14 @@ UI = {
         "tile_bei": "Índice de execução da linha de base", "tile_cpli": "Índice de comprimento do caminho crítico",
         "tile_critical_n": "Atividades críticas, incompletas", "tile_open_ends": "Pontas abertas",
         "bei_cap": "{a} no prazo de {d} devidas", "cpli_cap_na": "sem data limite no marco final",
-        "cpli_cap": "caminho crítico de {d} dias",
+        "cpli_cap": "caminho crítico de {d} {d?dia|dias}",
         "crit_reaches": "A cadeia crítica chega ao marco final.",
         "crit_not_reaches": "A cadeia crítica não chega ao marco final: a rede não está inteira, "
                             "ou o término está restrito em outro lugar.",
-        "soft_constraints": "{n} restrições flexíveis (não antes de) também presentes; contadas, "
+        "soft_constraints": "{n} {n?restrição flexível|restrições flexíveis} (não antes de) também presentes; contadas, "
                             "não reprovadas.",
-        "summaries_links": "{n} tarefas resumo carregam vínculo. Lógica pertence às atividades.",
-        "show_items": "Mostrar os {n} itens",
+        "summaries_links": "{n} {n?tarefa resumo carrega|tarefas resumo carregam} vínculo. Lógica pertence às atividades.",
+        "show_items": "Mostrar {n?o|os} {n} {n?item|itens}",
         "prod_title": "Produtividade e tendência por recurso",
         "prod_sub": "As quantidades vêm das atribuições do próprio arquivo: para recurso de "
                     "material o Project guarda a quantidade nos campos de trabalho. Três ritmos "
@@ -744,7 +816,7 @@ UI = {
         "src_actual": "quantidade real", "src_inferred": "percentual (inferido)",
         "col_evidence": "Evidência", "ev_thin": "fina", "ev_ok": "ok", "col_exec_days": "Dias de dado",
         "tile_thin": "Veredictos com evidência fina",
-        "prod_unassigned": "{n} atribuições não têm recurso, então não podem ser tendenciadas.",
+        "prod_unassigned": "{n} {n?atribuição não tem|atribuições não têm} recurso, então não {n?pode ser tendenciada|podem ser tendenciadas}.",
         "scurve_title": "Curva S do faseamento do próprio arquivo",
         "scurve_sub": "Previsto é o custo de linha de base que o arquivo faseia por período; "
                       "realizado é a distribuição diária de percentual físico do próprio arquivo "
@@ -761,22 +833,50 @@ UI = {
         "scurve_method_percent": "percentual concluído (duração)",
         "scurve_mixed": "Tarefas deste arquivo declaram métodos diferentes; a maioria governa a "
                         "curva e a mistura é um achado.",
-        "scurve_gap": "Os dois métodos diferem em {n} pontos de avanço na data de status. Trocar "
+        "scurve_gap": "Os dois métodos diferem em {n} {n?ponto|pontos} de avanço na data de status. Trocar "
                       "o método muda a curva, não a obra.",
         "scurve_recon": "Conciliação contra o arquivo: faseamento igual ao custo de linha de base "
                         "em {a} de {c} tarefas com custo; faseamento até a data de status igual "
-                        "ao BCWS do arquivo em {b} de {t}; custo × físico igual ao BCWP do "
-                        "arquivo em {e}.",
-        "scurve_ahead": "{n} atividades foram executadas antes da janela da linha de base; o "
+                        "ao BCWS do arquivo em {b} de {t} tarefas em que algum dos dois é maior "
+                        "que zero; custo × físico igual ao BCWP do arquivo em {e} de {f}. "
+                        "Atividade em que os dois lados são zero não conta como concordância.",
+        "net_none": "<b>Não há rede para se sustentar.</b> Nenhuma atividade está ligada a outra, "
+                    "então nenhuma data abaixo resulta de lógica: cada uma é o que foi digitado. "
+                    "Zero achados de execução fora de sequência não provam nada aqui, porque não "
+                    "há sequência.",
+        "net_open": "<b>Não foi encontrada execução fora de sequência, mas a rede está "
+                    "incompleta.</b> {u} de {o} atividades em aberto não têm predecessora ou "
+                    "não têm sucessora ({s}%, contra os {t}% que a métrica de qualidade cita). As "
+                    "datas delas não são conduzidas por lógica, e a leitura acima vale só para "
+                    "a parte que está ligada.",
+        "planned_na": "<b>O previsto até a data está indisponível.</b> O custo de linha de base "
+                      "não está distribuído no tempo neste arquivo (não há custo de linha de base "
+                      "faseado, e o valor previsto da própria ferramenta é zero em todas as "
+                      "atividades). Então não há curva prevista, nem VP, IDP, \"à frente\" ou "
+                      "\"atrás\" para ler: um previsto de zero aqui seria um dado que falta, não "
+                      "um plano.",
+        "rx_unreadable_none": "Os calendários em uso não têm nenhuma exceção de dia não útil, "
+                              "então nenhum período está reservado para tempo ruim e a exposição "
+                              "não pode ser lida deles. É ausência de dado, não ausência de risco.",
+        "rx_unreadable_few": "Os calendários em uso têm exceções de dia não útil, mas nenhum mês "
+                             "alcança a regra de reserva, então nenhum período conta como "
+                             "reservado para tempo ruim e a exposição não pode ser lida deles. É "
+                             "ausência de dado, não ausência de risco.",
+        "scurve_recon_none": "O arquivo não traz valor agregado próprio (BCWS e BCWP são zero em "
+                             "todas as atividades: a ferramenta não calculou), então não há com o "
+                             "que conciliar. Os números aqui são só os da skill.",
+        "not_available": "indisponível",
+        "scurve_ahead": "{n} {n?atividade foi executada|atividades foram executadas} antes da janela da linha de base; o "
                         "Project não credita nada até a data de status alcançar a janela, o "
-                        "método credita agora. Valem {v}.",
+                        "método credita agora. {n?Vale|Valem} {v}.",
         "tile_spi": "IDP", "tile_sv": "VP", "tile_planned": "Previsto até a data",
         "severity_view": "visão",
-        "conv_reconciliation": "Valor agregado contra o do próprio arquivo (bate / comparadas · diferença · executadas antes da janela da linha de base)",
+        "conv_reconciliation": "Valor agregado contra o do próprio arquivo (bate / comparadas, zero contra zero fica fora · diferença · executadas antes da janela da linha de base)",
+        "conv_reconciliation_none": "o arquivo não traz valor agregado próprio; nada a comparar",
         "ficha_file": "Arquivo", "ficha_leaves": "Atividades folha",
         "ficha_status": "Data de status", "ficha_budget": "Custo de linha de base",
         "hero_label": "Avanço físico acumulado",
-        "hero_cap": "ponderado pelo custo de linha de base, {n} atividades",
+        "hero_cap": "ponderado pelo custo de linha de base, {n} {n?atividade|atividades}",
         "roteiro": "Roteiro", "index_sub": "Cada linha leva à seção correspondente, com o "
                                            "detalhamento e a lista de atividades.",
         "view_group": "Avanço por {group}", "view_group_sub": "onde está o dinheiro e onde "
@@ -793,13 +893,13 @@ UI = {
         "col_actual_pct": "Real %",
         "problem": "Problema", "impact": "Impacto", "solution": "Solução",
         "levar": "Para reproduzir no Project", "fonte": "De onde saiu:",
-        "show_rows": "Mostrar as {n} atividades", "hide_rows": "Ocultar as atividades",
+        "show_rows": "Mostrar {n?a|as} {n} {n?atividade|atividades}", "hide_rows": "Ocultar as atividades",
         "col_pred": "Pred.", "col_succ": "Suc.", "col_service": "Serviço",
         "col_discipline": "Disciplina", "col_section": "Trecho",
         "col_term_lb": "Term. LB", "col_term": "Término", "col_var": "Var (d)",
         "col_float": "Folga (d)", "col_real_pct": "Real %", "col_why": "Motivo",
         "col_pair": "Par", "pair_fmt": "{succ} depois de {pred}",
-        "ignored_pairs": "{n} pares com as duas atividades concluídas ficaram fora da "
+        "ignored_pairs": "{n} {n?par|pares} com as duas atividades concluídas ficaram fora da "
                          "contagem, por decisão: já não mudam tendência. Estão no arquivo de "
                          "dados para a forense.",
         "links_evaluated": "Vínculos avaliados: {list}. Lags respeitados.",
@@ -811,7 +911,7 @@ UI = {
         "print": "Imprimir / salvar em PDF",
         "toggle_theme": "Alternar tema",
         "source_file": "Arquivo de origem",
-        "baseline_slot": "Gaveta de linha de base usada",
+        "baseline_slot": "Linha de base usada",
         "budget": "Orçamento na conclusão",
         "weighted_progress": "Avanço ponderado",
         "threshold": "Limiar",
@@ -885,11 +985,11 @@ UI = {
                   "achados de rede acima. Sem essa regra, um problema de apontamento é reportado "
                   "como problema de execução, e a conversa com quem executa começa acusando a "
                   "coisa errada.",
-        "counted_three": "Contado de três formas defensáveis: {d} atividades distintas, {s} como "
+        "counted_three": "Contado de três formas defensáveis: {d} {d?atividade distinta|atividades distintas}, {s} como "
                          "sucessoras, {p} como predecessoras. Alinhe com a convenção que a "
                          "ferramenta da outra parte mostra.",
         "conventions_title": "Convenções que este relatório usou",
-        "conv_slot": "Gaveta de linha de base", "conv_chosen": "Escolhida por",
+        "conv_slot": "Linha de base usada", "conv_chosen": "Escolhida por",
         "conv_threshold": "Limiar", "conv_tolerance": "Tolerância",
         "conv_population": "População", "conv_counting": "Contagem de rede",
         "conv_working": "Dias úteis", "conv_percent": "Origem do percentual",
@@ -901,7 +1001,7 @@ UI = {
                          "cronograma, então tudo caiu num único grupo. Confira o nome:",
         "no_activities": "Nenhuma atividade neste achado.",
         "no_data": "Sem dados para este gráfico.",
-        "showing": "Mostrando {n} de {total} linhas; o conjunto completo está no JSON ao lado "
+        "showing": "Mostrando {n} de {total} {total?linha|linhas}; o conjunto completo está no JSON ao lado "
                    "deste arquivo.",
         "footer": "Gerado pela skill <b>cronoaudit</b> a partir da exportação XML do "
                   "próprio cronograma. Cada achado declara o filtro que o reproduz, então "
@@ -963,11 +1063,361 @@ def ui(lang: str) -> dict:
     return base
 
 
+# ---------------------------------------------------------------------------
+# The cycle comparison. Kept apart from UI because these strings belong to one
+# report only; `cycle_text` merges them over the shared interface strings.
+# Every section carries a criterion and the way to reproduce it in the tool,
+# exactly as the findings of the review do.
+# ---------------------------------------------------------------------------
+CONSTRAINTS = {
+    "en": {"ASAP": "As Soon As Possible", "ALAP": "As Late As Possible",
+           "MSO": "Must Start On", "MFO": "Must Finish On",
+           "SNET": "Start No Earlier Than", "SNLT": "Start No Later Than",
+           "FNET": "Finish No Earlier Than", "FNLT": "Finish No Later Than"},
+    "pt": {"ASAP": "O Mais Breve Possível", "ALAP": "O Mais Tarde Possível",
+           "MSO": "Deve Iniciar Em", "MFO": "Deve Terminar Em",
+           "SNET": "Não Iniciar Antes De", "SNLT": "Não Iniciar Depois De",
+           "FNET": "Não Terminar Antes De", "FNLT": "Não Terminar Depois De"},
+}
+
+
+def constraint(lang: str, code: str) -> str:
+    return CONSTRAINTS.get(lang, CONSTRAINTS["en"]).get(code, code)
+
+
+CYCLE = {
+    "en": {
+        "page_title_cycle": "Cycle comparison — {title}",
+        "page_title_review": "Critical analysis — {title}",
+        "baseline_n": "Baseline {n}", "ficha_baseline": "Baseline",
+        "ficha_finish": "Project finish", "ficha_files": "Files",
+        "cy_index_sub": "What changed between the two deliveries, most consequential first. "
+                        "Each line leads to its section.",
+        "cy_model_title": "What changed in the schedule itself",
+        "cy_model_sub": "Six readings of the model, before any percentage: the end date, the "
+                        "critical path, the logic, the durations, the record of what was "
+                        "already done, and the quality of the network.",
+        "cy_progress_title": "Progress and dates",
+        "cy_progress_sub": "The weighted movement, where it came from, and whether the dates "
+                           "that moved were moved by the works or by the plan.",
+        "cy_nothing": "Nothing to list.",
+        "cy_conv_title": "Conventions this comparison used",
+        "yes": "yes", "no": "no", "withdrawn": "(withdrawn)", "none_word": "none",
+        "unit_d": "d", "calendar_days": "calendar days",
+        "col_before": "Before", "col_after": "After", "col_delta": "Change",
+        "col_float_before": "Float before (d)", "col_float_after": "Float after (d)",
+        "col_float_fell": "Float lost (d)",
+        "col_finish_before": "Finish before", "col_finish_after": "Finish after",
+        "col_predecessor": "Predecessor", "col_pred_row": "Pred. row",
+        "col_link_before": "Link before", "col_link_after": "Link after",
+        "col_constraint_before": "Constraint before", "col_constraint_after": "Constraint after",
+        "col_dur_before": "Duration before (d)", "col_dur_after": "Duration after (d)",
+        "col_delta_d": "Change (d)", "col_moved_cal": "Moved (calendar d)",
+        "col_field": "Field", "col_delta_pp": "Change (points)",
+        "col_critical": "Critical", "col_completed": "Finished meanwhile",
+        "col_count_before": "Count before", "col_count_after": "Count after",
+        "col_share_before": "Share before", "col_share_after": "Share after",
+        "col_share_delta": "Change (points)", "col_change": "Movement",
+        "col_status_before": "Before", "col_status_after": "After",
+        "field_physical": "physical %", "field_duration": "% complete",
+        "chg_improved": "improved", "chg_worsened": "worsened", "chg_unchanged": "unchanged",
+        "chg_na": "not computable",
+        "t_finish_before": "FINISH BEFORE", "t_finish_after": "FINISH NOW",
+        "t_finish_delta": "MOVED", "t_finish_driver": "HELD BY",
+        "t_finish_delta_cap": "calendar days", "t_driver_cap_row": "row {id}",
+        "t_entered": "ENTERED", "t_left": "LEFT", "t_fell": "LOST FLOAT",
+        "t_entered_cap": "now on the critical path", "t_left_cap": "no longer critical",
+        "t_fell_cap": "a working day or more",
+        "t_links_added": "LINKS ADDED", "t_links_removed": "LINKS REMOVED",
+        "t_links_edited": "LAG OR TYPE", "t_constraints": "CONSTRAINTS",
+        "t_links_cap": "between activities in both files", "t_links_edited_cap": "same link, edited",
+        "t_constraints_cap": "added, changed or removed",
+        "t_dur": "DURATIONS EDITED", "t_dur_cap": "on work not started", "t_dur_net": "NET CHANGE",
+        "t_dur_net_cap": "working days",
+        "t_past_start": "ACTUAL START", "t_past_finish": "ACTUAL FINISH",
+        "t_past_pct": "PERCENT DOWN", "t_past_start_cap": "changed or withdrawn",
+        "t_past_finish_cap": "changed or withdrawn", "t_past_pct_cap": "reported lower than before",
+        "t_q_worse": "WORSENED", "t_q_better": "IMPROVED", "t_q_crossed": "PASS TO FAIL",
+        "t_q_cap": "metrics",
+        "l_chain": "Driving chain of the current finish",
+        "l_entered": "Entered the critical path", "l_left": "Left the critical path",
+        "l_fell": "Float fell the most (top {n} of {total})",
+        "l_links_added": "Links added", "l_links_removed": "Links removed",
+        "l_lag": "Lag changed", "l_type": "Link type changed",
+        "l_c_added": "Constraints added", "l_c_changed": "Constraints changed",
+        "l_c_removed": "Constraints removed",
+        "l_dur": "Duration edited before any start",
+        "l_past_start": "Actual start changed", "l_past_finish": "Actual finish changed",
+        "l_past_pct": "Percent complete went down",
+        "l_quality": "The fourteen metrics, before and after",
+        "c1_title": "Project finish",
+        "c1_sub": "Where each delivery says the contract ends, and what holds the date now.",
+        "c1_criterion": "Finish date of the project in each file (the header's, or the latest "
+                        "activity finish when the header has none); difference in calendar days. "
+                        "The driving activity is approximated: the last-finishing open activity, "
+                        "walked back through the predecessor whose link lands latest.",
+        "c1_reproduce": "In each file: Project > Project Information > Finish date. For the "
+                        "path: filter Critical = Yes, sort by Finish descending, and follow "
+                        "Predecessors from the last row.",
+        "c2_title": "Critical path",
+        "c2_sub": "Which activities started or stopped deciding the end date, and where the "
+                  "float is being consumed.",
+        "c2_criterion": "Critical by the tool's own Critical flag when the file carries it, "
+                        "otherwise total float at or below zero; finished activities are on no "
+                        "path. Float in working days of each activity's own calendar; listed "
+                        "when it fell by one day or more on an unfinished activity.",
+        "c2_reproduce": "In each file: filter Critical = Yes and show Unique ID and Total "
+                        "Slack; compare the two lists by Unique ID.",
+        "c3_title": "Logic changed",
+        "c3_sub": "Links and constraints edited between the deliveries. Logic is the model; a "
+                  "date that moved because the logic was edited did not move because of the works.",
+        "c3_criterion": "A link is identified by its two activities, each matched across the "
+                        "files like any activity. Compared only between activities present in "
+                        "both files; links on inserted or removed activities count as scope. "
+                        "Constraints compared on unfinished activities, by type and date.",
+        "c3_reproduce": "In each file: show Unique ID, Predecessors, Constraint Type and "
+                        "Constraint Date; compare by Unique ID.",
+        "c4_title": "Duration changed before any start",
+        "c4_sub": "Remaining work rewritten by replanning: no actual start in either file, and "
+                  "a different duration.",
+        "c4_criterion": "Leaf, non-milestone activities with no actual start in both files "
+                        "whose Duration differs, in working days of the activity's own calendar.",
+        "c4_reproduce": "In each file: filter Actual Start = NA and show Unique ID and "
+                        "Duration; compare by Unique ID.",
+        "c5_title": "Past rewritten",
+        "c5_sub": "The silent trap. An actual date is a record and a percent is a measurement "
+                  "already reported; when either reads differently now, last cycle's figures "
+                  "rested on a past that no longer exists, and neither file says so.",
+        "c5_criterion": "Activities present in both files whose Actual Start or Actual Finish "
+                        "differs or was withdrawn, or whose physical percent (or percent "
+                        "complete, when the physical one did not go down) is lower than before.",
+        "c5_reproduce": "In each file: show Unique ID, Actual Start, Actual Finish, "
+                        "% Complete and Physical % Complete; compare by Unique ID.",
+        "c6_title": "Network quality, before and after",
+        "c6_sub": "The same fourteen metrics run on both deliveries by the same code, so the "
+                  "difference is the schedule's and not the method's.",
+        "c6_criterion": "The network-quality implementation of the review, run once per file; "
+                        "thresholds as quoted there. An implementation of the metrics, not a "
+                        "certification.",
+        "c6_reproduce": "Open each file's own review report, section V7, where every metric "
+                        "lists its activities.",
+        "w_baseline_moved": "The baseline moved on {n} {n?activity|activities} between these two deliveries. "
+                            "The comparison basis changed underneath the comparison: every "
+                            "deviation straddling the change is measured against two references. "
+                            "Report it as a finding about the report, not as performance.",
+        "w_slot_differs": "The baseline in force differs between the deliveries ({a} then {b}). "
+                          "The two aggregate figures are not comparable until one is chosen for both.",
+        "w_scope": "{i} {i?activity|activities} inserted and {r} removed. Scope changed, so the aggregate "
+                   "movement is not purely progress.",
+        "w_no_weight": "No activity carries baseline cost, so there is no weight to decompose.",
+        "w_same_status_date": "Both deliveries carry the same status date ({d}). A cycle "
+                              "comparison expects two different moments: confirm that the first "
+                              "file really is the previous cycle, and not another save of the "
+                              "same one.",
+        "w_status_date_backwards": "The second file's status date ({b}) is EARLIER than the "
+                                   "first one's ({a}). The files may be in the wrong order: the "
+                                   "previous delivery goes first.",
+        "w_status_date_missing": "A status date is missing in one of the deliveries, so the two "
+                                 "moments being compared cannot be confirmed.",
+        "w_residue": "{gap} {gap?percentage point|percentage points} of the movement are NOT explained by per-activity "
+                     "progress. Something other than work done moved the aggregate: scope "
+                     "changing the denominator, a rebased baseline, or a different baseline. Do "
+                     "not report the headline movement as progress until this residue is "
+                     "accounted for.",
+        "w_past_rewritten": "The past was rewritten on {n} {n?activity|activities}: an actual date changed or "
+                            "was withdrawn, or a percent complete went down. Ask for each "
+                            "correction to be stated.",
+        "cv_matching": "Matching", "cv_population": "Population (progress)",
+        "cv_logic_population": "Population (logic and record)",
+        "cv_denominator": "Denominator", "cv_aggregates": "Aggregates",
+        "cv_critical": "Critical path", "cv_links": "Links",
+        "cv_finish_delta": "Finish change", "cv_float_and_duration": "Float and duration",
+        "cvt_matching": "stable Unique ID, then name plus WBS path; two classes only",
+        "cvt_population": "leaf, active, non-external, non-milestone activities",
+        "cvt_logic_population": "leaf, active, non-external activities; milestones included",
+        "cvt_aggregates": "both deliveries computed by one function called twice",
+        "cvt_critical": "the tool's Critical flag when the file carries it, otherwise total "
+                        "float at or below zero; finished activities are on no path",
+        "cvt_links": "a link is its two ends, each matched like the activities; links touching "
+                     "inserted or removed activities are counted as scope",
+        "cvt_finish_delta": "calendar days between the two project finish dates",
+        "cvt_float_and_duration": "working days of each activity's own calendar",
+    },
+    "pt": {
+        "page_title_cycle": "Comparação de ciclo — {title}",
+        "page_title_review": "Análise crítica — {title}",
+        "baseline_n": "Linha de base {n}", "ficha_baseline": "Linha de base",
+        "ficha_finish": "Término do projeto", "ficha_files": "Arquivos",
+        "cy_index_sub": "O que mudou entre as duas entregas, do mais consequente para o menos. "
+                        "Cada linha leva à seção correspondente.",
+        "cy_model_title": "O que mudou no próprio cronograma",
+        "cy_model_sub": "Seis leituras do modelo, antes de qualquer percentual: a data de "
+                        "término, o caminho crítico, a lógica, as durações, o registro do que "
+                        "já estava feito e a qualidade da rede.",
+        "cy_progress_title": "Avanço e datas",
+        "cy_progress_sub": "O movimento ponderado, de onde ele veio, e se as datas que se "
+                           "moveram foram movidas pela obra ou pelo plano.",
+        "cy_nothing": "Nada a listar.",
+        "cy_conv_title": "Convenções que esta comparação usou",
+        "yes": "sim", "no": "não", "withdrawn": "(retirado)", "none_word": "nenhuma",
+        "unit_d": "d", "calendar_days": "dias corridos",
+        "col_before": "Antes", "col_after": "Depois", "col_delta": "Variação",
+        "col_float_before": "Folga antes (d)", "col_float_after": "Folga depois (d)",
+        "col_float_fell": "Folga perdida (d)",
+        "col_finish_before": "Término antes", "col_finish_after": "Término depois",
+        "col_predecessor": "Predecessora", "col_pred_row": "Linha pred.",
+        "col_link_before": "Vínculo antes", "col_link_after": "Vínculo depois",
+        "col_constraint_before": "Restrição antes", "col_constraint_after": "Restrição depois",
+        "col_dur_before": "Duração antes (d)", "col_dur_after": "Duração depois (d)",
+        "col_delta_d": "Variação (d)", "col_moved_cal": "Moveu (dias corridos)",
+        "col_field": "Campo", "col_delta_pp": "Variação (pontos)",
+        "col_critical": "Crítica", "col_completed": "Concluída no intervalo",
+        "col_count_before": "Qtde antes", "col_count_after": "Qtde depois",
+        "col_share_before": "Parcela antes", "col_share_after": "Parcela depois",
+        "col_share_delta": "Variação (pontos)", "col_change": "Movimento",
+        "col_status_before": "Antes", "col_status_after": "Depois",
+        "field_physical": "% físico", "field_duration": "% concluído",
+        "chg_improved": "melhorou", "chg_worsened": "piorou", "chg_unchanged": "igual",
+        "chg_na": "não calculável",
+        "t_finish_before": "TÉRMINO ANTES", "t_finish_after": "TÉRMINO AGORA",
+        "t_finish_delta": "MOVEU", "t_finish_driver": "SEGURA A DATA",
+        "t_finish_delta_cap": "dias corridos", "t_driver_cap_row": "linha {id}",
+        "t_entered": "ENTRARAM", "t_left": "SAÍRAM", "t_fell": "PERDERAM FOLGA",
+        "t_entered_cap": "agora no caminho crítico", "t_left_cap": "deixaram de ser críticas",
+        "t_fell_cap": "um dia útil ou mais",
+        "t_links_added": "VÍNCULOS INCLUÍDOS", "t_links_removed": "VÍNCULOS REMOVIDOS",
+        "t_links_edited": "LATÊNCIA OU TIPO", "t_constraints": "RESTRIÇÕES",
+        "t_links_cap": "entre atividades dos dois arquivos",
+        "t_links_edited_cap": "mesmo vínculo, editado",
+        "t_constraints_cap": "incluídas, alteradas ou removidas",
+        "t_dur": "DURAÇÕES EDITADAS", "t_dur_cap": "em atividade não iniciada",
+        "t_dur_net": "SALDO", "t_dur_net_cap": "dias úteis",
+        "t_past_start": "INÍCIO REAL", "t_past_finish": "TÉRMINO REAL",
+        "t_past_pct": "PERCENTUAL CAIU", "t_past_start_cap": "alterado ou retirado",
+        "t_past_finish_cap": "alterado ou retirado", "t_past_pct_cap": "informado menor que antes",
+        "t_q_worse": "PIORARAM", "t_q_better": "MELHORARAM", "t_q_crossed": "PASSARAM A NÃO ATENDER",
+        "t_q_cap": "métricas",
+        "l_chain": "Cadeia que conduz o término atual",
+        "l_entered": "Entraram no caminho crítico", "l_left": "Saíram do caminho crítico",
+        "l_fell": "Onde a folga mais caiu ({n} maiores de {total})",
+        "l_links_added": "Vínculos incluídos", "l_links_removed": "Vínculos removidos",
+        "l_lag": "Latência alterada", "l_type": "Tipo de vínculo alterado",
+        "l_c_added": "Restrições incluídas", "l_c_changed": "Restrições alteradas",
+        "l_c_removed": "Restrições removidas",
+        "l_dur": "Duração editada antes de qualquer início",
+        "l_past_start": "Início real alterado", "l_past_finish": "Término real alterado",
+        "l_past_pct": "Percentual concluído caiu",
+        "l_quality": "As quatorze métricas, antes e depois",
+        "c1_title": "Término do projeto",
+        "c1_sub": "Onde cada entrega diz que o contrato termina, e o que segura a data agora.",
+        "c1_criterion": "Data de término do projeto em cada arquivo (a do cabeçalho, ou o maior "
+                        "término de atividade quando o cabeçalho não traz); diferença em dias "
+                        "corridos. A atividade que conduz é aproximada: a atividade em aberto "
+                        "que termina por último, percorrida para trás pela predecessora cujo "
+                        "vínculo chega mais tarde.",
+        "c1_reproduce": "Em cada arquivo: Projeto > Informações do Projeto > Data de término. "
+                        "Para o caminho: filtre Crítica = Sim, ordene por Término decrescente e "
+                        "siga as Predecessoras a partir da última linha.",
+        "c2_title": "Caminho crítico",
+        "c2_sub": "Quais atividades passaram a decidir a data final ou deixaram de decidir, e "
+                  "onde a folga está sendo consumida.",
+        "c2_criterion": "Crítica pelo próprio campo Crítica da ferramenta quando o arquivo traz, "
+                        "senão folga total menor ou igual a zero; atividade concluída não está "
+                        "em caminho nenhum. Folga em dias úteis do calendário da própria "
+                        "atividade; listada quando caiu um dia ou mais em atividade não concluída.",
+        "c2_reproduce": "Em cada arquivo: filtre Crítica = Sim e mostre Id Exclusiva e Margem "
+                        "de Atraso Total; compare as duas listas pela Id Exclusiva.",
+        "c3_title": "Lógica alterada",
+        "c3_sub": "Vínculos e restrições editados entre as entregas. A lógica é o modelo; data "
+                  "que se moveu porque a lógica foi editada não se moveu por causa da obra.",
+        "c3_criterion": "Um vínculo é identificado pelas suas duas atividades, cada uma casada "
+                        "entre os arquivos como qualquer atividade. Comparado só entre "
+                        "atividades presentes nos dois arquivos; vínculo em atividade inserida "
+                        "ou removida conta como escopo. Restrições comparadas em atividades não "
+                        "concluídas, por tipo e data.",
+        "c3_reproduce": "Em cada arquivo: mostre Id Exclusiva, Predecessoras, Tipo de Restrição "
+                        "e Data da Restrição; compare pela Id Exclusiva.",
+        "c4_title": "Duração alterada antes de qualquer início",
+        "c4_sub": "Trabalho remanescente reescrito por replanejamento: sem início real em "
+                  "nenhum dos arquivos, e duração diferente.",
+        "c4_criterion": "Atividades folha, que não são marco, sem início real nos dois arquivos "
+                        "e com Duração diferente, em dias úteis do calendário da própria atividade.",
+        "c4_reproduce": "Em cada arquivo: filtre Início Real = ND e mostre Id Exclusiva e "
+                        "Duração; compare pela Id Exclusiva.",
+        "c5_title": "Passado reescrito",
+        "c5_sub": "A armadilha silenciosa. Data real é registro e percentual é medição já "
+                  "informada; quando um deles lê diferente agora, os números do ciclo anterior "
+                  "se apoiavam num passado que não existe mais, e nenhum dos arquivos avisa.",
+        "c5_criterion": "Atividades presentes nos dois arquivos cujo Início Real ou Término Real "
+                        "difere ou foi retirado, ou cujo percentual físico (ou percentual "
+                        "concluído, quando o físico não caiu) está menor que antes.",
+        "c5_reproduce": "Em cada arquivo: mostre Id Exclusiva, Início Real, Término Real, "
+                        "% Concluída e % Física Concluída; compare pela Id Exclusiva.",
+        "c6_title": "Qualidade da rede, antes × depois",
+        "c6_sub": "As mesmas quatorze métricas rodadas nas duas entregas pelo mesmo código, "
+                  "então a diferença é do cronograma e não do método.",
+        "c6_criterion": "A implementação de qualidade de rede da análise crítica, rodada uma vez "
+                        "por arquivo; limiares como citados lá. Implementação das métricas, não "
+                        "certificação.",
+        "c6_reproduce": "Abra o relatório de análise crítica de cada arquivo, seção V7, onde "
+                        "cada métrica lista as suas atividades.",
+        "w_baseline_moved": "A linha de base se moveu em {n} {n?atividade|atividades} entre estas duas "
+                            "entregas. A base de comparação mudou por baixo da comparação: todo "
+                            "desvio que atravessa a mudança está medido contra duas referências. "
+                            "Reporte como achado sobre o relatório, não como desempenho.",
+        "w_slot_differs": "A linha de base em vigor difere entre as entregas ({a} e depois {b}). "
+                          "Os dois números agregados não são comparáveis até se escolher uma "
+                          "para os dois.",
+        "w_scope": "{i} {i?atividade inserida|atividades inseridas} e {r} {r?removida|removidas}. O escopo mudou, então o movimento "
+                   "agregado não é só avanço.",
+        "w_no_weight": "Nenhuma atividade carrega custo de linha de base, então não há peso "
+                       "para decompor.",
+        "w_same_status_date": "As duas entregas têm a mesma data de status ({d}). Uma comparação "
+                              "de ciclo espera dois momentos diferentes: confirme que o primeiro "
+                              "arquivo é mesmo o ciclo anterior, e não outra gravação do mesmo.",
+        "w_status_date_backwards": "A data de status do segundo arquivo ({b}) é ANTERIOR à do "
+                                   "primeiro ({a}). Os arquivos podem estar na ordem errada: a "
+                                   "entrega anterior vai primeiro.",
+        "w_status_date_missing": "Falta a data de status em uma das entregas, então não dá para "
+                                 "confirmar os dois momentos comparados.",
+        "w_residue": "{gap} {gap?ponto percentual|pontos percentuais} do movimento NÃO são explicados pelo avanço por "
+                     "atividade. Algo que não é trabalho feito moveu o agregado: escopo mudando "
+                     "o denominador, linha de base reprogramada ou outra linha de base. Não "
+                     "reporte o movimento de cabeçalho como avanço até este resíduo estar "
+                     "explicado.",
+        "w_past_rewritten": "O passado foi reescrito em {n} {n?atividade|atividades}: uma data real mudou ou "
+                            "foi retirada, ou um percentual concluído caiu. Peça que cada "
+                            "correção seja declarada.",
+        "cv_matching": "Casamento", "cv_population": "População (avanço)",
+        "cv_logic_population": "População (lógica e registro)",
+        "cv_denominator": "Denominador", "cv_aggregates": "Agregados",
+        "cv_critical": "Caminho crítico", "cv_links": "Vínculos",
+        "cv_finish_delta": "Variação do término", "cv_float_and_duration": "Folga e duração",
+        "cvt_matching": "Id Exclusiva estável, depois nome mais caminho da EAP; apenas duas classes",
+        "cvt_population": "atividades folha, ativas, não externas e que não são marco",
+        "cvt_logic_population": "atividades folha, ativas e não externas; marcos incluídos",
+        "cvt_aggregates": "as duas entregas calculadas por uma única função chamada duas vezes",
+        "cvt_critical": "o campo Crítica da ferramenta quando o arquivo traz, senão folga total "
+                        "menor ou igual a zero; atividade concluída não está em caminho nenhum",
+        "cvt_links": "um vínculo são as suas duas pontas, cada uma casada como as atividades; "
+                     "vínculo que toca atividade inserida ou removida conta como escopo",
+        "cvt_finish_delta": "dias corridos entre as duas datas de término do projeto",
+        "cvt_float_and_duration": "dias úteis do calendário da própria atividade",
+    },
+}
+
+
+def cycle_text(lang: str) -> dict:
+    base = dict(CYCLE["en"])
+    base.update(CYCLE.get(lang, {}))
+    return base
+
+
 # Convention sentences. They are shown to a person and must follow the report's
 # language; the machine-readable keys in the findings JSON stay stable in English.
 CONVENTIONS = {
     "en": {
-        "slot_basis": "slot with the widest leaf-cost coverage, ties to the higher slot; "
+        "slot_basis": "the baseline with the widest leaf-cost coverage, ties to the higher-numbered one; "
                       "summaries and external tasks excluded",
         "threshold_unit": "working days of the activity's own calendar, between baseline "
                           "finish and current finish",
@@ -978,12 +1428,12 @@ CONVENTIONS = {
         "working_fallback": "NO CALENDARS IN FILE: fell back to a Monday-to-Friday "
                             "approximation, which is not a measurement",
         "percent_source": "physical percent complete when present, otherwise percent complete",
-        "tolerance": "{n} day of that activity's calendar",
+        "tolerance": "{n} {n?day|days} of that activity's calendar",
         "denominator": "current snapshot budget at completion",
     },
     "pt": {
-        "slot_basis": "gaveta com maior cobertura de custo nas folhas, empate para a mais "
-                      "alta; resumos e tarefas externas não votam",
+        "slot_basis": "a linha de base com maior cobertura de custo nas folhas, empate para a de "
+                      "número mais alto; resumos e tarefas externas não votam",
         "threshold_unit": "dias úteis do calendário da própria atividade, entre o término da "
                           "linha de base e o término atual",
         "population": "apenas atividades folha, ativas e não externas",
@@ -995,7 +1445,7 @@ CONVENTIONS = {
                             "sexta, que não é uma medição",
         "percent_source": "percentual físico concluído quando presente, senão percentual "
                           "concluído",
-        "tolerance": "{n} dia do calendário daquela atividade",
+        "tolerance": "{n} {n?dia|dias} do calendário daquela atividade",
         "denominator": "orçamento na conclusão do snapshot atual",
     },
 }

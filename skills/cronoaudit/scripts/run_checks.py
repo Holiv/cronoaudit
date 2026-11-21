@@ -28,6 +28,15 @@ import json
 import sys
 from datetime import datetime, timedelta
 
+import os
+
+# Run by path from anywhere, on any interpreter: an isolated Python (-I), and the
+# embeddable Windows package with its ._pth file, do not put the script's own
+# folder on sys.path, so the sibling modules below would not be found.
+_HERE = os.path.dirname(os.path.abspath(__file__))
+if _HERE not in sys.path:
+    sys.path.insert(0, _HERE)
+
 import calendars as cal_mod
 
 DEFAULT_THRESHOLD_DAYS = 30
@@ -157,7 +166,7 @@ def run(model: dict, threshold_days: int, tolerance_days: float) -> dict:
         )
     if slot is None:
         blocking.append(
-            "No baseline slot carries leaf cost above zero, so there is no planned "
+            "No baseline carries leaf cost above zero, so there is no planned "
             "half to compare against. Save a baseline before reviewing adherence."
         )
 
@@ -352,6 +361,8 @@ def run(model: dict, threshold_days: int, tolerance_days: float) -> dict:
             "threshold_basis": "working_days_task_calendar",
             "tolerance_days": tolerance_days,
             "baseline_slot": slot,
+            # The name a person reads; `baseline_slot` stays as the machine key.
+            "baseline_name": ("Baseline" if str(slot) == "0" else f"Baseline {slot}") if slot is not None else None,
             "baseline_slot_basis": (model.get("prevailing_baseline") or {}).get("basis"),
             "calendars_in_file": cal_blob.get("count", 0),
             "calendars_from_file": bool(cals),
@@ -392,7 +403,7 @@ CONSOLE = {
     "en": {
         "title": "Schedule integrity review",
         "blocking": "BLOCKING -- the review cannot be trusted until these are fixed:",
-        "slot": "Baseline slot used", "threshold": "Threshold",
+        "slot": "Baseline used", "threshold": "Threshold",
         "population": "Population", "counting": "Counting",
         "heading": "Findings, in the order the method runs them:",
         "activities": "activities", "as_succ": "as successors", "as_pred": "as predecessors",
@@ -402,7 +413,7 @@ CONSOLE = {
     "pt": {
         "title": "Análise crítica de cronograma",
         "blocking": "IMPEDIMENTO -- a análise não é confiável até isto ser resolvido:",
-        "slot": "Gaveta de linha de base usada", "threshold": "Limiar",
+        "slot": "Linha de base usada", "threshold": "Limiar",
         "population": "População", "counting": "Contagem",
         "heading": "Achados, na ordem em que o método os roda:",
         "activities": "atividades", "as_succ": "como sucessoras", "as_pred": "como predecessoras",
@@ -426,7 +437,7 @@ def report(res: dict, lang: str = "en") -> str:
         lines.append(C["blocking"])
         lines += [f"  * {b}" for b in res["blocking"]] + [""]
     lines += [
-        f"{C['slot']}: {conv['baseline_slot']} ({CV['slot_basis']})",
+        f"{C['slot']}: {i18n.baseline_name(lang, conv['baseline_slot'])} ({CV['slot_basis']})",
         f"{C['threshold']}: {conv['threshold_days']} {CV['threshold_unit']}",
         f"{C['population']}: {CV['population']}",
         f"{C['counting']}: {CV['network_counting']}",
