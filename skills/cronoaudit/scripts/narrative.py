@@ -51,6 +51,7 @@ R = {
         "q_pass_all": "The network passes every quantitative metric with a threshold.",
         "bei": "Of {d} {d?activity|activities} due by the status date, {a} finished on time: a baseline execution index of {b}.",
         "float_deadline": "{f}% of incomplete activities carry more than 44 working days of float while {m} of {mm} {mm?milestone|milestones} have no deadline: the float is not slack, it is an unconstrained plan.",
+        "float_no_milestones": "{f}% of incomplete activities carry more than 44 working days of float, and the file has no milestone a deadline could constrain: nothing ties the finish to a date, so read the float as a question, not as slack.",
         "float_deadline_set": "{f}% of incomplete activities carry more than 44 working days of float, although {mm} of {mm} {mm?milestone carries|milestones carry} a deadline: the float does not come from an unconstrained finish. It may be real slack or a missing link; read it as a question.",
         "es_behind": "Earned Schedule falls on {es}: the plan reached today's earned value {d} {d?day|days} ago, a schedule efficiency SPI(t) of {spi}.",
         "es_ahead": "Earned Schedule falls on {es}, {d} {d?day|days} ahead of today: SPI(t) {spi}.",
@@ -62,12 +63,14 @@ R = {
         "es_tspi_hard": "TSPI is {t}: the remainder must run {pct}% above the plan to finish on the planned date.",
         "es_tspi_hard_early": "TSPI is {t}: the remainder must run {pct}% above the plan to finish on the planned date. Modest because most of the duration is still ahead, not because the lag is small.",
         "es_tspi_no": "TSPI is {t}: the remainder would need {pct}% above the plan, which the literature treats as unrecoverable in practice.",
+        "es_tspi_plain": "TSPI is {t}: the pace the remainder needs, relative to the plan's, to finish on the planned date.",
         "la_no": "The next {w} {w?week|weeks} plan {p}% of earning; the practised rate delivers {q}%. Not reachable without a change of pace.",
         "la_yes": "The next {w} {w?week|weeks} plan {p}% of earning and the practised rate delivers {q}%: reachable.",
         "rg_out": "{n} {n?group|groups} cannot reach their baseline finish at the practised pace; {g} needs {r}× its current rate.",
         "rg_ok": "Every group with a trend is on pace or within a stretch of its baseline finish.",
         "rain": "{s}% of the remaining cost sits in months the calendars reserve for bad weather, {t}% if everything slips thirty days.",
-        "fx_origins": "{o} of {m} {m?future milestone|future milestones} trace to a named origin; activity {id} originates delay on {k} of them.",
+        "fx_origins": "{o} of {m} {m?future milestone|future milestones} trace to a named origin; activity {id}, {name}, originates delay on {k} of them.",
+        "fx_origins_unnamed": "{o} of {m} {m?future milestone|future milestones} trace to a named origin; no single activity originates delay on more than one.",
         "fx_none": "No future milestone carries variance above the threshold, so no origin is named.",
         "fx_bl_moved": "On the driving chain of {m}, row {id}, {name}, shows a variance of {v} working {v?day|days} against a baseline that moved {b} calendar {b?day|days} this cycle: part of that variance is the reference moving, not the works.",
         "fx_cal": "Calendar forensics flags {n} {n?calendar|calendars}: {list}.",
@@ -113,6 +116,7 @@ R = {
         "q_pass_all": "A rede atende todas as métricas quantitativas com limiar.",
         "bei": "De {d} {d?atividade devida|atividades devidas} até a data de status, {a} {a?terminou|terminaram} no prazo: índice de execução da linha de base de {b}.",
         "float_deadline": "{f}% das atividades incompletas carregam mais de 44 dias úteis de folga enquanto {m} de {mm} {mm?marco|marcos} não têm data limite: a folga não é margem, é plano sem restrição.",
+        "float_no_milestones": "{f}% das atividades incompletas carregam mais de 44 dias úteis de folga, e o arquivo não tem marco que uma data limite pudesse restringir: nada prende o término a uma data, então leia a folga como pergunta, não como margem.",
         "float_deadline_set": "{f}% das atividades incompletas carregam mais de 44 dias úteis de folga, embora {mm} de {mm} {mm?marco tenha|marcos tenham} data limite: a folga não vem de término sem restrição. Pode ser margem real ou vínculo faltando; leia como pergunta.",
         "es_behind": "O Earned Schedule cai em {es}: o plano alcançou o realizado de hoje há {d} {d?dia|dias}, eficiência de prazo SPI(t) de {spi}.",
         "es_ahead": "O Earned Schedule cai em {es}, {d} {d?dia|dias} à frente de hoje: SPI(t) {spi}.",
@@ -124,12 +128,14 @@ R = {
         "es_tspi_hard": "O TSPI é {t}: o restante precisa rodar {pct}% acima do plano para terminar na data prevista.",
         "es_tspi_hard_early": "O TSPI é {t}: o restante precisa rodar {pct}% acima do plano para terminar na data prevista. Modesto porque a maior parte da duração ainda está pela frente, não porque o atraso seja pequeno.",
         "es_tspi_no": "O TSPI é {t}: o restante precisaria de {pct}% acima do plano, o que a literatura trata como irrecuperável na prática.",
+        "es_tspi_plain": "O TSPI é {t}: o ritmo de que o restante precisa, relativo ao do plano, para terminar na data prevista.",
         "la_no": "As próximas {w} {w?semana|semanas} preveem {p}% de medição; o ritmo praticado entrega {q}%. Não alcançável sem mudança de ritmo.",
         "la_yes": "As próximas {w} {w?semana|semanas} preveem {p}% de medição e o ritmo praticado entrega {q}%: alcançável.",
         "rg_out": "{n} {n?grupo não alcança|grupos não alcançam} o término de linha de base no ritmo praticado; {g} precisa de {r}× o ritmo atual.",
         "rg_ok": "Todo grupo com tendência está no ritmo ou a um esforço do término de linha de base.",
         "rain": "{s}% do custo remanescente cai em meses que os calendários reservam para tempo ruim, {t}% se tudo escorregar trinta dias.",
-        "fx_origins": "{o} de {m} {m?marco futuro|marcos futuros} têm origem nomeada; a atividade {id} origina atraso em {k} deles.",
+        "fx_origins": "{o} de {m} {m?marco futuro|marcos futuros} têm origem nomeada; a atividade {id}, {name}, origina atraso em {k} deles.",
+        "fx_origins_unnamed": "{o} de {m} {m?marco futuro|marcos futuros} têm origem nomeada; nenhuma atividade isolada origina atraso em mais de um.",
         "fx_none": "Nenhum marco futuro carrega variação acima do limiar, então nenhuma origem é nomeada.",
         "fx_bl_moved": "Na cadeia condutora de {m}, a linha {id}, {name}, mostra variação de {v} {v?dia útil|dias úteis} contra uma linha de base que se moveu {b} {b?dia corrido|dias corridos} neste ciclo: parte dessa variação é a referência se movendo, não a obra.",
         "fx_cal": "A forense de calendário sinaliza {n} {n?calendário|calendários}: {list}.",
@@ -306,7 +312,8 @@ def build(payload: dict, lang: str) -> dict:
     fails = [x for x in q.get("metrics", []) if x.get("status") == "fail"]
     if q.get("metrics"):
         if fails:
-            add("quality", "q_fail", n=_n(len(fails), 0), list=", ".join(f"{x['code']} {x.get('title','')}" for x in fails))
+            add("quality", "q_fail", n=_n(len(fails), 0), list=", ".join(
+                " ".join(filter(None, (x.get("code"), x.get("title")))) for x in fails))
         else:
             add("quality", "q_pass_all")
     I = q.get("indices") or {}
@@ -317,7 +324,9 @@ def build(payload: dict, lang: str) -> dict:
     # High float is read only when Q6 fails, and "unconstrained plan" only when
     # some milestone has no deadline: with every milestone constrained the float
     # has another cause, and the reading asks instead of concluding.
-    if q6 and q6.get("share_pct") and q6.get("status") == "fail" and QL.get("milestones"):
+    if q6 and q6.get("share_pct") and q6.get("status") == "fail" and QL.get("milestones") == 0:
+        add("quality", "float_no_milestones", f=_n(q6["share_pct"], 0))
+    elif q6 and q6.get("share_pct") and q6.get("status") == "fail" and QL.get("milestones"):
         no_dl = QL.get("milestones_without_deadline")
         if no_dl:
             add("quality", "float_deadline", f=_n(q6["share_pct"], 0), m=_n(no_dl, 0), mm=_n(QL["milestones"], 0))
@@ -342,7 +351,8 @@ def build(payload: dict, lang: str) -> dict:
             add("forecast", key, ieac=E["ieac_t_date"], gap=_n(abs(E["gap_vs_schedule_days"]), 0),
                 sched=E.get("schedule_finish"), tol=_n(E.get("gap_agree_days"), 0))
         if E.get("tspi") is not None:
-            key = {"recoverable": "es_tspi_easy", "hard": "es_tspi_hard", "unrecoverable": "es_tspi_no"}.get(E.get("tspi_verdict"), "es_tspi_hard")
+            # An unknown verdict states the figure only, never the hard sentence.
+            key = {"recoverable": "es_tspi_easy", "hard": "es_tspi_hard", "unrecoverable": "es_tspi_no"}.get(E.get("tspi_verdict"), "es_tspi_plain")
             # "Modest because most of the duration is ahead" is said only when it is.
             at, pd = E.get("at_days"), E.get("pd_days")
             if key == "es_tspi_hard" and at is not None and pd and at / pd < 0.5:
@@ -372,7 +382,11 @@ def build(payload: dict, lang: str) -> dict:
     if FS.get("milestones"):
         if FS.get("with_origin") and FS.get("origins"):
             o = FS["origins"][0]
-            add("forensics", "fx_origins", o=_n(FS["with_origin"], 0), m=_n(FS["milestones"], 0), id=o["id"], k=_n(o["milestones"], 0))
+            add("forensics", "fx_origins", o=_n(FS["with_origin"], 0), m=_n(FS["milestones"], 0), id=o["id"],
+                name=o.get("name") or "—", k=_n(o["milestones"], 0))
+        elif FS.get("with_origin"):
+            # Origins exist but none is listed: never "no milestone carries variance".
+            add("forensics", "fx_origins_unnamed", o=_n(FS["with_origin"], 0), m=_n(FS["milestones"], 0))
         else:
             add("forensics", "fx_none")
     seen_bl = set()

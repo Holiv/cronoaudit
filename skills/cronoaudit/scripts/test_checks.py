@@ -1209,6 +1209,27 @@ def main() -> int:
     if "caiu na data da linha de base" not in ft or "depois" in ft:
         failures.append(f"slippage reading: a median start on the baseline was given a direction: {ft}")
 
+    # ---- the leftover readings (0.7.2): each missing input gets a neutral sentence,
+    # never a fallback to a claim.
+    def rd(payload, lang, sec):
+        return " ".join(nar_mod.build({"meta": {}, "findings": [], **payload}, lang).get(sec, []))
+    t_ = rd({"forecast": {"earned_schedule": {"available": True, "sv_t_days": -5.0, "es_date": "2027-01-01",
+                                              "spi_t": 0.9, "tspi": 1.05, "tspi_verdict": None}}}, "pt", "forecast")
+    if "acima do plano" in t_ or "O TSPI é 1,050" not in t_:
+        failures.append(f"tspi reading: an unknown verdict fell back to the hard sentence: {t_}")
+    t_ = rd({"forensics": {"summary": {"milestones": 4, "with_origin": 2, "origins": []}}}, "pt", "forensics")
+    if "Nenhum marco futuro carrega" in t_ or "2 de 4" not in t_:
+        failures.append(f"forensics reading: origins found but unlisted read as none: {t_}")
+    t_ = rd({"forensics": {"summary": {"milestones": 4, "with_origin": 2, "origins": [
+        {"id": 148, "name": "Bored piles", "milestones": 2}]}}}, "en", "forensics")
+    if "activity 148, Bored piles," not in t_:
+        failures.append(f"forensics reading: the origin activity is not named: {t_}")
+    t_ = rd({"quality": {"metrics": [{"code": "Q6", "share_pct": 12.0, "status": "fail"},
+                                     {"code": "Q11", "status": "fail"}],
+                         "qualitative": {"milestones": 0}}}, "pt", "quality")
+    if "Q11 ," in t_ or "Q11." not in t_ or "nenhum marco" not in t_.lower() and "não tem marco" not in t_:
+        failures.append(f"quality reading: a missing title or zero milestones read badly: {t_}")
+
     # ---- an actual date rewritten onto the baseline, and a variance measured against
     # a baseline that moved (0.7.2). Row 16 had its actual finish moved AWAY from the
     # baseline in the fixture (not flagged); here it is moved ONTO it (flagged).
