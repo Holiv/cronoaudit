@@ -378,7 +378,7 @@ UI = {
                         "The schedule allows more time than the pace achieved would need: either it "
                         "carries margin or it assumes a slower pace from here on.",
         "es_gap_agree": "The independent finish lands {n} {n?day|days} from the schedule's own finish, "
-                        "within the {t}-day tolerance of the method: the two agree.",
+                        "within the {t}-day tolerance this report applies: the two agree.",
         "es_limits": "Limits.",
         "tspi_recoverable": "recoverable", "tspi_hard": "hard", "tspi_unrecoverable": "unrecoverable in practice",
         "la_title": "Look-ahead", "la_window": "{w} {w?week|weeks}, {a} to {b}",
@@ -751,7 +751,7 @@ UI = {
                         "O cronograma dá mais tempo do que o ritmo realizado precisaria: ou carrega "
                         "margem, ou supõe um ritmo mais lento daqui em diante.",
         "es_gap_agree": "O término independente cai a {n} {n?dia|dias} do término do próprio cronograma, "
-                        "dentro da tolerância de {t} dias do método: os dois concordam.",
+                        "dentro da tolerância de {t} dias adotada neste relatório: os dois concordam.",
         "es_limits": "Limites.",
         "tspi_recoverable": "recuperável", "tspi_hard": "difícil", "tspi_unrecoverable": "irrecuperável na prática",
         "la_title": "Look-ahead", "la_window": "{w} {w?semana|semanas}, de {a} a {b}",

@@ -1123,6 +1123,11 @@ def main() -> int:
             failures.append(f"float reading ({lang}): milestones without deadline lost the conclusion: {t3}")
         if "44" in tp:
             failures.append(f"float reading ({lang}): Q6 passes, yet the high float is read as a finding: {tp}")
+    # No network state, and rates with no trend, support no reading at all.
+    none_ = nar_mod.build({"meta": {}, "findings": [], "forecast": {"rates_by_group": [
+        {"group": "G", "verdict": None}]}}, "en")
+    if any("network holds" in s_ for s_ in none_.get("verdict", [])) or none_.get("forecast"):
+        failures.append(f"readings: 'network holds' or 'every group on pace' stated without its input: {none_}")
     # Level progress, a reconciliation with nothing differing, a median start on the baseline.
     lv = nar_mod.build({"meta": {"percent_earned": 40.0, "percent_planned_file": 40.0,
                                  "inputs": {"planned_available": True},

@@ -31,7 +31,11 @@ possible".
 **The limits, stated in the report.** It is an aggregate, cost-weighted measure. It does not see
 the critical path: a mass of non-critical activities late shows behind while the end date
 holds, and the reverse. So it never replaces the schedule's own finish; it is set beside it,
-and the gap between the two is the conversation. It inherits everything the planned curve
+and the gap between the two is the conversation. The direction decides what it says: IEAC(t)
+*later* than the schedule's finish means the logic is more optimistic than the pace achieved;
+*earlier* means the schedule allows more time than that pace needs (margin, or a slower pace
+assumed from here on) and is not a sign of optimism; within 7 calendar days (a tolerance this
+report adopts, not one the method defines) the two agree. It inherits everything the planned curve
 inherits: the baseline slot, the earned-value method, costed milestones, execution ahead of the
 baseline window.
 

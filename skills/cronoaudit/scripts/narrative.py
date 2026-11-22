@@ -182,7 +182,8 @@ def build(payload: dict, lang: str) -> dict:
     elif netw.get("state") == "open":
         add("verdict", "net_open", u=_n(netw["unlinked"], 0), o=_n(netw["open"], 0),
             s=_n(netw["share_pct"], 1), t=_n(netw["threshold_pct"], 0))
-    else:
+    elif netw.get("state") == "linked":
+        # Only a network known to be linked "holds"; no state is no reading.
         add("verdict", "net_hold")
     e, p = m.get("percent_earned"), m.get("percent_planned_file")
     planned_ok = inputs.get("planned_available", True)
@@ -307,7 +308,8 @@ def build(payload: dict, lang: str) -> dict:
             add("forecast", "la_yes" if w["reachable"] else "la_no", w=w["weeks"], p=_n(w["planned_earning_pct"], 2), q=_n(w["projected_pct"], 2))
             break
     rg = [r for r in fc.get("rates_by_group") or [] if r.get("verdict") == "out of reach"]
-    if fc.get("rates_by_group"):
+    # "Every group with a trend is on pace" needs at least one group with a trend.
+    if any(r.get("verdict") for r in fc.get("rates_by_group") or []):
         if rg:
             worst = max(rg, key=lambda r: r.get("ratio_required_over_practised") or 0)
             add("forecast", "rg_out", n=_n(len(rg), 0), g=worst["group"], r=_n(worst["ratio_required_over_practised"], 1))
