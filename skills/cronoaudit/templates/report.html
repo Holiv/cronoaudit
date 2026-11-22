@@ -489,9 +489,9 @@ function renderReview(d){
       ${(Q.metrics||[]).map(mt=>`<div class="achado ${mt.status==="fail"?"al":(mt.status==="pass"?"":"vf")}" id="q-${mt.code}"><div class="barra"></div><div class="achado-in">
         <div class="achado-top"><span class="cod">${mt.code}</span><h3 style="font-size:16px">${esc(mt.title)}</h3>
           <span class="sev ${mt.status==="fail"?"al":(mt.status==="pass"?"vs":"vf")}">${esc(st(mt))}</span>
-          <span class="badge" style="font-size:20px">${mt.population?n(mt.count):"&mdash;"}</span></div>
+          <span class="badge" style="font-size:20px">${mt.code==="Q13"&&mt.population?n(mt.share_pct/100,3):(mt.population?n(mt.count):"&mdash;")}</span></div>
         <p class="sub">${esc(mt.description)}</p>
-        <div class="fonte">${mt.population?`${esc(L.col_count)} ${n(mt.count)} ${esc(L.col_population).toLowerCase()} ${n(mt.population)} · ${esc(L.col_share)} ${mt.share_pct==null?"&mdash;":n(mt.share_pct,2)+"%"}`:""}${mt.threshold_pct!=null?` · ${esc(L.col_threshold)} ${mt.direction==="min"?"\u2265":"\u2264"} ${n(mt.threshold_pct,1)}%`:""}</div>
+        <div class="fonte">${mt.code==="Q13"&&mt.population?`CPLI ${n(mt.share_pct/100,3)} · ${esc(L.col_threshold)} \u2265 ${n(mt.threshold_pct/100,2)}`:`${mt.population?`${esc(L.col_count)} ${n(mt.count)} ${esc(L.col_population).toLowerCase()} ${n(mt.population)} · ${esc(L.col_share)} ${mt.share_pct==null?"&mdash;":n(mt.share_pct,2)+"%"}`:""}${mt.threshold_pct!=null?` · ${esc(L.col_threshold)} ${mt.direction==="min"?"\u2265":"\u2264"} ${n(mt.threshold_pct,1)}%`:""}`}</div>
         ${mt.items&&mt.items.length?`<details><summary>${esc(fill(L.show_items,{n:n(mt.items.length)}))}</summary>${table(mt.item_columns||Object.keys(mt.items[0]).filter(k=>k!=="uid").map(k=>({label:k,key:k})),mt.items)}</details>`:""}
       </div></div>`).join("")}
     </section>`);

@@ -224,7 +224,15 @@ def build(model: dict, xml_path: str | None = None) -> dict:
     cpl_days = None
     if status and project_finish and project_finish > status:
         cpl_days = (project_finish - status).days
-        tf = (last_ms.get("total_slack_minutes") or 0) / day_minutes(last_ms) if last_ms else 0.0
+        deadline = last_ms.get("deadline") if last_ms else None
+        if deadline and last_ms.get("finish"):
+            # The float the path has is the room to the deadline. The tool's own total
+            # slack ignores a deadline later than the computed finish, so it reads 0
+            # and the index came out 1.0 on a file whose deadline was 9 days away.
+            # Calendar days on both sides, like the path length.
+            tf = (dt(deadline).date() - dt(last_ms["finish"]).date()).days
+        else:
+            tf = (last_ms.get("total_slack_minutes") or 0) / day_minutes(last_ms) if last_ms else 0.0
         cpli = round((cpl_days + tf) / cpl_days, 3) if cpl_days else None
     findings["Q13"] = ([], 0)
 
@@ -253,6 +261,12 @@ def build(model: dict, xml_path: str | None = None) -> dict:
             "threshold_pct": threshold, "status": status_word, "direction": "max",
             "items": items[:400],
         }
+        if code == "Q13" and cpli is not None and last_ms and last_ms.get("deadline"):
+            # Computable only with a deadline on the finish milestone; then it is a
+            # real index with the DCMA floor, and the table says the same as the tile.
+            entry.update({"count": 1, "population": 1, "share_pct": round(cpli * 100, 2),
+                          "threshold_pct": 95.0, "direction": "min",
+                          "status": "pass" if cpli >= 0.95 else "fail"})
         if code == "Q14" and due:
             # The index itself, with its floor: finished on time over due.
             entry.update({"count": due - len(q11), "share_pct": round(bei * 100, 2),

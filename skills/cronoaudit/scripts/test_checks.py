@@ -872,13 +872,35 @@ def main() -> int:
         failures.append("quality: an activity with duration and no resource was not counted as Q10")
     if qm["Q11"]["population"] < 1 or qm["Q11"]["count"] < 1:
         failures.append("quality: missed activities (due by status, not finished on time) not counted")
-    if qm["Q12"]["population"] != 0 or qm["Q13"]["population"] != 0:
-        failures.append("quality: Q12 or Q13 were computed from a file, which they cannot be")
+    if qm["Q12"]["population"] != 0:
+        failures.append("quality: Q12 was computed from a file, which it cannot be")
+    if qm["Q13"]["population"] != 0 and not qres["indices"]["cpli_meaningful"]:
+        failures.append("quality: Q13 was computed without a deadline on the finish milestone")
     I = qres["indices"]
     if I["bei"] is None or not (0 <= I["bei"] <= 1):
         failures.append("quality: the baseline execution index was not computed")
     if I["cpli_meaningful"]:
         failures.append("quality: CPLI reported as meaningful with no deadline on the finish milestone")
+    # With a deadline on the finish milestone, Q13 is a real index: the room to the
+    # deadline is the float, and the table carries the same figure as the tile.
+    # Found by an agent in secret mode on 22/11/2026: tile 1.0, table "not computable".
+    import copy as _copy
+    from datetime import timedelta as _td
+    pm_dl = _copy.deepcopy(pm)
+    _ms = sorted((t for t in pm_dl["tasks"] if t.get("milestone") and t.get("finish")
+                  and not t.get("summary")), key=lambda t: t["finish"], reverse=True)
+    if _ms:
+        from datetime import datetime as _dtm
+        _ms[0]["deadline"] = (_dtm.fromisoformat(_ms[0]["finish"]) + _td(days=9)).isoformat()
+        pm_dl["project"]["finish"] = pm_dl["project"].get("finish") or _ms[0]["finish"]
+        q_dl = quality_mod.build(pm_dl, os.path.join(ROOT, "fixtures", "positive.xml"))
+        q13 = {m["code"]: m for m in q_dl["metrics"]}["Q13"]
+        I_dl = q_dl["indices"]
+        if not I_dl["cpli_meaningful"] or I_dl["cpli"] is None or I_dl["cpli"] <= 1:
+            failures.append(f"quality: a deadline 9 days after the finish milestone left CPLI at {I_dl['cpli']}")
+        elif q13["population"] != 1 or q13["status"] not in ("pass", "fail") \
+                or abs(q13["share_pct"] - I_dl["cpli"] * 100) > 0.01:
+            failures.append("quality: with a deadline, the Q13 row does not carry the tile's CPLI")
     if qres["qualitative"]["summaries_with_links_count"] < 1:
         failures.append("quality: a summary task carrying a link was not flagged")
     for mtr in qres["metrics"]:
