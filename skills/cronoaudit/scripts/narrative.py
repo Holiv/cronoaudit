@@ -13,6 +13,7 @@ label. See `inject_narrative.py`.
 from __future__ import annotations
 
 import re
+from decimal import ROUND_HALF_UP, Decimal
 
 import i18n
 
@@ -260,7 +261,9 @@ def build(payload: dict, lang: str) -> dict:
     s = payload.get("scurve") or {}
     T_ = s.get("totals") or {}
     if T_.get("spi") is not None:
-        add("scurve", "spi", s=_n(T_["spi"], 3), pct=_n(T_["spi"] * 100, 1))
+        # The percentage is read from the index as displayed, so "0,902" and "90,2%"
+        # cannot disagree in the same sentence.
+        add("scurve", "spi", s=_n(T_["spi"], 3), pct=_n(half_up(T_["spi"], 3) * 100, 1))
     if T_.get("earned_alt_pct") is not None and abs(T_.get("method_gap_points") or 0) >= 0.01:
         add("scurve", "method_gap", alt=_n(T_["earned_alt_pct"], 2), e=_n(T_.get("earned_pct"), 2),
             g=_n(abs(T_["method_gap_points"]), 2))
@@ -539,11 +542,20 @@ RC = {
 HARD_CONSTRAINT_CODES = {"MSO", "MFO", "SNLT", "FNLT"}
 
 
+def half_up(v, d):
+    """Round the way the report's renderer does: half away from zero on the
+    shortest decimal form of the number. Python's `round` works on the binary
+    value, so 0.9015 became 0,901 in a reading beside a tile showing 0,902."""
+    q = Decimal(repr(float(v))).quantize(Decimal(1).scaleb(-d), rounding=ROUND_HALF_UP)
+    return float(q)
+
+
 def fnum(v, d, lang):
-    """A number the way the report's language writes it; never a negative zero."""
+    """A number the way the report's language writes it; never a negative zero.
+    One rounding rule for every sentence, the same as the report's tiles."""
     if v is None:
         return "—"
-    v = round(float(v), d)
+    v = half_up(v, d)
     if v == 0:
         v = 0.0
     s = f"{v:,.{d}f}"

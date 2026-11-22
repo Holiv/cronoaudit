@@ -330,11 +330,11 @@ UI = {
                         "chain still carrying at least {n} {n?working day|working days} of variance: the delay "
                         "has a name, not an aggregate.",
         "fx_origins": "Activities originating delay on the most milestones",
-        "col_milestones_n": "Milestones", "col_origin": "Origin", "col_origin_var": "Origin var. (d)",
+        "col_milestones_n": "Milestones", "col_origin": "Origin", "col_origin_var": "Origin var. (working d)",
         "col_chain": "Chain", "col_open_end": "Open end", "col_reaches": "Reaches started work",
-        "col_amplifier": "Grew most at", "col_added": "Added (d)",
+        "col_amplifier": "Grew most at", "col_added": "Added (working d)",
         "fx_chain_show": "Show the driving chain",
-        "col_via": "Via", "col_var_days": "Var. (d)", "col_started": "Started",
+        "col_via": "Via", "col_var_days": "Var. (working d)", "col_started": "Started",
         "col_bl_moved": "Baseline moved this cycle (calendar d)",
         "fx_cal_title": "Calendar forensics",
         "fx_cal_sub": "A productivity reserve registered for one year while the activities on "
@@ -353,8 +353,8 @@ UI = {
         "fx_cycle_sub": "Between the two snapshots: float consumed per group, activities that "
                         "became critical, and the movement of each milestone attributed to what "
                         "moved on its driving chain: execution, replan, or a moved reference.",
-        "col_float_before": "Float before", "col_float_now": "Float now", "col_consumed": "Consumed (d)",
-        "col_moved": "Moved (d)", "col_attribution": "Attribution", "col_finish_before": "Finish before",
+        "col_float_before": "Float before", "col_float_now": "Float now", "col_consumed": "Consumed (working d)",
+        "col_moved": "Moved (calendar d)", "col_attribution": "Attribution", "col_finish_before": "Finish before",
         "col_finish_now": "Finish now", "fx_became_critical": "Became critical this cycle",
         "fc_title": "Looking forward",
         "fc_sub": "Five readings from data the file already carries. Earned Schedule asks on "
@@ -396,7 +396,7 @@ UI = {
         "mb_sub": "The distribution of finish slippage already observed in this snapshot, "
                   "applied to each future milestone's current finish: P50 {a} {a?day|days}, P80 {b} "
                   "days, from {n} {n?activity|activities}. Not a simulation with an invented premise.",
-        "col_slip_now": "Slip now (d)", "col_p50": "P50", "col_p80": "P80", "col_deadline": "Deadline",
+        "col_slip_now": "Slip now (calendar d)", "col_p50": "P50", "col_p80": "P80", "col_deadline": "Deadline",
         "col_critical": "Critical",
         "rx_title": "Exposure to the rainy season",
         "rx_sub": "Remaining cost spread over each activity's current span, read against the "
@@ -424,6 +424,25 @@ UI = {
                             "counted, not failed.",
         "summaries_links": "{n} {n?summary task carries|summary tasks carry} links. Logic belongs on activities.",
         "show_items": "Show the {n} {n?item|items}",
+        "show_rows_periods": "Show the {n} {n?period|periods}",
+        "show_rows_resources": "Show the {n} {n?resource|resources}",
+        "show_rows_milestones": "Show the {n} {n?milestone|milestones}",
+        "qcol_missing": "Missing", "qcol_predecessor_id": "Pred. row", "qcol_predecessor_name": "Predecessor",
+        "qcol_link_type": "Link", "qcol_lag_days": "Lag (working d)", "qcol_float_days": "Total float (working d)",
+        "qcol_baseline_finish": "Baseline finish", "qcol_finish": "Finish", "qcol_actual_finish": "Actual finish",
+        "qmiss_both": "predecessor and successor", "qmiss_predecessor": "predecessor", "qmiss_successor": "successor",
+        "es_limits_text": "aggregate and cost-weighted; blind to the critical path; inherits the baseline, the "
+                          "earned-value method and everything the planned curve inherits. Set beside the "
+                          "schedule's own finish, never in its place.",
+        "rx_rule": "a month with at least {n} non-working exceptions on the activity's calendar",
+        "rx_basis": "inferred: remaining cost spread evenly over each activity's current span from the "
+                    "status date; reserve months read from each activity's own calendar",
+        "fx_provenance": "mechanism reconstruction from the file's dates, links and calendars; not a "
+                         "contractual delay analysis, which needs contemporaneous records",
+        "attr_execution": "execution", "attr_replan": "replan", "attr_reference": "moved baseline",
+        "attr_none": "none", "attr_outside": "outside the chain",
+        "word_yes": "yes", "word_no": "no",
+        "findings_quiet": "Checked, nothing found:",
         "prod_title": "Productivity and trend by resource",
         "prod_sub": "Quantities come from the file's own assignments: for a material resource "
                     "the tool stores the quantity in the work fields. Three rates per activity, "
@@ -704,11 +723,11 @@ UI = {
                         "carrega ao menos {n} {n?dia útil|dias úteis} de variação: o atraso tem nome, não "
                         "agregado.",
         "fx_origins": "Atividades que originam atraso no maior número de marcos",
-        "col_milestones_n": "Marcos", "col_origin": "Origem", "col_origin_var": "Var. da origem (d)",
+        "col_milestones_n": "Marcos", "col_origin": "Origem", "col_origin_var": "Var. da origem (dias úteis)",
         "col_chain": "Cadeia", "col_open_end": "Ponta aberta", "col_reaches": "Chega a serviço iniciado",
-        "col_amplifier": "Cresceu mais em", "col_added": "Acrescentou (d)",
+        "col_amplifier": "Cresceu mais em", "col_added": "Acrescentou (dias úteis)",
         "fx_chain_show": "Mostrar a cadeia condutora",
-        "col_via": "Via", "col_var_days": "Var. (d)", "col_started": "Iniciada",
+        "col_via": "Via", "col_var_days": "Var. (dias úteis)", "col_started": "Iniciada",
         "col_bl_moved": "LB movida neste ciclo (dias corridos)",
         "fx_cal_title": "Forense de calendário",
         "fx_cal_sub": "Reserva de improdutividade cadastrada num ano enquanto as atividades "
@@ -727,8 +746,8 @@ UI = {
         "fx_cycle_sub": "Entre os dois snapshots: folga consumida por grupo, atividades que "
                         "viraram críticas, e o movimento de cada marco atribuído ao que se moveu "
                         "na cadeia condutora dele: execução, replanejamento ou referência movida.",
-        "col_float_before": "Folga antes", "col_float_now": "Folga agora", "col_consumed": "Consumida (d)",
-        "col_moved": "Moveu (d)", "col_attribution": "Atribuição", "col_finish_before": "Término antes",
+        "col_float_before": "Folga antes", "col_float_now": "Folga agora", "col_consumed": "Consumida (dias úteis)",
+        "col_moved": "Moveu (dias corridos)", "col_attribution": "Atribuição", "col_finish_before": "Término antes",
         "col_finish_now": "Término agora", "fx_became_critical": "Viraram críticas neste ciclo",
         "fc_title": "Olhando para frente",
         "fc_sub": "Cinco leituras a partir de dados que o arquivo já carrega. Earned Schedule "
@@ -770,7 +789,7 @@ UI = {
         "mb_sub": "A distribuição de escorregão de término já observada neste snapshot, "
                   "aplicada ao término atual de cada marco futuro: P50 {a} {a?dia|dias}, P80 {b} {b?dia|dias}, "
                   "de {n} {n?atividade|atividades}. Não é simulação com premissa inventada.",
-        "col_slip_now": "Escorregão hoje (d)", "col_p50": "P50", "col_p80": "P80", "col_deadline": "Data limite",
+        "col_slip_now": "Escorregão hoje (dias corridos)", "col_p50": "P50", "col_p80": "P80", "col_deadline": "Data limite",
         "col_critical": "Crítico",
         "rx_title": "Exposição ao período chuvoso",
         "rx_sub": "Custo remanescente distribuído pela janela atual de cada atividade, lido "
@@ -798,6 +817,25 @@ UI = {
                             "não reprovadas.",
         "summaries_links": "{n} {n?tarefa resumo carrega|tarefas resumo carregam} vínculo. Lógica pertence às atividades.",
         "show_items": "Mostrar {n?o|os} {n} {n?item|itens}",
+        "show_rows_periods": "Mostrar {n?o|os} {n} {n?período|períodos}",
+        "show_rows_resources": "Mostrar {n?o|os} {n} {n?recurso|recursos}",
+        "show_rows_milestones": "Mostrar {n?o|os} {n} {n?marco|marcos}",
+        "qcol_missing": "Falta", "qcol_predecessor_id": "Linha pred.", "qcol_predecessor_name": "Predecessora",
+        "qcol_link_type": "Vínculo", "qcol_lag_days": "Lag (dias úteis)", "qcol_float_days": "Folga total (dias úteis)",
+        "qcol_baseline_finish": "Término LB", "qcol_finish": "Término", "qcol_actual_finish": "Término real",
+        "qmiss_both": "predecessora e sucessora", "qmiss_predecessor": "predecessora", "qmiss_successor": "sucessora",
+        "es_limits_text": "agregado e ponderado por custo; cego ao caminho crítico; herda a linha de base, o "
+                          "método de valor agregado e tudo o que a curva prevista herda. Ponha ao lado do "
+                          "término do próprio cronograma, nunca no lugar dele.",
+        "rx_rule": "mês com ao menos {n} exceções de dia não útil no calendário da atividade",
+        "rx_basis": "inferido: custo remanescente distribuído por igual na janela atual de cada atividade a "
+                    "partir da data de status; meses de reserva lidos do calendário de cada atividade",
+        "fx_provenance": "reconstrução do mecanismo a partir das datas, vínculos e calendários do arquivo; "
+                         "não é apuração contratual de atraso, que exige registro contemporâneo",
+        "attr_execution": "execução", "attr_replan": "replanejamento", "attr_reference": "linha de base movida",
+        "attr_none": "nenhuma", "attr_outside": "fora da cadeia",
+        "word_yes": "sim", "word_no": "não",
+        "findings_quiet": "Verificados sem ocorrência:",
         "prod_title": "Produtividade e tendência por recurso",
         "prod_sub": "As quantidades vêm das atribuições do próprio arquivo: para recurso de "
                     "material o Project guarda a quantidade nos campos de trabalho. Três ritmos "

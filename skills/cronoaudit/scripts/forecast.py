@@ -413,6 +413,7 @@ def rain_exposure(model: dict, reserve_days: int = RESERVE_DAYS_PER_MONTH) -> di
         "calendars_with_reserve": len(with_reserve),
         "non_working_exceptions_in_use": exceptions_in_use,
         "reserve_rule": f"a month with at least {reserve_days} non-working exceptions on the activity's calendar",
+        "reserve_min_exceptions": reserve_days,
         "remaining_total": round(total, 2),
         "in_reserve": round(in_reserve, 2) if readable else None,
         "share_in_reserve_pct": round(in_reserve / total * 100, 2) if (total and readable) else None,

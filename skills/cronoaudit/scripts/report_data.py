@@ -276,6 +276,9 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
     default_cal = cal_blob.get("default_uid")
     grp = resolve_grouping(model, grouping)
     labels = group_labels(model, grp)
+    # The forecast and forensics group by the WBS branch unless a custom field was
+    # resolved; their codes are named from the same summary rows.
+    wbs_labels = group_labels(model, {"mode": "wbs"}) if grp["mode"] != "custom" else {}
     extra_cols = discovered_columns(model, grp, L)
     # A profile's declared fields win over discovery, and a declared field that the
     # file does not have is reported, never silently ignored.
@@ -578,8 +581,8 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
         "scurve": phasing,
         "productivity": productivity,
         "quality": localize_quality(quality, lang) if quality else None,
-        "forecast": forecast,
-        "forensics": forensics,
+        "forecast": localize_forecast(forecast, lang, wbs_labels),
+        "forensics": localize_forensics(forensics, lang, wbs_labels),
         # The executive synthesis is injected later by whoever writes it; the slot
         # exists so the template knows where it goes and how to label it.
         "narrative": None,
@@ -591,14 +594,85 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
     return payload
 
 
+QUALITY_ITEM_COLS = ("id", "name", "missing", "predecessor_id", "predecessor_name", "link_type",
+                     "lag_days", "float_days", "baseline_finish", "finish", "actual_finish")
+
+
 def localize_quality(q: dict, lang: str) -> dict:
+    """Metric titles, and the item tables with labelled columns and localized
+    values: a person reads "Folga total (dias úteis)", never `float_days`."""
     QT = i18n.quality_text(lang)
+    L = i18n.ui(lang)
     out = dict(q)
-    out["metrics"] = [
-        {**m, "title": QT.get(m["code"], (m["code"], ""))[0],
-         "description": QT.get(m["code"], (m["code"], ""))[1]}
-        for m in q.get("metrics", [])
-    ]
+    metrics = []
+    for m in q.get("metrics", []):
+        items = m.get("items") or []
+        keys = [k for k in QUALITY_ITEM_COLS if any(k in it for it in items)]
+        keys += sorted({k for it in items for k in it} - set(keys) - {"uid"})
+        cols = [{"key": k, "label": {"id": L["col_row"], "name": L["col_activity"]}.get(k)
+                 or L.get("qcol_" + k, k)} for k in keys]
+        rows = []
+        for it in items:
+            r = dict(it)
+            if r.get("missing"):
+                r["missing"] = L.get("qmiss_" + r["missing"], r["missing"])
+            if r.get("link_type"):
+                r["link_type"] = i18n.link_type(lang, r["link_type"])
+            for k in ("baseline_finish", "finish", "actual_finish"):
+                if r.get(k):
+                    r[k] = fmt_date(r[k], lang)
+            rows.append(r)
+        metrics.append({**m, "title": QT.get(m["code"], (m["code"], ""))[0],
+                        "description": QT.get(m["code"], (m["code"], ""))[1],
+                        "items": rows, "item_columns": cols})
+    out["metrics"] = metrics
+    return out
+
+
+def localize_forecast(fc: dict, lang: str, labels: dict) -> dict:
+    """The forecast as a person reads it: group names instead of WBS codes, and
+    the method's sentences in the report's language. The sidecar keeps the
+    engine's own English and codes; this is a copy."""
+    import copy
+    if not fc:
+        return fc
+    L = i18n.ui(lang)
+    out = copy.deepcopy(fc)
+    for w in out.get("lookahead") or []:
+        for row in (w.get("by_group") or []) + (w.get("starts") or []) + (w.get("finishes") or []):
+            row["group"] = labels.get(row.get("group"), row.get("group"))
+    E = out.get("earned_schedule") or {}
+    if E.get("limits"):
+        E["limits"] = L["es_limits_text"]
+    RX = out.get("rain_exposure") or {}
+    if RX.get("reserve_rule") and RX.get("reserve_min_exceptions") is not None:
+        RX["reserve_rule"] = i18n.fmt(L["rx_rule"], n=RX["reserve_min_exceptions"])
+    if RX.get("basis", "").startswith("inferred: remaining cost"):
+        RX["basis"] = L["rx_basis"]
+    for m in (out.get("milestone_bands") or {}).get("milestones") or []:
+        if isinstance(m.get("critical"), bool):
+            m["critical"] = L["word_yes"] if m["critical"] else L["word_no"]
+    return out
+
+
+def localize_forensics(fx: dict, lang: str, labels: dict) -> dict:
+    """Group names, attribution words and provenance in the report's language,
+    on a copy; the sidecar keeps the engine's codes."""
+    import copy
+    if not fx:
+        return fx
+    L = i18n.ui(lang)
+    out = copy.deepcopy(fx)
+    out["provenance"] = L["fx_provenance"]
+    cy = out.get("cycle") or {}
+    for key in ("float_by_group", "became_critical", "float_consumed"):
+        for row in cy.get(key) or []:
+            row["group"] = labels.get(row.get("group"), row.get("group"))
+    words = {"execution": L["attr_execution"], "replan": L["attr_replan"],
+             "reference": L["attr_reference"], "none": L["attr_none"],
+             "outside the chain": L["attr_outside"]}
+    for row in cy.get("milestone_movements") or []:
+        row["attribution"] = words.get(row.get("attribution"), row.get("attribution"))
     return out
 
 

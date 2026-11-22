@@ -96,6 +96,14 @@ FORBID = FORBID + [
     "--forbid=(^|[^\\d.,])1 (atividades|activities|dias|days|grupos|groups|marcos|milestones|v\u00ednculos|links|folhas|leaves)\\b",
 ]
 FORBID_PT = FORBID + ["--forbid=\\d{4}-\\d{2}-\\d{2}", "--forbid=[Gg]aveta"]
+# Raw engine keys and English method sentences in a Portuguese report, and a year
+# written as a thousand ("2.026"), all seen on a real run (0.7.2).
+FORBID_PT_REVIEW = FORBID_PT + [
+    "--forbid=predecessor_id|float_days|baseline_finish|lag_days",
+    "--forbid=mechanism reconstruction|aggregate and cost-weighted|non-working exceptions on the|"
+    "inferred: remaining|outside the chain",
+    "--forbid=(^|\\s)2\\.0[2-3]\\d(?=\\s)",
+]
 BARE_SECTIONS = ["There is no network to hold", "Planned-to-date is unavailable", "unavailable",
                  "carries no earned value of its own", "absence of data",
                  "--forbid=Network integrity holds", "--forbid=In reserve months now"]
@@ -119,7 +127,7 @@ def render_checks() -> dict:
             check=True, capture_output=True,
         )
         pairs = [
-            ("cycle_curr-review.html", REVIEW_SECTIONS + FORBID),
+            ("cycle_curr-review.html", REVIEW_SECTIONS + ["Checked, nothing found:"] + FORBID),
             ("cycle_prev--to--cycle_curr-cycle.html", CYCLE_SECTIONS + FORBID),
         ]
         # And again in Portuguese, so a missing label is a failing test rather than
@@ -131,7 +139,9 @@ def render_checks() -> dict:
              "--outdir", pt_dir, "--quiet", "--lang", "pt"],
             check=True, capture_output=True,
         )
-        pairs.append((os.path.join("pt", "cycle_curr-review.html"), PT_SECTIONS + FORBID_PT))
+        pairs.append((os.path.join("pt", "cycle_curr-review.html"),
+                      PT_SECTIONS + ["Verificados sem ocorr\u00eancia:", "agregado e ponderado por custo"]
+                      + FORBID_PT_REVIEW))
         # The cycle pair in Portuguese, and the positive fixture too: it is the one
         # that fills every table of the review, so a raw date has nowhere to hide.
         subprocess.run(
@@ -160,7 +170,7 @@ def render_checks() -> dict:
         pairs.append((os.path.join("bare-en", "bare-review.html"), BARE_SECTIONS + FORBID))
         pairs.append((os.path.join("bare-pt", "bare-review.html"),
                       ["N\u00e3o h\u00e1 rede para se sustentar", "indispon\u00edvel"] + FORBID_PT))
-        pairs.append((os.path.join("ptp", "positive-review.html"), PT_SECTIONS + FORBID_PT))
+        pairs.append((os.path.join("ptp", "positive-review.html"), PT_SECTIONS + FORBID_PT_REVIEW))
         # No path in any file written, sidecars included, and the tab title in the
         # report's own language.
         for folder, _, names in os.walk(tmp):
@@ -1208,6 +1218,32 @@ def main() -> int:
         failures.append(f"reconciliation reading: a difference was called explained where none exists: {vt}")
     if "caiu na data da linha de base" not in ft or "depois" in ft:
         failures.append(f"slippage reading: a median start on the baseline was given a direction: {ft}")
+
+    # ---- one rounding rule: the reading and the tile beside it must agree (0.7.2).
+    for v_, d_, lang_, want_ in ((0.9015, 3, "pt", "0,902"), (1.005, 2, "en", "1.01"),
+                                 (2.675, 2, "pt", "2,68"), (-0.00004, 2, "pt", "0,00")):
+        if nar_mod.fnum(v_, d_, lang_) != want_:
+            failures.append(f"rounding: {v_} to {d_} read {nar_mod.fnum(v_, d_, lang_)}, the report shows {want_}")
+    spi_ = " ".join(nar_mod.build({"meta": {}, "findings": [], "scurve": {"totals": {"spi": 0.9015}}},
+                                  "pt").get("scurve", []))
+    if "0,902" not in spi_ or "90,2%" not in spi_:
+        failures.append(f"rounding: the SPI reading disagrees with its tile: {spi_}")
+    # Group codes become group names; method sentences and attribution words are
+    # localized on a copy, and the sidecar keeps the engine's own.
+    fc_ = {"lookahead": [{"by_group": [{"group": "7"}], "starts": [{"group": "7"}], "finishes": []}],
+           "earned_schedule": {"limits": "aggregate and cost-weighted"},
+           "rain_exposure": {"reserve_rule": "x", "reserve_min_exceptions": 4,
+                             "basis": "inferred: remaining cost spread"}}
+    lf = rd_mod.localize_forecast(fc_, "pt", {"7": "Viaduct"})
+    if lf["lookahead"][0]["by_group"][0]["group"] != "Viaduct" or fc_["lookahead"][0]["by_group"][0]["group"] != "7" \
+            or "4 exce" not in lf["rain_exposure"]["reserve_rule"] or "aggregate" in lf["earned_schedule"]["limits"]:
+        failures.append(f"localize: the forecast copy is not localized, or the sidecar was touched: {lf}")
+    fxl = rd_mod.localize_forensics({"cycle": {"float_by_group": [{"group": "7"}], "milestone_movements": [
+        {"attribution": "replan"}, {"attribution": "outside the chain"}]}}, "pt", {"7": "Viaduct"})
+    if fxl["cycle"]["float_by_group"][0]["group"] != "Viaduct" or \
+            [r["attribution"] for r in fxl["cycle"]["milestone_movements"]] != ["replanejamento", "fora da cadeia"] \
+            or "reconstrução" not in fxl["provenance"]:
+        failures.append(f"localize: forensics groups, attribution or provenance left raw: {fxl}")
 
     # ---- the leftover readings (0.7.2): each missing input gets a neutral sentence,
     # never a fallback to a claim.
