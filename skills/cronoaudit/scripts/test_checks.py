@@ -601,6 +601,492 @@ def mode_checks() -> list:
     return failures
 
 
+# ---------------------------------------------------------------------------
+# Secret mode (experimental). Three properties, each tested here:
+#   equality  the coded output decodes to exactly what free mode writes
+#   no leak   nothing of the file's identity is anywhere in the work folder
+#   guard     the Claude Code hook allows the session's work and blocks the rest
+# `secret_roundtrip` is also what test_secret_real.py runs on a real export, so it
+# never puts a value from the file into a message when `redact` is set.
+# ---------------------------------------------------------------------------
+_REAL_DATE_SHAPES = re.compile(
+    r"(?<![\w\d])(?:19|20|21)\d\d-[01]\d-[0-3]\d"      # ISO day
+    r"|(?<![\w\d/])[0-3]\d/[01]\d/(?:19|20|21)\d\d"     # dd/mm/yyyy
+    r"|(?<![\w\d\-])(?:19|20|21)\d\d-[01]\d(?![\d\-])"  # yyyy-mm
+    r"|(?<![\w\d])(?:19|20|21)\d\d(?=:(?!\d))"          # "2026: ..."
+    r"|(?:janeiro|fevereiro|março|abril|maio|junho|julho|agosto|setembro|outubro|novembro|"
+    r"dezembro|January|February|March|April|June|July|August|September|October|November|"
+    r"December)\s+(?:de\s+)?(?:19|20|21)\d\d", re.I)
+
+
+def _secret_env(home: str, agent: bool = False) -> dict:
+    env = {k: v for k, v in os.environ.items() if k not in ("CLAUDECODE", "CLAUDE_CODE_CHILD_SESSION")}
+    env["CRONOAUDIT_CONFIG_DIR"] = home
+    env.pop("CRONOAUDIT_WORK_DIR", None)
+    if agent:
+        env["CLAUDE_CODE_CHILD_SESSION"] = "1"
+    return env
+
+
+def _payload_of(path: str) -> dict:
+    import inject_narrative
+    with open(path, encoding="utf-8") as fh:
+        return inject_narrative.extract(fh.read())
+
+
+def _scan_text(path: str) -> str:
+    """What a file says, for the leak test. For a report, the embedded data and the
+    tab title: the rest is the template, the same public code for every schedule."""
+    with open(path, encoding="utf-8", errors="replace") as fh:
+        body = fh.read()
+    if path.endswith(".html"):
+        m = re.search(r"const DATA = (\{.*?\});\n", body, re.S)
+        t = re.search(r"<title>.*?</title>", body, re.S)
+        return (m.group(1) if m else body) + "\n" + (t.group(0) if t else "")
+    return body
+
+
+def _forms(value: str) -> set:
+    import html as html_mod
+    j = json.dumps(value, ensure_ascii=False)[1:-1]
+    return {value, j, j.replace("</", "<\\/"), html_mod.escape(value), html_mod.escape(value, quote=False)}
+
+
+def _money_forms(v) -> set:
+    import secret_codec
+    out = set()
+    if isinstance(v, bool) or not isinstance(v, (int, float)) or abs(v) < 10000:
+        return out
+    out.add(repr(v))
+    if float(v).is_integer():
+        out.add(str(int(v)))
+    for d in (0, 2):
+        for lang in ("pt", "en"):
+            out.add(secret_codec.fnum(v, d, lang))
+    return out
+
+
+def _money_values(obj, keys) -> list:
+    found, stack = [], [(None, obj)]
+    while stack:
+        k, o = stack.pop()
+        if isinstance(o, dict):
+            stack.extend(o.items())
+        elif isinstance(o, list):
+            stack.extend((k, x) for x in o)
+        elif k in keys and isinstance(o, (int, float)) and not isinstance(o, bool):
+            found.append(o)
+    return found
+
+
+def secret_roundtrip(files: list, tmp: str, redact: bool = False) -> dict:
+    """Free run and secret run of the same files; decode; compare; look for leaks.
+
+    Returns {"failures": [...], "stats": {...}}. With `redact`, a failure says what
+    kind and how many, never which value.
+    """
+    import shutil
+
+    import secret_codec
+    import secret_decode
+
+    failures, stats = [], {"sidecars": 0, "reports": 0, "values_equal": 0, "leak_values": 0,
+                           "leak_hits": 0, "texts_checked": 0, "money_checked": 0}
+
+    def fail(kind, detail=""):
+        failures.append(kind if (redact or not detail) else f"{kind}: {detail}")
+
+    orig = os.path.join(tmp, "orig")
+    os.makedirs(orig, exist_ok=True)
+    local = []
+    for f in files:
+        dst = os.path.join(orig, os.path.basename(f))
+        shutil.copyfile(f, dst)
+        local.append(dst)
+    home = os.path.join(tmp, "cfg")
+    workroot = os.path.join(tmp, "work")
+    free_dir = os.path.join(tmp, "free")
+    env = _secret_env(home)
+    r = subprocess.run([sys.executable, os.path.join(HERE, "review.py"), *local, "--free",
+                        "--outdir", free_dir, "--quiet"], capture_output=True, text=True,
+                       env=env, stdin=subprocess.DEVNULL, encoding="utf-8", errors="replace")
+    if r.returncode != 0:
+        fail("secret: the free run failed")
+        return {"failures": failures, "stats": stats}
+    sec = subprocess.run([sys.executable, os.path.join(HERE, "review.py"), *local, "--secret",
+                          "--workdir", workroot], capture_output=True, text=True, env=env,
+                         stdin=subprocess.DEVNULL, encoding="utf-8", errors="replace")
+    if sec.returncode != 0 or not os.path.isdir(workroot) or len(os.listdir(workroot)) != 1:
+        fail("secret: the secret run failed", "" if redact else sec.stderr[-300:])
+        return {"failures": failures, "stats": stats}
+    work = os.path.join(workroot, os.listdir(workroot)[0])
+    with open(os.path.join(work, "cronoaudit-secret.json"), encoding="utf-8") as fh:
+        run_id = json.load(fh)["run"]
+    vault_run = os.path.join(home, "vault", run_id)
+    with open(os.path.join(vault_run, "back.json"), encoding="utf-8") as fh:
+        codec = secret_codec.Codec.from_back_table(json.load(fh))
+    with open(os.path.join(vault_run, "run.json"), encoding="utf-8") as fh:
+        run = json.load(fh)
+    import secret_mode
+
+    # ---- 1. equality, sidecar by sidecar: generic decoding alone, no lookup of
+    # the real output except the withheld series, which by design is not coded.
+    for name in sorted(os.listdir(free_dir)):
+        if not name.endswith(".json"):
+            continue
+        coded_name = secret_mode.rename(name, local)
+        with open(os.path.join(free_dir, name), encoding="utf-8") as fh:
+            free = json.load(fh)
+        with open(os.path.join(work, coded_name), encoding="utf-8") as fh:
+            coded = json.load(fh)
+        decoded = codec.decode_obj(coded)
+        if name.endswith("-review-forecast.json"):
+            for path in secret_codec.LEGIBILITY["withheld"]:
+                if path[0] == "forecast":
+                    secret_codec.restore(decoded, free, path[1:])
+        if decoded != free:
+            eq, df = secret_decode.count_leaves(decoded, free)
+            fail("secret equality: a sidecar did not decode to the free run", f"{name}, {df} values")
+        else:
+            stats["sidecars"] += 1
+
+    # ---- 2. equality of the report, after a fake agent wrote a synthesis in codes
+    names = [n for n in os.listdir(free_dir) if n.endswith(".html")]
+    review_coded = next(c for c, real in run["html"].items() if real.endswith("-review.html"))
+    coded_payload = _payload_of(os.path.join(work, review_coded))
+    some_task = next((t["name"] for f in (coded_payload.get("findings") or []) for t in f.get("items") or []
+                      if t.get("name")), None) or next(iter(codec.back))
+    real_name = codec.decode_text(some_task)
+    syn = os.path.join(work, "synthesis.txt")
+    with open(syn, "w", encoding="utf-8") as fh:
+        fh.write(f"The activity {some_task} finishes on D+0400 and is worth {secret_codec.MONEY_MARK}"
+                 f"{secret_codec.fnum(1234567.0 * codec.k, 2, codec.lang)}.\n\nSecond paragraph.")
+    subprocess.run([sys.executable, os.path.join(HERE, "inject_narrative.py"),
+                    os.path.join(work, review_coded), syn, "--who", "the test suite"],
+                   check=True, capture_output=True)
+    fin = subprocess.run([sys.executable, os.path.join(HERE, "secret_decode.py"), "finish", work,
+                          "--no-open"], capture_output=True, text=True, env=env,
+                         encoding="utf-8", errors="replace")
+    if fin.returncode != 0 or "check passed" not in fin.stdout:
+        fail("secret equality: finish did not pass its own check", fin.stdout[-200:] + fin.stderr[-200:])
+    for name in names:
+        free_p = _payload_of(os.path.join(free_dir, name))
+        dec_p = _payload_of(os.path.join(vault_run, name))
+        beside = os.path.join(orig, name)
+        if not os.path.exists(beside):
+            fail("secret: the decoded report was not written beside the original", name)
+        narrative = dec_p.pop("narrative", None)
+        free_p.pop("narrative", None)
+        # The one normalisation: the time the report was generated. Two runs, two
+        # minutes; it is not a finding.
+        for p in (free_p, dec_p):
+            (p.get("meta") or {}).pop("generated", None)
+        if dec_p != free_p:
+            eq, df = secret_decode.count_leaves(dec_p, free_p)
+            fail("secret equality: a decoded report differs from the free run", f"{name}, {df} values")
+        else:
+            stats["reports"] += 1
+            stats["values_equal"] += secret_decode.count_leaves(dec_p, free_p)[0]
+        if name.endswith("-review.html"):
+            text = (narrative or {}).get("text", "")
+            want_day = codec._from_day(400)
+            want_day = want_day.strftime("%d/%m/%Y" if codec.lang == "pt" else "%Y-%m-%d")
+            want_money = secret_codec.fnum(1234567.0, 2, codec.lang)
+            if real_name not in text or want_day not in text or want_money not in text:
+                fail("secret equality: the synthesis did not decode to real name, date and money")
+
+    # ---- 3. no leak: every text, date and money figure of the files, anywhere
+    texts = set()
+    for f in local:
+        texts |= {v for _c, v in secret_codec.collect_xml(f)}
+        texts |= {os.path.basename(f), os.path.splitext(os.path.basename(f))[0]}
+    # Independently of the codec's own collection: every element text with a
+    # letter that the boundary does not declare legible.
+    import xml.etree.ElementTree as ET
+    dates, costs = set(), []
+    cost_tags = {"Cost", "BCWS", "BCWP", "ACWP", "FixedCost", "ActualCost", "RemainingCost",
+                 "BaselineCost", "CostVariance"}
+    for f in local:
+        for _ev, el in ET.iterparse(f):
+            tag = el.tag.rsplit("}", 1)[-1]
+            t = (el.text or "").strip()
+            if t:
+                if secret_codec.eligible(t) and not secret_codec.format_legible(t) \
+                        and tag not in secret_codec.LEGIBILITY["legible_tags"]:
+                    texts.add(t)
+                m = re.match(r"^(\d{4})-(\d{2})-(\d{2})", t)
+                if m:
+                    dates.add(t[:10])
+                    dates.add(f"{m.group(3)}/{m.group(2)}/{m.group(1)}")
+                if tag in cost_tags:
+                    try:
+                        costs.append(float(t))
+                    except ValueError:
+                        pass
+            el.clear()
+    real_money = []
+    for name in os.listdir(os.path.join(vault_run, "real")):
+        p = os.path.join(vault_run, "real", name)
+        obj = _payload_of(p) if name.endswith(".html") else json.load(open(p, encoding="utf-8"))
+        real_money += _money_values(obj, secret_codec.LEGIBILITY["money_keys"])
+    money_forms = set()
+    for v in costs + real_money:
+        money_forms |= _money_forms(v)
+    stats["texts_checked"] = len(texts)
+    stats["money_checked"] = len(money_forms)
+    text_forms = set()
+    for t in texts:
+        text_forms |= _forms(t)
+    rx_text = re.compile(r"(?<!\w)(?:" + secret_codec._trie_pattern(sorted(text_forms, key=len, reverse=True))
+                         + r")(?!\w)") if text_forms else None
+    rx_money = re.compile(r"(?<![\d.,])(?:" + secret_codec._trie_pattern(sorted(money_forms, key=len, reverse=True))
+                          + r")(?![\d]|[.,]\d)") if money_forms else None
+    rx_dates = re.compile(r"(?<![\d\w])(?:" + secret_codec._trie_pattern(sorted(dates, key=len, reverse=True))
+                          + r")(?!\d)") if dates else None
+    # The original's folder and the run's vault folder. The cronoaudit folder itself
+    # is named on purpose, in the deny rule of .claude/settings.json (as ~/.cronoaudit
+    # in a real installation); its location is documented, not secret.
+    paths = [orig, os.path.realpath(orig), vault_run, os.path.realpath(vault_run)]
+    surfaces = []
+    for folder, _dirs, fnames in os.walk(work):
+        for fname in fnames:
+            surfaces.append((fname, _scan_text(os.path.join(folder, fname))))
+            surfaces.append(("file name", fname))
+    surfaces += [("stdout", sec.stdout), ("stderr", sec.stderr), ("finish", fin.stdout + fin.stderr)]
+    hits = {"text": set(), "date": set(), "money": set(), "date shape": 0, "path": 0}
+    for label, blob in surfaces:
+        if rx_text:
+            hits["text"] |= set(rx_text.findall(blob))
+        if rx_dates:
+            hits["date"] |= set(rx_dates.findall(blob))
+        if rx_money:
+            hits["money"] |= set(rx_money.findall(blob))
+        hits["date shape"] += len(_REAL_DATE_SHAPES.findall(blob))
+        hits["path"] += sum(1 for p in paths if p in blob)
+    for kind in ("text", "date", "money"):
+        if hits[kind]:
+            stats["leak_values"] += len(hits[kind])
+            fail(f"secret leak: {len(hits[kind])} {kind} value(s) of the file found in the work folder or output",
+                 ", ".join(sorted(hits[kind])[:5]))
+    for kind in ("date shape", "path"):
+        if hits[kind]:
+            stats["leak_hits"] += hits[kind]
+            fail(f"secret leak: {hits[kind]} {kind} occurrence(s) in the work folder or output")
+
+    # ---- 4. what an agent reads rendered: the coded report runs, and shows no real date
+    import shutil as _sh
+    node = _sh.which("node")
+    if node:
+        for c in run["html"]:
+            p = subprocess.run([node, os.path.join(HERE, "test_render.js"), os.path.join(work, c),
+                                r"--forbid=(?:19|20)\d\d-[01]\d-[0-3]\d|[0-3]\d/[01]\d/(?:19|20)\d\d"],
+                               capture_output=True, text=True)
+            if p.returncode != 0:
+                fail("secret: a coded report does not render, or shows a real date", "" if redact else p.stderr[-200:])
+    return {"failures": failures, "stats": stats}
+
+
+def secret_unit_checks() -> list:
+    """The codec on its own: collisions, money in prose, the boundary's tripwire."""
+    from datetime import date
+
+    import narrative
+    import secret_codec as sc
+    failures = []
+    # Collisions: at two hex digits, 300 names in one category must collide, and
+    # every one must still get its own token and come back.
+    c = sc.Codec(b"k" * 32, date(2024, 1, 1), 3.3, width=2, lang="pt")
+    names = [f"Atividade número {i}" for i in range(200)]
+    c.add([("T", n) for n in names])
+    if c.collisions == 0 or len(set(c.tokens.values())) != len(names):
+        failures.append(f"secret codec: collisions not exercised or not resolved ({c.collisions})")
+    for n in names:
+        if c.decode_text(c.encode_text(f"x {n} y")) != f"x {n} y":
+            failures.append("secret codec: a name did not survive a collision round trip")
+            break
+    # Persisted table: a codec rebuilt from the table gives the same tokens, so rev03
+    # and rev04 read the same codes.
+    c2 = sc.Codec(b"k" * 32, date(2024, 1, 1), 3.3, dict(c.tokens), width=2, lang="pt")
+    c2.add([("T", "Nova atividade")] + [("T", n) for n in names])
+    if any(c2.tokens[n] != c.tokens[n] for n in names):
+        failures.append("secret codec: a persisted token changed when new names were added")
+    # Money written into a sentence by the engine: the earned-before-plan reading.
+    payload = {"lang": "pt", "meta": {}, "findings": [],
+               "scurve": {"bac": 1000000.0, "totals": {},
+                          "periods": [{"period": "2026-01", "planned": 0, "earned": 123456.78},
+                                      {"period": "2026-02", "planned": 50000.0, "earned": 1000.0}]}}
+    readings = narrative.build(payload, "pt")
+    real_sentence = next((x for x in readings.get("scurve", []) if "123.457" in x), None)
+    if real_sentence is None:
+        failures.append("secret codec: the earned-before-plan reading did not fire on its probe")
+    else:
+        coded = {k: list(v) for k, v in readings.items()}
+        n = sc.mark_prose_money(coded, payload, "pt", c)
+        enc = c.encode_obj(coded)
+        if n != 1 or "123.457" in json.dumps(enc, ensure_ascii=False):
+            failures.append("secret codec: the money in the earned-before-plan reading was not coded")
+        if c.decode_obj(enc) != readings:
+            failures.append("secret codec: the earned-before-plan reading did not decode back")
+    # Every shape of date, and the year key, round trip and change.
+    probe = {"a": "2026-10-30T17:00:00", "b": "30/10/2026", "c": "2026-10", "year": 2027,
+             "d": "2026: activities without reserve", "e": "between 2026-01-31 and 2026-02-01",
+             "cost": 1234.5, "planned": 7, "pct": 12.5}
+    enc = c.encode_obj(probe)
+    if c.decode_obj(enc) != probe or _REAL_DATE_SHAPES.search(json.dumps(enc)) or enc["pct"] != 12.5 \
+            or enc["cost"] == 1234.5:
+        failures.append(f"secret codec: the date and money probe did not round trip: {enc}")
+    # Tripwire for the boundary: a large number under a key not declared money and
+    # not declared a quantity is probably money the list forgot.
+    quantity_keys = {"planned_qty", "executed_qty", "remaining_qty", "rate_global", "rate_own",
+                     "rate_planned", "rate_recent", "rate_required_late", "rate_required_trend",
+                     "rate_contracted", "activity_days", "words"}
+    folder = os.path.join(os.path.dirname(os.path.dirname(ROOT)), "examples")
+    if os.path.isdir(folder):
+        with tempfile.TemporaryDirectory() as tmp:
+            subprocess.run([sys.executable, os.path.join(HERE, "review.py"),
+                            os.path.join(folder, "rodovia-ficticia-rev03.xml"),
+                            os.path.join(folder, "rodovia-ficticia-rev04.xml"),
+                            "--free", "--outdir", tmp, "--quiet"], check=True, capture_output=True)
+            big = set()
+            for name in os.listdir(tmp):
+                obj = _payload_of(os.path.join(tmp, name)) if name.endswith(".html") \
+                    else json.load(open(os.path.join(tmp, name), encoding="utf-8"))
+                stack = [(None, obj)]
+                while stack:
+                    k, o = stack.pop()
+                    if isinstance(o, dict):
+                        stack.extend(o.items())
+                    elif isinstance(o, list):
+                        stack.extend((k, x) for x in o)
+                    elif isinstance(o, (int, float)) and not isinstance(o, bool) and abs(o) >= 1e6 \
+                            and k not in sc.LEGIBILITY["money_keys"] and k not in quantity_keys:
+                        big.add(k)
+            if big:
+                failures.append(f"secret boundary: large numbers under keys not classified: {sorted(big)}")
+    return failures
+
+
+def guard_checks() -> list:
+    """The Claude Code hook, fed the calls a session makes and the ones it must not."""
+    import importlib.util
+
+    import secret_mode
+    failures = []
+    with tempfile.TemporaryDirectory() as tmp:
+        work = os.path.join(tmp, "work", "run1")
+        os.makedirs(work)
+        secret_mode.write_guard(work)
+        with open(os.path.join(work, "schedule-review.json"), "w") as fh:
+            fh.write("{}")
+        vault = os.path.join(tmp, "home", ".cronoaudit", "vault", "run1")
+        os.makedirs(vault)
+        original = os.path.join(tmp, "Contrato 999", "cronograma.xml")
+        os.makedirs(os.path.dirname(original))
+        open(original, "w").close()
+        os.symlink(original, os.path.join(work, "link.xml")) if hasattr(os, "symlink") and os.name != "nt" else None
+        hook = os.path.join(work, ".claude", "hooks", "cronoaudit_guard.py")
+        spec = importlib.util.spec_from_file_location("cronoaudit_guard", hook)
+        g = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(g)
+        guard = g.load_guard()
+        s = os.path.join(ROOT, "scripts").replace("\\", "/")
+        py = sys.executable
+        cases = [
+            ("Read", {"file_path": os.path.join(vault, "back.json")}, False, "Read of a vault file"),
+            ("Bash", {"command": f'cat "{original}"'}, False, "cat of the original"),
+            ("Grep", {"pattern": "x", "path": vault}, False, "Grep in the vault"),
+            ("Read", {"file_path": os.path.join(work, "schedule-review.json")}, True, "Read in the work folder"),
+            ("Bash", {"command": "python3 -c \"print(open('/etc/hosts').read())\""}, False, "python -c"),
+            ("Bash", {"command": "env"}, False, "env"),
+            ("Bash", {"command": "printenv OLDPWD"}, False, "printenv"),
+            ("Bash", {"command": "cd .."}, False, "cd .."),
+            ("Bash", {"command": "cat schedule-review.json | python3"}, False, "pipe into an interpreter"),
+            ("Bash", {"command": "cat $HOME/x"}, False, "a variable"),
+            ("Bash", {"command": "ls ../"}, False, "ls of the parent"),
+            ("Bash", {"command": f'"{py}" {s}/review.py "{original}" --free'}, False, "review.py on the original"),
+            ("Bash", {"command": f"python3 {s}/secret_decode.py text"}, False, "secret_decode text"),
+            ("Bash", {"command": f"python3 {s}/secret_decode.py finish"}, True, "secret_decode finish"),
+            ("Bash", {"command": f'python3 {s}/inject_narrative.py schedule-review.html synthesis.txt '
+                                 f'--who "Claude, via the skill"'}, True, "inject_narrative"),
+            ("Bash", {"command": "head -50 schedule-review.json | grep -n x 2>&1"}, True, "reading pipeline"),
+            ("Bash", {"command": "ls"}, True, "ls"),
+            ("Write", {"file_path": os.path.join(work, "synthesis.txt")}, True, "Write the synthesis"),
+            ("Write", {"file_path": os.path.join(work, ".claude", "settings.json")}, False, "Write the hook's settings"),
+            ("Edit", {"file_path": original}, False, "Edit the original"),
+            ("Glob", {"pattern": "/**/*.xml"}, False, "Glob from the root"),
+            ("Glob", {"pattern": "*.json"}, True, "Glob in the work folder"),
+            ("Bash", {"command": "echo x > ../out.txt"}, False, "redirect outside"),
+        ]
+        if os.name != "nt":
+            cases.append(("Read", {"file_path": os.path.join(work, "link.xml")}, False,
+                          "Read through a symlink to the original"))
+        for tool, inp, want, label in cases:
+            ok, _reason = g.decide(guard, {"tool_name": tool, "tool_input": inp, "cwd": work})
+            if ok != want:
+                failures.append(f"guard: {label} was {'allowed' if ok else 'blocked'}")
+        # The hook as Claude Code runs it: exit 2 blocks, 0 allows, garbage blocks.
+        for payload, code in ((json.dumps({"tool_name": "Read", "tool_input": {"file_path": original},
+                                           "cwd": work}), 2),
+                              (json.dumps({"tool_name": "Bash", "tool_input": {"command": "ls"},
+                                           "cwd": work}), 0),
+                              ("not json", 2)):
+            r = subprocess.run([sys.executable, hook], input=payload, capture_output=True, text=True)
+            if r.returncode != code:
+                failures.append(f"guard: the hook process returned {r.returncode}, not {code}")
+        settings = json.load(open(os.path.join(work, ".claude", "settings.json"), encoding="utf-8"))
+        deny = settings["permissions"]["deny"]
+        if not any(d.startswith("Read(") and d.endswith("/**)") for d in deny) or \
+                "PreToolUse" not in settings["hooks"]:
+            failures.append(f"guard: settings.json lacks the deny rule or the hook: {settings}")
+    return failures
+
+
+def secret_checks() -> dict:
+    """Round trip and leak test over the fixtures and the example, and the guard."""
+    failures = secret_unit_checks() + guard_checks()
+    sets = [[os.path.join(ROOT, "fixtures", n)] for n in ("positive.xml", "negative.xml", "bare.xml")]
+    sets.append([os.path.join(ROOT, "fixtures", "cycle_prev.xml"), os.path.join(ROOT, "fixtures", "cycle_curr.xml")])
+    folder = os.path.join(os.path.dirname(os.path.dirname(ROOT)), "examples")
+    if os.path.isdir(folder):
+        ex = [os.path.join(folder, f"rodovia-ficticia-rev0{i}.xml") for i in (3, 4)]
+        sets += [[ex[0]], [ex[1]], ex]
+    totals = {"runs": 0, "sidecars": 0, "reports": 0, "values_equal": 0}
+    for files in sets:
+        with tempfile.TemporaryDirectory() as tmp:
+            r = secret_roundtrip(files, tmp)
+        failures += [f"{'+'.join(os.path.basename(f) for f in files)}: {x}" for x in r["failures"]]
+        totals["runs"] += 1
+        for k in ("sidecars", "reports", "values_equal"):
+            totals[k] += r["stats"][k]
+    # Same project, two separate runs: one key, the same tokens on both sides.
+    if os.path.isdir(folder):
+        import secret_codec
+        with tempfile.TemporaryDirectory() as tmp:
+            home = os.path.join(tmp, "cfg")
+            orig = os.path.join(tmp, "orig")
+            os.makedirs(orig)
+            import shutil
+            for f in ex:
+                shutil.copyfile(f, os.path.join(orig, os.path.basename(f)))
+            tables = []
+            for f in ex:
+                subprocess.run([sys.executable, os.path.join(HERE, "review.py"),
+                                os.path.join(orig, os.path.basename(f)), "--secret", "--quiet",
+                                "--workdir", os.path.join(tmp, "work")], check=True, capture_output=True,
+                               env=_secret_env(home), stdin=subprocess.DEVNULL)
+            for run_id in os.listdir(os.path.join(home, "vault")):
+                if run_id != "keys":
+                    with open(os.path.join(home, "vault", run_id, "back.json"), encoding="utf-8") as fh:
+                        tables.append(json.load(fh))
+            keys = os.listdir(os.path.join(home, "vault", "keys"))
+            a, b = ({v: k for k, v in t["tokens"].items()} for t in tables)
+            shared = set(a) & set(b)
+            if len(keys) != 1 or not shared or any(a[x] != b[x] for x in shared) \
+                    or tables[0]["origin"] != tables[1]["origin"] or tables[0]["k"] != tables[1]["k"]:
+                failures.append("secret: two runs of the same project do not share key, tokens, origin and k")
+    return {"failures": failures, "totals": totals}
+
+
 def run_all() -> int:
     failures = []
 
@@ -1374,6 +1860,8 @@ def run_all() -> int:
 
     # ---- modes: free and secret. The preference file, and a run that must not read.
     failures.extend(mode_checks())
+    secret = secret_checks()
+    failures.extend(secret["failures"])
 
     # ---- the worked example a reader runs first: what its README lists as planted
     # is what the engine finds.
@@ -1418,7 +1906,13 @@ def run_all() -> int:
     print("  readings: every section reads in both languages; synthesis injected without recompute")
     print("  profile: init/set/validate round-trip; grouping, fields, optional checks and hiding applied")
     print("  modes: preference set, read and survived a corrupt file; --secret and a stored 'on' stop")
-    print("         without reading; 'ask' with no terminal says one line on stderr and goes on")
+    print("         without reading inside an agent and run a coded work folder outside one;")
+    print("         'ask' with no terminal says one line on stderr and goes on")
+    t = secret["totals"]
+    print(f"  secret (experimental): {t['runs']} runs, {t['sidecars']} sidecars and {t['reports']} reports "
+          f"decoded equal to free mode ({t['values_equal']} report values); no text, date, money or")
+    print("         path of the files in any work folder or output; guard allows the session's work and")
+    print("         blocks the vault, the original, interpreters, variables and `text`; collisions resolved")
     return 0
 
 

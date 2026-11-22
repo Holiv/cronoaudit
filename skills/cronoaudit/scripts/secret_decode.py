@@ -62,8 +62,11 @@ def decode_payload(codec, coded: dict, real: dict) -> dict:
     for path in codec_mod.LEGIBILITY["withheld"]:
         codec_mod.restore(decoded, real, path)
     if isinstance(narrative, dict):
+        from datetime import datetime
+        when = datetime.now().strftime("%d/%m/%Y %H:%M" if codec.lang == "pt" else "%Y-%m-%d %H:%M")
         decoded["narrative"] = {**narrative,
-                                "text": codec.decode_text(narrative.get("text") or "", narrative=True)}
+                                "text": codec.decode_text(narrative.get("text") or "", narrative=True),
+                                "when": narrative.get("when") or when}
     elif has:
         decoded["narrative"] = narrative
     return decoded
