@@ -51,6 +51,7 @@
   <CurrentDate>2026-10-04T08:00:00</CurrentDate>
   <NewTasksAreManual>0</NewTasksAreManual>
   <DefaultTaskEVMethod>1</DefaultTaskEVMethod>
+  <ProjectExternallyEdited>0</ProjectExternallyEdited>
   <ExtendedAttributes>
     <ExtendedAttribute><FieldID>188743731</FieldID><FieldName>Text1</FieldName><Alias>DISCIPLINA</Alias></ExtendedAttribute>
     <ExtendedAttribute><FieldID>188743734</FieldID><FieldName>Text2</FieldName><Alias>SEGMENTO</Alias></ExtendedAttribute>
