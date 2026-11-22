@@ -8,3 +8,6 @@ profile.json
 docs/manual/node_modules/
 docs/manual/package-lock.json
 docs/manual/package.json
+# reports written beside the example schedules when the example is run in place
+examples/*.html
+examples/*.json
