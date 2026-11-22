@@ -23,7 +23,8 @@ represented.
   segments (earthworks, drainage, paving, signing, lighting), a viaduct, demobilisation.
 - Two calendars, both with the Brazilian national holidays and a rainy-season reserve
   from December to March: the project calendar (five days) and the earthworks calendar
-  (six days).
+  (six days). Each resource also carries its own calendar derived from one of the two,
+  which is how MS Project saves a resource and what it expects when it opens the file.
 - Nine milestones, each with a deadline.
 - A cost-loaded baseline (unit prices times quantities), **distributed in time** one
   block per working day, so planned-to-date, SV, SPI and Earned Schedule are computable.
