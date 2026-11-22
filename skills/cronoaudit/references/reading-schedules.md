@@ -149,7 +149,7 @@ opening a fictitious MSPDI with costs x100 in MS Project 16 (pt-BR): the sum Pro
 displayed was exactly the XML value / 100. A real export read raw had produced a budget
 about 100x its contract size. Microsoft's MSPDI reference types `Cost` as a decimal and
 says nothing of the unit; MPXJ divides every MSPDI currency field by 100
-(`DatatypeConverter.parseCurrency`, also applied to time-phased cost). Rates follow a
+(`DatatypeConverter.parseCurrency`, also applied to assignment time-phased cost). The task baseline-cost blocks (type 10) share the unit of baseline `Cost`: they sum to it on 4,677 of 4,677 tasks measured. Rates follow a
 different convention: MPXJ does not scale `StandardRate` / `OvertimeRate` (`parseRate`),
 though it does scale `CostPerUse`. The engine converts once, at parse time
 (`parse_mspdi.money()`), and reads no rate. Ratios -- SPI, CPI, percents, weights -- were
