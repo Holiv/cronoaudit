@@ -246,7 +246,8 @@ Durations, percentages, counts, ratios, row IDs and WBS codes are real.
 - Quote tokens and codes exactly as written. Write coded money with the mark,
   in the report's notation: `¤1.234.567` (a figure without the mark is not decoded).
 - Never run `secret_decode.py text`: it prints real names, and only the person runs it.
-- To finish, after `inject_narrative.py` (write commands with full paths, no variables):
+- To finish (write commands with full paths, no variables; for a cycle the report is
+  current-review.html):
     python3 {s}/inject_narrative.py schedule-review.html synthesis.txt --who "<agent>, via the skill"
     python3 {s}/secret_decode.py finish
   `finish` decodes on this machine and prints nothing from the schedule.

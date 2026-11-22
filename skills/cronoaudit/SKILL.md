@@ -23,6 +23,7 @@ python3 $S/review.py previous.xml current.xml           # the periodic cycle
 python3 $S/review.py delivery.xml --profile profile.json --group-by DISCIPLINA
 python3 $S/review.py delivery.xml --outdir reports --lang pt
 python3 $S/review.py --config                           # the stored mode preference
+python3 $S/review.py delivery.xml --secret              # secret mode, experimental: run by the PERSON
 ```
 
 Settle the mode first: see "Modes: free and secret" below.
@@ -40,44 +41,87 @@ make for you: `references/usage.md`.
 **Settle this before reading any schedule data and before running the engine.** That means
 before opening an XML, a report or a JSON sidecar, and before quoting anything from one.
 
-- **Free mode** is what exists today. You read the schedule and the results, and whatever you
-  read goes to your provider, under the person's or the company's account.
-- **Secret mode** is in development. When it exists you will read only an encoded version of
-  the schedule, and the decoding will happen on the person's machine. It does not exist yet.
+- **Free mode.** You read the schedule and the results, and whatever you read goes to your
+  provider, under the person's or the company's account.
+- **Secret mode (experimental).** You never see the schedule. The person runs the engine
+  on their own machine; it writes the real report into a local vault and a **coded copy**
+  into a work folder, and you are started inside that folder. Names are tokens (`T·3fa91c`),
+  money is multiplied by a secret factor, dates are day counts from a secret origin
+  (`D+0412`; `d+0412` is the same day in display form, `M+0013` a month, `Y+0001` a
+  year). Durations, percentages, counts, SPI/CPI and every ratio, row IDs and WBS codes
+  stay real. The monthly rain-reserve series is withheld (it would tell the season).
 
-1. **Did the person ask for secret?** If the request carries `--secreto` or `--secret`, or
-   asks for secret or private mode in any words, the mode is secret. Today that means: say
-   that secret mode is in development, say what it will do, say that you read nothing, and
-   **stop**. Do not continue in free mode on your own. The person can then choose free mode
-   in so many words, or run the engine without an agent (`review.py <file> --free`), which
-   sends nothing anywhere.
-2. **Otherwise read the stored preference** with `python3 $S/review.py --config`. It reads only
+1. **Are you inside a secret work folder?** If the working directory holds
+   `cronoaudit-secret.json`, this is a secret session: go to "In a secret session" below.
+   Do not ask the mode question.
+2. **Did the person ask for secret?** If the request carries `--secreto` or `--secret`, or
+   asks for secret or private mode in any words, **do not take the XML path and do not run
+   the engine yourself**: an agent that holds the original protects nothing. Tell the
+   person to run, in their own terminal (not through you):
+
+   ```
+   python3 <absolute path of the scripts>/review.py <their file>.xml --secret
+   python3 <absolute path of the scripts>/review.py previous.xml current.xml --secret
+   ```
+
+   It prints a work folder; they start you again inside it (`cd <folder>` then the agent).
+   Started by Claude Code, the engine refuses secret mode by itself (exit 3).
+3. **Otherwise read the stored preference** with `python3 $S/review.py --config`. It reads only
    the preference file, never a schedule, and its first line is `secret: ask`, `secret: on` or
    `secret: off`.
    - `off`: go on in free mode. Do not ask.
-   - `on`: treat it as a request for secret mode, as in step 1.
+   - `on`: treat it as a request for secret mode, as in step 2.
    - `ask`: ask the person this, in their language, **before reading anything**:
 
      > Modo LIVRE: o que o agente ler vai para o provedor dele. Continuar? [s] livre / [secreto] / [nunca] não perguntar mais
 
      > FREE mode: whatever the agent reads goes to its provider. Continue? [y] free / [secret] / [never] do not ask again
 
-     "s" or "y": free mode, this time. "secreto" or "secret": step 1. "nunca" or "never": run
+     "s" or "y": free mode, this time. "secreto" or "secret": step 2. "nunca" or "never": run
      `python3 $S/review.py --secret off`, tell the person it can be undone with
      `--secret ask`, and go on in free mode. Any other answer is not a yes: ask again.
    - If the command fails, or says the file could not be read, treat it as `ask` and say so.
-3. **In free mode, pass `--free` to the engine.** The mode is already settled, so the engine
+4. **In free mode, pass `--free` to the engine.** The mode is already settled, so the engine
    neither repeats the question nor stops.
-4. **A request written by the MS Project add-in** (`pedido.md`) states the mode: there the
+5. **A request written by the MS Project add-in** (`pedido.md`) states the mode: there the
    person was asked by the add-in before you were started. Do not ask again.
 
-The engine holds the same line by itself: `review.py <file> --secret`, or a stored `on`, stops
-with exit code 3 before opening the file, and it never falls back to free mode.
+### In a secret session
 
-**Be plain about what this question is.** It is you following this skill, not an enforcement:
-nothing technical stops an agent from opening a file it was pointed at. What is enforced by
-code is narrower: the engine's stop on `--secret`, and the add-in's dialog before it starts an
-agent. If the person asks whether the question protects their data, say exactly this.
+- **Say this first, in the person's language:** "Secret mode (experimental). Refer to
+  activities by code or by row ID: anything you type with a real name or value goes to the
+  AI service."
+- Read only the files in the folder; `cronoaudit-secret.json` lists them, the code shapes
+  and which JSON keys are money. Never ask for, look for or open the original, and never
+  run `review.py`. Write commands with full paths and no shell variables: the guard
+  blocks variables.
+- Quote tokens and codes exactly. Write coded money with its mark, in the report's notation
+  (`¤1.234.567`); a figure without the mark is not decoded. A date you write as `D+0412`
+  comes back as a real date.
+- **What secret mode answers:** logic, float, critical path, durations, progress, cost
+  proportions and weights, deltas between versions, network quality, deviations and
+  inconsistencies, the forensics chain by row ID. **What it does not:** real values, company,
+  supplier or person names, locations, and absolute dates ("does this fall before the March
+  contractual milestone?"). Refuse those plainly and point to the way out: the decoded
+  report on the person's machine, the person's own `secret_decode.py text`, or free mode.
+- Synthesis: write it in codes, inject it with `inject_narrative.py` into
+  `schedule-review.html` (`current-review.html` for a cycle), then run
+  `python3 <scripts>/secret_decode.py finish`. It decodes on this machine, beside the
+  original, opens the report, and prints counts only.
+- **Never run `secret_decode.py text`.** It prints real names, so its output would go to
+  your provider. It is the person's command, typed in their own terminal, to read one of
+  your answers with real names (it refuses inside Claude Code, and the guard blocks it).
+
+**Be plain about what protects what.** The mode question is you following this skill, not
+an enforcement. What code enforces: the engine refuses secret mode when Claude Code started
+it; the work folder holds only coded files (a leak test proves it on every test run); and,
+**for Claude Code only**, the folder carries deny rules and a hook that let a session read
+only its own folder and run only the finishing scripts. The hook is a tripwire, not a
+sandbox. **For Copilot CLI, Codex and Gemini nothing is enforced yet**: the folder carries
+the same rules as instructions only. Coding lowers what leaves the machine; it does not
+make the structure, durations and row IDs anonymous, and it does not replace the company's
+own policy on AI services. If the person asks whether their data is protected, say exactly
+this.
 
 ## How a conversation starts
 
