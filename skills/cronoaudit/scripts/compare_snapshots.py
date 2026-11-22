@@ -632,7 +632,7 @@ def residual_terms(pairs, inserted, removed, agg_prev, agg_curr) -> dict:
                                   "count": len(chg_rows)},
         "bac_change": {"points": zero(ev_m_prev * (1.0 / bac_c - 1.0 / bac_p) * 100.0),
                        "bac_before": bac_p, "bac_after": bac_c,
-                       "delta": round(bac_c - bac_p, 2), "inserted_cost": round(cost_ins, 2),
+                       "bac_delta": round(bac_c - bac_p, 2), "inserted_cost": round(cost_ins, 2),
                        "removed_cost": round(cost_rem, 2), "changed_cost": round(cost_chg, 2)},
         "basis": "exact identity over the weighted population of each snapshot (considered, its "
                  "own baseline, cost above zero); the BAC term is the net change, its parts listed",

@@ -282,7 +282,989 @@ def render_checks() -> dict:
     return out
 
 
+def example_checks() -> dict:
+    """The fictitious road-works pair under examples/: every planted problem is found.
+
+    The example is what a reader runs first, and its README lists what was planted
+    so the report can be checked against it. This holds the two together: if the
+    generator, the files or the engine drift apart, the list in the README stops
+    being true and this fails. An installed copy of the skill does not carry the
+    examples folder; there the check is skipped, and says so.
+    """
+    failures = []
+    folder = os.path.join(os.path.dirname(os.path.dirname(ROOT)), "examples")
+    gen_path = os.path.join(folder, "make_exemplo.py")
+    if not os.path.exists(gen_path):
+        return {"failures": failures, "skipped": True}
+
+    import importlib.util
+    import compare_snapshots
+    import forecast as forecast_mod
+    import forensics as forensics_mod
+    import network_quality as quality_mod
+    import parse_mspdi
+    import phasing as phasing_mod
+    import report_data
+    import run_checks
+
+    spec = importlib.util.spec_from_file_location("make_exemplo", gen_path)
+    gen = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(gen)
+    out = gen.generate()
+    paths = {}
+    for name, body in out["files"].items():
+        paths[name[-9:-4]] = path = os.path.join(folder, name)
+        on_disk = None
+        if os.path.exists(path):
+            with open(path, encoding="utf-8", newline="") as fh:
+                on_disk = fh.read().replace("\r\n", "\n")   # a checkout may convert line ends
+        if on_disk != body:
+            failures.append(f"example: {name} is not what make_exemplo.py generates; run the generator")
+    if failures:
+        return {"failures": failures, "skipped": False}
+    if gen.generate()["files"] != out["files"]:
+        failures.append("example: the generator is not deterministic")
+
+    P = gen.PLANTED
+    uid = {r.key: r.uid for rev in out["snaps"] for r in out["snaps"][rev]["rows"]}
+    prev, curr = parse_mspdi.parse(paths["rev03"]), parse_mspdi.parse(paths["rev04"])
+    if not 150 <= prev["counts"]["tasks"] <= 250 or prev["counts"]["links"] < 150:
+        failures.append(f"example: unexpected size {prev['counts']}")
+
+    def fail(msg):
+        failures.append("example: " + msg)
+
+    # ---- each delivery on its own
+    res_p = run_checks.run(prev, run_checks.DEFAULT_THRESHOLD_DAYS, run_checks.DEFAULT_TOLERANCE_DAYS)
+    res_c = run_checks.run(curr, run_checks.DEFAULT_THRESHOLD_DAYS, run_checks.DEFAULT_TOLERANCE_DAYS)
+    if res_p["blocking"] or res_c["blocking"]:
+        fail("a blocking notice on a file built with a status date and a costed baseline")
+    if any(c["marked_rows"] for c in res_p["counts"].values()):
+        fail(f"rev03 should be clean on A1 to P, got {res_p['counts']}")
+    oos = P["out_of_sequence"]["task"]
+    pairs = [(a["successor_uid"], a["link_type"]) for a in res_c["pairs"]["A1"]]
+    if pairs != [(uid[oos], "FS")]:
+        fail(f"out of sequence: expected one A1 pair on the planted activity, got {res_c['pairs']['A1']}")
+    if any(res_c["counts"][c]["marked_rows"] for c in CODES if c != "A1"):
+        fail(f"rev04 should raise A1 only, got {res_c['counts']}")
+
+    curve = phasing_mod.build(paths["rev04"], None)
+    rec, tot = curve["reconciliation"], curve["totals"]
+    if not curve["inputs"]["planned_available"] or tot["planned_to_date"] is None or tot["spi"] is None:
+        fail("the planned curve is not available: the baseline cost is not read as time-phased")
+    if rec["phasing_sum_equals_cost"] != rec["with_cost"] \
+            or rec["phasing_to_status_equals_bcws"] != rec["bcws_comparable"] \
+            or rec["earned_equals_bcwp"] != rec["bcwp_comparable"]:
+        fail(f"the phasing does not reconcile with the file's own totals: {rec}")
+    odd = next(t for t in curr["tasks"] if t["uid"] == uid[P["percent_vs_physical"]["task"]])
+    if not odd["percent_complete"] - odd["physical_percent_complete"] >= 20 \
+            or abs(tot["method_gap_points"] or 0) < 0.01:
+        fail("percent complete against physical percent: the disagreement did not reach the method gap")
+
+    quality = quality_mod.build(curr, paths["rev04"])
+    by_code = {m["code"]: m for m in quality["metrics"]}
+    for model, q in ((prev, None), (curr, quality)):
+        if report_data.network_state(model, q)["state"] != "linked":
+            fail(f"network state of {model['source']} is not 'linked'")
+    open_ends = {uid[k] for k in P["no_successor"]}
+    if {i["uid"] for i in by_code["Q1"]["items"]} != open_ends \
+            or any(i["missing"] != "successor" for i in by_code["Q1"]["items"]):
+        fail(f"missing logic: Q1 is not the planted open ends: {by_code['Q1']['items']}")
+    if not open_ends <= {i["uid"] for i in by_code["Q6"]["items"]}:
+        fail("high float: the open-ended activities are not in Q6")
+    if by_code["Q7"]["count"] or by_code["Q9"]["count"] or by_code["Q5"]["count"]:
+        fail("negative float, invalid dates or hard constraints in a schedule meant to be mostly healthy")
+
+    fc = forecast_mod.build(curr, curve, None, None)
+    rain = fc["rain_exposure"]
+    if not fc["earned_schedule"]["available"] or not rain["readable"] \
+            or not (rain["share_in_reserve_pct"] or 0) > 10:
+        fail(f"earned schedule or rain exposure not readable: {fc['earned_schedule']} {rain}")
+
+    # ---- the cycle
+    cyc = compare_snapshots.compare(prev, curr)
+    trend = {t["uid"]: t for t in cyc["trend"]}
+    if sum(1 for t in cyc["trend"] if t["reading"] == "execution") < 5:
+        fail("execution: fewer than five activities moved with actuals behind them")
+    rp = P["replan"]["task"]
+    if trend.get(uid[rp], {}).get("reading") != "replan" \
+            or [r["uid"] for r in cyc["logic"]["constraints_added"]] != [uid[rp]]:
+        fail("replan: the pushed forecast is not read as a replan with a constraint added")
+    dc = cyc["duration_changed"]
+    if [(r["uid"], r["duration_before_days"], r["duration_after_days"]) for r in dc] != \
+            [(uid[P["duration"]["task"]], float(P["duration"]["before"]), float(P["duration"]["after"]))]:
+        fail(f"duration: expected the one planted change, got {dc}")
+    past = cyc["past_rewritten"]
+    if [r["uid"] for r in past["actual_finish"]] != [uid[P["past_rewritten"]["task"]]] \
+            or past["actual_start"] or past["percent_decreased"]:
+        fail(f"past rewritten: expected one actual finish, got {past}")
+    if [r["uid"] for r in cyc["baseline_moved"]] != [uid[P["rebaselined"]["task"]]]:
+        fail(f"rebaselined: got {cyc['baseline_moved']}")
+    if [r["uid"] for r in cyc["unmatched"]["inserted"]] != [uid[P["inserted"]]] \
+            or [r["uid"] for r in cyc["unmatched"]["removed"]] != [uid[P["removed"]]]:
+        fail(f"scope: got {cyc['unmatched']}")
+    lg = cyc["logic"]
+    if [(r["uid"], r["predecessor_uid"]) for r in lg["links_added"]] != \
+            [(uid[P["link_added"][0]], uid[P["link_added"][1]])] \
+            or [(r["uid"], r["predecessor_uid"]) for r in lg["links_removed"]] != \
+            [(uid[P["link_removed"][0]], uid[P["link_removed"][1]])]:
+        fail(f"links: added {lg['links_added']} removed {lg['links_removed']}")
+    pf = cyc["project_finish"]
+    viaduct = {u for k, u in uid.items() if k.startswith("oae.") or k == "ms.oae"}
+    if not 7 <= (pf["delta_days"] or 0) <= 45 or len(viaduct & {n["uid"] for n in pf["current"]["chain"]}) < 5 \
+            or uid[P["duration"]["task"]] not in {n["uid"] for n in pf["current"]["chain"]}:
+        fail(f"project finish: not slipping some days along the viaduct: {pf['delta_days']}")
+    fell = {r["uid"]: r for r in cyc["critical_path"]["float_fell_top"]}
+    ms = fell.get(uid["ms.s3"])
+    if not ms or ms["float_fell_days"] < 5 or ms["float_after_days"] < 0:
+        fail(f"float erosion: the segment 3 milestone did not lose float: {ms}")
+    codes = {w["code"] for w in cyc["warning_codes"]}
+    if not {"baseline_moved", "scope", "past_rewritten"} <= codes or not codes & {"residue", "residue_named"} \
+            or codes & {"same_status_date", "status_date_backwards", "slot_differs"}:
+        fail(f"cycle warnings: {sorted(codes)}")
+
+    fx = forensics_mod.build(curr, res_c, prev, cyc)
+    trp = next((m for m in fx["milestones"] if m["id"] and m["name"].startswith("Termo de Recebimento")), None)
+    if not trp or not trp["origin"] or not trp["amplifier"] \
+            or trp["amplifier"]["id"] != next(t["id"] for t in curr["tasks"]
+                                               if t["uid"] == uid[P["duration"]["task"]]):
+        fail(f"forensics: the final milestone's delay is not traced to the viaduct: {trp and trp['amplifier']}")
+    return {"failures": failures, "skipped": False}
+
+
 def main() -> int:
+    # No test may read or write the real ~/.cronoaudit, and no child run may stop to
+    # ask the mode question when the tests are started from a terminal (the child
+    # inherits it). Every run below sees a throwaway preference of "off"; the mode
+    # tests further down use folders of their own.
+    with tempfile.TemporaryDirectory() as cfg_home:
+        os.environ["CRONOAUDIT_CONFIG_DIR"] = cfg_home
+        with open(os.path.join(cfg_home, "config.json"), "w", encoding="utf-8") as fh:
+            fh.write('{"secret": "off"}\n')
+        return run_all()
+
+
+def mode_checks() -> list:
+    """Modes: the stored preference, and what review.py does with it.
+
+    The point of every case is the same: a run asked to be secret must not read the
+    schedule, and a preference that cannot be read must not become "free, silently".
+    """
+    import io
+
+    import cronoaudit_config as cfg
+    import i18n
+    import review
+
+    failures = []
+    xml = os.path.join(ROOT, "fixtures", "positive.xml")
+    saved = os.environ.get("CRONOAUDIT_CONFIG_DIR")
+
+    def engine(args, home, agent=False):
+        # The tests may themselves run inside an agent (Claude Code sets these for
+        # every command it runs). Secret mode refuses to start there, which is one of
+        # the cases below; every other case runs as a person at a terminal would.
+        env = {k: v for k, v in os.environ.items() if k not in ("CLAUDECODE", "CLAUDE_CODE_CHILD_SESSION")}
+        env.update(CRONOAUDIT_CONFIG_DIR=home, CRONOAUDIT_WORK_DIR=work)
+        if agent:
+            env["CLAUDE_CODE_CHILD_SESSION"] = "1"
+        # DEVNULL: not a terminal, whatever started the tests.
+        return subprocess.run([sys.executable, os.path.join(HERE, "review.py")] + args,
+                              capture_output=True, text=True, env=env,
+                              stdin=subprocess.DEVNULL, encoding="utf-8", errors="replace")
+
+    try:
+        with tempfile.TemporaryDirectory() as tmp:
+            home = os.path.join(tmp, "home", ".cronoaudit")   # does not exist yet
+            out = os.path.join(tmp, "out")
+            work = os.path.join(tmp, "work")
+            os.environ["CRONOAUDIT_CONFIG_DIR"] = home
+
+            # ---- the file: missing, set, read back, other keys kept, corrupt, invalid
+            st = cfg.load()
+            if st["secret"] != "ask" or st["status"] != "missing":
+                failures.append(f"modes: a missing file is not the factory default: {st}")
+            if os.path.exists(home):
+                failures.append("modes: reading the preference created the folder")
+            for value in ("on", "off", "ask"):
+                path = cfg.set_secret(value)
+                st = cfg.load()
+                if st["secret"] != value or st["status"] != "ok" or path != cfg.config_path():
+                    failures.append(f"modes: set {value!r} did not read back: {st}")
+            raw = open(cfg.config_path(), "rb").read()
+            if raw.startswith(b"\xef\xbb\xbf") or json.loads(raw.decode("utf-8")) != {"secret": "ask"}:
+                failures.append(f"modes: the file is not plain UTF-8 JSON with the one key: {raw!r}")
+            if [f for f in os.listdir(home) if f != "config.json"]:
+                failures.append(f"modes: the atomic write left a file behind: {os.listdir(home)}")
+            try:
+                cfg.set_secret("maybe")
+                failures.append("modes: an unknown value was stored")
+            except ValueError:
+                pass
+            with open(cfg.config_path(), "w", encoding="utf-8") as fh:
+                fh.write('{"secret": "off", "other": 7}')
+            cfg.set_secret("on")
+            if json.load(open(cfg.config_path(), encoding="utf-8")) != {"secret": "on", "other": 7}:
+                failures.append("modes: storing the preference dropped another key of the file")
+            # A byte-order mark in front, as a Windows editor leaves it, is still readable.
+            with open(cfg.config_path(), "wb") as fh:
+                fh.write(b"\xef\xbb\xbf" + b'{"secret": "OFF"}')
+            if cfg.load()["secret"] != "off":
+                failures.append("modes: a file with a byte-order mark, or an upper-case value, was not read")
+            for bad, want in (("{not json", "corrupt"), ("", "corrupt"), ("[1, 2]", "corrupt"),
+                              ('{"secret": "yes"}', "invalid"), ('{"secret": true}', "invalid"),
+                              ('{"other": 1}', "missing")):
+                with open(cfg.config_path(), "w", encoding="utf-8") as fh:
+                    fh.write(bad)
+                st = cfg.load()
+                if st["secret"] != "ask" or st["status"] != want:
+                    failures.append(f"modes: {bad!r} should be ask/{want}, got {st['secret']}/{st['status']}")
+            # A corrupt file is said, not swallowed, and is replaced by the next set.
+            with open(cfg.config_path(), "w", encoding="utf-8") as fh:
+                fh.write('{"secret": "yes"}')
+            r = engine(["--config", "--lang", "en"], home)
+            if r.returncode != 0 or not r.stdout.startswith("secret: ask\n") or "not ask, on or off" not in r.stdout:
+                failures.append(f"modes: --config did not report an invalid file as ask: {r.stdout!r}")
+            with open(cfg.config_path(), "w", encoding="utf-8") as fh:
+                fh.write("{not json")
+            r = engine([xml, "--outdir", out, "--quiet", "--lang", "en"], home)
+            if r.returncode != 0 or "could not be read" not in r.stderr or "FREE mode" not in r.stderr:
+                failures.append(f"modes: a corrupt file was not said on stderr before going on: {r.stderr!r}")
+            r = engine(["--secret", "off"], home)
+            if r.returncode != 0 or not r.stdout.startswith("secret: off\n") or cfg.load()["status"] != "ok":
+                failures.append(f"modes: --secret off did not replace a corrupt file: {r.stdout!r} {r.stderr!r}")
+
+            # ---- the decision table
+            for (fs, ff, pref, tty), want in {
+                    (True, False, "off", False): "secret", (True, False, "ask", True): "secret",
+                    (False, True, "on", False): "free", (False, True, "ask", True): "free",
+                    (False, False, "on", True): "secret", (False, False, "on", False): "secret",
+                    (False, False, "off", True): "free", (False, False, "off", False): "free",
+                    (False, False, "ask", True): "ask", (False, False, "ask", False): "notice"}.items():
+                got = cfg.decide(fs, ff, pref, tty)
+                if got != want:
+                    failures.append(f"modes: decide(secret={fs}, free={ff}, {pref}, tty={tty}) gave {got}, not {want}")
+
+            # ---- `--secret` must not swallow the schedule that follows it
+            for argv, want in ((["--secret", "a.xml"], ["--secret=run", "a.xml"]),
+                               (["a.xml", "--secreto"], ["a.xml", "--secret=run"]),
+                               (["--secret", "ON"], ["--secret=on"]),
+                               (["--secreto=Ask"], ["--secret=ask"]),
+                               (["a.xml", "--free"], ["a.xml", "--free"])):
+                if review.normalise_mode_args(argv) != want:
+                    failures.append(f"modes: {argv} normalised to {review.normalise_mode_args(argv)}")
+
+            # ---- --secret started by an agent stops without reading. The file named
+            # does not exist: had the engine gone as far as looking for it, the
+            # message would say so.
+            def nothing_written():
+                return not os.path.exists(out) or not os.listdir(out)
+            def no_work():
+                return not os.path.exists(work) or not os.listdir(work)
+            import shutil
+            shutil.rmtree(out, ignore_errors=True)
+            for args in ([xml, "--secret", "--outdir", out], ["--secret", xml, "--outdir", out],
+                         [xml, "--secreto", "--outdir", out, "--lang", "pt"]):
+                r = engine(args, home, agent=True)   # the stored preference is "off": the flag wins
+                if r.returncode != review.EXIT_SECRET or r.stdout.strip() or not nothing_written() \
+                        or not no_work():
+                    failures.append(f"modes: {args[:2]} inside an agent did not stop clean: rc {r.returncode}, "
+                                    f"stdout {r.stdout[:80]!r}, outdir {os.path.exists(out)}")
+                if "Nothing was read" not in r.stderr and "Nada foi lido" not in r.stderr:
+                    failures.append("modes: the stop message does not say that nothing was read")
+                if "CLAUDE_CODE_CHILD_SESSION" not in r.stderr:
+                    failures.append("modes: the stop message does not name what showed an agent started it")
+            r = engine([os.path.join(tmp, "no-such-file.xml"), "--secret", "--lang", "en"], home, agent=True)
+            if r.returncode != review.EXIT_SECRET or "no such file" in (r.stderr + r.stdout) \
+                    or "not found" in (r.stderr + r.stdout):
+                failures.append("modes: --secret inside an agent looked for the schedule before stopping")
+            if "SECRET mode was requested" not in r.stderr or "SECRETO" in r.stderr:
+                failures.append("modes: with --lang en the stop message is not in English only")
+            r = engine([xml, "--secret", "--free"], home)
+            if r.returncode != 2 or not nothing_written():
+                failures.append("modes: --secret with --free was not rejected")
+            # ---- run by a person, --secret runs: a work folder, nothing beside the file
+            r = engine([xml, "--secret", "--outdir", out, "--quiet", "--lang", "en"], home)
+            if r.returncode != 0 or not nothing_written() or no_work() or "Work folder" not in r.stdout:
+                failures.append(f"modes: --secret run by a person did not write a work folder only: "
+                                f"rc {r.returncode} {r.stderr[-200:]!r}")
+
+            # ---- stored "on" behaves as --secret; --free is the only way through it
+            engine(["--secret", "on"], home)
+            r = engine([xml, "--outdir", out, "--quiet"], home, agent=True)
+            if r.returncode != review.EXIT_SECRET or not nothing_written() or cfg.config_path() not in r.stderr:
+                failures.append(f"modes: a stored 'on' inside an agent did not stop and name the file: rc {r.returncode}")
+            shutil.rmtree(work, ignore_errors=True)
+            r = engine([xml, "--outdir", out, "--quiet"], home)
+            if r.returncode != 0 or not nothing_written() or no_work():
+                failures.append(f"modes: a stored 'on' did not run in secret mode: rc {r.returncode}")
+            r = engine([xml, "--outdir", out, "--quiet", "--free"], home)
+            if r.returncode != 0 or nothing_written() or r.stderr.strip():
+                failures.append(f"modes: --free did not run, quietly, over a stored 'on': {r.stderr!r}")
+
+            # ---- "ask" with nobody to answer: one line on stderr, then the run
+            shutil.rmtree(out, ignore_errors=True)
+            engine(["--secret", "ask"], home)
+            r = engine([xml, "--outdir", out, "--quiet", "--lang", "en"], home)
+            lines = [ln for ln in r.stderr.splitlines() if ln.strip()]
+            if r.returncode != 0 or nothing_written():
+                failures.append(f"modes: 'ask' with no terminal blocked the run: rc {r.returncode} {r.stderr!r}")
+            if len(lines) != 1 or "FREE mode" not in lines[0] or "--secret" not in lines[0]:
+                failures.append(f"modes: 'ask' with no terminal did not say one line on stderr: {lines}")
+            if "FREE mode" in r.stdout:
+                failures.append("modes: the free-mode line went to stdout, where a program reads results")
+            # "off" says nothing at all.
+            engine(["--secret", "off"], home)
+            r = engine([xml, "--outdir", out, "--quiet"], home)
+            if r.returncode != 0 or r.stderr.strip():
+                failures.append(f"modes: a stored 'off' still spoke: {r.stderr!r}")
+
+            # ---- the question itself, answered. In-process, with the streams swapped.
+            def answer(text):
+                cfg.set_secret("ask")
+                old_in, old_err = sys.stdin, sys.stderr
+                sys.stdin, sys.stderr = io.StringIO(text), io.StringIO()
+                try:
+                    mode = review.ask_mode(cfg.load(), i18n.modes_text("pt"), ["pt"])
+                    return ("go" if mode == "free" else mode), sys.stderr.getvalue()
+                except SystemExit as exc:
+                    return exc.code, sys.stderr.getvalue()
+                finally:
+                    sys.stdin, sys.stderr = old_in, old_err
+            for text, want, pref in (("s\n", "go", "ask"), ("livre\n", "go", "ask"), ("y\n", "go", "ask"),
+                                     ("secreto\n", "secret", "ask"), ("n\n", 1, "ask"),
+                                     ("nunca\n", "go", "off"), ("\n\nwhat\n", 1, "ask"), ("", 1, "ask"),
+                                     ("talvez\nsim\n", "go", "ask")):
+                got, shown = answer(text)
+                if got != want or cfg.load()["secret"] != pref:
+                    failures.append(f"modes: answering {text!r} gave {got} with preference "
+                                    f"{cfg.load()['secret']}, not {want} with {pref}")
+                if "Modo LIVRE: o que o agente ler vai para o provedor dele. Continuar?" not in shown:
+                    failures.append("modes: the question is not the agreed sentence")
+
+            # ---- every mode string exists in both languages, with the same placeholders
+            for key, en in i18n.MODES["en"].items():
+                pt = i18n.MODES["pt"].get(key)
+                if pt is None or sorted(re.findall(r"\{(\w+)\}", en)) != sorted(re.findall(r"\{(\w+)\}", pt)):
+                    failures.append(f"modes: the string {key!r} is missing or takes other values in pt")
+            if set(i18n.MODES["pt"]) - set(i18n.MODES["en"]):
+                failures.append("modes: pt has strings en does not")
+    finally:
+        if saved is None:
+            os.environ.pop("CRONOAUDIT_CONFIG_DIR", None)
+        else:
+            os.environ["CRONOAUDIT_CONFIG_DIR"] = saved
+    return failures
+
+
+# ---------------------------------------------------------------------------
+# Secret mode (experimental). Three properties, each tested here:
+#   equality  the coded output decodes to exactly what free mode writes
+#   no leak   nothing of the file's identity is anywhere in the work folder
+#   guard     the Claude Code hook allows the session's work and blocks the rest
+# `secret_roundtrip` is also what test_secret_real.py runs on a real export, so it
+# never puts a value from the file into a message when `redact` is set.
+# ---------------------------------------------------------------------------
+_REAL_DATE_SHAPES = re.compile(
+    r"(?<![\w\d])(?:19|20|21)\d\d-[01]\d-[0-3]\d"      # ISO day
+    r"|(?<![\w\d/])[0-3]\d/[01]\d/(?:19|20|21)\d\d"     # dd/mm/yyyy
+    r"|(?<![\w\d\-])(?:19|20|21)\d\d-[01]\d(?![\d\-])"  # yyyy-mm
+    r"|(?<![\w\d])(?:19|20|21)\d\d(?=:(?!\d))"          # "2026: ..."
+    r"|(?:janeiro|fevereiro|março|abril|maio|junho|julho|agosto|setembro|outubro|novembro|"
+    r"dezembro|January|February|March|April|June|July|August|September|October|November|"
+    r"December)\s+(?:de\s+)?(?:19|20|21)\d\d", re.I)
+
+
+def _secret_env(home: str, agent: bool = False) -> dict:
+    env = {k: v for k, v in os.environ.items() if k not in ("CLAUDECODE", "CLAUDE_CODE_CHILD_SESSION")}
+    env["CRONOAUDIT_CONFIG_DIR"] = home
+    env.pop("CRONOAUDIT_WORK_DIR", None)
+    if agent:
+        env["CLAUDE_CODE_CHILD_SESSION"] = "1"
+    return env
+
+
+def _payload_of(path: str) -> dict:
+    import inject_narrative
+    with open(path, encoding="utf-8") as fh:
+        return inject_narrative.extract(fh.read())
+
+
+def _scan_text(path: str) -> str:
+    """What a file says, for the leak test. For a report, the embedded data and the
+    tab title: the rest is the template, the same public code for every schedule."""
+    with open(path, encoding="utf-8", errors="replace") as fh:
+        body = fh.read()
+    if path.endswith(".html"):
+        m = re.search(r"const DATA = (\{.*?\});\n", body, re.S)
+        t = re.search(r"<title>.*?</title>", body, re.S)
+        return (m.group(1) if m else body) + "\n" + (t.group(0) if t else "")
+    return body
+
+
+def _forms(value: str) -> set:
+    import html as html_mod
+    j = json.dumps(value, ensure_ascii=False)[1:-1]
+    return {value, j, j.replace("</", "<\\/"), html_mod.escape(value), html_mod.escape(value, quote=False)}
+
+
+def _money_forms(v) -> set:
+    import secret_codec
+    out = set()
+    if isinstance(v, bool) or not isinstance(v, (int, float)) or abs(v) < 10000:
+        return out
+    out.add(repr(v))
+    if float(v).is_integer():
+        out.add(str(int(v)))
+    for d in (0, 2):
+        for lang in ("pt", "en"):
+            out.add(secret_codec.fnum(v, d, lang))
+    return out
+
+
+def _money_values(obj, keys) -> list:
+    found, stack = [], [(None, obj)]
+    while stack:
+        k, o = stack.pop()
+        if isinstance(o, dict):
+            stack.extend(o.items())
+        elif isinstance(o, list):
+            stack.extend((k, x) for x in o)
+        elif k in keys and isinstance(o, (int, float)) and not isinstance(o, bool):
+            found.append(o)
+    return found
+
+
+_VOCABULARY = {}
+
+
+def _program_vocabulary(avoid: list) -> str:
+    """Everything cronoaudit itself writes in a secret run, over a fixture that is not
+    the schedule under test: the coded work folder (whole files, template included),
+    stdout, stderr and the finish line. Fixture names are coded there, so what is
+    left legible is program text."""
+    fixture = next(n for n in ("bare.xml", "negative.xml") if n not in avoid)
+    if fixture in _VOCABULARY:
+        return _VOCABULARY[fixture]
+    import shutil
+    parts = []
+    with tempfile.TemporaryDirectory() as tmp:
+        orig = os.path.join(tmp, "orig")
+        os.makedirs(orig)
+        src = os.path.join(orig, fixture)
+        shutil.copyfile(os.path.join(ROOT, "fixtures", fixture), src)
+        env = _secret_env(os.path.join(tmp, "cfg"))
+        r = subprocess.run([sys.executable, os.path.join(HERE, "review.py"), src, "--secret",
+                            "--workdir", os.path.join(tmp, "work")], capture_output=True, text=True,
+                           env=env, stdin=subprocess.DEVNULL, encoding="utf-8", errors="replace")
+        parts += [r.stdout, r.stderr]
+        work = os.path.join(tmp, "work", os.listdir(os.path.join(tmp, "work"))[0])
+        f = subprocess.run([sys.executable, os.path.join(HERE, "secret_decode.py"), "finish", work,
+                            "--no-open", "--vault-only"], capture_output=True, text=True, env=env,
+                           encoding="utf-8", errors="replace")
+        parts += [f.stdout, f.stderr]
+        for folder, _d, fnames in os.walk(work):
+            for fname in fnames:
+                parts.append(fname)
+                with open(os.path.join(folder, fname), encoding="utf-8", errors="replace") as fh:
+                    parts.append(fh.read())
+    _VOCABULARY[fixture] = "\n".join(parts)
+    return _VOCABULARY[fixture]
+
+
+def secret_roundtrip(files: list, tmp: str, redact: bool = False) -> dict:
+    """Free run and secret run of the same files; decode; compare; look for leaks.
+
+    Returns {"failures": [...], "stats": {...}}. With `redact`, a failure says what
+    kind and how many, never which value.
+    """
+    import shutil
+
+    import secret_codec
+    import secret_decode
+
+    failures, stats = [], {"sidecars": 0, "reports": 0, "values_equal": 0, "leak_values": 0,
+                           "leak_hits": 0, "texts_checked": 0, "money_checked": 0}
+
+    def fail(kind, detail=""):
+        failures.append(kind if (redact or not detail) else f"{kind}: {detail}")
+
+    orig = os.path.join(tmp, "orig")
+    os.makedirs(orig, exist_ok=True)
+    local = []
+    for f in files:
+        dst = os.path.join(orig, os.path.basename(f))
+        shutil.copyfile(f, dst)
+        local.append(dst)
+    home = os.path.join(tmp, "cfg")
+    workroot = os.path.join(tmp, "work")
+    free_dir = os.path.join(tmp, "free")
+    env = _secret_env(home)
+    r = subprocess.run([sys.executable, os.path.join(HERE, "review.py"), *local, "--free",
+                        "--outdir", free_dir, "--quiet"], capture_output=True, text=True,
+                       env=env, stdin=subprocess.DEVNULL, encoding="utf-8", errors="replace")
+    if r.returncode != 0:
+        fail("secret: the free run failed")
+        return {"failures": failures, "stats": stats}
+    sec = subprocess.run([sys.executable, os.path.join(HERE, "review.py"), *local, "--secret",
+                          "--workdir", workroot], capture_output=True, text=True, env=env,
+                         stdin=subprocess.DEVNULL, encoding="utf-8", errors="replace")
+    if sec.returncode != 0 or not os.path.isdir(workroot) or len(os.listdir(workroot)) != 1:
+        fail("secret: the secret run failed", "" if redact else sec.stderr[-300:])
+        return {"failures": failures, "stats": stats}
+    work = os.path.join(workroot, os.listdir(workroot)[0])
+    with open(os.path.join(work, "cronoaudit-secret.json"), encoding="utf-8") as fh:
+        run_id = json.load(fh)["run"]
+    vault_run = os.path.join(home, "vault", run_id)
+    with open(os.path.join(vault_run, "back.json"), encoding="utf-8") as fh:
+        codec = secret_codec.Codec.from_back_table(json.load(fh))
+    with open(os.path.join(vault_run, "run.json"), encoding="utf-8") as fh:
+        run = json.load(fh)
+    import secret_mode
+
+    # ---- 1. equality, sidecar by sidecar: generic decoding alone, no lookup of
+    # the real output except the withheld series, which by design is not coded.
+    for name in sorted(os.listdir(free_dir)):
+        if not name.endswith(".json"):
+            continue
+        coded_name = secret_mode.rename(name, local)
+        with open(os.path.join(free_dir, name), encoding="utf-8") as fh:
+            free = json.load(fh)
+        with open(os.path.join(work, coded_name), encoding="utf-8") as fh:
+            coded = json.load(fh)
+        decoded = codec.decode_obj(coded)
+        if name.endswith("-review-forecast.json"):
+            for path in secret_codec.LEGIBILITY["withheld"]:
+                if path[0] == "forecast":
+                    secret_codec.restore(decoded, free, path[1:])
+        if decoded != free:
+            eq, df = secret_decode.count_leaves(decoded, free)
+            fail("secret equality: a sidecar did not decode to the free run", f"{name}, {df} values")
+        else:
+            stats["sidecars"] += 1
+
+    # ---- 2. equality of the report, after a fake agent wrote a synthesis in codes
+    names = [n for n in os.listdir(free_dir) if n.endswith(".html")]
+    review_coded = next(c for c, real in run["html"].items() if real.endswith("-review.html"))
+    coded_payload = _payload_of(os.path.join(work, review_coded))
+    some_task = next((t["name"] for f in (coded_payload.get("findings") or []) for t in f.get("items") or []
+                      if t.get("name")), None) or next(iter(codec.back))
+    real_name = codec.decode_text(some_task)
+    syn = os.path.join(work, "synthesis.txt")
+    with open(syn, "w", encoding="utf-8") as fh:
+        fh.write(f"The activity {some_task} finishes on D+0400 and is worth {secret_codec.MONEY_MARK}"
+                 f"{secret_codec.fnum(1234567.0 * codec.k, 2, codec.lang)}.\n\nSecond paragraph.")
+    subprocess.run([sys.executable, os.path.join(HERE, "inject_narrative.py"),
+                    os.path.join(work, review_coded), syn, "--who", "the test suite"],
+                   check=True, capture_output=True)
+    fin = subprocess.run([sys.executable, os.path.join(HERE, "secret_decode.py"), "finish", work,
+                          "--no-open"], capture_output=True, text=True, env=env,
+                         encoding="utf-8", errors="replace")
+    if fin.returncode != 0 or "check passed" not in fin.stdout:
+        fail("secret equality: finish did not pass its own check", fin.stdout[-200:] + fin.stderr[-200:])
+    for name in names:
+        free_p = _payload_of(os.path.join(free_dir, name))
+        dec_p = _payload_of(os.path.join(vault_run, name))
+        beside = os.path.join(orig, name)
+        if not os.path.exists(beside):
+            fail("secret: the decoded report was not written beside the original", name)
+        narrative = dec_p.pop("narrative", None)
+        free_p.pop("narrative", None)
+        # The one normalisation: the time the report was generated. Two runs, two
+        # minutes; it is not a finding.
+        for p in (free_p, dec_p):
+            (p.get("meta") or {}).pop("generated", None)
+        if dec_p != free_p:
+            eq, df = secret_decode.count_leaves(dec_p, free_p)
+            fail("secret equality: a decoded report differs from the free run", f"{name}, {df} values")
+        else:
+            stats["reports"] += 1
+            stats["values_equal"] += secret_decode.count_leaves(dec_p, free_p)[0]
+        if name.endswith("-review.html"):
+            text = (narrative or {}).get("text", "")
+            want_day = codec._from_day(400)
+            want_day = want_day.strftime("%d/%m/%Y" if codec.lang == "pt" else "%Y-%m-%d")
+            want_money = secret_codec.fnum(1234567.0, 2, codec.lang)
+            if real_name not in text or want_day not in text or want_money not in text:
+                fail("secret equality: the synthesis did not decode to real name, date and money")
+
+    # ---- 3. no leak: every text, date and money figure of the files, anywhere
+    texts = set()
+    for f in local:
+        texts |= {v for _c, v in secret_codec.collect_xml(f)}
+        texts |= {os.path.basename(f), os.path.splitext(os.path.basename(f))[0]}
+    # Independently of the codec's own collection: every element text with a
+    # letter that the boundary does not declare legible.
+    import xml.etree.ElementTree as ET
+    dates, costs = set(), []
+    cost_tags = {"Cost", "BCWS", "BCWP", "ACWP", "FixedCost", "ActualCost", "RemainingCost",
+                 "BaselineCost", "CostVariance"}
+    for f in local:
+        for _ev, el in ET.iterparse(f):
+            tag = el.tag.rsplit("}", 1)[-1]
+            t = (el.text or "").strip()
+            if t:
+                if secret_codec.eligible(t) and not secret_codec.format_legible(t) \
+                        and tag not in secret_codec.LEGIBILITY["legible_tags"]:
+                    texts.add(t)
+                m = re.match(r"^(\d{4})-(\d{2})-(\d{2})", t)
+                if m:
+                    dates.add(t[:10])
+                    dates.add(f"{m.group(3)}/{m.group(2)}/{m.group(1)}")
+                if tag in cost_tags:
+                    try:
+                        costs.append(float(t))
+                    except ValueError:
+                        pass
+            el.clear()
+    real_money = []
+    for name in os.listdir(os.path.join(vault_run, "real")):
+        p = os.path.join(vault_run, "real", name)
+        obj = _payload_of(p) if name.endswith(".html") else json.load(open(p, encoding="utf-8"))
+        real_money += _money_values(obj, secret_codec.LEGIBILITY["money_keys"])
+    money_forms = set()
+    for v in costs + real_money:
+        money_forms |= _money_forms(v)
+    stats["texts_checked"] = len(texts)
+    stats["money_checked"] = len(money_forms)
+    text_forms = set()
+    for t in texts:
+        text_forms |= _forms(t)
+    rx_text = re.compile(r"(?<!\w)(?:" + secret_codec._trie_pattern(sorted(text_forms, key=len, reverse=True))
+                         + r")(?!\w)") if text_forms else None
+    # Not glued to a letter either: a token is six hex characters (T·a12345), and
+    # five digits inside one matched a real figure by chance on the real export.
+    rx_money = re.compile(r"(?<![\w.,])(?:" + secret_codec._trie_pattern(sorted(money_forms, key=len, reverse=True))
+                          + r")(?![\d]|[.,]\d)") if money_forms else None
+    rx_dates = re.compile(r"(?<![\d\w])(?:" + secret_codec._trie_pattern(sorted(dates, key=len, reverse=True))
+                          + r")(?!\d)") if dates else None
+    # The original's folder and the run's vault folder. The cronoaudit folder itself
+    # is named on purpose, in the deny rule of .claude/settings.json (as ~/.cronoaudit
+    # in a real installation); its location is documented, not secret.
+    paths = [orig, os.path.realpath(orig), vault_run, os.path.realpath(vault_run)]
+    surfaces = []
+    for folder, _dirs, fnames in os.walk(work):
+        for fname in fnames:
+            surfaces.append((fname, _scan_text(os.path.join(folder, fname))))
+            surfaces.append(("file name", fname))
+    surfaces += [("stdout", sec.stdout), ("stderr", sec.stderr), ("finish", fin.stdout + fin.stderr)]
+    # Two kinds of coincidence are not leaks, and are told apart without looking at
+    # the value:
+    #  - program vocabulary: a real text that is also a word of cronoaudit's own
+    #    output (a label, a key, the guard's code). Such a word is in the work folder
+    #    of ANY schedule. It is excused only if it appears in the coded output of a
+    #    different schedule run through the same pipeline; that output holds no
+    #    names of this file, so the excuse cannot hide one of them.
+    #  - a coded figure equal by chance to a real one: money times k can land on
+    #    another real figure. A money hit is excused only if the same string is a
+    #    form of what the codec must write for some real figure (real times k). A
+    #    real figure leaking unscaled is not such a form, so it still fails; the
+    #    deliberate-break check (scaling switched off) proves it.
+    vocabulary = _program_vocabulary([os.path.basename(f) for f in files])
+    # What the codec should have written for each real figure, computed here from
+    # the real output and k, not read from the work folder: a codec that forgot to
+    # scale would otherwise excuse its own leak.
+    coded_money = set()
+    for v in costs + real_money:
+        coded_money |= _money_forms(codec.scale(v))
+        for d in (0, 2):
+            coded_money.add(secret_codec.fnum(round(v, d) * codec.k, d, codec.lang))
+    hits = {"text": {}, "date": {}, "money": {}, "date shape": 0, "path": 0}
+    excused = {"vocabulary": 0, "coded figure": 0}
+    for label, blob in surfaces:
+        for kind, rx in (("text", rx_text), ("date", rx_dates), ("money", rx_money)):
+            if not rx:
+                continue
+            for v in set(rx.findall(blob)):
+                if kind == "text" and re.search(r"(?<!\w)" + re.escape(v) + r"(?!\w)", vocabulary):
+                    excused["vocabulary"] += 1
+                    continue
+                if kind == "money" and v in coded_money:
+                    excused["coded figure"] += 1
+                    continue
+                hits[kind].setdefault(v, label)
+        hits["date shape"] += len(_REAL_DATE_SHAPES.findall(blob))
+        hits["path"] += sum(1 for p in paths if p in blob)
+    stats["excused"] = excused
+    stats["hit_detail"] = []
+    for kind in ("text", "date", "money"):
+        if hits[kind]:
+            stats["leak_values"] += len(hits[kind])
+            # Kind, length and where: enough to diagnose, never the value itself.
+            stats["hit_detail"] += [(kind, len(v), where) for v, where in sorted(hits[kind].items())]
+            fail(f"secret leak: {len(hits[kind])} {kind} value(s) of the file found in the work folder or output",
+                 ", ".join(sorted(hits[kind])[:5]))
+    for kind in ("date shape", "path"):
+        if hits[kind]:
+            stats["leak_hits"] += hits[kind]
+            fail(f"secret leak: {hits[kind]} {kind} occurrence(s) in the work folder or output")
+
+    # ---- 4. what an agent reads rendered: the coded report runs, and shows no real date
+    import shutil as _sh
+    node = _sh.which("node")
+    if node:
+        for c in run["html"]:
+            p = subprocess.run([node, os.path.join(HERE, "test_render.js"), os.path.join(work, c),
+                                r"--forbid=(?:19|20)\d\d-[01]\d-[0-3]\d|[0-3]\d/[01]\d/(?:19|20)\d\d"],
+                               capture_output=True, text=True)
+            if p.returncode != 0:
+                fail("secret: a coded report does not render, or shows a real date", "" if redact else p.stderr[-200:])
+    return {"failures": failures, "stats": stats}
+
+
+def secret_unit_checks() -> list:
+    """The codec on its own: collisions, money in prose, the boundary's tripwire."""
+    from datetime import date
+
+    import narrative
+    import secret_codec as sc
+    failures = []
+    # Collisions: at two hex digits, 300 names in one category must collide, and
+    # every one must still get its own token and come back.
+    c = sc.Codec(b"k" * 32, date(2024, 1, 1), 3.3, width=2, lang="pt")
+    names = [f"Atividade número {i}" for i in range(200)]
+    c.add([("T", n) for n in names])
+    if c.collisions == 0 or len(set(c.tokens.values())) != len(names):
+        failures.append(f"secret codec: collisions not exercised or not resolved ({c.collisions})")
+    for n in names:
+        if c.decode_text(c.encode_text(f"x {n} y")) != f"x {n} y":
+            failures.append("secret codec: a name did not survive a collision round trip")
+            break
+    # Persisted table: a codec rebuilt from the table gives the same tokens, so rev03
+    # and rev04 read the same codes.
+    c2 = sc.Codec(b"k" * 32, date(2024, 1, 1), 3.3, dict(c.tokens), width=2, lang="pt")
+    c2.add([("T", "Nova atividade")] + [("T", n) for n in names])
+    if any(c2.tokens[n] != c.tokens[n] for n in names):
+        failures.append("secret codec: a persisted token changed when new names were added")
+    # Money written into a sentence by the engine: the earned-before-plan reading.
+    payload = {"lang": "pt", "meta": {}, "findings": [],
+               "scurve": {"bac": 1000000.0, "totals": {},
+                          "periods": [{"period": "2026-01", "planned": 0, "earned": 123456.78},
+                                      {"period": "2026-02", "planned": 50000.0, "earned": 1000.0}]}}
+    readings = narrative.build(payload, "pt")
+    real_sentence = next((x for x in readings.get("scurve", []) if "123.457" in x), None)
+    if real_sentence is None:
+        failures.append("secret codec: the earned-before-plan reading did not fire on its probe")
+    else:
+        coded = {k: list(v) for k, v in readings.items()}
+        n = sc.mark_prose_money(coded, payload, "pt", c)
+        enc = c.encode_obj(coded)
+        if n != 1 or "123.457" in json.dumps(enc, ensure_ascii=False):
+            failures.append("secret codec: the money in the earned-before-plan reading was not coded")
+        if c.decode_obj(enc) != readings:
+            failures.append("secret codec: the earned-before-plan reading did not decode back")
+    # Every shape of date, and the year key, round trip and change.
+    probe = {"a": "2026-10-30T17:00:00", "b": "30/10/2026", "c": "2026-10", "year": 2027,
+             "d": "2026: activities without reserve", "e": "between 2026-01-31 and 2026-02-01",
+             "cost": 1234.5, "planned": 7, "pct": 12.5}
+    enc = c.encode_obj(probe)
+    if c.decode_obj(enc) != probe or _REAL_DATE_SHAPES.search(json.dumps(enc)) or enc["pct"] != 12.5 \
+            or enc["cost"] == 1234.5:
+        failures.append(f"secret codec: the date and money probe did not round trip: {enc}")
+    # Tripwire for the boundary: a large number under a key not declared money and
+    # not declared a quantity is probably money the list forgot.
+    quantity_keys = {"planned_qty", "executed_qty", "remaining_qty", "rate_global", "rate_own",
+                     "rate_planned", "rate_recent", "rate_required_late", "rate_required_trend",
+                     "rate_contracted", "activity_days", "words"}
+    folder = os.path.join(os.path.dirname(os.path.dirname(ROOT)), "examples")
+    if os.path.isdir(folder):
+        with tempfile.TemporaryDirectory() as tmp:
+            subprocess.run([sys.executable, os.path.join(HERE, "review.py"),
+                            os.path.join(folder, "rodovia-ficticia-rev03.xml"),
+                            os.path.join(folder, "rodovia-ficticia-rev04.xml"),
+                            "--free", "--outdir", tmp, "--quiet"], check=True, capture_output=True)
+            big = set()
+            for name in os.listdir(tmp):
+                obj = _payload_of(os.path.join(tmp, name)) if name.endswith(".html") \
+                    else json.load(open(os.path.join(tmp, name), encoding="utf-8"))
+                stack = [(None, obj)]
+                while stack:
+                    k, o = stack.pop()
+                    if isinstance(o, dict):
+                        stack.extend(o.items())
+                    elif isinstance(o, list):
+                        stack.extend((k, x) for x in o)
+                    elif isinstance(o, (int, float)) and not isinstance(o, bool) and abs(o) >= 1e6 \
+                            and k not in sc.LEGIBILITY["money_keys"] and k not in quantity_keys:
+                        big.add(k)
+            if big:
+                failures.append(f"secret boundary: large numbers under keys not classified: {sorted(big)}")
+    return failures
+
+
+def guard_checks() -> list:
+    """The Claude Code hook, fed the calls a session makes and the ones it must not."""
+    import importlib.util
+
+    import secret_mode
+    failures = []
+    with tempfile.TemporaryDirectory() as tmp:
+        work = os.path.join(tmp, "work", "run1")
+        os.makedirs(work)
+        secret_mode.write_guard(work)
+        with open(os.path.join(work, "schedule-review.json"), "w") as fh:
+            fh.write("{}")
+        vault = os.path.join(tmp, "home", ".cronoaudit", "vault", "run1")
+        os.makedirs(vault)
+        original = os.path.join(tmp, "Contrato 999", "cronograma.xml")
+        os.makedirs(os.path.dirname(original))
+        open(original, "w").close()
+        os.symlink(original, os.path.join(work, "link.xml")) if hasattr(os, "symlink") and os.name != "nt" else None
+        hook = os.path.join(work, ".claude", "hooks", "cronoaudit_guard.py")
+        spec = importlib.util.spec_from_file_location("cronoaudit_guard", hook)
+        g = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(g)
+        guard = g.load_guard()
+        s = os.path.join(ROOT, "scripts").replace("\\", "/")
+        py = sys.executable
+        cases = [
+            ("Read", {"file_path": os.path.join(vault, "back.json")}, False, "Read of a vault file"),
+            ("Bash", {"command": f'cat "{original}"'}, False, "cat of the original"),
+            ("Grep", {"pattern": "x", "path": vault}, False, "Grep in the vault"),
+            ("Read", {"file_path": os.path.join(work, "schedule-review.json")}, True, "Read in the work folder"),
+            ("Bash", {"command": "python3 -c \"print(open('/etc/hosts').read())\""}, False, "python -c"),
+            ("Bash", {"command": "env"}, False, "env"),
+            ("Bash", {"command": "printenv OLDPWD"}, False, "printenv"),
+            ("Bash", {"command": "cd .."}, False, "cd .."),
+            ("Bash", {"command": "cat schedule-review.json | python3"}, False, "pipe into an interpreter"),
+            ("Bash", {"command": "cat $HOME/x"}, False, "a variable"),
+            ("Bash", {"command": "ls ../"}, False, "ls of the parent"),
+            ("Bash", {"command": f'"{py}" {s}/review.py "{original}" --free'}, False, "review.py on the original"),
+            ("Bash", {"command": f"python3 {s}/secret_decode.py text"}, False, "secret_decode text"),
+            ("Bash", {"command": f"python3 {s}/secret_decode.py finish"}, True, "secret_decode finish"),
+            ("Bash", {"command": f'python3 {s}/inject_narrative.py schedule-review.html synthesis.txt '
+                                 f'--who "Claude, via the skill"'}, True, "inject_narrative"),
+            ("Bash", {"command": "head -50 schedule-review.json | grep -n x 2>&1"}, True, "reading pipeline"),
+            ("Bash", {"command": "ls"}, True, "ls"),
+            ("Write", {"file_path": os.path.join(work, "synthesis.txt")}, True, "Write the synthesis"),
+            ("Write", {"file_path": os.path.join(work, ".claude", "settings.json")}, False, "Write the hook's settings"),
+            ("Edit", {"file_path": original}, False, "Edit the original"),
+            ("Glob", {"pattern": "/**/*.xml"}, False, "Glob from the root"),
+            ("Glob", {"pattern": "*.json"}, True, "Glob in the work folder"),
+            ("Read", {"file_path": os.path.join(ROOT, "SKILL.md")}, True, "Read the skill's text"),
+            ("Read", {"file_path": os.path.join(ROOT, "templates", "report.custom.html")}, False,
+             "Read a customised template"),
+            ("Bash", {"command": "cat link.xml"}, os.name == "nt", "cat through a symlink to the original"),
+            ("Bash", {"command": "echo x > ../out.txt"}, False, "redirect outside"),
+        ]
+        if os.name != "nt":
+            cases.append(("Read", {"file_path": os.path.join(work, "link.xml")}, False,
+                          "Read through a symlink to the original"))
+        for tool, inp, want, label in cases:
+            ok, _reason = g.decide(guard, {"tool_name": tool, "tool_input": inp, "cwd": work})
+            if ok != want:
+                failures.append(f"guard: {label} was {'allowed' if ok else 'blocked'}")
+        # The hook as Claude Code runs it: exit 2 blocks, 0 allows, garbage blocks.
+        for payload, code in ((json.dumps({"tool_name": "Read", "tool_input": {"file_path": original},
+                                           "cwd": work}), 2),
+                              (json.dumps({"tool_name": "Bash", "tool_input": {"command": "ls"},
+                                           "cwd": work}), 0),
+                              ("not json", 2)):
+            r = subprocess.run([sys.executable, hook], input=payload, capture_output=True, text=True)
+            if r.returncode != code:
+                failures.append(f"guard: the hook process returned {r.returncode}, not {code}")
+        settings = json.load(open(os.path.join(work, ".claude", "settings.json"), encoding="utf-8"))
+        deny = settings["permissions"]["deny"]
+        if not any(d.startswith("Read(") and d.endswith("/**)") for d in deny) or \
+                "PreToolUse" not in settings["hooks"]:
+            failures.append(f"guard: settings.json lacks the deny rule or the hook: {settings}")
+    return failures
+
+
+def secret_checks() -> dict:
+    """Round trip and leak test over the fixtures and the example, and the guard."""
+    failures = secret_unit_checks() + guard_checks()
+    sets = [[os.path.join(ROOT, "fixtures", n)] for n in ("positive.xml", "negative.xml", "bare.xml")]
+    sets.append([os.path.join(ROOT, "fixtures", "cycle_prev.xml"), os.path.join(ROOT, "fixtures", "cycle_curr.xml")])
+    folder = os.path.join(os.path.dirname(os.path.dirname(ROOT)), "examples")
+    if os.path.isdir(folder):
+        ex = [os.path.join(folder, f"rodovia-ficticia-rev0{i}.xml") for i in (3, 4)]
+        sets += [[ex[0]], [ex[1]], ex]
+    # Surfaces no fixture carries: header fields, a note, a named holiday, a task
+    # name with a date inside, a hyperlink. Built from the positive fixture.
+    variant_dir = tempfile.mkdtemp()
+    with open(os.path.join(ROOT, "fixtures", "positive.xml"), encoding="utf-8") as fh:
+        x = fh.read()
+    x = x.replace("<Title>Positive fixture</Title>",
+                  "<Title>Positive fixture</Title><Subject>Contrato 4711 do Cliente Exemplar</Subject>"
+                  "<Company>Construtora Exemplo Ltda</Company><Author>Fulano de Tal</Author>"
+                  "<Manager>Beltrana Gerente</Manager><LastAuthor>Sicrano Revisor</LastAuthor>"
+                  "<Keywords>lote sigiloso</Keywords>"
+                  # A real value that is also a word cronoaudit writes in every work
+                  # folder: the leak test must excuse it as program vocabulary.
+                  "<Category>secret</Category>", 1)
+    x = x.replace("<Name>Holiday</Name>", "<Name>Feriado Municipal de Exemplópolis</Name>", 1)
+    x = x.replace("<Name>A1 successor started early</Name>",
+                  "<Name>Marco 15/03/2027 — Ponte do Exemplo</Name>"
+                  "<Notes>Ver ofício 22/2026 de 03/02/2026, valor R$ 1.234.567,89</Notes>"
+                  "<Hyperlink>Pasta do Contrato</Hyperlink>", 1)
+    variant = os.path.join(variant_dir, "Contrato-4711-cronograma.xml")
+    with open(variant, "w", encoding="utf-8") as fh:
+        fh.write(x)
+    sets.append([variant])
+    totals = {"runs": 0, "sidecars": 0, "reports": 0, "values_equal": 0}
+    for files in sets:
+        with tempfile.TemporaryDirectory() as tmp:
+            r = secret_roundtrip(files, tmp)
+        failures += [f"{'+'.join(os.path.basename(f) for f in files)}: {x}" for x in r["failures"]]
+        if files == [variant] and not (r["stats"].get("excused") or {}).get("vocabulary"):
+            failures.append("secret: a real value equal to a program word was not excused as vocabulary")
+        totals["runs"] += 1
+        for k in ("sidecars", "reports", "values_equal"):
+            totals[k] += r["stats"][k]
+    import shutil as _shutil
+    _shutil.rmtree(variant_dir, ignore_errors=True)
+    # A customised template is the organisation's branding: it must not reach the work folder.
+    with tempfile.TemporaryDirectory() as tmp:
+        with open(os.path.join(ROOT, "templates", "report.html"), encoding="utf-8") as fh:
+            tpl = fh.read().replace("<body>", "<body><!-- Marca Corporativa Sigilosa -->", 1)
+        custom = os.path.join(tmp, "custom.html")
+        with open(custom, "w", encoding="utf-8") as fh:
+            fh.write(tpl)
+        orig = os.path.join(tmp, "orig")
+        os.makedirs(orig)
+        _shutil.copyfile(os.path.join(ROOT, "fixtures", "positive.xml"), os.path.join(orig, "positive.xml"))
+        subprocess.run([sys.executable, os.path.join(HERE, "review.py"), os.path.join(orig, "positive.xml"),
+                        "--secret", "--quiet", "--template", custom, "--workdir", os.path.join(tmp, "work")],
+                       check=True, capture_output=True, env=_secret_env(os.path.join(tmp, "cfg")),
+                       stdin=subprocess.DEVNULL)
+        if "Marca Corporativa" not in tpl:
+            failures.append("secret: the custom-template probe was not built")
+        for folder, _d, fnames in os.walk(os.path.join(tmp, "work")):
+            for fname in fnames:
+                with open(os.path.join(folder, fname), encoding="utf-8", errors="replace") as fh:
+                    if "Marca Corporativa" in fh.read():
+                        failures.append("secret leak: a customised template reached the work folder")
+    # Same project, two separate runs: one key, the same tokens on both sides.
+    if os.path.isdir(folder):
+        import secret_codec
+        with tempfile.TemporaryDirectory() as tmp:
+            home = os.path.join(tmp, "cfg")
+            orig = os.path.join(tmp, "orig")
+            os.makedirs(orig)
+            import shutil
+            for f in ex:
+                shutil.copyfile(f, os.path.join(orig, os.path.basename(f)))
+            tables = []
+            for f in ex:
+                subprocess.run([sys.executable, os.path.join(HERE, "review.py"),
+                                os.path.join(orig, os.path.basename(f)), "--secret", "--quiet",
+                                "--workdir", os.path.join(tmp, "work")], check=True, capture_output=True,
+                               env=_secret_env(home), stdin=subprocess.DEVNULL)
+            for run_id in os.listdir(os.path.join(home, "vault")):
+                if run_id != "keys":
+                    with open(os.path.join(home, "vault", run_id, "back.json"), encoding="utf-8") as fh:
+                        tables.append(json.load(fh))
+            keys = os.listdir(os.path.join(home, "vault", "keys"))
+            a, b = ({v: k for k, v in t["tokens"].items()} for t in tables)
+            shared = set(a) & set(b)
+            if len(keys) != 1 or not shared or any(a[x] != b[x] for x in shared) \
+                    or tables[0]["origin"] != tables[1]["origin"] or tables[0]["k"] != tables[1]["k"]:
+                failures.append("secret: two runs of the same project do not share key, tokens, origin and k")
+    return {"failures": failures, "totals": totals}
+
+
+def run_all() -> int:
     failures = []
 
     pos = analyse("positive.xml")
@@ -479,7 +1461,7 @@ def main() -> int:
     terms = cyc["residual_terms"]
     if terms is None or abs(cyc["residual_remainder_points"]) >= 0.01 \
             or abs(terms["bac_change"]["points"] - cyc["movement_unexplained_points"]) >= 0.01 \
-            or terms["bac_change"]["delta"] != -2000.0:
+            or terms["bac_change"]["bac_delta"] != -2000.0:
         failures.append(f"residual terms: the fixture's residue is not the BAC change, exactly: {terms}")
     if any(abs(quiet["residual_terms"][k]["points"]) for k in cs_mod.TERM_KEYS):
         failures.append("residual terms: a file compared with itself carries a residue term")
@@ -1416,6 +2398,16 @@ def main() -> int:
             failures.append(f"required rate: rate {_rate} vs required {_req:.3f} disagrees with "
                             f"the projection {_proj:%Y-%m-%d} against {_end:%Y-%m-%d}")
 
+    # ---- modes: free and secret. The preference file, and a run that must not read.
+    failures.extend(mode_checks())
+    secret = secret_checks()
+    failures.extend(secret["failures"])
+
+    # ---- the worked example a reader runs first: what its README lists as planted
+    # is what the engine finds.
+    example = example_checks()
+    failures.extend(example["failures"])
+
     if failures:
         print("FAIL")
         for f in failures:
@@ -1437,6 +2429,10 @@ def main() -> int:
         print("  report render: SKIPPED (node not installed) -- the blank-page guard did not run")
     else:
         print("  report render: both reports executed and produced every expected section")
+    if example["skipped"]:
+        print("  example: SKIPPED (no examples folder beside this copy of the skill)")
+    else:
+        print("  example: the fictitious road pair is what its generator writes; every planted problem found")
     print("  calendars: 9h six-day week and its holiday applied; consistent task not flagged")
     print("  language: pt and en detected from content; every label present in both")
     print("  fields: discovery typed and ranked them; grouping by alias and by a missing name")
@@ -1451,6 +2447,15 @@ def main() -> int:
     print("  readings: every section reads in both languages; synthesis injected without recompute")
     print("  directions: IEAC(t) later/earlier/agree, float vs deadlines, level progress/ES/slip, TSPI clause")
     print("  profile: init/set/validate round-trip; grouping, fields, optional checks and hiding applied")
+    print("  modes: preference set, read and survived a corrupt file; --secret and a stored 'on' stop")
+    print("         without reading inside an agent and run a coded work folder outside one;")
+    print("         'ask' with no terminal says one line on stderr and goes on")
+    t = secret["totals"]
+    print(f"  secret (experimental): {t['runs']} runs, {t['sidecars']} sidecars and {t['reports']} reports "
+          f"decoded equal to free mode ({t['values_equal']} report values); no text, date, money or")
+    print("         path of the files in any work folder or output; guard allows the session's work and")
+    print("         blocks the vault, the original, interpreters, variables and `text`; collisions resolved")
+    print("         (program words and coded figures equal to a real one by chance are excused, by rule)")
     return 0
 
 

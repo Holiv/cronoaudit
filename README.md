@@ -39,7 +39,39 @@ follows the open [Agent Skills](https://agentskills.io) format.
   goes to the agent's provider, under the terms of your account or your company's. Check the
   company policy before pointing an agent at a contract schedule.
 - If the policy forbids it, run the engine without an agent (see [Use](#use)): same report, no
-  conversation, nothing leaves the machine. A private mode for the agent is in development.
+  conversation, nothing leaves the machine.
+
+### Modes
+
+There are two, and only one exists today.
+
+| Mode | What the agent reads | Status |
+|---|---|---|
+| **free** | the schedule and the results; what it reads goes to its provider | what runs today |
+| **secret** | only an encoded version of the schedule; decoding happens on your machine | **in development** |
+
+The switch, the question and the stored preference already exist, so nobody runs in free mode
+without having been told:
+
+```
+review.py delivery.xml --secret     # secret mode: stops, says it is in development, reads nothing
+review.py delivery.xml --free       # free mode, said explicitly
+review.py --secret on|off|ask       # store the preference: secret by default, free without asking, ask
+review.py --config                  # show the stored preference
+```
+
+With neither flag, the preference decides. It lives in `~/.cronoaudit/config.json`
+(`%USERPROFILE%\.cronoaudit\config.json` on Windows), one file read by the engine, the skill and
+the MS Project add-in; out of the box it is `ask`. To an agent you can simply write `--secreto`
+or `--secret` in the request.
+
+**cronoaudit never runs in free mode when secret was asked for.** Until secret mode exists, asking
+for it stops the run (exit code 3) before any file is opened.
+
+What enforces what, without overstating it: the engine's stop and the add-in's dialog are code.
+The question an agent asks before reading is the agent following the skill's instructions; it is
+a courtesy that makes the choice visible, not a barrier. And the engine itself sends nothing in
+either mode: run at a terminal with no agent, "free" changes nothing about where your data goes.
 
 ## Install
 

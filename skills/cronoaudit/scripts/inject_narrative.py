@@ -57,6 +57,11 @@ def main() -> None:
         raise SystemExit("The synthesis file is empty.")
     lang = payload.get("lang", "en")
     when = datetime.now().strftime("%d/%m/%Y %H:%M" if lang == "pt" else "%Y-%m-%d %H:%M")
+    # In a secret-mode work folder today's date is left out: beside a coded status
+    # date it would tell roughly where the coded calendar sits. secret_decode.py
+    # finish writes the time of decoding instead.
+    if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(args.report)), "cronoaudit-secret.json")):
+        when = ""
     payload["narrative"] = {"text": text, "who": args.who, "when": when}
     out = args.out or args.report
     report_html.write(payload, out, args.template)
