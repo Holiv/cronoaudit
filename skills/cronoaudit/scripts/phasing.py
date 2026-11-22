@@ -34,6 +34,17 @@ import xml.etree.ElementTree as ET
 from collections import defaultdict
 from datetime import datetime, timedelta
 
+# Run by path from anywhere, on any interpreter: an isolated Python (-I), and the
+# embeddable Windows package with its ._pth file, do not put the script's own
+# folder on sys.path, so the sibling modules below would not be found.
+_HERE = os.path.dirname(os.path.abspath(__file__))
+if _HERE not in sys.path:
+    sys.path.insert(0, _HERE)
+
+# Money arrives in hundredths of the currency unit; converted by the one helper
+# the parser uses, so this module and the model agree to the last digit.
+import parse_mspdi as mspdi
+
 NS = "{http://schemas.microsoft.com/project}"
 SENTINEL = 32768.0  # what Project writes on a non-working day in a percent block
 TYPE_BASELINE_COST = "10"
@@ -73,9 +84,9 @@ def stream(path: str, group_field: str | None):
         rec = {
             "id": int(el.findtext(NS + "ID") or 0),
             "uid": int(el.findtext(NS + "UID") or 0),
-            "cost": float(bl.findtext(NS + "Cost") or 0) if bl is not None else 0.0,
-            "bcws": float(el.findtext(NS + "BCWS") or 0),
-            "bcwp": float(el.findtext(NS + "BCWP") or 0),
+            "cost": (mspdi.money(bl.findtext(NS + "Cost")) or 0.0) if bl is not None else 0.0,
+            "bcws": mspdi.money(el.findtext(NS + "BCWS")) or 0.0,
+            "bcwp": mspdi.money(el.findtext(NS + "BCWP")) or 0.0,
             "physical": float(el.findtext(NS + "PhysicalPercentComplete") or 0),
             "percent": float(el.findtext(NS + "PercentComplete") or 0),
             "actual_start": el.findtext(NS + "ActualStart"),
@@ -99,10 +110,18 @@ def stream(path: str, group_field: str | None):
                 # A block with no value is a block with nothing in it. Real files
                 # carry these; a fixture never did until one broke the run.
                 continue
-            try:
-                value = float(raw)
-            except ValueError:
-                continue
+            if ty == TYPE_BASELINE_COST:
+                # Same unit as the baseline Cost it sums to (4,677 of 4,677 tasks
+                # measured): hundredths of the currency unit.
+                value = mspdi.money(raw)
+                if value is None:
+                    continue
+            else:
+                # A percent, not money: never scaled. 32768 is the sentinel.
+                try:
+                    value = float(raw)
+                except ValueError:
+                    continue
             if ty == TYPE_PHYSICAL_PCT and value >= SENTINEL:
                 continue
             day = (tp.findtext(NS + "Start") or "")[:10]
@@ -161,6 +180,14 @@ def build(path: str, group_field: str | None) -> dict:
     by_group = defaultdict(lambda: {"planned": defaultdict(float), "earned": defaultdict(float),
                                     "bac": 0.0})
 
+    # Reconciliation tolerances, stated against the raw file values they were
+    # measured with and converted to currency units: zero is below 0.005 raw,
+    # a sum agrees within 0.5 raw (half a cent), and earned
+    # value agrees within 0.01 raw (a hundredth of a cent). Same booleans as
+    # before money was scaled.
+    tol_zero = mspdi.money_tolerance(0.005)
+    tol_sum = mspdi.money_tolerance(0.5)
+    tol_match = mspdi.money_tolerance(0.01)
     for st, rec in stream(path, group_field):
         status = status or st
         tasks += 1
@@ -170,15 +197,15 @@ def build(path: str, group_field: str | None) -> dict:
             with_cost += 1
             bac += cost
         s10 = sum(rec["planned_by_day"].values())
-        if cost > 0 and abs(s10 - cost) < 0.5:
+        if cost > 0 and abs(s10 - cost) < tol_sum:
             sum_eq_cost += 1
         cutoff = status.date().isoformat() if status else "9999-12-31"
         s10_upto = sum(v for d, v in rec["planned_by_day"].items() if d <= cutoff)
-        if rec["bcws"] > 0.005:
+        if rec["bcws"] > tol_zero:
             file_bcws_nonzero += 1
-        if s10_upto > 0.005 or rec["bcws"] > 0.005:
+        if s10_upto > tol_zero or rec["bcws"] > tol_zero:
             bcws_comparable += 1
-            if abs(s10_upto - rec["bcws"]) < 0.5:
+            if abs(s10_upto - rec["bcws"]) < tol_sum:
                 upto_eq_bcws += 1
 
         for d, v in rec["planned_by_day"].items():
@@ -190,11 +217,11 @@ def build(path: str, group_field: str | None) -> dict:
                 g["planned"][d] += v
 
         mine = cost * rec["physical"] / 100.0 if cost > 0 else 0.0
-        if rec["bcwp"] > 0.005:
+        if rec["bcwp"] > tol_zero:
             file_bcwp_nonzero += 1
-        if cost > 0 and (mine > 0.005 or rec["bcwp"] > 0.005):
+        if cost > 0 and (mine > tol_zero or rec["bcwp"] > tol_zero):
             bcwp_comparable += 1
-            if abs(mine - rec["bcwp"]) < 0.01:
+            if abs(mine - rec["bcwp"]) < tol_match:
                 earned_eq_bcwp += 1
         dropped += rec.get("dropped_epoch", 0)
 

@@ -22,6 +22,7 @@ import explain as ex_mod
 import i18n
 import narrative as narrative_mod
 import network_quality as quality_mod
+import parse_mspdi as mspdi
 import profile as prof_mod
 
 # Severity is a judgement, not a measurement: network breaches invalidate every
@@ -244,6 +245,11 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
     ahead_of_baseline = []   # executed before the baseline window; the tool credits nothing yet
     unexplained = []
     status = dt(model["project"].get("status_date"))
+    # Tolerances stated against the raw file values they were measured with
+    # (0.005 raw is zero, 0.01 raw is agreement), in currency units: money is
+    # read in hundredths and converted at parse time. See parse_mspdi.money().
+    tol_zero = mspdi.money_tolerance(0.005)
+    tol_match = mspdi.money_tolerance(0.01)
     for t in lv:
         cost = bl_of(t).get("cost") or 0.0
         if cost <= 0:
@@ -251,14 +257,14 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
         budget += cost
         mine = cost * pct_of(t) / 100.0
         earned += mine
-        if t.get("bcwp") is not None and mine <= 0.005 and t["bcwp"] <= 0.005:
+        if t.get("bcwp") is not None and mine <= tol_zero and t["bcwp"] <= tol_zero:
             both_zero += 1
         elif t.get("bcwp") is not None:
             compared += 1
             earned_file += t["bcwp"]
-            if t["bcwp"] > 0.005:
+            if t["bcwp"] > tol_zero:
                 file_bcwp_nonzero += 1
-            if abs(mine - t["bcwp"]) < 0.01:
+            if abs(mine - t["bcwp"]) < tol_match:
                 matches += 1
             else:
                 bstart = dt(bl_of(t).get("start"))
@@ -279,7 +285,7 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
                                         "mine": round(mine, 2), "file_bcwp": t["bcwp"]})
         if t.get("bcws") is not None:
             planned_file += t["bcws"]
-            if t["bcws"] > 0.005:
+            if t["bcws"] > tol_zero:
                 file_bcws_nonzero += 1
     file_computed_ev = file_bcwp_nonzero > 0
     if not file_computed_ev:
