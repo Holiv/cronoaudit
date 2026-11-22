@@ -371,9 +371,14 @@ UI = {
         "es_ieac": "IEAC(t)", "es_ieac_cap": "independent finish at this efficiency",
         "es_tspi": "TSPI", "es_tspi_cap": "efficiency the remainder needs to finish as planned",
         "es_schedule": "Schedule's own finish", "es_planned": "Planned finish",
-        "es_gap": "The independent finish lands {n} {n?day|days} from the schedule's own finish. The "
+        "es_gap": "The independent finish lands {n} {n?day|days} after the schedule's own finish. The "
                   "gap is the conversation: either the logic is optimistic, or the remainder "
                   "will run at a pace not yet seen.",
+        "es_gap_early": "The independent finish lands {n} {n?day|days} before the schedule's own finish. "
+                        "The schedule allows more time than the pace achieved would need: either it "
+                        "carries margin or it assumes a slower pace from here on.",
+        "es_gap_agree": "The independent finish lands {n} {n?day|days} from the schedule's own finish, "
+                        "within the {t}-day tolerance of the method: the two agree.",
         "es_limits": "Limits.",
         "tspi_recoverable": "recoverable", "tspi_hard": "hard", "tspi_unrecoverable": "unrecoverable in practice",
         "la_title": "Look-ahead", "la_window": "{w} {w?week|weeks}, {a} to {b}",
@@ -739,9 +744,14 @@ UI = {
         "es_ieac": "IEAC(t)", "es_ieac_cap": "término independente nesta eficiência",
         "es_tspi": "TSPI", "es_tspi_cap": "eficiência que o restante precisa para terminar no previsto",
         "es_schedule": "Término do próprio cronograma", "es_planned": "Término previsto",
-        "es_gap": "O término independente cai a {n} {n?dia|dias} do término do próprio cronograma. A "
+        "es_gap": "O término independente cai {n} {n?dia|dias} depois do término do próprio cronograma. A "
                   "diferença é a conversa: ou a lógica está otimista, ou o restante vai rodar "
                   "num ritmo que ainda não aconteceu.",
+        "es_gap_early": "O término independente cai {n} {n?dia|dias} antes do término do próprio cronograma. "
+                        "O cronograma dá mais tempo do que o ritmo realizado precisaria: ou carrega "
+                        "margem, ou supõe um ritmo mais lento daqui em diante.",
+        "es_gap_agree": "O término independente cai a {n} {n?dia|dias} do término do próprio cronograma, "
+                        "dentro da tolerância de {t} dias do método: os dois concordam.",
         "es_limits": "Limites.",
         "tspi_recoverable": "recuperável", "tspi_hard": "difícil", "tspi_unrecoverable": "irrecuperável na prática",
         "la_title": "Look-ahead", "la_window": "{w} {w?semana|semanas}, de {a} a {b}",

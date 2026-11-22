@@ -495,7 +495,7 @@ function renderReview(d){
         <div class="tile cr"><div class="c">${esc(L.es_ieac)}</div><div class="v" style="font-size:22px">${esc(E.ieac_t_date)}</div><div class="t">${esc(L.es_ieac_cap)} · ${esc(L.es_schedule)} ${esc(E.schedule_finish)} · ${esc(L.es_planned)} ${esc(E.planned_finish)}</div></div>
         <div class="tile ${E.tspi_verdict==="recoverable"?"vs":(E.tspi_verdict==="hard"?"al":"cr")}"><div class="c">${esc(L.es_tspi)}</div><div class="v">${n(E.tspi,3)}</div><div class="t">${esc(L.es_tspi_cap)} · ${esc(tv[E.tspi_verdict]||"")}</div></div>
       </div>
-      ${E.gap_vs_schedule_days!=null?`<div class="note"><b>${esc(L.warning)}</b> ${esc(fill(L.es_gap,{n:n(E.gap_vs_schedule_days)}))}</div>`:""}
+      ${E.gap_vs_schedule_days!=null&&E.gap_reading?`<div class="note">${E.gap_reading==="agree"?"":`<b>${esc(L.warning)}</b> `}${esc(fill({later:L.es_gap,earlier:L.es_gap_early,agree:L.es_gap_agree}[E.gap_reading],{n:n(Math.abs(E.gap_vs_schedule_days)),t:n(E.gap_agree_days)}))}</div>`:""}
       <p class="fonte"><b>${esc(L.es_limits)}</b> ${esc(E.limits)}</p>`);
     }
     if(LA.length){

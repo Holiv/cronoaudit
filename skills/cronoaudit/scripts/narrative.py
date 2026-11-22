@@ -29,7 +29,9 @@ R = {
         "net_broken": "{n} {n?activity sits|activities sit} in violated logic ({a1} out of sequence, {a2} in total inversion). Every forecast date below is derived from a network the works does not follow; settle these before discussing a date.",
         "progress": "Weighted progress is {e}% against {p}% planned: {d} {d?point|points} behind.",
         "progress_ahead": "Weighted progress is {e}% against {p}% planned: {d} {d?point|points} ahead.",
+        "progress_even": "Weighted progress is {e}%, level with the {p}% planned.",
         "recon_ok": "The skill's earned value matched the file's own on {m} of {c} {c?leaf|leaves} to the cent, zero against zero left out; the difference is explained.",
+        "recon_all": "The skill's earned value matched the file's own on {c} of {c} {c?leaf|leaves} to the cent, zero against zero left out: nothing differs.",
         "recon_gap": "The skill's earned value differs from the file's on {u} {u?leaf|leaves} without explanation; check which baseline is in use and the earned-value method before trusting either figure.",
         "spi": "Cumulative SPI is {s}: the works has earned {pct}% of what the plan expected by now.",
         "method_gap": "The other earned-value method would read {alt}% instead of {e}%, a gap of {g} {g?point|points}. Switching method changes the curve, not the works.",
@@ -44,11 +46,16 @@ R = {
         "q_pass_all": "The network passes every quantitative metric with a threshold.",
         "bei": "Of {d} {d?activity|activities} due by the status date, {a} finished on time: a baseline execution index of {b}.",
         "float_deadline": "{f}% of incomplete activities carry more than 44 working days of float while {m} of {mm} {mm?milestone|milestones} have no deadline: the float is not slack, it is an unconstrained plan.",
+        "float_deadline_set": "{f}% of incomplete activities carry more than 44 working days of float, although {mm} of {mm} {mm?milestone carries|milestones carry} a deadline: the float does not come from an unconstrained finish. It may be real slack or a missing link; read it as a question.",
         "es_behind": "Earned Schedule falls on {es}: the plan reached today's earned value {d} {d?day|days} ago, a schedule efficiency SPI(t) of {spi}.",
         "es_ahead": "Earned Schedule falls on {es}, {d} {d?day|days} ahead of today: SPI(t) {spi}.",
-        "es_ieac": "At this efficiency the independent finish is {ieac}, {gap} {gap?day|days} from the schedule's own {sched}. Either the logic is optimistic or the remainder will run at a pace not yet seen.",
+        "es_level": "Earned Schedule falls on the status date, {es}: the works has earned what the plan expected by today, SPI(t) {spi}.",
+        "es_ieac": "At this efficiency the independent finish is {ieac}, {gap} {gap?day|days} after the schedule's own finish, {sched}. Either the logic is optimistic or the remainder will run at a pace not yet seen.",
+        "es_ieac_early": "At this efficiency the independent finish is {ieac}, {gap} {gap?day|days} before the schedule's own finish, {sched}. The schedule allows the remainder more time than the pace achieved so far would need: either it carries margin or it assumes a slower pace from here on.",
+        "es_ieac_agree": "At this efficiency the independent finish is {ieac} and the schedule's own finish is {sched}: within {tol} days of each other, the achieved pace and the schedule agree on the date.",
         "es_tspi_easy": "TSPI is {t}: the remainder can finish on the planned date at the plan's own pace.",
-        "es_tspi_hard": "TSPI is {t}: the remainder must run {pct}% above the plan to finish on the planned date. Modest because most of the duration is still ahead, not because the lag is small.",
+        "es_tspi_hard": "TSPI is {t}: the remainder must run {pct}% above the plan to finish on the planned date.",
+        "es_tspi_hard_early": "TSPI is {t}: the remainder must run {pct}% above the plan to finish on the planned date. Modest because most of the duration is still ahead, not because the lag is small.",
         "es_tspi_no": "TSPI is {t}: the remainder would need {pct}% above the plan, which the literature treats as unrecoverable in practice.",
         "la_no": "The next {w} {w?week|weeks} plan {p}% of earning; the practised rate delivers {q}%. Not reachable without a change of pace.",
         "la_yes": "The next {w} {w?week|weeks} plan {p}% of earning and the practised rate delivers {q}%: reachable.",
@@ -61,6 +68,7 @@ R = {
         "fx_oos_rising": "Out-of-sequence execution is rising, from {a} {a?pair|pairs} a month to {b}: the practice is accelerating.",
         "fx_oos_falling": "Out-of-sequence execution is falling, from {a} {a?pair|pairs} a month to {b}.",
         "fx_slip": "Of {n} {n?started activity|started activities}, {early} started early and {late} late; the median start was {p50} {p50?day|days} {dir} the baseline.",
+        "fx_slip_on": "Of {n} {n?started activity|started activities}, {early} started early and {late} late; the median start fell on the baseline date.",
         "early": "before", "late": "after",
         "syn_label": "Executive synthesis",
         "syn_written": "Written by {who} from the figures in this report, on {when}.",
@@ -77,7 +85,9 @@ R = {
         "net_broken": "{n} {n?atividade está|atividades estão} em lógica violada ({a1} fora de sequência, {a2} em inversão total). Toda data de tendência abaixo deriva de uma rede que a obra não segue; resolva isso antes de discutir uma data.",
         "progress": "O avanço ponderado é {e}% contra {p}% previsto: {d} {d?ponto|pontos} atrás.",
         "progress_ahead": "O avanço ponderado é {e}% contra {p}% previsto: {d} {d?ponto|pontos} à frente.",
+        "progress_even": "O avanço ponderado é {e}%, igual aos {p}% previstos.",
         "recon_ok": "O valor agregado da skill bateu com o do arquivo em {m} de {c} {c?folha|folhas} ao centavo, zero contra zero fica fora; a diferença está explicada.",
+        "recon_all": "O valor agregado da skill bateu com o do arquivo em {c} de {c} {c?folha|folhas} ao centavo, zero contra zero fica fora: nada difere.",
         "recon_gap": "O valor agregado da skill difere do arquivo em {u} {u?folha|folhas} sem explicação; confira qual linha de base está em uso e o método antes de confiar em qualquer dos dois.",
         "spi": "O IDP acumulado é {s}: a obra agregou {pct}% do que o plano esperava até agora.",
         "method_gap": "O outro método de valor agregado leria {alt}% em vez de {e}%, diferença de {g} {g?ponto|pontos}. Trocar o método muda a curva, não a obra.",
@@ -92,11 +102,16 @@ R = {
         "q_pass_all": "A rede atende todas as métricas quantitativas com limiar.",
         "bei": "De {d} {d?atividade devida|atividades devidas} até a data de status, {a} {a?terminou|terminaram} no prazo: índice de execução da linha de base de {b}.",
         "float_deadline": "{f}% das atividades incompletas carregam mais de 44 dias úteis de folga enquanto {m} de {mm} {mm?marco|marcos} não têm data limite: a folga não é margem, é plano sem restrição.",
+        "float_deadline_set": "{f}% das atividades incompletas carregam mais de 44 dias úteis de folga, embora {mm} de {mm} {mm?marco tenha|marcos tenham} data limite: a folga não vem de término sem restrição. Pode ser margem real ou vínculo faltando; leia como pergunta.",
         "es_behind": "O Earned Schedule cai em {es}: o plano alcançou o realizado de hoje há {d} {d?dia|dias}, eficiência de prazo SPI(t) de {spi}.",
         "es_ahead": "O Earned Schedule cai em {es}, {d} {d?dia|dias} à frente de hoje: SPI(t) {spi}.",
-        "es_ieac": "Nesta eficiência o término independente é {ieac}, a {gap} {gap?dia|dias} do término do próprio cronograma, {sched}. Ou a lógica está otimista, ou o restante vai rodar num ritmo que ainda não aconteceu.",
+        "es_level": "O Earned Schedule cai na própria data de status, {es}: a obra agregou o que o plano esperava até hoje, SPI(t) {spi}.",
+        "es_ieac": "Nesta eficiência o término independente é {ieac}, {gap} {gap?dia|dias} depois do término do próprio cronograma, {sched}. Ou a lógica está otimista, ou o restante vai rodar num ritmo que ainda não aconteceu.",
+        "es_ieac_early": "Nesta eficiência o término independente é {ieac}, {gap} {gap?dia|dias} antes do término do próprio cronograma, {sched}. O cronograma dá ao restante mais tempo do que o ritmo realizado até aqui precisaria: ou carrega margem, ou supõe um ritmo mais lento daqui em diante.",
+        "es_ieac_agree": "Nesta eficiência o término independente é {ieac} e o término do próprio cronograma é {sched}: com até {tol} dias de diferença, o ritmo realizado e o cronograma concordam na data.",
         "es_tspi_easy": "O TSPI é {t}: o restante termina na data prevista no ritmo do próprio plano.",
-        "es_tspi_hard": "O TSPI é {t}: o restante precisa rodar {pct}% acima do plano para terminar na data prevista. Modesto porque quase toda a duração ainda está pela frente, não porque o atraso seja pequeno.",
+        "es_tspi_hard": "O TSPI é {t}: o restante precisa rodar {pct}% acima do plano para terminar na data prevista.",
+        "es_tspi_hard_early": "O TSPI é {t}: o restante precisa rodar {pct}% acima do plano para terminar na data prevista. Modesto porque a maior parte da duração ainda está pela frente, não porque o atraso seja pequeno.",
         "es_tspi_no": "O TSPI é {t}: o restante precisaria de {pct}% acima do plano, o que a literatura trata como irrecuperável na prática.",
         "la_no": "As próximas {w} {w?semana|semanas} preveem {p}% de medição; o ritmo praticado entrega {q}%. Não alcançável sem mudança de ritmo.",
         "la_yes": "As próximas {w} {w?semana|semanas} preveem {p}% de medição e o ritmo praticado entrega {q}%: alcançável.",
@@ -109,6 +124,7 @@ R = {
         "fx_oos_rising": "A execução fora de sequência está subindo, de {a} {a?par|pares} por mês para {b}: a prática está acelerando.",
         "fx_oos_falling": "A execução fora de sequência está caindo, de {a} {a?par|pares} por mês para {b}.",
         "fx_slip": "De {n} {n?atividade iniciada|atividades iniciadas}, {early} {early?começou|começaram} cedo e {late} tarde; o início mediano foi {p50} {p50?dia|dias} {dir} da linha de base.",
+        "fx_slip_on": "De {n} {n?atividade iniciada|atividades iniciadas}, {early} {early?começou|começaram} cedo e {late} tarde; o início mediano caiu na data da linha de base.",
         "early": "antes", "late": "depois",
         "syn_label": "Síntese executiva",
         "syn_written": "Redigida por {who} a partir dos números deste relatório, em {when}.",
@@ -173,13 +189,18 @@ def build(payload: dict, lang: str) -> dict:
     if e is not None and not planned_ok:
         add("verdict", "planned_na", e=_n(e, 2))
     elif e is not None and p is not None:
-        add("verdict", "progress_ahead" if e > p else "progress", e=_n(e, 2), p=_n(p, 2), d=_n(abs(e - p), 2))
+        # Level is its own reading: "0.00 points behind" is a direction the data lacks.
+        key = "progress_even" if abs(e - p) < 0.005 else ("progress_ahead" if e > p else "progress")
+        add("verdict", key, e=_n(e, 2), p=_n(p, 2), d=_n(abs(e - p), 2))
     rc = m.get("reconciliation") or {}
     if rc.get("file_computed_ev") is False:
         add("verdict", "recon_none")
     elif rc.get("leaves_compared"):
         if rc.get("unexplained"):
             add("verdict", "recon_gap", u=_n(rc["unexplained"], 0))
+        elif rc.get("matches_to_cent") == rc["leaves_compared"]:
+            # Nothing differs, so there is no difference to call explained.
+            add("verdict", "recon_all", c=_n(rc["leaves_compared"], 0))
         else:
             add("verdict", "recon_ok", m=_n(rc["matches_to_cent"], 0), c=_n(rc["leaves_compared"], 0))
 
@@ -247,21 +268,39 @@ def build(payload: dict, lang: str) -> dict:
         add("quality", "bei", d=_n(I["bei_due"], 0), a=_n(I["bei_on_time"], 0), b=_n(I["bei"], 2))
     q6 = next((x for x in q.get("metrics", []) if x["code"] == "Q6"), None)
     QL = q.get("qualitative") or {}
-    if q6 and q6.get("share_pct") and QL.get("milestones"):
-        add("quality", "float_deadline", f=_n(q6["share_pct"], 0), m=_n(QL.get("milestones_without_deadline"), 0), mm=_n(QL["milestones"], 0))
+    # High float is read only when Q6 fails, and "unconstrained plan" only when
+    # some milestone has no deadline: with every milestone constrained the float
+    # has another cause, and the reading asks instead of concluding.
+    if q6 and q6.get("share_pct") and q6.get("status") == "fail" and QL.get("milestones"):
+        no_dl = QL.get("milestones_without_deadline")
+        if no_dl:
+            add("quality", "float_deadline", f=_n(q6["share_pct"], 0), m=_n(no_dl, 0), mm=_n(QL["milestones"], 0))
+        elif no_dl == 0:
+            add("quality", "float_deadline_set", f=_n(q6["share_pct"], 0), mm=_n(QL["milestones"], 0))
 
     # ---- forecast
     fc = payload.get("forecast") or {}
     E = fc.get("earned_schedule") or {}
     if E.get("available"):
-        if E["sv_t_days"] < 0:
+        if abs(E["sv_t_days"]) < 0.5:
+            add("forecast", "es_level", es=E["es_date"], spi=_n(E["spi_t"], 3))
+        elif E["sv_t_days"] < 0:
             add("forecast", "es_behind", es=E["es_date"], d=_n(abs(E["sv_t_days"]), 0), spi=_n(E["spi_t"], 3))
         else:
             add("forecast", "es_ahead", es=E["es_date"], d=_n(E["sv_t_days"], 0), spi=_n(E["spi_t"], 3))
-        if E.get("ieac_t_date") and E.get("gap_vs_schedule_days") is not None:
-            add("forecast", "es_ieac", ieac=E["ieac_t_date"], gap=_n(abs(E["gap_vs_schedule_days"]), 0), sched=E.get("schedule_finish"))
+        # gap = IEAC(t) - schedule finish, classified by forecast.gap_reading. Only
+        # the "later" side supports "the logic is optimistic"; the earlier side says
+        # the schedule allows more time than the pace needs; close is agreement.
+        key = {"later": "es_ieac", "earlier": "es_ieac_early", "agree": "es_ieac_agree"}.get(E.get("gap_reading"))
+        if E.get("ieac_t_date") and key and E.get("gap_vs_schedule_days") is not None:
+            add("forecast", key, ieac=E["ieac_t_date"], gap=_n(abs(E["gap_vs_schedule_days"]), 0),
+                sched=E.get("schedule_finish"), tol=_n(E.get("gap_agree_days"), 0))
         if E.get("tspi") is not None:
             key = {"recoverable": "es_tspi_easy", "hard": "es_tspi_hard", "unrecoverable": "es_tspi_no"}.get(E.get("tspi_verdict"), "es_tspi_hard")
+            # "Modest because most of the duration is ahead" is said only when it is.
+            at, pd = E.get("at_days"), E.get("pd_days")
+            if key == "es_tspi_hard" and at is not None and pd and at / pd < 0.5:
+                key = "es_tspi_hard_early"
             add("forecast", key, t=_n(E["tspi"], 3), pct=_n(max(0.0, (E["tspi"] - 1) * 100), 1))
     for w in fc.get("lookahead") or []:
         if w.get("reachable") is not None:
@@ -303,8 +342,12 @@ def build(payload: dict, lang: str) -> dict:
     SL = (fx.get("execution") or {}).get("start_slippage") or {}
     if SL.get("sample"):
         p50 = SL.get("p50") or 0
-        add("forensics", "fx_slip", n=_n(SL["sample"], 0), early=_n(SL["started_early"], 0), late=_n(SL["started_late"], 0),
-            p50=_n(abs(p50), 0), dir=T["early"] if p50 < 0 else T["late"])
+        if round(abs(p50)) == 0:
+            add("forensics", "fx_slip_on", n=_n(SL["sample"], 0), early=_n(SL["started_early"], 0),
+                late=_n(SL["started_late"], 0))
+        else:
+            add("forensics", "fx_slip", n=_n(SL["sample"], 0), early=_n(SL["started_early"], 0),
+                late=_n(SL["started_late"], 0), p50=_n(abs(p50), 0), dir=T["early"] if p50 < 0 else T["late"])
     return out
 
 
