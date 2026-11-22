@@ -1081,6 +1081,10 @@ def document(snap: dict, uid_of: dict) -> str:
         f"  <CurrentDate>{ts(status + timedelta(days=4), False)}</CurrentDate>",
         "  <NewTasksAreManual>0</NewTasksAreManual>",
         "  <DefaultTaskEVMethod>1</DefaultTaskEVMethod>",
+        # Without this flag Project treats the file as edited outside it and recalculates on
+        # open: material progress and partial progress are dropped and fixed cost is invented.
+        # Isolated on 22/11/2026 by opening 18 one-field variants in MS Project 16.
+        "  <ProjectExternallyEdited>0</ProjectExternallyEdited>",
         "  <ExtendedAttributes>",
         f"    <ExtendedAttribute><FieldID>{FIELD_DISC}</FieldID><FieldName>Text1</FieldName>"
         "<Alias>DISCIPLINA</Alias></ExtendedAttribute>",
