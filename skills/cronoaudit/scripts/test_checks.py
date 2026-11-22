@@ -390,6 +390,7 @@ def main() -> int:
     import narrative as nar_mod
     import report_data as rd_mod
     for table, label in ((i18n_mod.CYCLE, "cycle strings"), (nar_mod.RC, "cycle readings"),
+                         (nar_mod.R, "readings"),
                          (i18n_mod.CONSTRAINTS, "constraint names")):
         for lang in table:
             gap = set(table["en"]) ^ set(table[lang])
@@ -1055,6 +1056,88 @@ def main() -> int:
     if re.search(r"\d[.,]\d{3,}\s*%", console) or "aveta" in console:
         failures.append("console: a percentage with more than two decimals, or the storage word for the baseline")
 
+    # ---- a reading holds only in the direction, or for the count, that supports it.
+    # IEAC(t) earlier than the schedule's finish is not "the logic is optimistic";
+    # high float with every milestone constrained is not "an unconstrained plan".
+    def es_inputs(sched_finish):
+        periods = [{"period": f"2027-{k:02d}", "planned": 10.0, "planned_cum_pct": 10.0 * k}
+                   for k in range(1, 11)]
+        sc = {"periods": periods, "status_date": "2027-05-31T17:00:00", "bac": 100.0,
+              "totals": {"earned_pct": 50.0, "planned_pct": 50.0}}
+        mdl = {"project": {"finish": sched_finish}, "prevailing_baseline": {"slot": "0"},
+               "tasks": [{"baselines": {"0": {"finish": "2027-10-22T17:00:00"}}}]}
+        return fc_mod.earned_schedule(sc, mdl)
+    # IEAC(t) lands on 22/10 at midnight; the finish is at 17:00. The gap is counted
+    # in calendar dates: a floored timedelta made three days earlier read as four.
+    for fin, want_gap, want_read in (("2027-10-25T17:00:00", -3, "agree"),
+                                     ("2027-10-19T17:00:00", 3, "agree"),
+                                     ("2027-11-25T17:00:00", -34, "earlier"),
+                                     ("2027-09-24T17:00:00", 28, "later")):
+        E_ = es_inputs(fin)
+        if E_.get("ieac_t_date") != "2027-10-22" or E_.get("gap_vs_schedule_days") != want_gap \
+                or E_.get("gap_reading") != want_read:
+            failures.append(f"ieac gap: finish {fin} gave {E_.get('ieac_t_date')}, "
+                            f"{E_.get('gap_vs_schedule_days')} days, {E_.get('gap_reading')}; "
+                            f"expected 2027-10-22, {want_gap}, {want_read}")
+    ieac_said = {"later": {"en": ("logic is optimistic", "days after"), "pt": ("lógica está otimista", "dias depois")},
+                 "earlier": {"en": ("days before", "carries margin"), "pt": ("dias antes", "carrega margem")},
+                 "agree": {"en": ("agree on the date",), "pt": ("concordam na data",)}}
+    ieac_gone = {"en": "logic is optimistic", "pt": "lógica está otimista"}
+    for fin, read in (("2027-09-24T17:00:00", "later"), ("2027-11-25T17:00:00", "earlier"),
+                      ("2027-10-25T17:00:00", "agree")):
+        E_ = es_inputs(fin)
+        for lang in ("en", "pt"):
+            txt = " ".join(nar_mod.build({"meta": {}, "findings": [],
+                                          "forecast": {"earned_schedule": E_}}, lang).get("forecast", []))
+            for s_ in ieac_said[read][lang]:
+                if s_ not in txt:
+                    failures.append(f"ieac reading ({read}, {lang}): '{s_}' missing: {txt}")
+            if read != "later" and ieac_gone[lang] in txt:
+                failures.append(f"ieac reading ({read}, {lang}): concludes the logic is optimistic")
+    # TSPI: "modest because most of the duration is ahead" only when it is.
+    for at_, early_ in ((100, True), (450, False)):
+        E_ = {"available": True, "sv_t_days": -10.0, "es_date": "2027-01-01", "spi_t": 0.95,
+              "tspi": 1.05, "tspi_verdict": "hard", "at_days": at_, "pd_days": 568}
+        for lang, word in (("en", "Modest because"), ("pt", "Modesto porque")):
+            txt = " ".join(nar_mod.build({"meta": {}, "findings": [],
+                                          "forecast": {"earned_schedule": E_}}, lang).get("forecast", []))
+            if (word in txt) != early_ or "TSPI" not in txt:
+                failures.append(f"tspi reading ({lang}, {at_}/568 elapsed): the 'most is ahead' clause "
+                                f"{'is missing' if early_ else 'is stated late in the project'}")
+    # A level Earned Schedule is neither ahead nor behind.
+    lvl = nar_mod.build({"meta": {}, "findings": [], "forecast": {"earned_schedule": {
+        "available": True, "sv_t_days": 0.2, "es_date": "2027-05-31", "spi_t": 1.0}}}, "pt").get("forecast", [])
+    if not any("própria data de status" in s_ for s_ in lvl) or any("à frente" in s_ for s_ in lvl):
+        failures.append(f"es reading: a level Earned Schedule was read as ahead: {lvl}")
+    # Float against milestones: the conclusion needs a milestone without a deadline.
+    def q_read(no_dl, status, lang):
+        return " ".join(nar_mod.build({"meta": {}, "findings": [], "quality": {
+            "metrics": [{"code": "Q6", "title": "High float", "share_pct": 12.0, "status": status}],
+            "qualitative": {"milestones": 9, "milestones_without_deadline": no_dl}}}, lang).get("quality", []))
+    for lang, concl, ask in (("en", "unconstrained plan", "read it as a question"),
+                             ("pt", "plano sem restrição", "leia como pergunta")):
+        t0, t3, tp = q_read(0, "fail", lang), q_read(3, "fail", lang), q_read(3, "pass", lang)
+        if concl in t0 or ask not in t0 or "9 of 9" not in t0 and "9 de 9" not in t0:
+            failures.append(f"float reading ({lang}): every milestone has a deadline, yet: {t0}")
+        if concl not in t3 or "3 " not in t3:
+            failures.append(f"float reading ({lang}): milestones without deadline lost the conclusion: {t3}")
+        if "44" in tp:
+            failures.append(f"float reading ({lang}): Q6 passes, yet the high float is read as a finding: {tp}")
+    # Level progress, a reconciliation with nothing differing, a median start on the baseline.
+    lv = nar_mod.build({"meta": {"percent_earned": 40.0, "percent_planned_file": 40.0,
+                                 "inputs": {"planned_available": True},
+                                 "reconciliation": {"leaves_compared": 5, "matches_to_cent": 5,
+                                                    "unexplained": 0}},
+                        "findings": [], "forensics": {"execution": {"start_slippage": {
+                            "sample": 4, "started_early": 2, "started_late": 2, "p50": 0.2}}}}, "pt")
+    vt, ft = " ".join(lv.get("verdict", [])), " ".join(lv.get("forensics", []))
+    if "igual aos 40,00% previstos" not in vt or "atrás" in vt:
+        failures.append(f"progress reading: level progress read with a direction: {vt}")
+    if "explicada" in vt or "5 de 5 folhas" not in vt:
+        failures.append(f"reconciliation reading: a difference was called explained where none exists: {vt}")
+    if "caiu na data da linha de base" not in ft or "depois" in ft:
+        failures.append(f"slippage reading: a median start on the baseline was given a direction: {ft}")
+
     # ---- the report must actually render. A valid file that runs to a blank page
     # is the failure mode this guards; see scripts/test_render.js for the real bug.
     rendered = render_checks()
@@ -1093,6 +1176,7 @@ def main() -> int:
     print("  forecast: earned schedule, look-ahead, rates, milestone bands, rain exposure")
     print("  forensics: driving chain through the lag link, origin named, cycle readings")
     print("  readings: every section reads in both languages; synthesis injected without recompute")
+    print("  directions: IEAC(t) later/earlier/agree, float vs deadlines, level progress/ES/slip, TSPI clause")
     print("  profile: init/set/validate round-trip; grouping, fields, optional checks and hiding applied")
     return 0
 
