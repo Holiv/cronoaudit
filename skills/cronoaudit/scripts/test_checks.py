@@ -404,8 +404,14 @@ def mode_checks() -> list:
     xml = os.path.join(ROOT, "fixtures", "positive.xml")
     saved = os.environ.get("CRONOAUDIT_CONFIG_DIR")
 
-    def engine(args, home):
-        env = dict(os.environ, CRONOAUDIT_CONFIG_DIR=home)
+    def engine(args, home, agent=False):
+        # The tests may themselves run inside an agent (Claude Code sets these for
+        # every command it runs). Secret mode refuses to start there, which is one of
+        # the cases below; every other case runs as a person at a terminal would.
+        env = {k: v for k, v in os.environ.items() if k not in ("CLAUDECODE", "CLAUDE_CODE_CHILD_SESSION")}
+        env.update(CRONOAUDIT_CONFIG_DIR=home, CRONOAUDIT_WORK_DIR=work)
+        if agent:
+            env["CLAUDE_CODE_CHILD_SESSION"] = "1"
         # DEVNULL: not a terminal, whatever started the tests.
         return subprocess.run([sys.executable, os.path.join(HERE, "review.py")] + args,
                               capture_output=True, text=True, env=env,
@@ -415,6 +421,7 @@ def mode_checks() -> list:
         with tempfile.TemporaryDirectory() as tmp:
             home = os.path.join(tmp, "home", ".cronoaudit")   # does not exist yet
             out = os.path.join(tmp, "out")
+            work = os.path.join(tmp, "work")
             os.environ["CRONOAUDIT_CONFIG_DIR"] = home
 
             # ---- the file: missing, set, read back, other keys kept, corrupt, invalid
@@ -491,36 +498,50 @@ def mode_checks() -> list:
                 if review.normalise_mode_args(argv) != want:
                     failures.append(f"modes: {argv} normalised to {review.normalise_mode_args(argv)}")
 
-            # ---- --secret stops without reading. The file named does not exist: had
-            # the engine gone as far as looking for it, the message would say so.
+            # ---- --secret started by an agent stops without reading. The file named
+            # does not exist: had the engine gone as far as looking for it, the
+            # message would say so.
             def nothing_written():
                 return not os.path.exists(out) or not os.listdir(out)
+            def no_work():
+                return not os.path.exists(work) or not os.listdir(work)
             import shutil
             shutil.rmtree(out, ignore_errors=True)
             for args in ([xml, "--secret", "--outdir", out], ["--secret", xml, "--outdir", out],
                          [xml, "--secreto", "--outdir", out, "--lang", "pt"]):
-                r = engine(args, home)   # the stored preference is "off": the flag wins
-                if r.returncode != review.EXIT_SECRET or r.stdout.strip() or not nothing_written():
-                    failures.append(f"modes: {args[:2]} did not stop clean: rc {r.returncode}, "
+                r = engine(args, home, agent=True)   # the stored preference is "off": the flag wins
+                if r.returncode != review.EXIT_SECRET or r.stdout.strip() or not nothing_written() \
+                        or not no_work():
+                    failures.append(f"modes: {args[:2]} inside an agent did not stop clean: rc {r.returncode}, "
                                     f"stdout {r.stdout[:80]!r}, outdir {os.path.exists(out)}")
                 if "Nothing was read" not in r.stderr and "Nada foi lido" not in r.stderr:
                     failures.append("modes: the stop message does not say that nothing was read")
-                if "in development" not in r.stderr and "em desenvolvimento" not in r.stderr:
-                    failures.append("modes: the stop message does not say the mode is in development")
-            r = engine([os.path.join(tmp, "no-such-file.xml"), "--secret", "--lang", "en"], home)
-            if r.returncode != review.EXIT_SECRET or "no such file" in (r.stderr + r.stdout):
-                failures.append("modes: --secret looked for the schedule before stopping")
+                if "CLAUDE_CODE_CHILD_SESSION" not in r.stderr:
+                    failures.append("modes: the stop message does not name what showed an agent started it")
+            r = engine([os.path.join(tmp, "no-such-file.xml"), "--secret", "--lang", "en"], home, agent=True)
+            if r.returncode != review.EXIT_SECRET or "no such file" in (r.stderr + r.stdout) \
+                    or "not found" in (r.stderr + r.stdout):
+                failures.append("modes: --secret inside an agent looked for the schedule before stopping")
             if "SECRET mode was requested" not in r.stderr or "SECRETO" in r.stderr:
                 failures.append("modes: with --lang en the stop message is not in English only")
             r = engine([xml, "--secret", "--free"], home)
             if r.returncode != 2 or not nothing_written():
                 failures.append("modes: --secret with --free was not rejected")
+            # ---- run by a person, --secret runs: a work folder, nothing beside the file
+            r = engine([xml, "--secret", "--outdir", out, "--quiet", "--lang", "en"], home)
+            if r.returncode != 0 or not nothing_written() or no_work() or "Work folder" not in r.stdout:
+                failures.append(f"modes: --secret run by a person did not write a work folder only: "
+                                f"rc {r.returncode} {r.stderr[-200:]!r}")
 
             # ---- stored "on" behaves as --secret; --free is the only way through it
             engine(["--secret", "on"], home)
-            r = engine([xml, "--outdir", out, "--quiet"], home)
+            r = engine([xml, "--outdir", out, "--quiet"], home, agent=True)
             if r.returncode != review.EXIT_SECRET or not nothing_written() or cfg.config_path() not in r.stderr:
-                failures.append(f"modes: a stored 'on' did not stop the run and name the file: rc {r.returncode}")
+                failures.append(f"modes: a stored 'on' inside an agent did not stop and name the file: rc {r.returncode}")
+            shutil.rmtree(work, ignore_errors=True)
+            r = engine([xml, "--outdir", out, "--quiet"], home)
+            if r.returncode != 0 or not nothing_written() or no_work():
+                failures.append(f"modes: a stored 'on' did not run in secret mode: rc {r.returncode}")
             r = engine([xml, "--outdir", out, "--quiet", "--free"], home)
             if r.returncode != 0 or nothing_written() or r.stderr.strip():
                 failures.append(f"modes: --free did not run, quietly, over a stored 'on': {r.stderr!r}")
@@ -548,14 +569,14 @@ def mode_checks() -> list:
                 old_in, old_err = sys.stdin, sys.stderr
                 sys.stdin, sys.stderr = io.StringIO(text), io.StringIO()
                 try:
-                    review.ask_mode(cfg.load(), i18n.modes_text("pt"), ["pt"])
-                    return "go", sys.stderr.getvalue()
+                    mode = review.ask_mode(cfg.load(), i18n.modes_text("pt"), ["pt"])
+                    return ("go" if mode == "free" else mode), sys.stderr.getvalue()
                 except SystemExit as exc:
                     return exc.code, sys.stderr.getvalue()
                 finally:
                     sys.stdin, sys.stderr = old_in, old_err
             for text, want, pref in (("s\n", "go", "ask"), ("livre\n", "go", "ask"), ("y\n", "go", "ask"),
-                                     ("secreto\n", review.EXIT_SECRET, "ask"), ("n\n", 1, "ask"),
+                                     ("secreto\n", "secret", "ask"), ("n\n", 1, "ask"),
                                      ("nunca\n", "go", "off"), ("\n\nwhat\n", 1, "ask"), ("", 1, "ask"),
                                      ("talvez\nsim\n", "go", "ask")):
                 got, shown = answer(text)

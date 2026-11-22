@@ -17,7 +17,7 @@ on a machine with no network and looks the same there.
 Modes. The engine sends nothing either way; the mode is about what an AGENT reads.
 
     python3 review.py delivery.xml --free       # free mode, said explicitly
-    python3 review.py delivery.xml --secret     # secret mode: in development, so it stops
+    python3 review.py delivery.xml --secret     # secret mode (experimental): a coded work folder
     python3 review.py --secret on|off|ask       # store the preference and exit
     python3 review.py --config                  # print the stored preference
 
@@ -262,8 +262,23 @@ def describe_config(state: dict, txt: dict) -> str:
     return "\n".join(lines)
 
 
-def stop_for_secret(origin_key: str, state: dict, langs: list) -> None:
-    """Secret mode was asked for and does not exist yet: stop, having read nothing.
+def agent_environment() -> str | None:
+    """The name of the variable that says an agent started this process, if one does.
+
+    Secret mode protects only if the agent never holds the original, so the coded
+    run must be started by the person (or by the MS Project add-in), not by the
+    agent. Claude Code documents CLAUDE_CODE_CHILD_SESSION for the processes its
+    tools start and CLAUDECODE for those and for IDE terminals. Other agents
+    document no such variable, so for them this check does nothing; SKILL.md says so.
+    """
+    for name in ("CLAUDE_CODE_CHILD_SESSION", "CLAUDECODE"):
+        if os.environ.get(name):
+            return name
+    return None
+
+
+def stop_for_secret(origin_key: str, state: dict, langs: list, reason: str = "secret_stop") -> None:
+    """Secret mode was asked for and cannot run here: stop, having read nothing.
 
     Never a fallback to free mode. The person who asked for secret and got a free
     run would have sent the schedule to a provider believing they had not.
@@ -273,12 +288,13 @@ def stop_for_secret(origin_key: str, state: dict, langs: list) -> None:
         txt = i18n.modes_text(lang)
         if n:
             say("")
-        say(txt["secret_stop"].format(origin=txt[origin_key].format(path=state["path"])))
+        say(txt[reason].format(origin=txt[origin_key].format(path=state["path"]),
+                               variable=agent_environment() or ""))
     raise SystemExit(EXIT_SECRET)
 
 
-def ask_mode(state: dict, txt: dict, langs: list) -> None:
-    """The question, at a terminal. Returns to go on in free mode; exits otherwise."""
+def ask_mode(state: dict, txt: dict, langs: list) -> str:
+    """The question, at a terminal. Returns "free" or "secret"; exits otherwise."""
     for _attempt in range(3):
         say(txt["question"])
         sys.stderr.write("> ")
@@ -288,16 +304,16 @@ def ask_mode(state: dict, txt: dict, langs: list) -> None:
             break
         answer = line.strip().lower()
         if answer in ("s", "sim", "y", "yes", "l", "livre", "free"):
-            return
+            return "free"
         if answer in ("secreto", "secret"):
-            stop_for_secret("origin_answer", state, langs)
+            return "secret"
         if answer in ("nunca", "never"):
             try:
                 path = cfg_mod.set_secret("off")
                 say(txt["never_saved"].format(path=path))
             except OSError as exc:
                 say(txt["never_failed"].format(path=state["path"], error=exc))
-            return
+            return "free"
         if answer in ("n", "nao", "não", "no", "c", "cancelar", "cancel"):
             say(txt["cancelled"])
             raise SystemExit(1)
@@ -306,10 +322,9 @@ def ask_mode(state: dict, txt: dict, langs: list) -> None:
     raise SystemExit(1)
 
 
-def settle_mode(args, lang_forced) -> None:
-    """Decide the mode of this run. Called before any schedule is opened.
-
-    Returns when the run goes on in free mode; exits when it must not go on.
+def settle_mode(args, lang_forced) -> str:
+    """Decide the mode of this run: "free" or "secret". Called before any schedule
+    is opened. Exits when the run must not go on.
     """
     import i18n
     lang = lang_forced or cfg_mod.system_lang()
@@ -323,16 +338,22 @@ def settle_mode(args, lang_forced) -> None:
     except (AttributeError, ValueError):
         interactive = False
     mode = cfg_mod.decide(args.secret == "run", args.free, state["secret"], interactive)
-    if mode == "secret":
-        stop_for_secret("origin_flag" if args.secret == "run" else "origin_pref", state, langs)
+    origin = "origin_flag" if args.secret == "run" else "origin_pref"
     if mode == "ask":
         if state["status"] in ("corrupt", "invalid"):
             say("cronoaudit: " + txt["config_" + state["status"]].format(detail=state["detail"]))
-        ask_mode(state, txt, langs)
+        mode = ask_mode(state, txt, langs)
+        origin = "origin_answer"
     elif mode == "notice":
         if state["status"] in ("corrupt", "invalid"):
             say("cronoaudit: " + txt["config_" + state["status"]].format(detail=state["detail"]))
         say(txt["notice"])
+        mode = "free"
+    if mode == "secret" and agent_environment():
+        # Started by an agent: the agent already holds the path of the original, so
+        # coding the output would protect nothing. Stop; the person runs it.
+        stop_for_secret(origin, state, langs, "secret_agent_stop")
+    return mode
 
 
 def main() -> None:
@@ -344,8 +365,8 @@ def main() -> None:
                     help="one export to review, or two to compare (previous first)")
     ap.add_argument("--secret", "--secreto", dest="secret", nargs="?", const="run",
                     choices=["run", "on", "off", "ask"], metavar="on|off|ask",
-                    help="alone: run in secret mode (in development: the run stops, nothing "
-                         "is read). With on, off or ask: store the preference and exit")
+                    help="alone: run in secret mode (experimental): the agent reads only a coded "
+                         "copy, in a work folder. With on, off or ask: store the preference and exit")
     ap.add_argument("--free", "--livre", dest="free", action="store_true",
                     help="run in free mode explicitly: whatever an agent reads goes to its provider")
     ap.add_argument("--config", action="store_true",
@@ -360,6 +381,10 @@ def main() -> None:
                     help="field the report groups weight by (default: the top WBS branch)")
     ap.add_argument("--template", help="a customised report template to use instead of the default")
     ap.add_argument("--profile", help="JSON profile with theme and field mappings")
+    ap.add_argument("--workdir", help="secret mode: the folder under which the coded work folder "
+                                      "is created (default ~/cronoaudit-work)")
+    ap.add_argument("--project", help="secret mode: the name that keeps the same codes across "
+                                      "versions (default: the folder of the schedule)")
     ap.add_argument("--lang", choices=["en", "pt"],
                     help="force the report language; by default it follows the schedule's own")
     args = ap.parse_args(normalise_mode_args(sys.argv[1:]))
@@ -384,8 +409,20 @@ def main() -> None:
         return
     if not args.files:
         ap.error(mode_txt["no_files"])
-    settle_mode(args, args.lang)
+    mode = settle_mode(args, args.lang)
 
+    if mode == "secret":
+        import secret_mode
+        raise SystemExit(secret_mode.run(args))
+    analyse(args)
+
+
+def analyse(args, outdir=None) -> list:
+    """The analysis itself, the same in both modes. Returns the models it read.
+
+    Secret mode calls this with `outdir` in the vault: the engine runs on the real
+    data exactly as in free mode, and only what it wrote is coded afterwards.
+    """
     if len(args.files) > 2:
         raise SystemExit("Pass one file to review, or two to compare. More than two is ambiguous.")
 
@@ -393,7 +430,7 @@ def main() -> None:
         if not os.path.exists(f):
             raise SystemExit(f"{f}: no such file")
 
-    outdir = args.outdir or os.path.dirname(os.path.abspath(args.files[-1]))
+    outdir = outdir or args.outdir or os.path.dirname(os.path.abspath(args.files[-1]))
     os.makedirs(outdir, exist_ok=True)
 
     profile = prof_mod.load(args.profile)
@@ -411,7 +448,7 @@ def main() -> None:
         do_review(models[0], args.files[0], outdir, args.threshold_days,
                   args.tolerance_days, args.quiet, theme, grouping, template, lang,
                   profile=profile)
-        return
+        return models
 
     prev_path, curr_path = args.files
     prev, curr = models
@@ -444,6 +481,7 @@ def main() -> None:
         print()
     print(f"  report   {base}.html")
     print(f"  data     {base}.json")
+    return models
 
 
 if __name__ == "__main__":
