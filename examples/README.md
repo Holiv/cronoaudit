@@ -17,7 +17,7 @@ represented.
 
 ## What is in the schedule
 
-- 142 activities under 32 summary rows, about 220 links, 45 resources, task names in
+- 142 activities under 32 summary rows, about 220 links, 38 resources, task names in
   Brazilian Portuguese.
 - WBS by stretch and discipline: contractual milestones, mobilisation, four 6 km
   segments (earthworks, drainage, paving, signing, lighting), a viaduct, demobilisation.
@@ -25,10 +25,6 @@ represented.
   from December to March: the project calendar (five days) and the earthworks calendar
   (six days). Each resource also carries its own calendar derived from one of the two,
   which is how MS Project saves a resource and what it expects when it opens the file.
-- Each measured service carries two assignments: the quantity (a material resource
-  priced per unit, which is the whole cost) and the crew that executes it (a work
-  resource at no rate). MS Project keeps an activity's progress in the work of its
-  assignments, so a quantity alone would open at zero percent.
 - Nine milestones, each with a deadline.
 - A cost-loaded baseline (unit prices times quantities), **distributed in time** one
   block per working day, so planned-to-date, SV, SPI and Earned Schedule are computable.
