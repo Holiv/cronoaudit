@@ -121,6 +121,22 @@ def working_days_between(cal, a, b):
     return max(1, abs(cal.working_days(a, b) or 0))
 
 
+def working_days_after(cal, status, end):
+    """Working days left after the status date, up to and including `end`.
+
+    The status day itself is spent: the projection (add_working_days) starts on
+    the next day, so the required rate must divide by the same days. Counting the
+    status day made the required rate one day too low, and an activity whose
+    practised rate beat the required one could still be projected late.
+    """
+    if status is None or end is None:
+        return None
+    nxt = status + timedelta(days=1)
+    if end.date() < nxt.date():
+        return 1
+    return working_days_between(cal, nxt, end)
+
+
 def add_working_days(cal, start: datetime, days: float, limit_days: int = 3660):
     """The date `days` working days after `start`, on the calendar."""
     if days <= 0:
@@ -300,9 +316,9 @@ def build(xml_path: str, model: dict, profile: dict | None = None) -> dict:
                     for k, p in projected.items()}
         req_trend = req_late = None
         if status and row["_trend"] and row["_trend"] > status:
-            req_trend = row["remaining_qty"] / working_days_between(cal, status, row["_trend"])
+            req_trend = row["remaining_qty"] / working_days_after(cal, status, row["_trend"])
         if status and row["_late"] and row["_late"] > status:
-            req_late = row["remaining_qty"] / working_days_between(cal, status, row["_late"])
+            req_late = row["remaining_qty"] / working_days_after(cal, status, row["_late"])
         days_to_critical = None
         if projected.get("global") and row["_late"]:
             days_to_critical = (row["_late"] - projected["global"]).days

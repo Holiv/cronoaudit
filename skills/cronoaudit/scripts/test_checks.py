@@ -1377,6 +1377,23 @@ def main() -> int:
     rendered = render_checks()
     failures.extend(rendered["failures"])
 
+    # Required rate and projection count the same days: the status day is spent.
+    # Found by an agent in secret mode on 22/11/2026 (activity 149 of the example):
+    # practised rate above the required one, verdict still "critical".
+    from datetime import datetime as _dt
+    import resources as _res
+    _st = _dt(2026, 11, 3, 17, 0)
+    _end = _dt(2026, 11, 10, 17, 0)
+    _days = _res.working_days_after(None, _st, _end)
+    if _days != 7:
+        failures.append(f"required rate: days after the status date should be 7, got {_days}")
+    for _qty, _rate in ((137.6, 21.474), (140.0, 20.0), (150.0, 20.0), (139.9, 20.0), (5.0, 0.7)):
+        _req = _qty / _days
+        _proj = _res.add_working_days(None, _st, _qty / _rate)
+        if (_rate >= _req) != (_proj <= _end):
+            failures.append(f"required rate: rate {_rate} vs required {_req:.3f} disagrees with "
+                            f"the projection {_proj:%Y-%m-%d} against {_end:%Y-%m-%d}")
+
     if failures:
         print("FAIL")
         for f in failures:
