@@ -330,11 +330,12 @@ UI = {
                         "chain still carrying at least {n} {n?working day|working days} of variance: the delay "
                         "has a name, not an aggregate.",
         "fx_origins": "Activities originating delay on the most milestones",
-        "col_milestones_n": "Milestones", "col_origin": "Origin", "col_origin_var": "Origin var. (d)",
+        "col_milestones_n": "Milestones", "col_origin": "Origin", "col_origin_var": "Origin var. (working d)",
         "col_chain": "Chain", "col_open_end": "Open end", "col_reaches": "Reaches started work",
-        "col_amplifier": "Grew most at", "col_added": "Added (d)",
+        "col_amplifier": "Grew most at", "col_added": "Added (working d)",
         "fx_chain_show": "Show the driving chain",
-        "col_via": "Via", "col_var_days": "Var. (d)", "col_started": "Started",
+        "col_via": "Via", "col_var_days": "Var. (working d)", "col_started": "Started",
+        "col_bl_moved": "Baseline moved this cycle (calendar d)",
         "fx_cal_title": "Calendar forensics",
         "fx_cal_sub": "A productivity reserve registered for one year while the activities on "
                       "that calendar execute in another embeds optimism nothing in the file "
@@ -352,8 +353,8 @@ UI = {
         "fx_cycle_sub": "Between the two snapshots: float consumed per group, activities that "
                         "became critical, and the movement of each milestone attributed to what "
                         "moved on its driving chain: execution, replan, or a moved reference.",
-        "col_float_before": "Float before", "col_float_now": "Float now", "col_consumed": "Consumed (d)",
-        "col_moved": "Moved (d)", "col_attribution": "Attribution", "col_finish_before": "Finish before",
+        "col_float_before": "Float before", "col_float_now": "Float now", "col_consumed": "Consumed (working d)",
+        "col_moved": "Moved (calendar d)", "col_attribution": "Attribution", "col_finish_before": "Finish before",
         "col_finish_now": "Finish now", "fx_became_critical": "Became critical this cycle",
         "fc_title": "Looking forward",
         "fc_sub": "Five readings from data the file already carries. Earned Schedule asks on "
@@ -371,9 +372,14 @@ UI = {
         "es_ieac": "IEAC(t)", "es_ieac_cap": "independent finish at this efficiency",
         "es_tspi": "TSPI", "es_tspi_cap": "efficiency the remainder needs to finish as planned",
         "es_schedule": "Schedule's own finish", "es_planned": "Planned finish",
-        "es_gap": "The independent finish lands {n} {n?day|days} from the schedule's own finish. The "
+        "es_gap": "The independent finish lands {n} {n?day|days} after the schedule's own finish. The "
                   "gap is the conversation: either the logic is optimistic, or the remainder "
                   "will run at a pace not yet seen.",
+        "es_gap_early": "The independent finish lands {n} {n?day|days} before the schedule's own finish. "
+                        "The schedule allows more time than the pace achieved would need: either it "
+                        "carries margin or it assumes a slower pace from here on.",
+        "es_gap_agree": "The independent finish lands {n} {n?day|days} from the schedule's own finish, "
+                        "within the {t}-day tolerance this report applies: the two agree.",
         "es_limits": "Limits.",
         "tspi_recoverable": "recoverable", "tspi_hard": "hard", "tspi_unrecoverable": "unrecoverable in practice",
         "la_title": "Look-ahead", "la_window": "{w} {w?week|weeks}, {a} to {b}",
@@ -390,7 +396,7 @@ UI = {
         "mb_sub": "The distribution of finish slippage already observed in this snapshot, "
                   "applied to each future milestone's current finish: P50 {a} {a?day|days}, P80 {b} "
                   "days, from {n} {n?activity|activities}. Not a simulation with an invented premise.",
-        "col_slip_now": "Slip now (d)", "col_p50": "P50", "col_p80": "P80", "col_deadline": "Deadline",
+        "col_slip_now": "Slip now (calendar d)", "col_p50": "P50", "col_p80": "P80", "col_deadline": "Deadline",
         "col_critical": "Critical",
         "rx_title": "Exposure to the rainy season",
         "rx_sub": "Remaining cost spread over each activity's current span, read against the "
@@ -418,6 +424,25 @@ UI = {
                             "counted, not failed.",
         "summaries_links": "{n} {n?summary task carries|summary tasks carry} links. Logic belongs on activities.",
         "show_items": "Show the {n} {n?item|items}",
+        "show_rows_periods": "Show the {n} {n?period|periods}",
+        "show_rows_resources": "Show the {n} {n?resource|resources}",
+        "show_rows_milestones": "Show the {n} {n?milestone|milestones}",
+        "qcol_missing": "Missing", "qcol_predecessor_id": "Pred. row", "qcol_predecessor_name": "Predecessor",
+        "qcol_link_type": "Link", "qcol_lag_days": "Lag (working d)", "qcol_float_days": "Total float (working d)",
+        "qcol_baseline_finish": "Baseline finish", "qcol_finish": "Finish", "qcol_actual_finish": "Actual finish",
+        "qmiss_both": "predecessor and successor", "qmiss_predecessor": "predecessor", "qmiss_successor": "successor",
+        "es_limits_text": "aggregate and cost-weighted; blind to the critical path; inherits the baseline, the "
+                          "earned-value method and everything the planned curve inherits. Set beside the "
+                          "schedule's own finish, never in its place.",
+        "rx_rule": "a month with at least {n} non-working exceptions on the activity's calendar",
+        "rx_basis": "inferred: remaining cost spread evenly over each activity's current span from the "
+                    "status date; reserve months read from each activity's own calendar",
+        "fx_provenance": "mechanism reconstruction from the file's dates, links and calendars; not a "
+                         "contractual delay analysis, which needs contemporaneous records",
+        "attr_execution": "execution", "attr_replan": "replan", "attr_reference": "moved baseline",
+        "attr_none": "none", "attr_outside": "outside the chain",
+        "word_yes": "yes", "word_no": "no",
+        "findings_quiet": "Checked, nothing found:",
         "prod_title": "Productivity and trend by resource",
         "prod_sub": "Quantities come from the file's own assignments: for a material resource "
                     "the tool stores the quantity in the work fields. Three rates per activity, "
@@ -698,11 +723,12 @@ UI = {
                         "carrega ao menos {n} {n?dia útil|dias úteis} de variação: o atraso tem nome, não "
                         "agregado.",
         "fx_origins": "Atividades que originam atraso no maior número de marcos",
-        "col_milestones_n": "Marcos", "col_origin": "Origem", "col_origin_var": "Var. da origem (d)",
+        "col_milestones_n": "Marcos", "col_origin": "Origem", "col_origin_var": "Var. da origem (dias úteis)",
         "col_chain": "Cadeia", "col_open_end": "Ponta aberta", "col_reaches": "Chega a serviço iniciado",
-        "col_amplifier": "Cresceu mais em", "col_added": "Acrescentou (d)",
+        "col_amplifier": "Cresceu mais em", "col_added": "Acrescentou (dias úteis)",
         "fx_chain_show": "Mostrar a cadeia condutora",
-        "col_via": "Via", "col_var_days": "Var. (d)", "col_started": "Iniciada",
+        "col_via": "Via", "col_var_days": "Var. (dias úteis)", "col_started": "Iniciada",
+        "col_bl_moved": "LB movida neste ciclo (dias corridos)",
         "fx_cal_title": "Forense de calendário",
         "fx_cal_sub": "Reserva de improdutividade cadastrada num ano enquanto as atividades "
                       "daquele calendário executam em outro embute otimismo que nada no arquivo "
@@ -720,8 +746,8 @@ UI = {
         "fx_cycle_sub": "Entre os dois snapshots: folga consumida por grupo, atividades que "
                         "viraram críticas, e o movimento de cada marco atribuído ao que se moveu "
                         "na cadeia condutora dele: execução, replanejamento ou referência movida.",
-        "col_float_before": "Folga antes", "col_float_now": "Folga agora", "col_consumed": "Consumida (d)",
-        "col_moved": "Moveu (d)", "col_attribution": "Atribuição", "col_finish_before": "Término antes",
+        "col_float_before": "Folga antes", "col_float_now": "Folga agora", "col_consumed": "Consumida (dias úteis)",
+        "col_moved": "Moveu (dias corridos)", "col_attribution": "Atribuição", "col_finish_before": "Término antes",
         "col_finish_now": "Término agora", "fx_became_critical": "Viraram críticas neste ciclo",
         "fc_title": "Olhando para frente",
         "fc_sub": "Cinco leituras a partir de dados que o arquivo já carrega. Earned Schedule "
@@ -739,9 +765,14 @@ UI = {
         "es_ieac": "IEAC(t)", "es_ieac_cap": "término independente nesta eficiência",
         "es_tspi": "TSPI", "es_tspi_cap": "eficiência que o restante precisa para terminar no previsto",
         "es_schedule": "Término do próprio cronograma", "es_planned": "Término previsto",
-        "es_gap": "O término independente cai a {n} {n?dia|dias} do término do próprio cronograma. A "
+        "es_gap": "O término independente cai {n} {n?dia|dias} depois do término do próprio cronograma. A "
                   "diferença é a conversa: ou a lógica está otimista, ou o restante vai rodar "
                   "num ritmo que ainda não aconteceu.",
+        "es_gap_early": "O término independente cai {n} {n?dia|dias} antes do término do próprio cronograma. "
+                        "O cronograma dá mais tempo do que o ritmo realizado precisaria: ou carrega "
+                        "margem, ou supõe um ritmo mais lento daqui em diante.",
+        "es_gap_agree": "O término independente cai a {n} {n?dia|dias} do término do próprio cronograma, "
+                        "dentro da tolerância de {t} dias adotada neste relatório: os dois concordam.",
         "es_limits": "Limites.",
         "tspi_recoverable": "recuperável", "tspi_hard": "difícil", "tspi_unrecoverable": "irrecuperável na prática",
         "la_title": "Look-ahead", "la_window": "{w} {w?semana|semanas}, de {a} a {b}",
@@ -758,7 +789,7 @@ UI = {
         "mb_sub": "A distribuição de escorregão de término já observada neste snapshot, "
                   "aplicada ao término atual de cada marco futuro: P50 {a} {a?dia|dias}, P80 {b} {b?dia|dias}, "
                   "de {n} {n?atividade|atividades}. Não é simulação com premissa inventada.",
-        "col_slip_now": "Escorregão hoje (d)", "col_p50": "P50", "col_p80": "P80", "col_deadline": "Data limite",
+        "col_slip_now": "Escorregão hoje (dias corridos)", "col_p50": "P50", "col_p80": "P80", "col_deadline": "Data limite",
         "col_critical": "Crítico",
         "rx_title": "Exposição ao período chuvoso",
         "rx_sub": "Custo remanescente distribuído pela janela atual de cada atividade, lido "
@@ -786,6 +817,25 @@ UI = {
                             "não reprovadas.",
         "summaries_links": "{n} {n?tarefa resumo carrega|tarefas resumo carregam} vínculo. Lógica pertence às atividades.",
         "show_items": "Mostrar {n?o|os} {n} {n?item|itens}",
+        "show_rows_periods": "Mostrar {n?o|os} {n} {n?período|períodos}",
+        "show_rows_resources": "Mostrar {n?o|os} {n} {n?recurso|recursos}",
+        "show_rows_milestones": "Mostrar {n?o|os} {n} {n?marco|marcos}",
+        "qcol_missing": "Falta", "qcol_predecessor_id": "Linha pred.", "qcol_predecessor_name": "Predecessora",
+        "qcol_link_type": "Vínculo", "qcol_lag_days": "Lag (dias úteis)", "qcol_float_days": "Folga total (dias úteis)",
+        "qcol_baseline_finish": "Término LB", "qcol_finish": "Término", "qcol_actual_finish": "Término real",
+        "qmiss_both": "predecessora e sucessora", "qmiss_predecessor": "predecessora", "qmiss_successor": "sucessora",
+        "es_limits_text": "agregado e ponderado por custo; cego ao caminho crítico; herda a linha de base, o "
+                          "método de valor agregado e tudo o que a curva prevista herda. Ponha ao lado do "
+                          "término do próprio cronograma, nunca no lugar dele.",
+        "rx_rule": "mês com ao menos {n} exceções de dia não útil no calendário da atividade",
+        "rx_basis": "inferido: custo remanescente distribuído por igual na janela atual de cada atividade a "
+                    "partir da data de status; meses de reserva lidos do calendário de cada atividade",
+        "fx_provenance": "reconstrução do mecanismo a partir das datas, vínculos e calendários do arquivo; "
+                         "não é apuração contratual de atraso, que exige registro contemporâneo",
+        "attr_execution": "execução", "attr_replan": "replanejamento", "attr_reference": "linha de base movida",
+        "attr_none": "nenhuma", "attr_outside": "fora da cadeia",
+        "word_yes": "sim", "word_no": "não",
+        "findings_quiet": "Verificados sem ocorrência:",
         "prod_title": "Produtividade e tendência por recurso",
         "prod_sub": "As quantidades vêm das atribuições do próprio arquivo: para recurso de "
                     "material o Project guarda a quantidade nos campos de trabalho. Três ritmos "
@@ -1135,6 +1185,7 @@ CYCLE = {
         "t_dur": "DURATIONS EDITED", "t_dur_cap": "on work not started", "t_dur_net": "NET CHANGE",
         "t_dur_net_cap": "working days",
         "t_past_start": "ACTUAL START", "t_past_finish": "ACTUAL FINISH",
+        "t_past_gone": "REMOVED WITH PROGRESS", "t_past_gone_cap": "earned value erased with the row",
         "t_past_pct": "PERCENT DOWN", "t_past_start_cap": "changed or withdrawn",
         "t_past_finish_cap": "changed or withdrawn", "t_past_pct_cap": "reported lower than before",
         "t_q_worse": "WORSENED", "t_q_better": "IMPROVED", "t_q_crossed": "PASS TO FAIL",
@@ -1149,6 +1200,9 @@ CYCLE = {
         "l_dur": "Duration edited before any start",
         "l_past_start": "Actual start changed", "l_past_finish": "Actual finish changed",
         "l_past_pct": "Percent complete went down",
+        "l_past_gone": "Removed with recorded progress",
+        "col_row_prev": "Row (previous delivery)", "col_ev_erased": "Earned value erased",
+        "col_matches_bl": "Now on the baseline date",
         "l_quality": "The fourteen metrics, before and after",
         "c1_title": "Project finish",
         "c1_sub": "Where each delivery says the contract ends, and what holds the date now.",
@@ -1190,7 +1244,9 @@ CYCLE = {
                   "rested on a past that no longer exists, and neither file says so.",
         "c5_criterion": "Activities present in both files whose Actual Start or Actual Finish "
                         "differs or was withdrawn, or whose physical percent (or percent "
-                        "complete, when the physical one did not go down) is lower than before.",
+                        "complete, when the physical one did not go down) is lower than before; "
+                        "and activities of the previous file that carried progress and are absent "
+                        "from the current one.",
         "c5_reproduce": "In each file: show Unique ID, Actual Start, Actual Finish, "
                         "% Complete and Physical % Complete; compare by Unique ID.",
         "c6_title": "Network quality, before and after",
@@ -1225,8 +1281,12 @@ CYCLE = {
                      "not report the headline movement as progress until this residue is "
                      "accounted for.",
         "w_past_rewritten": "The past was rewritten on {n} {n?activity|activities}: an actual date changed or "
-                            "was withdrawn, or a percent complete went down. Ask for each "
-                            "correction to be stated.",
+                            "was withdrawn, a percent complete went down, or an activity with "
+                            "recorded progress was removed. Ask for each correction to be stated.",
+        "w_residue_named": "{gap} {gap?percentage point|percentage points} of the movement are NOT "
+                           "per-activity progress, and each part has a name: {terms}. Report the "
+                           "explained part as progress and each term as what it is, never the "
+                           "headline movement as progress.",
         "cv_matching": "Matching", "cv_population": "Population (progress)",
         "cv_logic_population": "Population (logic and record)",
         "cv_denominator": "Denominator", "cv_aggregates": "Aggregates",
@@ -1293,6 +1353,7 @@ CYCLE = {
         "t_dur": "DURAÇÕES EDITADAS", "t_dur_cap": "em atividade não iniciada",
         "t_dur_net": "SALDO", "t_dur_net_cap": "dias úteis",
         "t_past_start": "INÍCIO REAL", "t_past_finish": "TÉRMINO REAL",
+        "t_past_gone": "REMOVIDA COM AVANÇO", "t_past_gone_cap": "valor agregado apagado com a linha",
         "t_past_pct": "PERCENTUAL CAIU", "t_past_start_cap": "alterado ou retirado",
         "t_past_finish_cap": "alterado ou retirado", "t_past_pct_cap": "informado menor que antes",
         "t_q_worse": "PIORARAM", "t_q_better": "MELHORARAM", "t_q_crossed": "PASSARAM A NÃO ATENDER",
@@ -1307,6 +1368,9 @@ CYCLE = {
         "l_dur": "Duração editada antes de qualquer início",
         "l_past_start": "Início real alterado", "l_past_finish": "Término real alterado",
         "l_past_pct": "Percentual concluído caiu",
+        "l_past_gone": "Removidas com avanço registrado",
+        "col_row_prev": "Linha (entrega anterior)", "col_ev_erased": "Valor agregado apagado",
+        "col_matches_bl": "Passou a coincidir com a LB",
         "l_quality": "As quatorze métricas, antes e depois",
         "c1_title": "Término do projeto",
         "c1_sub": "Onde cada entrega diz que o contrato termina, e o que segura a data agora.",
@@ -1350,7 +1414,8 @@ CYCLE = {
                   "se apoiavam num passado que não existe mais, e nenhum dos arquivos avisa.",
         "c5_criterion": "Atividades presentes nos dois arquivos cujo Início Real ou Término Real "
                         "difere ou foi retirado, ou cujo percentual físico (ou percentual "
-                        "concluído, quando o físico não caiu) está menor que antes.",
+                        "concluído, quando o físico não caiu) está menor que antes; e atividades "
+                        "do arquivo anterior que tinham avanço e não estão no atual.",
         "c5_reproduce": "Em cada arquivo: mostre Id Exclusiva, Início Real, Término Real, "
                         "% Concluída e % Física Concluída; compare pela Id Exclusiva.",
         "c6_title": "Qualidade da rede, antes × depois",
@@ -1386,8 +1451,12 @@ CYCLE = {
                      "reporte o movimento de cabeçalho como avanço até este resíduo estar "
                      "explicado.",
         "w_past_rewritten": "O passado foi reescrito em {n} {n?atividade|atividades}: uma data real mudou ou "
-                            "foi retirada, ou um percentual concluído caiu. Peça que cada "
-                            "correção seja declarada.",
+                            "foi retirada, um percentual concluído caiu, ou uma atividade com "
+                            "avanço registrado foi removida. Peça que cada correção seja declarada.",
+        "w_residue_named": "{gap} {gap?ponto percentual|pontos percentuais} do movimento NÃO são "
+                           "avanço por atividade, e cada parte tem nome: {terms}. Reporte a parte "
+                           "explicada como avanço e cada termo como o que é, nunca o movimento de "
+                           "cabeçalho como avanço.",
         "cv_matching": "Casamento", "cv_population": "População (avanço)",
         "cv_logic_population": "População (lógica e registro)",
         "cv_denominator": "Denominador", "cv_aggregates": "Agregados",

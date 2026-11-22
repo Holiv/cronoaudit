@@ -37,11 +37,18 @@ make for you: `references/usage.md`.
 The person may be on any side of the schedule: the one who received it, the one who produced
 it, the one responsible for updating it, a regulator, or someone studying. Never assume a role.
 
+0. **Before reading any file or sidecar, say where the data goes**, once, in a first
+   conversation. What you read (the XML, the reports, the JSON) is sent to your provider under
+   the person's or the company's account; the engine itself runs locally and sends nothing, and
+   it runs without an agent with the same report. This step is where the person chooses how to
+   proceed; any other mode of running is offered here, from its own section.
 1. **Locate the file.** If the request names a path, use it. If it names a folder, or nothing,
-   look in the folder (or the working directory) for `.xml` files: exactly one, use it and name
-   it in the reply; more than one, list them and ask which, offering the cycle comparison when
-   two look like versions of the same schedule; none, ask for the path. Never pick silently
-   among several.
+   look in that folder (or the working directory) only, not in subfolders, for `.xml` files:
+   exactly one, use it and name it in the reply; more than one, list them and ask which,
+   offering the cycle comparison when two look like versions of the same schedule; none, ask
+   for the path. Never pick silently among several. Never list the person's home folders
+   (Documents, Desktop, Downloads) or offer files that are not schedules; a `.mpp` is named
+   only to ask for its XML export.
 2. **Run the analysis once.** `review.py <file>` writes the report and the JSON sidecars beside
    the XML; `--outdir <folder>` when the person names a folder (it is created if missing,
    relative to the working directory). The analysis and the report are the same command, so
@@ -52,23 +59,24 @@ it, the one responsible for updating it, a regulator, or someone studying. Never
 4. **State the full path of the report in the first reply**, then read the sidecars in the
    report's own order: blocking notices, `conventions`, `counts` (network first), scurve
    totals and reconciliation, quality metrics that fail, forecast, forensics, productivity
-   verdicts. The `-readings.json` sidecar holds the rule-built sentences the report shows;
-   quote those rather than composing your own. Do not rerun unless asked or the file changed.
+   verdicts. After a cycle run, read `-cycle-readings.json` and `-cycle.json` in this order:
+   warnings (rewritten past first), C1 finish, C5 rewritten past, the residue and its named
+   terms, C3 and C4 with P2 (replan against execution), P1, C2, C6. The `-readings.json` sidecar
+   holds the rule-built sentences the report shows; quote those rather than composing your own.
+   Do not rerun unless asked or the file changed.
 5. **Counts.** The `counts` block of `-review.json` is the official figure (distinct
    activities, as successors, as predecessors); the `findings` lists carry one row per link
    end and are longer by design.
 6. **The report need not be opened.** A conversation about one finding, one rate or one
    milestone is a complete use of the skill. Write the executive synthesis only when asked, or
-   when the person asks for a report to hand over.
+   when the person asks for a report to hand over. After a cycle run, offer both in one line:
+   the synthesis, and a list of what to demand from the other party (one item per evidence row:
+   line, before → after).
 
 ## How to speak about the results
 
 The engine measures; you read, explain and answer. Keep the two apart.
 
-- **Say once, at the start of a first conversation, where the data goes.** What you read (the
-  XML, the reports, the JSON) is sent to your provider under the person's or the company's
-  account; the engine itself runs locally and sends nothing. If that is a problem, the engine
-  runs without an agent and produces the same report.
 - **Every number comes from the engine's files.** Never compute, estimate or round one on your
   own account. If a figure is not in the files, say it is not there.
 - **Present numbers rounded**: percentages and percentage points with two decimals ("35,56%",
@@ -86,7 +94,10 @@ The engine measures; you read, explain and answer. Keep the two apart.
   and say which you believe and why. A reading stated without the input it needs is the very
   failure this skill hunts.
 - **Mark deductions.** What the files state is `measured`; what you conclude from them is
-  `inferred`, and you say so in the sentence ("inferred: ..." / "inferência: ...").
+  `inferred`, and you say so in the sentence ("inferred: ..." / "inferência: ..."). Before
+  writing one, check whether a sidecar already holds the figure (`residual_terms`,
+  `unmatched.removed` with its percent, `past_rewritten`). An inference the engine could have
+  measured is an engine gap: say so.
 
 ## The one question, before anything
 
@@ -118,7 +129,9 @@ identifies an activity.
 ## Rules the implementation never breaks
 
 - **Network first.** When the tool recalculates over a violated network, every forecast date
-  is derived from logic the works does not follow. A1 and A2 gate everything.
+  is derived from logic the works does not follow. A1 and A2 gate everything; one to three
+  pairs off the critical and finish chains are named with the milestones they reach, not read
+  as a broken network (`references/checks.md`).
 - **The conversion basis is per activity.** Working time on each activity's own calendar,
   never the header's day, never a five-day week. A real programme had 107 calendars; counting
   Monday to Friday flagged 27% of it as inconsistent, the calendar brought it to 2%.
@@ -142,11 +155,14 @@ identifies an activity.
 Read the JSON sidecars and write four to six short paragraphs a director can
 read in two minutes: whether the network holds and what that means; where the weight is and
 whether progress happened there; the Earned Schedule reading with its limit; the activities the
-forensics name; what the next four weeks demand. Quote figures from the files, say what is
-`inferred`, add nothing the files do not support. Then:
+forensics name; what the next four weeks demand. For a cycle: the finish and milestones against
+their deadlines; the integrity of the measurement (rewritten past, moved baseline, the residue
+by its terms); replan against execution; what to demand from the other party. Quote figures
+from the files, say what is `inferred`, add nothing the files do not support. Then:
 
 ```
 python3 $S/inject_narrative.py <name>-review.html synthesis.txt --who "Claude, via the skill"
+python3 $S/inject_narrative.py <prev>--to--<curr>-cycle.html synthesis.txt --who "Claude, via the skill"
 ```
 
 ## Customising: two conversational flows

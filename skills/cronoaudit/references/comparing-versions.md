@@ -121,6 +121,31 @@ The denominator is the total baseline cost from the summary row, falling back to
 leaves when that is absent. **State which one was used**: a decomposition against a different
 denominator is not comparable with last cycle's.
 
+### The residue, in named terms
+
+The headline movement minus the sum of the contributions is the residue: everything that moved
+the aggregate without being progress. Leaving it unnamed is where a plausible wrong number
+lives, so it is broken down into measured terms. With M the matched pairs, R the removed rows,
+I the inserted ones, b a row's baseline cost in its own snapshot's weighted population and p
+its percent:
+
+    residue = + sum_I b.p / BAC_now                    earned value of inserted activities
+              - sum_R b.p / BAC_before                 earned value erased by removals
+              + sum_M (b_now - b_before).p_before / BAC_now
+                                                       baseline cost changed on matched rows
+              + E_M,before . (1/BAC_now - 1/BAC_before)
+                                                       the denominator: the BAC changed
+
+It is an identity over the population `snapshot_aggregate` sums, so what remains after the four
+terms is arithmetic noise; a remainder of a hundredth of a point or more is reported as
+unexplained, and only then does the report fall back to the generic list of causes. The
+denominator term is the **net** BAC change, with its parts (inserted, removed, changed baselines)
+listed beside it: splitting it among them would depend on the order of the split.
+
+Measured on a fictitious pair (22/11/2026): a removed activity at 100% with baseline cost
+473,600 erased 0.27 point; the BAC grew by 462,400 (936,000 inserted, 473,600 removed) and took
+0.06 more. Together, the whole 0.33 residue.
+
 Aggregating the same contributions by discipline, ordered by magnitude rather than
 alphabetically, puts the discipline that actually moved the number at the top. Ordering a table
 of impacts by name is how the largest item gets missed.
@@ -138,7 +163,7 @@ nothing, because a clean result is a result.
 | C2 | Critical path | entered, left, and the largest float losses, in working days of each activity's calendar |
 | C3 | Logic | links added, removed, lag or type changed; constraints added, changed, removed |
 | C4 | Duration edited before any start | no actual start in either file, different duration |
-| C5 | **Past rewritten** | actual start or finish changed or withdrawn; percent complete lower than before |
+| C5 | **Past rewritten** | actual start or finish changed or withdrawn; percent complete lower than before; an activity with recorded progress removed |
 | C6 | Network quality, side by side | `network_quality.build` called once per file |
 
 **C5 is the one that outranks the rest.** An actual date is a record and a percent is a
@@ -146,7 +171,14 @@ measurement already reported. When either reads differently in the next delivery
 the previous cycle reported on that activity rested on a past that no longer exists, and
 neither file says so. It is always a finding about the record, to be answered with a stated
 correction. Changes that stay within the same day (time of day only) are listed and counted
-apart, because a calendar edit can produce them.
+apart, because a calendar edit can produce them. **A removed activity that carried progress is
+rewritten past too**: executed, measured work erased from the record together with its row. It is
+listed by its row number in the previous delivery, with the earned value that left the aggregate. An actual
+date rewritten to land **exactly on the baseline date** is flagged apart ("now on the baseline
+date"): the record was made to agree with the plan, and the evidence behind it is worth asking
+for. In the review of the current file, a row on a milestone's driving chain whose baseline moved
+this cycle carries the movement beside its variance, because that variance is measured against a
+reference that moved.
 
 Conventions and limits, all declared in the output:
 

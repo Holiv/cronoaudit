@@ -96,6 +96,14 @@ FORBID = FORBID + [
     "--forbid=(^|[^\\d.,])1 (atividades|activities|dias|days|grupos|groups|marcos|milestones|v\u00ednculos|links|folhas|leaves)\\b",
 ]
 FORBID_PT = FORBID + ["--forbid=\\d{4}-\\d{2}-\\d{2}", "--forbid=[Gg]aveta"]
+# Raw engine keys and English method sentences in a Portuguese report, and a year
+# written as a thousand ("2.026"), all seen on a real run (0.7.2).
+FORBID_PT_REVIEW = FORBID_PT + [
+    "--forbid=predecessor_id|float_days|baseline_finish|lag_days",
+    "--forbid=mechanism reconstruction|aggregate and cost-weighted|non-working exceptions on the|"
+    "inferred: remaining|outside the chain",
+    "--forbid=(^|\\s)2\\.0[2-3]\\d(?=\\s)",
+]
 BARE_SECTIONS = ["There is no network to hold", "Planned-to-date is unavailable", "unavailable",
                  "carries no earned value of its own", "absence of data",
                  "--forbid=Network integrity holds", "--forbid=In reserve months now"]
@@ -119,7 +127,7 @@ def render_checks() -> dict:
             check=True, capture_output=True,
         )
         pairs = [
-            ("cycle_curr-review.html", REVIEW_SECTIONS + FORBID),
+            ("cycle_curr-review.html", REVIEW_SECTIONS + ["Checked, nothing found:"] + FORBID),
             ("cycle_prev--to--cycle_curr-cycle.html", CYCLE_SECTIONS + FORBID),
         ]
         # And again in Portuguese, so a missing label is a failing test rather than
@@ -131,7 +139,9 @@ def render_checks() -> dict:
              "--outdir", pt_dir, "--quiet", "--lang", "pt"],
             check=True, capture_output=True,
         )
-        pairs.append((os.path.join("pt", "cycle_curr-review.html"), PT_SECTIONS + FORBID_PT))
+        pairs.append((os.path.join("pt", "cycle_curr-review.html"),
+                      PT_SECTIONS + ["Verificados sem ocorr\u00eancia:", "agregado e ponderado por custo"]
+                      + FORBID_PT_REVIEW))
         # The cycle pair in Portuguese, and the positive fixture too: it is the one
         # that fills every table of the review, so a raw date has nowhere to hide.
         subprocess.run(
@@ -143,6 +153,14 @@ def render_checks() -> dict:
         )
         pairs.append((os.path.join("ptc", "cycle_prev--to--cycle_curr-cycle.html"),
                       CYCLE_PT_SECTIONS + FORBID_PT))
+        # The review of the current file from a pair run: the only page that shows
+        # the cycle forensics (attribution words, calendar-day movement, the moved
+        # baseline column) end to end. Milestone 8 moves in the fixture, so the
+        # attribution column has a row to leak through.
+        pairs.append((os.path.join("ptc", "cycle_curr-review.html"),
+                      PT_SECTIONS + ["Atribui\u00e7\u00e3o", "replanejamento", "Moveu (dias corridos)",
+                                     "LB movida neste ciclo"]
+                      + FORBID_PT_REVIEW + ["--forbid=\\b(replan|execution)\\b"]))
         subprocess.run(
             [sys.executable, os.path.join(HERE, "review.py"),
              os.path.join(ROOT, "fixtures", "positive.xml"),
@@ -160,7 +178,7 @@ def render_checks() -> dict:
         pairs.append((os.path.join("bare-en", "bare-review.html"), BARE_SECTIONS + FORBID))
         pairs.append((os.path.join("bare-pt", "bare-review.html"),
                       ["N\u00e3o h\u00e1 rede para se sustentar", "indispon\u00edvel"] + FORBID_PT))
-        pairs.append((os.path.join("ptp", "positive-review.html"), PT_SECTIONS + FORBID_PT))
+        pairs.append((os.path.join("ptp", "positive-review.html"), PT_SECTIONS + FORBID_PT_REVIEW))
         # No path in any file written, sidecars included, and the tab title in the
         # report's own language.
         for folder, _, names in os.walk(tmp):
@@ -179,6 +197,29 @@ def render_checks() -> dict:
                 head = fh.read(600)
             if want not in head:
                 out["failures"].append(f"report {rel}: the tab title is not in the report's language")
+        # A scoped network gate, rendered: one side-branch pair must not raise the
+        # absolute banner over the findings (0.7.2).
+        import copy as _cp
+        import parse_mspdi
+        import report_data
+        import report_html as _rh
+        import run_checks as _rc
+        gm = parse_mspdi.parse(os.path.join(ROOT, "fixtures", "positive.xml"))
+        gr = _rc.run(gm, _rc.DEFAULT_THRESHOLD_DAYS, _rc.DEFAULT_TOLERANCE_DAYS)
+        gr = _cp.deepcopy(gr)
+        gr["pairs"]["A1"] = gr["pairs"]["A1"][:1]
+        gr["counts"]["A2"]["distinct_activities"] = 0
+        gr["findings"]["A2"] = []
+        keep = {gr["pairs"]["A1"][0]["successor_uid"], gr["pairs"]["A1"][0]["predecessor_uid"]}
+        for t in gm["tasks"]:
+            if t["uid"] in keep:
+                t["critical"], t["total_slack_minutes"] = False, 4800.0
+        for lang_, quiet_ in (("en", "Read this before any date"), ("pt", "Leia isto antes")):
+            gp = report_data.build_review(gm, gr, lang=lang_)
+            gpath = os.path.join(tmp, f"gate-{lang_}.html")
+            _rh.write(gp, gpath)
+            pairs.append((f"gate-{lang_}.html",
+                          ["row 2" if lang_ == "en" else "linha 2", "--forbid=" + quiet_]))
         if not os.path.exists(os.path.join(tmp, "cycle_prev--to--cycle_curr-cycle-readings.json")):
             out["failures"].append("cycle: the readings sidecar was not written")
         # Executive synthesis injection: rebuild from embedded data, no recomputation.
@@ -198,6 +239,21 @@ def render_checks() -> dict:
                     out["failures"].append("synthesis: injected text or author missing from the report")
                 if "<b>no</b>" in body:
                     out["failures"].append("synthesis: markup in the text was interpreted, not escaped")
+        # The cycle report too, asserted on what the renderer DRAWS: the raw file
+        # always carries the text inside its embedded data, so a check on the file
+        # passed while the cycle page never showed the synthesis (fixed in 0.7.2).
+        for rel, lang_word in (("cycle_prev--to--cycle_curr-cycle.html", "Executive synthesis"),
+                               (os.path.join("ptc", "cycle_prev--to--cycle_curr-cycle.html"),
+                                "S\u00edntese executiva")):
+            target = os.path.join(tmp, rel)
+            p = subprocess.run([sys.executable, os.path.join(HERE, "inject_narrative.py"), target, syn,
+                                "--who", "the test suite"], capture_output=True, text=True)
+            if p.returncode != 0:
+                out["failures"].append(f"synthesis (cycle): injection failed: {p.stderr.strip()}")
+            for i, (name, sections) in enumerate(pairs):
+                if name == rel:
+                    pairs[i] = (name, sections + [lang_word, "Second paragraph, with",
+                                                  "the test suite"])
         for name, sections in pairs:
             path = os.path.join(tmp, name)
             if not os.path.exists(path):
@@ -379,7 +435,8 @@ def main() -> int:
     if noise or quiet["past_rewritten"]["activities"] or quiet["project_finish"]["delta_days"] != 0 \
             or any(m["change"] not in (None, "unchanged") for m in quiet["quality"]["metrics"]):
         failures.append("cycle: a file compared with itself produced findings")
-    for key in ("movement_points", "decomposition_sums_to_points", "movement_unexplained_points"):
+    for key in ("movement_points", "decomposition_sums_to_points", "movement_unexplained_points",
+                "residual_remainder_points"):
         if str(quiet[key]).startswith("-"):
             failures.append(f"cycle: {key} is a negative zero")
     # No path leaves the engine, and both languages carry every cycle string.
@@ -390,6 +447,7 @@ def main() -> int:
     import narrative as nar_mod
     import report_data as rd_mod
     for table, label in ((i18n_mod.CYCLE, "cycle strings"), (nar_mod.RC, "cycle readings"),
+                         (nar_mod.R, "readings"),
                          (i18n_mod.CONSTRAINTS, "constraint names")):
         for lang in table:
             gap = set(table["en"]) ^ set(table[lang])
@@ -412,6 +470,56 @@ def main() -> int:
     quiet_pay = rd_mod.build_cycle(quiet, lang="pt")
     if not all(s["empty"] for s in quiet_pay["sections"] if s["code"] in ("C2", "C3", "C4", "C5")):
         failures.append("cycle report: a section with nothing to show is not collapsed to one line")
+
+    # ---- the residue in named terms (0.7.2). The fixture's residue comes from the
+    # BAC shrinking (7,000 removed at 0%, 5,000 inserted); then the removed row is
+    # given 100% and its erased earned value must appear as its own term, in C5,
+    # and in both languages -- the agent had to infer it on a real run.
+    import narrative as nar_mod2
+    terms = cyc["residual_terms"]
+    if terms is None or abs(cyc["residual_remainder_points"]) >= 0.01 \
+            or abs(terms["bac_change"]["points"] - cyc["movement_unexplained_points"]) >= 0.01 \
+            or terms["bac_change"]["delta"] != -2000.0:
+        failures.append(f"residual terms: the fixture's residue is not the BAC change, exactly: {terms}")
+    if any(abs(quiet["residual_terms"][k]["points"]) for k in cs_mod.TERM_KEYS):
+        failures.append("residual terms: a file compared with itself carries a residue term")
+    pv = copy_mod.deepcopy(pm_mod.parse(os.path.join(ROOT, "fixtures", "cycle_prev.xml")))
+    cv = pm_mod.parse(os.path.join(ROOT, "fixtures", "cycle_curr.xml"))
+    for t in pv["tasks"]:
+        if t["uid"] == 6:
+            t["physical_percent_complete"] = 100.0
+            t["percent_complete"] = 100.0
+    gone = cs_mod.compare(pv, cv)
+    gt = gone["residual_terms"]
+    want_rem = round(-7000.0 / gone["previous"]["budget_at_completion"] * 100, 4)
+    if abs(gt["removed_earned"]["points"] - want_rem) > 1e-4 or abs(gone["residual_remainder_points"]) >= 0.01:
+        failures.append(f"residual terms: the removed row's erased earned value is not its own term "
+                        f"({gt['removed_earned']['points']} vs {want_rem}, remainder "
+                        f"{gone['residual_remainder_points']})")
+    gpr = gone["past_rewritten"]
+    if [r["id"] for r in gpr["removed_with_progress"]] != [6] or gpr["activities"] != pr["activities"] + 1 \
+            or gpr["removed_with_progress"][0]["earned_erased"] != 7000.0:
+        failures.append(f"cycle past: a removed activity at 100% is not counted as rewritten past: {gpr}")
+    for lang, words in (("en", ("row 6 of the previous delivery", "removed from the schedule")),
+                        ("pt", ("linha 6 da entrega anterior", "removida do cronograma"))):
+        rd_ = nar_mod2.build_cycle(gone, lang, rd_mod.fmt_date)
+        mv_ = " ".join(rd_.get("movement", []))
+        c5_ = " ".join(rd_.get("c5", []))
+        if words[0] not in mv_ or words[1] not in c5_:
+            failures.append(f"residual reading ({lang}): the erased earned value is not named: {mv_} / {c5_}")
+        if re.search(r"-\d[\d,.]* (?:are not explained|não são explicados)", mv_):
+            failures.append(f"residual reading ({lang}): a negative residue is read as a count: {mv_}")
+        pay_ = rd_mod.build_cycle(gone, lang=lang)
+        c5s = next(s_ for s_ in pay_["sections"] if s_["code"] == "C5")
+        if not any(l_["rows"] and l_["rows"][0].get("ev") == 7000.0 for l_ in c5s["lists"]):
+            failures.append(f"cycle report ({lang}): C5 does not list the removed row with its earned value")
+        if not any(w_["text"].count("6") and ("has a name" in w_["text"] or "tem nome" in w_["text"])
+                   for w_ in pay_["warnings"]):
+            failures.append(f"cycle report ({lang}): the residue warning does not name its terms")
+    # A positive residue keeps the plain sentence, and names the BAC term.
+    mv_en = " ".join(nar_mod2.build_cycle(cyc, "en", rd_mod.fmt_date).get("movement", []))
+    if "are not explained by work done" not in mv_en or "budget at completion" not in mv_en:
+        failures.append(f"residual reading: the BAC term of a positive residue is not named: {mv_en}")
 
     # ---- the network rules the in-tool implementation taught, each with a control.
     a1_pairs = {(p["successor_id"], p["predecessor_id"]) for p in pos["pairs"]["A1"]}
@@ -1055,6 +1163,215 @@ def main() -> int:
     if re.search(r"\d[.,]\d{3,}\s*%", console) or "aveta" in console:
         failures.append("console: a percentage with more than two decimals, or the storage word for the baseline")
 
+    # ---- a reading holds only in the direction, or for the count, that supports it.
+    # IEAC(t) earlier than the schedule's finish is not "the logic is optimistic";
+    # high float with every milestone constrained is not "an unconstrained plan".
+    def es_inputs(sched_finish):
+        periods = [{"period": f"2027-{k:02d}", "planned": 10.0, "planned_cum_pct": 10.0 * k}
+                   for k in range(1, 11)]
+        sc = {"periods": periods, "status_date": "2027-05-31T17:00:00", "bac": 100.0,
+              "totals": {"earned_pct": 50.0, "planned_pct": 50.0}}
+        mdl = {"project": {"finish": sched_finish}, "prevailing_baseline": {"slot": "0"},
+               "tasks": [{"baselines": {"0": {"finish": "2027-10-22T17:00:00"}}}]}
+        return fc_mod.earned_schedule(sc, mdl)
+    # IEAC(t) lands on 22/10 at midnight; the finish is at 17:00. The gap is counted
+    # in calendar dates: a floored timedelta made three days earlier read as four.
+    for fin, want_gap, want_read in (("2027-10-25T17:00:00", -3, "agree"),
+                                     ("2027-10-19T17:00:00", 3, "agree"),
+                                     ("2027-11-25T17:00:00", -34, "earlier"),
+                                     ("2027-09-24T17:00:00", 28, "later")):
+        E_ = es_inputs(fin)
+        if E_.get("ieac_t_date") != "2027-10-22" or E_.get("gap_vs_schedule_days") != want_gap \
+                or E_.get("gap_reading") != want_read:
+            failures.append(f"ieac gap: finish {fin} gave {E_.get('ieac_t_date')}, "
+                            f"{E_.get('gap_vs_schedule_days')} days, {E_.get('gap_reading')}; "
+                            f"expected 2027-10-22, {want_gap}, {want_read}")
+    ieac_said = {"later": {"en": ("logic is optimistic", "days after"), "pt": ("lógica está otimista", "dias depois")},
+                 "earlier": {"en": ("days before", "carries margin"), "pt": ("dias antes", "carrega margem")},
+                 "agree": {"en": ("agree on the date",), "pt": ("concordam na data",)}}
+    ieac_gone = {"en": "logic is optimistic", "pt": "lógica está otimista"}
+    for fin, read in (("2027-09-24T17:00:00", "later"), ("2027-11-25T17:00:00", "earlier"),
+                      ("2027-10-25T17:00:00", "agree")):
+        E_ = es_inputs(fin)
+        for lang in ("en", "pt"):
+            txt = " ".join(nar_mod.build({"meta": {}, "findings": [],
+                                          "forecast": {"earned_schedule": E_}}, lang).get("forecast", []))
+            for s_ in ieac_said[read][lang]:
+                if s_ not in txt:
+                    failures.append(f"ieac reading ({read}, {lang}): '{s_}' missing: {txt}")
+            if read != "later" and ieac_gone[lang] in txt:
+                failures.append(f"ieac reading ({read}, {lang}): concludes the logic is optimistic")
+    # TSPI: "modest because most of the duration is ahead" only when it is.
+    for at_, early_ in ((100, True), (450, False)):
+        E_ = {"available": True, "sv_t_days": -10.0, "es_date": "2027-01-01", "spi_t": 0.95,
+              "tspi": 1.05, "tspi_verdict": "hard", "at_days": at_, "pd_days": 568}
+        for lang, word in (("en", "Modest because"), ("pt", "Modesto porque")):
+            txt = " ".join(nar_mod.build({"meta": {}, "findings": [],
+                                          "forecast": {"earned_schedule": E_}}, lang).get("forecast", []))
+            if (word in txt) != early_ or "TSPI" not in txt:
+                failures.append(f"tspi reading ({lang}, {at_}/568 elapsed): the 'most is ahead' clause "
+                                f"{'is missing' if early_ else 'is stated late in the project'}")
+    # A level Earned Schedule is neither ahead nor behind.
+    lvl = nar_mod.build({"meta": {}, "findings": [], "forecast": {"earned_schedule": {
+        "available": True, "sv_t_days": 0.2, "es_date": "2027-05-31", "spi_t": 1.0}}}, "pt").get("forecast", [])
+    if not any("própria data de status" in s_ for s_ in lvl) or any("à frente" in s_ for s_ in lvl):
+        failures.append(f"es reading: a level Earned Schedule was read as ahead: {lvl}")
+    # Float against milestones: the conclusion needs a milestone without a deadline.
+    def q_read(no_dl, status, lang):
+        return " ".join(nar_mod.build({"meta": {}, "findings": [], "quality": {
+            "metrics": [{"code": "Q6", "title": "High float", "share_pct": 12.0, "status": status}],
+            "qualitative": {"milestones": 9, "milestones_without_deadline": no_dl}}}, lang).get("quality", []))
+    for lang, concl, ask in (("en", "unconstrained plan", "read it as a question"),
+                             ("pt", "plano sem restrição", "leia como pergunta")):
+        t0, t3, tp = q_read(0, "fail", lang), q_read(3, "fail", lang), q_read(3, "pass", lang)
+        if concl in t0 or ask not in t0 or "9 of 9" not in t0 and "9 de 9" not in t0:
+            failures.append(f"float reading ({lang}): every milestone has a deadline, yet: {t0}")
+        if concl not in t3 or "3 " not in t3:
+            failures.append(f"float reading ({lang}): milestones without deadline lost the conclusion: {t3}")
+        if "44" in tp:
+            failures.append(f"float reading ({lang}): Q6 passes, yet the high float is read as a finding: {tp}")
+    # No network state, and rates with no trend, support no reading at all.
+    none_ = nar_mod.build({"meta": {}, "findings": [], "forecast": {"rates_by_group": [
+        {"group": "G", "verdict": None}]}}, "en")
+    if any("network holds" in s_ for s_ in none_.get("verdict", [])) or none_.get("forecast"):
+        failures.append(f"readings: 'network holds' or 'every group on pace' stated without its input: {none_}")
+    # Level progress, a reconciliation with nothing differing, a median start on the baseline.
+    lv = nar_mod.build({"meta": {"percent_earned": 40.0, "percent_planned_file": 40.0,
+                                 "inputs": {"planned_available": True},
+                                 "reconciliation": {"leaves_compared": 5, "matches_to_cent": 5,
+                                                    "unexplained": 0}},
+                        "findings": [], "forensics": {"execution": {"start_slippage": {
+                            "sample": 4, "started_early": 2, "started_late": 2, "p50": 0.2}}}}, "pt")
+    vt, ft = " ".join(lv.get("verdict", [])), " ".join(lv.get("forensics", []))
+    if "igual aos 40,00% previstos" not in vt or "atrás" in vt:
+        failures.append(f"progress reading: level progress read with a direction: {vt}")
+    if "explicada" in vt or "5 de 5 folhas" not in vt:
+        failures.append(f"reconciliation reading: a difference was called explained where none exists: {vt}")
+    if "caiu na data da linha de base" not in ft or "depois" in ft:
+        failures.append(f"slippage reading: a median start on the baseline was given a direction: {ft}")
+
+    # ---- one rounding rule: the reading and the tile beside it must agree (0.7.2).
+    for v_, d_, lang_, want_ in ((0.9015, 3, "pt", "0,902"), (1.005, 2, "en", "1.01"),
+                                 (2.675, 2, "pt", "2,68"), (-0.00004, 2, "pt", "0,00")):
+        if nar_mod.fnum(v_, d_, lang_) != want_:
+            failures.append(f"rounding: {v_} to {d_} read {nar_mod.fnum(v_, d_, lang_)}, the report shows {want_}")
+    spi_ = " ".join(nar_mod.build({"meta": {}, "findings": [], "scurve": {"totals": {"spi": 0.9015}}},
+                                  "pt").get("scurve", []))
+    if "0,902" not in spi_ or "90,2%" not in spi_:
+        failures.append(f"rounding: the SPI reading disagrees with its tile: {spi_}")
+    # Group codes become group names; method sentences and attribution words are
+    # localized on a copy, and the sidecar keeps the engine's own.
+    fc_ = {"lookahead": [{"by_group": [{"group": "7"}], "starts": [{"group": "7"}], "finishes": []}],
+           "earned_schedule": {"limits": "aggregate and cost-weighted"},
+           "rain_exposure": {"reserve_rule": "x", "reserve_min_exceptions": 4,
+                             "basis": "inferred: remaining cost spread"}}
+    lf = rd_mod.localize_forecast(fc_, "pt", {"7": "Viaduct"})
+    if lf["lookahead"][0]["by_group"][0]["group"] != "Viaduct" or fc_["lookahead"][0]["by_group"][0]["group"] != "7" \
+            or "4 exce" not in lf["rain_exposure"]["reserve_rule"] or "aggregate" in lf["earned_schedule"]["limits"]:
+        failures.append(f"localize: the forecast copy is not localized, or the sidecar was touched: {lf}")
+    fxl = rd_mod.localize_forensics({"cycle": {"float_by_group": [{"group": "7"}], "milestone_movements": [
+        {"attribution": "replan"}, {"attribution": "outside the chain"}]}}, "pt", {"7": "Viaduct"})
+    if fxl["cycle"]["float_by_group"][0]["group"] != "Viaduct" or \
+            [r["attribution"] for r in fxl["cycle"]["milestone_movements"]] != ["replanejamento", "fora da cadeia"] \
+            or "reconstrução" not in fxl["provenance"]:
+        failures.append(f"localize: forensics groups, attribution or provenance left raw: {fxl}")
+
+    # ---- the leftover readings (0.7.2): each missing input gets a neutral sentence,
+    # never a fallback to a claim.
+    def rd(payload, lang, sec):
+        return " ".join(nar_mod.build({"meta": {}, "findings": [], **payload}, lang).get(sec, []))
+    t_ = rd({"forecast": {"earned_schedule": {"available": True, "sv_t_days": -5.0, "es_date": "2027-01-01",
+                                              "spi_t": 0.9, "tspi": 1.05, "tspi_verdict": None}}}, "pt", "forecast")
+    if "acima do plano" in t_ or "O TSPI é 1,050" not in t_:
+        failures.append(f"tspi reading: an unknown verdict fell back to the hard sentence: {t_}")
+    t_ = rd({"forensics": {"summary": {"milestones": 4, "with_origin": 2, "origins": []}}}, "pt", "forensics")
+    if "Nenhum marco futuro carrega" in t_ or "2 de 4" not in t_:
+        failures.append(f"forensics reading: origins found but unlisted read as none: {t_}")
+    t_ = rd({"forensics": {"summary": {"milestones": 4, "with_origin": 2, "origins": [
+        {"id": 148, "name": "Bored piles", "milestones": 2}]}}}, "en", "forensics")
+    if "activity 148, Bored piles," not in t_:
+        failures.append(f"forensics reading: the origin activity is not named: {t_}")
+    t_ = rd({"quality": {"metrics": [{"code": "Q6", "share_pct": 12.0, "status": "fail"},
+                                     {"code": "Q11", "status": "fail"}],
+                         "qualitative": {"milestones": 0}}}, "pt", "quality")
+    if "Q11 ," in t_ or "Q11." not in t_ or "nenhum marco" not in t_.lower() and "não tem marco" not in t_:
+        failures.append(f"quality reading: a missing title or zero milestones read badly: {t_}")
+
+    # ---- an actual date rewritten onto the baseline, and a variance measured against
+    # a baseline that moved (0.7.2). Row 16 had its actual finish moved AWAY from the
+    # baseline in the fixture (not flagged); here it is moved ONTO it (flagged).
+    pv5 = copy_mod.deepcopy(pm_mod.parse(os.path.join(ROOT, "fixtures", "cycle_prev.xml")))
+    cv5 = copy_mod.deepcopy(pm_mod.parse(os.path.join(ROOT, "fixtures", "cycle_curr.xml")))
+    for t in pv5["tasks"]:
+        if t["uid"] == 16:
+            t["actual_finish"] = "2026-04-14T17:00:00"
+    for t in cv5["tasks"]:
+        if t["uid"] == 16:
+            t["actual_finish"] = t["baselines"]["1"]["finish"]
+    c5 = cs_mod.compare(pv5, cv5)
+    flagged = [r["id"] for r in c5["past_rewritten"]["actual_finish"] if r["matches_baseline"]]
+    if flagged != [16] or any(r["matches_baseline"] for r in cyc["past_rewritten"]["actual_finish"]):
+        failures.append(f"cycle past: an actual date rewritten onto the baseline not flagged, or a control flagged: {flagged}")
+    for lang, word in (("en", "exactly on the baseline date (row 16"), ("pt", "coincidir exatamente com a linha de base (linha 16")):
+        if word not in " ".join(nar_mod.build_cycle(c5, lang, rd_mod.fmt_date).get("c5", [])):
+            failures.append(f"cycle past reading ({lang}): the date rewritten onto the baseline is not said")
+    import forensics as fx_mod5
+    cv0 = pm_mod.parse(os.path.join(ROOT, "fixtures", "cycle_curr.xml"))
+    fx5 = fx_mod5.build(cv0, analyse_raw(cv0), pv5, {"baseline_moved": [
+        {"uid": 7, "id": 7, "baseline_finish_moved_days": 12.0}], "trend": []})
+    marked5 = [n["id"] for m_ in fx5["milestones"] for n in m_["chain"] if n.get("baseline_moved_days")]
+    if marked5 != [7]:
+        failures.append(f"forensics: a chain row whose baseline moved is not marked: {marked5}")
+    for lang, word in (("en", "the reference moving"), ("pt", "a referência se movendo")):
+        txt = " ".join(nar_mod.build({"meta": {}, "findings": [], "forensics": fx5}, lang).get("forensics", []))
+        if word not in txt or "+12" not in txt:
+            failures.append(f"forensics reading ({lang}): the moved baseline is not cross-referenced: {txt}")
+
+    # ---- the network gate is as wide as the breach (0.7.2). One pair off the
+    # critical path and off the finish chain is named, with the milestones whose
+    # chain passes through it; on the critical path, or above the threshold, the
+    # absolute wording stays.
+    gate_model = pm_mod.parse(os.path.join(ROOT, "fixtures", "positive.xml"))
+    gate_res = analyse_raw(gate_model)
+    g_abs = rd_mod.network_gate(gate_model, gate_res)
+    if g_abs["scope"] != "absolute" or "total_inversion" not in g_abs["reasons"]:
+        failures.append(f"network gate: total inversion did not keep the absolute wording: {g_abs}")
+    one = copy_mod.deepcopy(gate_res)
+    one["pairs"]["A1"] = one["pairs"]["A1"][:1]
+    one["counts"]["A2"]["distinct_activities"] = 0
+    pair_uids = {one["pairs"]["A1"][0]["successor_uid"], one["pairs"]["A1"][0]["predecessor_uid"]}
+    side = copy_mod.deepcopy(gate_model)
+    for t in side["tasks"]:
+        if t["uid"] in pair_uids:
+            t["critical"], t["total_slack_minutes"] = False, 4800.0
+    fake_fx = {"milestones": [{"id": 99, "name": "Milestone M", "chain": [{"uid": u} for u in pair_uids]}]}
+    g_sc = rd_mod.network_gate(side, one, fake_fx)
+    if g_sc["scope"] != "scoped" or [m_["id"] for m_ in g_sc["milestones"]] != [99]:
+        failures.append(f"network gate: one side-branch pair was read as a broken network: {g_sc}")
+    for t in side["tasks"]:
+        if t["uid"] in pair_uids:
+            t["critical"] = True
+    if rd_mod.network_gate(side, one, fake_fx)["scope"] != "absolute":
+        failures.append("network gate: a pair on the critical path lost the absolute wording")
+    many = copy_mod.deepcopy(one)
+    many["pairs"]["A1"] = one["pairs"]["A1"] * (rd_mod.GATE_MAX_PAIRS + 1)
+    if "count" not in rd_mod.network_gate(gate_model, many)["reasons"]:
+        failures.append("network gate: more pairs than the threshold did not keep the absolute wording")
+    scoped_gate = {"scope": "scoped", "pair_count": 1, "threshold_pairs": rd_mod.GATE_MAX_PAIRS,
+                   "pairs": [{"succ_id": 36, "succ_name": "Prime coat", "pred_id": 35,
+                              "pred_name": "Base course"}],
+                   "milestones": [{"id": 5, "name": "Opening S1"}, {"id": 6, "name": "Opening S2"}]}
+    for lang, absolute, words in (("en", "settle these before discussing a date", ("row 36", "Opening S2 (row 6)")),
+                                  ("pt", "resolva isso antes de discutir uma data", ("linha 36", "Opening S2 (linha 6)"))):
+        base = {"findings": [{"code": "A1", "count": 2}, {"code": "A2", "count": 0}]}
+        sc_ = " ".join(nar_mod.build({**base, "meta": {"inputs": {"network_gate": scoped_gate}}}, lang)["verdict"])
+        ab_ = " ".join(nar_mod.build({**base, "meta": {"inputs": {"network_gate": {
+            **scoped_gate, "scope": "absolute", "reasons": ["critical"]}}}}, lang)["verdict"])
+        if absolute in sc_ or not all(w_ in sc_ for w_ in words):
+            failures.append(f"network gate reading ({lang}): one side pair is not named and scoped: {sc_}")
+        if absolute not in ab_ or "36" not in ab_:
+            failures.append(f"network gate reading ({lang}): a critical pair lost the absolute wording: {ab_}")
+
     # ---- the report must actually render. A valid file that runs to a blank page
     # is the failure mode this guards; see scripts/test_render.js for the real bug.
     rendered = render_checks()
@@ -1093,6 +1410,7 @@ def main() -> int:
     print("  forecast: earned schedule, look-ahead, rates, milestone bands, rain exposure")
     print("  forensics: driving chain through the lag link, origin named, cycle readings")
     print("  readings: every section reads in both languages; synthesis injected without recompute")
+    print("  directions: IEAC(t) later/earlier/agree, float vs deadlines, level progress/ES/slip, TSPI clause")
     print("  profile: init/set/validate round-trip; grouping, fields, optional checks and hiding applied")
     return 0
 

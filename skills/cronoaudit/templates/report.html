@@ -294,6 +294,8 @@ function cell(v,key,col,row){
   if(v==null||v==="") return `<td></td>`;
   col=col||{};
   const tone = col.tone&&row&&row._tone ? (row._tone==="bad"?" neg":" pos") : "";
+  // A year is a label, not a quantity: "2026", never "2.026".
+  if(typeof v==="number"&&(key==="year"||col.raw)) return `<td class="num">${esc(String(v))}</td>`;
   if(typeof v==="number"){
     const neg = (key==="var_d"||key==="gap_days") && v<0, pos=(key==="var_d")&&v>0;
     const d = col.decimals!=null?col.decimals:(Number.isInteger(v)?0:(col.pct?2:1));
@@ -310,9 +312,21 @@ function table(cols,rows,limit=600){
   const more=rows.length>limit?`<p class="sub" style="padding:8px 12px">${esc(fill(L.showing,{n:limit,total:rows.length}))}</p>`:"";
   return `<div class="scroll"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>${more}`;
 }
-function folded(cols,rows,count){
+// `noun` names what the rows are ("periods", "resources", "milestones"); a table
+// of months is never announced as activities.
+function folded(cols,rows,count,noun){
   if(!rows||!rows.length) return `<p class="sub">${esc(L.no_activities)}</p>`;
-  return `<details><summary>${esc(fill(L.show_rows,{n:n(count!=null?count:rows.length)}))}</summary>${table(cols,rows)}</details>`;
+  const lab=(noun&&L["show_rows_"+noun])||L.show_rows;
+  return `<details><summary>${esc(fill(lab,{n:n(count!=null?count:rows.length)}))}</summary>${table(cols,rows)}</details>`;
+}
+
+// The executive synthesis, when someone wrote one: prose under its own label, with
+// who wrote it and when, so it is never mistaken for a measurement. Both reports
+// draw it from the one function, near the top.
+function synthesis(d){
+  if(!(d.narrative&&d.narrative.text)) return "";
+  return `<div class="sintese"><div class="eyebrow">${esc(L.syn_label)}</div>${d.narrative.text.split(/\n\s*\n/).map(pg=>`<p>${esc(pg.trim())}</p>`).join("")}
+      <div class="who">${esc(fill(L.syn_written,{who:d.narrative.who||"",when:d.narrative.when||""}))}</div></div>`;
 }
 
 function renderReview(d){
@@ -332,10 +346,7 @@ function renderReview(d){
   if(d.profile&&d.profile.fields_missing&&d.profile.fields_missing.length){
     out.push(`<div class="note" style="margin-top:14px"><b>${esc(L.warning)}</b> ${esc(L.profile_missing)} ${esc(d.profile.fields_missing.join("; "))}</div>`);
   }
-  if(d.narrative&&d.narrative.text){
-    out.push(`<div class="sintese"><div class="eyebrow">${esc(L.syn_label)}</div>${d.narrative.text.split(/\n\s*\n/).map(pg=>`<p>${esc(pg.trim())}</p>`).join("")}
-      <div class="who">${esc(fill(L.syn_written,{who:d.narrative.who||"",when:d.narrative.when||""}))}</div></div>`);
-  }
+  out.push(synthesis(d));
 
   out.push(`<div class="veredito"><div>
       <div class="eyebrow">${esc(L.hero_label)}</div>
@@ -349,7 +360,10 @@ function renderReview(d){
 
   // "The network holds" is only said of a network that exists.
   const NW=(m.inputs||{}).network||{};
-  out.push(net
+  const GATE=(m.inputs||{}).network_gate||{};
+  out.push(net&&GATE.scope==="scoped"&&(GATE.text||[]).length
+    ? `<div class="note">${GATE.text.map(x=>esc(x)).join(" ")}</div>`
+    : net
     ? `<div class="note bad">${L.net_bad_1} ${n(net)} ${esc(L.net_bad_2)}</div>`
     : NW.state==="none" ? `<div class="note bad">${L.net_none}</div>`
     : NW.state==="open" ? `<div class="note">${fill(L.net_open,{u:n(NW.unlinked),o:n(NW.open),s:n(NW.share_pct,1),t:n(NW.threshold_pct,0)})}</div>`
@@ -398,7 +412,7 @@ function renderReview(d){
       ${folded([{label:L.col_period,key:"period"},{label:L.scurve_planned,key:"planned"},{label:L.scurve_earned,key:"earned"},
         {label:L.col_planned_cum,key:"planned_cum"},{label:L.col_earned_cum,key:"earned_cum"},{label:L.col_sv,key:"sv_cum"},{label:L.col_spi,key:"spi_cum"},
         {label:L.col_planned_pct,key:"planned_cum_pct"},{label:L.col_earned_pct_cum,key:"earned_cum_pct"},{label:L.col_alt_pct,key:"earned_alt_cum_pct"}],
-        s.periods||[],(s.periods||[]).length)}
+        s.periods||[],(s.periods||[]).length,"periods")}
     </section>`);
   }
 
@@ -445,7 +459,7 @@ function renderReview(d){
       ${folded([{label:L.col_resource,key:"name"},{label:L.col_unit,key:"unit"},{label:L.col_assign,key:"assignments"},
         {label:L.col_planned_qty,key:"planned_qty"},{label:L.col_exec_qty,key:"executed_qty"},{label:L.col_rem_qty,key:"remaining_qty"},
         {label:L.col_progress,key:"progress_pct"},{label:L.col_rate_planned,key:"rate_planned"},{label:L.col_rate_global,key:"rate_global"},{label:L.col_rate_recent,key:"rate_recent"},{label:L.col_exec_days,key:"executed_days"},{label:L.col_evidence,key:"evidence_t"}],
-        resRows,resRows.length)}
+        resRows,resRows.length,"resources")}
       <h3 style="font-size:15px;margin:14px 0 8px">${esc(L.prod_activities_title)}</h3>
       ${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_resource,key:"resource"},{label:L.col_unit,key:"unit"},
         {label:L.col_planned_qty,key:"planned_qty"},{label:L.col_exec_qty,key:"executed_qty"},{label:L.col_source,key:"source_t"},{label:L.col_rem_qty,key:"remaining_qty"},
@@ -478,7 +492,7 @@ function renderReview(d){
           <span class="badge" style="font-size:20px">${mt.population?n(mt.count):"&mdash;"}</span></div>
         <p class="sub">${esc(mt.description)}</p>
         <div class="fonte">${mt.population?`${esc(L.col_count)} ${n(mt.count)} ${esc(L.col_population).toLowerCase()} ${n(mt.population)} · ${esc(L.col_share)} ${mt.share_pct==null?"&mdash;":n(mt.share_pct,2)+"%"}`:""}${mt.threshold_pct!=null?` · ${esc(L.col_threshold)} ${mt.direction==="min"?"\u2265":"\u2264"} ${n(mt.threshold_pct,1)}%`:""}</div>
-        ${mt.items&&mt.items.length?`<details><summary>${esc(fill(L.show_items,{n:n(mt.items.length)}))}</summary>${table(Object.keys(mt.items[0]).filter(k=>k!=="uid").map(k=>({label:k,key:k})),mt.items)}</details>`:""}
+        ${mt.items&&mt.items.length?`<details><summary>${esc(fill(L.show_items,{n:n(mt.items.length)}))}</summary>${table(mt.item_columns||Object.keys(mt.items[0]).filter(k=>k!=="uid").map(k=>({label:k,key:k})),mt.items)}</details>`:""}
       </div></div>`).join("")}
     </section>`);
   }
@@ -495,7 +509,7 @@ function renderReview(d){
         <div class="tile cr"><div class="c">${esc(L.es_ieac)}</div><div class="v" style="font-size:22px">${esc(E.ieac_t_date)}</div><div class="t">${esc(L.es_ieac_cap)} · ${esc(L.es_schedule)} ${esc(E.schedule_finish)} · ${esc(L.es_planned)} ${esc(E.planned_finish)}</div></div>
         <div class="tile ${E.tspi_verdict==="recoverable"?"vs":(E.tspi_verdict==="hard"?"al":"cr")}"><div class="c">${esc(L.es_tspi)}</div><div class="v">${n(E.tspi,3)}</div><div class="t">${esc(L.es_tspi_cap)} · ${esc(tv[E.tspi_verdict]||"")}</div></div>
       </div>
-      ${E.gap_vs_schedule_days!=null?`<div class="note"><b>${esc(L.warning)}</b> ${esc(fill(L.es_gap,{n:n(E.gap_vs_schedule_days)}))}</div>`:""}
+      ${E.gap_vs_schedule_days!=null&&E.gap_reading?`<div class="note">${E.gap_reading==="agree"?"":`<b>${esc(L.warning)}</b> `}${esc(fill({later:L.es_gap,earlier:L.es_gap_early,agree:L.es_gap_agree}[E.gap_reading],{n:n(Math.abs(E.gap_vs_schedule_days)),t:n(E.gap_agree_days)}))}</div>`:""}
       <p class="fonte"><b>${esc(L.es_limits)}</b> ${esc(E.limits)}</p>`);
     }
     if(LA.length){
@@ -527,7 +541,7 @@ function renderReview(d){
     }
     if(MB.milestones&&MB.milestones.length){
       out.push(`<h3 style="font-size:16px;margin:18px 0 8px">${esc(L.mb_title)}</h3><p class="sec-d">${esc(fill(L.mb_sub,{a:n(MB.p50_days),b:n(MB.p80_days),n:n(MB.sample)}))}</p>
-        ${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_fin_baseline,key:"baseline_finish"},{label:L.col_fin_trend,key:"finish"},{label:L.col_slip_now,key:"slip_now_days"},{label:L.col_p50,key:"p50"},{label:L.col_p80,key:"p80"},{label:L.col_deadline,key:"deadline"},{label:L.col_critical,key:"critical"}],MB.milestones,MB.milestones.length)}`);
+        ${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_fin_baseline,key:"baseline_finish"},{label:L.col_fin_trend,key:"finish"},{label:L.col_slip_now,key:"slip_now_days"},{label:L.col_p50,key:"p50"},{label:L.col_p80,key:"p80"},{label:L.col_deadline,key:"deadline"},{label:L.col_critical,key:"critical"}],MB.milestones,MB.milestones.length,"milestones")}`);
     }
     if(RX.available&&RX.readable===false){
       // No reserved period on any calendar in use: the exposure is not zero, it is unread.
@@ -554,10 +568,10 @@ function renderReview(d){
       amp_id:m.amplifier?m.amplifier.id:null,amp_added:m.amplifier?m.amplifier.added_days:null,
       open_end_t:m.open_end?"●":"",reaches_t:m.reaches_started?"●":""}));
     out.push(`<div style="margin-top:10px">${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_fin_baseline,key:"baseline_finish"},{label:L.col_fin_trend,key:"finish"},{label:L.col_var_days,key:"variance_days"},
-      {label:L.col_origin,key:"origin_id"},{label:L.col_activity,key:"origin_name"},{label:L.col_origin_var,key:"origin_var"},{label:L.col_amplifier,key:"amp_id"},{label:L.col_added,key:"amp_added"},{label:L.col_chain,key:"chain_length"},{label:L.col_reaches,key:"reaches_t"},{label:L.col_open_end,key:"open_end_t"}],ms,ms.length)}</div>`);
+      {label:L.col_origin,key:"origin_id"},{label:L.col_activity,key:"origin_name"},{label:L.col_origin_var,key:"origin_var"},{label:L.col_amplifier,key:"amp_id"},{label:L.col_added,key:"amp_added"},{label:L.col_chain,key:"chain_length"},{label:L.col_reaches,key:"reaches_t"},{label:L.col_open_end,key:"open_end_t"}],ms,ms.length,"milestones")}</div>`);
     (X.milestones||[]).slice(0,12).forEach(m=>{
       out.push(`<details style="margin-top:6px"><summary>${esc(L.fx_chain_show)} · ${esc(m.id)} ${esc(m.name)} · ${esc(L.col_var_days)} ${n(m.variance_days)}</summary>
-        ${table([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_via,key:"via"},{label:L.col_fin_baseline,key:"baseline_finish"},{label:L.col_fin_trend,key:"finish"},{label:L.col_var_days,key:"variance_days"},{label:L.col_started,key:"started_t"}],
+        ${table([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_via,key:"via"},{label:L.col_fin_baseline,key:"baseline_finish"},{label:L.col_fin_trend,key:"finish"},{label:L.col_var_days,key:"variance_days"},{label:L.col_bl_moved,key:"baseline_moved_days",signed:true},{label:L.col_started,key:"started_t"}],
           m.chain.map(c=>({...c,started_t:c.finished?"✓✓":(c.started?"✓":"")})))}</details>`);
     });
     if(X.calendars&&X.calendars.length){
@@ -574,14 +588,21 @@ function renderReview(d){
         ${table([{label:L.col_group,key:"group"},{label:L.col_activities,key:"activities"},{label:L.col_consumed,key:"float_consumed_days"}],CY.float_by_group||[])}
         <p class="fonte" style="margin:10px 0 6px"><b>${esc(L.fx_became_critical)}</b> ${n((CY.became_critical||[]).length)}</p>
         ${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_group,key:"group"},{label:L.col_float_before,key:"float_before"}],CY.became_critical||[])}
-        <div style="margin-top:10px">${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_finish_before,key:"finish_before"},{label:L.col_finish_now,key:"finish_now"},{label:L.col_moved,key:"moved_days"},{label:L.col_attribution,key:"attribution"}],CY.milestone_movements||[])}</div>`);
+        <div style="margin-top:10px">${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_finish_before,key:"finish_before"},{label:L.col_finish_now,key:"finish_now"},{label:L.col_moved,key:"moved_days"},{label:L.col_attribution,key:"attribution"}],CY.milestone_movements||[],null,"milestones")}</div>`);
     }
     out.push(`<p class="fonte" style="margin-top:10px">${esc(X.provenance||"")}</p></section>`);
   }
 
   out.push(`<section><div class="sec-h"><span class="eyebrow">${esc(L.findings)}</span><h2>${esc(L.findings)}</h2></div>
     <p class="sec-d">${L.counting_convention} ${esc(c.network_counting)} ${esc(L.counting_tail)} ${esc(m.links_evaluated||"")}</p>`);
-  d.findings.forEach(f=>{
+  // A check that found nothing takes one line, not a card: "Checked, nothing
+  // found: A2 ..., H ...". Each code keeps its anchor, so the index still lands.
+  const full=f=>f.count||(f.code==="A1"&&m.ignored_pairs);
+  const quiet=d.findings.filter(f=>!full(f));
+  if(quiet.length){
+    out.push(`<div class="achado quieto"><div class="barra"></div><div class="achado-in"><p class="quieto-p"><b>${esc(L.findings_quiet)}</b> ${quiet.map(f=>`<span id="f-${f.code}">${esc(f.code)} ${esc(f.title)}</span>`).join(", ")}.</p></div></div>`);
+  }
+  d.findings.filter(full).forEach(f=>{
     let extra="";
     if(f.as_successors!=null) extra=" "+fill(L.counted_three,{d:n(f.count),s:n(f.as_successors),p:n(f.as_predecessors)});
     out.push(`<div class="achado ${SEV[f.severity]}" id="f-${f.code}"><div class="barra"></div><div class="achado-in">
@@ -657,6 +678,7 @@ function renderCycle(d){
     ${ficha([[L.prev_status,esc(m.previous_status_date||L.not_set)],[L.curr_status,esc(m.current_status_date||L.not_set)],[L.ficha_finish,m.current_finish?esc(m.current_finish):null],[L.budget,n(m.budget,2)]])}${bar()}</header>`);
 
   (d.warnings||[]).forEach(w=>out.push(`<div class="note${w.severity==="critical"?" bad":""}" style="margin-top:14px"><b>${esc(L.warning)}</b> ${esc(w.text)}</div>`));
+  out.push(synthesis(d));
 
   out.push(`<div class="veredito"><div><div class="eyebrow">${esc(L.card_movement)}</div><div class="hero-num">${(m.movement_points>0?"+":"")+n(m.movement_points,2)}</div><div class="hero-cap">${esc(L.pp_headline)}</div></div>
     <div class="contra"><h2>${esc(L.how_to_read)}</h2><p>${L.cycle_read_p1}</p><p>${L.cycle_read_p2}</p></div></div>`);
@@ -696,8 +718,8 @@ function renderCycle(d){
     ${t.reference.length?`<div class="note" style="margin:12px 0 8px"><b>${esc(L.baseline_moved_title)}.</b> ${esc(L.baseline_moved_sub)}</div>`:""}
     ${titled(L.baseline_moved_title,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_bl_start,key:"baseline_start_moved_days",signed:true},{label:L.col_bl_finish,key:"baseline_finish_moved_days",signed:true}],t.reference)}</div>`);
   out.push(`<div id="p-escopo">${sub(L.scope_changes,nScope?L.scope_sub:"")}${reading("scope")}
-    ${titled(L.inserted,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"}],d.unmatched.inserted)}
-    ${titled(L.removed,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"}],d.unmatched.removed)}</div>`);
+    ${titled(L.inserted,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_pct_curr,key:"percent"},{label:L.col_bl_cost,key:"baseline_cost",decimals:2}],d.unmatched.inserted)}
+    ${titled(L.removed,[{label:L.col_row_prev||L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_pct_prev,key:"percent"},{label:L.col_bl_cost,key:"baseline_cost",decimals:2}],d.unmatched.removed)}</div>`);
   out.push(`</section>`);
 
   const lg=d.language||{};

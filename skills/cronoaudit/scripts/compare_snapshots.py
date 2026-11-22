@@ -47,6 +47,12 @@ PERCENT_LAG_FORMATS = {"19", "20", "51", "52"}
 CONSTRAINT_CODES = {0: "ASAP", 1: "ALAP", 2: "MSO", 3: "MFO",
                     4: "SNET", 5: "SNLT", 6: "FNET", 7: "FNLT"}
 DATED_CONSTRAINTS = {2, 3, 4, 5, 6, 7}
+# The named terms of the movement residue, in the order a report lists them.
+TERM_KEYS = ("removed_earned", "inserted_earned", "baseline_cost_changed", "bac_change")
+TERM_WORDS = {"removed_earned": "earned value of removed activities",
+              "inserted_earned": "earned value of inserted activities",
+              "baseline_cost_changed": "baseline cost changed on matched activities",
+              "bac_change": "budget at completion changed"}
 
 
 def dt(v):
@@ -328,7 +334,7 @@ def duration_changes(pairs, bp: Basis, bc: Basis) -> list:
     return out
 
 
-def past_rewritten(pairs) -> dict:
+def past_rewritten(pairs, removed=(), slot=None, curr_slot=None) -> dict:
     """What was already recorded as done, and reads differently now.
 
     An actual date is a record of something that happened; a percent complete is
@@ -347,9 +353,15 @@ def past_rewritten(pairs) -> dict:
             b, a = p.get(key), c.get(key)
             if not b or b == a:
                 continue
+            # An actual date rewritten to land exactly on the baseline date is the
+            # record made to agree with the plan: worth asking for the evidence.
+            bl = (((c.get("baselines") or {}).get(curr_slot) or {}).get(key.replace("actual_", ""))
+                  if curr_slot else None)
             bucket.append({**base, "before": b, "after": a, "removed": a is None,
                            "moved_days": days_between(b, a) if a else None,
-                           "same_day": bool(a) and a[:10] == b[:10]})
+                           "same_day": bool(a) and a[:10] == b[:10],
+                           "matches_baseline": bool(a and bl) and a[:10] == bl[:10]
+                                               and b[:10] != bl[:10]})
             touched.add(c["uid"])
         # One row per activity: the physical percent first, because it is the one
         # the earned value reads; the duration percent only when the physical one
@@ -363,15 +375,32 @@ def past_rewritten(pairs) -> dict:
                              "delta_points": round(a - b, 2)})
             touched.add(c["uid"])
             break
+    # Work recorded as done, or begun, that the current delivery no longer carries
+    # at all: the measured past erased together with its row. Its earned value
+    # leaves the aggregate, and nothing in the current file says it was ever there.
+    gone = []
+    for p in removed:
+        pct = percent_of(p)
+        if pct <= EPS and not p.get("actual_start"):
+            continue
+        bcost = (((p.get("baselines") or {}).get(slot) or {}).get("cost") or 0.0) if slot else 0.0
+        gone.append({"uid": p["uid"], "id": p["id"], "name": p["name"], "percent": pct,
+                     "completed": bool(p.get("actual_finish")) or pct >= 100 - EPS,
+                     "baseline_cost": bcost, "earned_erased": round(bcost * pct / 100.0, 2)})
+        touched.add(("removed", p["uid"]))
+    gone.sort(key=lambda r: (-r["earned_erased"], r["id"] or 0))
     starts.sort(key=lambda r: (r["same_day"], r["id"] or 0))
     finishes.sort(key=lambda r: (r["same_day"], r["id"] or 0))
     percents.sort(key=lambda r: (r["delta_points"], r["id"] or 0))
     return {
         "activities": len(touched),
         "actual_start": starts, "actual_finish": finishes, "percent_decreased": percents,
+        "removed_with_progress": gone,
         "actual_removed": sum(1 for r in starts + finishes if r["removed"]),
         "time_of_day_only": sum(1 for r in starts + finishes if r["same_day"]),
-        "population": "leaf, active, non-external, matched in both snapshots; milestones included",
+        "matches_baseline": sum(1 for r in starts + finishes if r["matches_baseline"]),
+        "population": "leaf, active, non-external, matched in both snapshots; milestones included; "
+                      "plus removed activities that carried progress (row number of the previous delivery)",
     }
 
 
@@ -509,6 +538,105 @@ def match(prev_tasks, curr_tasks):
 
     removed = [p for p in prev_tasks if p["uid"] not in used and considered(p)]
     return pairs, inserted, removed
+
+
+def percent_of(t) -> float:
+    """The percent the earned value reads: physical, falling back to duration."""
+    v = t.get("physical_percent_complete")
+    if v is None:
+        v = t.get("percent_complete") or 0.0
+    return v
+
+
+def weighted_cost(t, slot) -> float:
+    """Baseline cost of a row in the weighted population of ITS snapshot, else 0.
+
+    The same population `snapshot_aggregate` sums: considered, that snapshot's own
+    baseline, cost above zero. A residual term built on any other population would
+    leave a remainder that is only the two populations disagreeing.
+    """
+    if not considered(t) or not slot:
+        return 0.0
+    bcost = (((t.get("baselines") or {}).get(slot) or {}).get("cost")) or 0.0
+    return bcost if bcost > 0 else 0.0
+
+
+def residual_terms(pairs, inserted, removed, agg_prev, agg_curr) -> dict:
+    """The gap between the headline movement and the per-activity progress, in
+    named, measured terms.
+
+    With M the matched pairs, R the removed rows, I the inserted ones, b the
+    baseline cost of a row in its own snapshot's weighted population and p its
+    percent, the gap is exactly
+
+        + sum_I b.p / BAC_now                 earned value of inserted activities
+        - sum_R b.p / BAC_before              earned value erased by removals
+        + sum_M (b_now - b_before).p_before / BAC_now
+                                              baseline cost changed on matched rows
+        + E_M,before . (1/BAC_now - 1/BAC_before)
+                                              the denominator: BAC grew or shrank
+
+    An identity, not a fit: what is left after the four terms is arithmetic noise
+    unless the inputs disagree with `snapshot_aggregate`, and whatever is left is
+    reported as unexplained. The denominator term is the NET change of the BAC,
+    with its parts (inserted, removed, changed) listed beside it; splitting it
+    among them would depend on the order of the split.
+    """
+    sp, sc = agg_prev["baseline_slot"], agg_curr["baseline_slot"]
+    bac_p, bac_c = agg_prev["budget_at_completion"], agg_curr["budget_at_completion"]
+    if not bac_p or not bac_c:
+        return None
+
+    def pts(v, base):
+        return v / base * 100.0
+
+    ins_rows, rem_rows, chg_rows = [], [], []
+    ev_ins = sum(weighted_cost(t, sc) * percent_of(t) / 100.0 for t in inserted)
+    cost_ins = sum(weighted_cost(t, sc) for t in inserted)
+    for t in inserted:
+        b = weighted_cost(t, sc)
+        if b:
+            ins_rows.append({"uid": t["uid"], "id": t["id"], "name": t["name"],
+                             "baseline_cost": b, "percent": percent_of(t),
+                             "earned": round(b * percent_of(t) / 100.0, 2)})
+    ev_rem = cost_rem = 0.0
+    for t in removed:
+        b = weighted_cost(t, sp)
+        cost_rem += b
+        ev = b * percent_of(t) / 100.0
+        ev_rem += ev
+        if b:
+            rem_rows.append({"uid": t["uid"], "id": t["id"], "name": t["name"],
+                             "baseline_cost": b, "percent": percent_of(t),
+                             "earned_erased": round(ev, 2)})
+    ev_m_prev = chg_num = cost_chg = 0.0
+    for p, c, _ in pairs:
+        bp, bc = weighted_cost(p, sp), weighted_cost(c, sc)
+        ev_m_prev += bp * percent_of(p) / 100.0
+        if abs(bc - bp) >= 0.005:
+            cost_chg += bc - bp
+            chg_num += (bc - bp) * percent_of(p) / 100.0
+            chg_rows.append({"uid": c["uid"], "id": c["id"], "name": c["name"],
+                             "baseline_cost_before": bp, "baseline_cost_after": bc,
+                             "percent_before": percent_of(p)})
+    rem_rows.sort(key=lambda r: (-r["earned_erased"], r["id"] or 0))
+    ins_rows.sort(key=lambda r: (-r["earned"], r["id"] or 0))
+    chg_rows.sort(key=lambda r: (-abs(r["baseline_cost_after"] - r["baseline_cost_before"]),
+                                 r["id"] or 0))
+    return {
+        "inserted_earned": {"points": zero(pts(ev_ins, bac_c)), "earned": round(ev_ins, 2),
+                            "rows": ins_rows},
+        "removed_earned": {"points": zero(-pts(ev_rem, bac_p)), "earned_erased": round(ev_rem, 2),
+                           "rows": rem_rows},
+        "baseline_cost_changed": {"points": zero(pts(chg_num, bac_c)), "rows": chg_rows[:50],
+                                  "count": len(chg_rows)},
+        "bac_change": {"points": zero(ev_m_prev * (1.0 / bac_c - 1.0 / bac_p) * 100.0),
+                       "bac_before": bac_p, "bac_after": bac_c,
+                       "delta": round(bac_c - bac_p, 2), "inserted_cost": round(cost_ins, 2),
+                       "removed_cost": round(cost_rem, 2), "changed_cost": round(cost_chg, 2)},
+        "basis": "exact identity over the weighted population of each snapshot (considered, its "
+                 "own baseline, cost above zero); the BAC term is the net change, its parts listed",
+    }
 
 
 def compare(prev: dict, curr: dict) -> dict:
@@ -651,14 +779,14 @@ def compare(prev: dict, curr: dict) -> dict:
                                      prev, curr, bp, bc)
     logic = logic_changes(pairs, inserted_all, removed_all, prev, curr, bp, bc)
     durations = duration_changes(pairs, bp, bc)
-    past = past_rewritten(pairs)
+    past = past_rewritten(pairs, removed, agg_prev["baseline_slot"], agg_curr["baseline_slot"])
     quality = quality_side_by_side(prev, curr)
     if past["activities"]:
         warning_codes.append({"code": "past_rewritten", "n": past["activities"]})
         warnings.append(
             f"The past was rewritten on {past['activities']} activities: an actual date "
-            "changed or disappeared, or a percent complete went down, between these two "
-            "snapshots. Whatever the previous cycle reported on those activities rested "
+            "changed or disappeared, a percent complete went down, or an activity with "
+            "recorded progress was removed, between these two snapshots. Whatever the previous cycle reported on those activities rested "
             "on a record that no longer exists. Ask for the correction to be stated."
         )
 
@@ -705,23 +833,49 @@ def compare(prev: dict, curr: dict) -> dict:
         "trend": trend,
         "baseline_moved": baseline_moved,
         "unmatched": {
-            "inserted": [{"uid": t["uid"], "id": t["id"], "name": t["name"]} for t in inserted],
-            "removed": [{"uid": t["uid"], "id": t["id"], "name": t["name"]} for t in removed],
+            "inserted": [{"uid": t["uid"], "id": t["id"], "name": t["name"],
+                          "percent": percent_of(t),
+                          "baseline_cost": weighted_cost(t, agg_curr["baseline_slot"])}
+                         for t in inserted],
+            "removed": [{"uid": t["uid"], "id": t["id"], "name": t["name"],
+                         "percent": percent_of(t),
+                         "baseline_cost": weighted_cost(t, agg_prev["baseline_slot"])}
+                        for t in removed],
         },
         "decomposition": decomposition,
     }
+    result["residual_terms"] = None
+    result["residual_remainder_points"] = None
     if result["movement_points"] is not None:
         gap = zero(result["movement_points"] - total)
         result["movement_unexplained_points"] = gap
+        terms = residual_terms(pairs, inserted, removed, agg_prev, agg_curr)
+        rest = None
+        if terms:
+            rest = zero(result["movement_points"] - total - sum(
+                terms[k]["points"] for k in TERM_KEYS))
+            result["residual_terms"] = terms
+            result["residual_remainder_points"] = rest
         if abs(gap) >= 0.01:
-            result["warning_codes"].append({"code": "residue", "gap": gap})
-            result["warnings"].append(
-                f"{gap:+.2f} percentage points of the movement are NOT explained by "
-                "per-activity progress. Something other than work done moved the "
-                "aggregate: scope changing the denominator, a rebased baseline, or a "
-                "different baseline slot. Do not report the headline movement as "
-                "progress until this residue is accounted for."
-            )
+            named = terms is not None and abs(rest) < 0.01
+            result["warning_codes"].append({"code": "residue_named" if named else "residue",
+                                            "gap": gap})
+            if named:
+                parts = "; ".join(
+                    f"{TERM_WORDS[k]} {terms[k]['points']:+.2f}" for k in TERM_KEYS
+                    if abs(terms[k]["points"]) >= 0.005)
+                result["warnings"].append(
+                    f"{gap:+.2f} percentage points of the movement are NOT per-activity "
+                    f"progress, and they are named: {parts}. Report the explained part as "
+                    "progress and each term as what it is, never the headline as progress.")
+            else:
+                result["warnings"].append(
+                    f"{gap:+.2f} percentage points of the movement are NOT explained by "
+                    "per-activity progress. Something other than work done moved the "
+                    "aggregate: scope changing the denominator, a rebased baseline, or a "
+                    "different baseline slot. Do not report the headline movement as "
+                    "progress until this residue is accounted for."
+                )
     return result
 
 
@@ -762,7 +916,8 @@ def report(r: dict) -> str:
         f"  duration changed on work not started: {len(r['duration_changed'])}",
         f"  PAST REWRITTEN: {len(pr['actual_start'])} actual starts, "
         f"{len(pr['actual_finish'])} actual finishes, "
-        f"{len(pr['percent_decreased'])} percents that went down",
+        f"{len(pr['percent_decreased'])} percents that went down, "
+        f"{len(pr['removed_with_progress'])} activities with progress removed",
         "",
     ]
     if r["warnings"]:

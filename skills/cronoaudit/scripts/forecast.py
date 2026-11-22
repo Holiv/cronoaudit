@@ -75,6 +75,23 @@ def considered(t):
 # ---------------------------------------------------------------------------
 # Earned Schedule
 # ---------------------------------------------------------------------------
+# IEAC(t) and the schedule's own finish are read as agreeing within this many
+# calendar days. Earned Schedule is interpolated inside a monthly curve, so a gap of
+# a few days is below what the method resolves and supports neither direction.
+ES_AGREE_DAYS = 7
+
+
+def gap_reading(gap):
+    """Which way IEAC(t) falls from the schedule's own finish: `later` (the schedule
+    is more optimistic than the pace achieved), `earlier` (it allows more time than
+    that pace needs) or `agree`. None when there is no gap to read."""
+    if gap is None:
+        return None
+    if abs(gap) <= ES_AGREE_DAYS:
+        return "agree"
+    return "later" if gap > 0 else "earlier"
+
+
 def earned_schedule(scurve: dict, model: dict) -> dict:
     periods = scurve.get("periods") or []
     status = dt(scurve.get("status_date"))
@@ -117,6 +134,10 @@ def earned_schedule(scurve: dict, model: dict) -> dict:
     ieac_days = round(pd / spi_t) if (pd and spi_t) else None
     ieac_date = first + timedelta(days=ieac_days) if ieac_days else None
     tspi = round((pd - es) / (pd - at), 3) if (pd and pd > at) else None
+    # Calendar dates, not datetimes: IEAC(t) lands at midnight and the finish at the
+    # end of a working day, and `.days` floors a negative timedelta -- three days
+    # earlier read as four, and three days later as two.
+    gap = (ieac_date.date() - schedule_finish.date()).days if (ieac_date and schedule_finish) else None
     return {
         "available": True,
         "project_start": fmt(first), "status_date": fmt(status),
@@ -126,7 +147,8 @@ def earned_schedule(scurve: dict, model: dict) -> dict:
         "planned_finish": fmt(planned_finish), "pd_days": pd,
         "ieac_t_days": ieac_days, "ieac_t_date": fmt(ieac_date),
         "schedule_finish": fmt(schedule_finish),
-        "gap_vs_schedule_days": (ieac_date - schedule_finish).days if (ieac_date and schedule_finish) else None,
+        "gap_vs_schedule_days": gap,
+        "gap_reading": gap_reading(gap), "gap_agree_days": ES_AGREE_DAYS,
         "tspi": tspi,
         "tspi_verdict": (None if tspi is None else
                          ("recoverable" if tspi <= 1.0 else
@@ -391,6 +413,7 @@ def rain_exposure(model: dict, reserve_days: int = RESERVE_DAYS_PER_MONTH) -> di
         "calendars_with_reserve": len(with_reserve),
         "non_working_exceptions_in_use": exceptions_in_use,
         "reserve_rule": f"a month with at least {reserve_days} non-working exceptions on the activity's calendar",
+        "reserve_min_exceptions": reserve_days,
         "remaining_total": round(total, 2),
         "in_reserve": round(in_reserve, 2) if readable else None,
         "share_in_reserve_pct": round(in_reserve / total * 100, 2) if (total and readable) else None,

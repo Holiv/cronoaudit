@@ -99,6 +99,75 @@ def network_state(model, quality=None) -> dict:
                      "no predecessor or no successor, against its quoted threshold"}
 
 
+# How many out-of-sequence pairs, off the critical path and off the chain that
+# drives the project finish, are NAMED rather than read as a broken network.
+# Ours, not a published threshold: one or two pairs on a side branch do not make
+# every date in the file derive from logic the works ignores; four or more read
+# as a practice, not an incident. Total inversion (A2) is never scaled.
+GATE_MAX_PAIRS = 3
+
+
+def network_gate(model, res, forensics=None) -> dict:
+    """How far the violated logic reaches, so the warning is as wide as the breach.
+
+    absolute  A2 present, more than GATE_MAX_PAIRS pairs, or a pair touching an
+              unfinished critical activity (the tool's flag, or total float at or
+              below zero) or the chain that drives the project finish
+    scoped    otherwise: the pairs are named, and the milestones whose driving
+              chain passes through them (from the forensics, when run)
+    none      no A1 or A2 pair
+    """
+    import calendars as cal_mod
+    import forensics as fx_mod
+    pairs = (res.get("pairs") or {}).get("A1") or []
+    a2 = (res.get("counts") or {}).get("A2", {}).get("distinct_activities") or 0
+    if not pairs and not a2:
+        return {"scope": "none", "pairs": [], "milestones": [], "reasons": [],
+                "threshold_pairs": GATE_MAX_PAIRS}
+    by_uid = {t["uid"]: t for t in model["tasks"]}
+    uids = {u for p in pairs for u in (p["successor_uid"], p["predecessor_uid"])}
+
+    def critical(t):
+        if not t or t.get("actual_finish"):
+            return False
+        sl = t.get("total_slack_minutes")
+        return bool(t.get("critical")) or (sl is not None and sl <= 0)
+
+    blob = model.get("calendars") or {}
+    cals = cal_mod.from_dict(blob.get("definitions"))
+    slot = (model.get("prevailing_baseline") or {}).get("slot")
+    pool = [t for t in model["tasks"] if fx_mod.considered(t) and t.get("finish")
+            and not t.get("actual_finish")]
+    finish_chain = set()
+    if pool:
+        end = max(pool, key=lambda t: (t["finish"], bool(t.get("critical")),
+                                       bool(t.get("milestone")), t["id"] or 0))
+        finish_chain = {n["uid"] for n in fx_mod.driving_chain(
+            end, by_uid, cals, blob.get("default_uid"), slot)}
+    reasons = []
+    if a2:
+        reasons.append("total_inversion")
+    if len(pairs) > GATE_MAX_PAIRS:
+        reasons.append("count")
+    if any(critical(by_uid.get(u)) for u in uids):
+        reasons.append("critical")
+    if uids & finish_chain:
+        reasons.append("finish_chain")
+    milestones = []
+    for m in (forensics or {}).get("milestones") or []:
+        if uids & {n.get("uid") for n in m.get("chain") or []}:
+            milestones.append({"id": m["id"], "name": m["name"]})
+    named = [{"succ_id": p["successor_id"], "succ_name": by_uid[p["successor_uid"]]["name"],
+              "pred_id": p["predecessor_id"], "pred_name": by_uid[p["predecessor_uid"]]["name"]}
+             for p in pairs if p["successor_uid"] in by_uid and p["predecessor_uid"] in by_uid]
+    return {"scope": "absolute" if reasons else "scoped", "pairs": named[:GATE_MAX_PAIRS + 1],
+            "pair_count": len(pairs), "milestones": milestones, "reasons": reasons,
+            "threshold_pairs": GATE_MAX_PAIRS,
+            "basis": "absolute with total inversion, more than threshold_pairs pairs, or a pair on "
+                     "an unfinished critical activity or on the chain driving the project finish; "
+                     "the threshold is ours"}
+
+
 def leaves(model):
     return [
         t for t in model["tasks"]
@@ -207,6 +276,9 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
     default_cal = cal_blob.get("default_uid")
     grp = resolve_grouping(model, grouping)
     labels = group_labels(model, grp)
+    # The forecast and forensics group by the WBS branch unless a custom field was
+    # resolved; their codes are named from the same summary rows.
+    wbs_labels = group_labels(model, {"mode": "wbs"}) if grp["mode"] != "custom" else {}
     extra_cols = discovered_columns(model, grp, L)
     # A profile's declared fields win over discovery, and a declared field that the
     # file does not have is reported, never silently ignored.
@@ -298,6 +370,7 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
     # input and is reported as unavailable, not as zero.
     planned_available = file_bcws_nonzero > 0 or bool(ph_inputs.get("baseline_time_phased"))
     network = network_state(model, quality)
+    gate = network_gate(model, res, forensics)
 
     # ---- findings, enriched with the columns a planner reads
     marked = {code: {f["uid"] for f in res["findings"][code]} for code in ORDER}
@@ -450,6 +523,7 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
             # whose input is missing is replaced by a sentence saying so.
             "inputs": {
                 "network": network,
+                "network_gate": gate,
                 "file_earned_value": file_computed_ev,
                 "file_planned_value": file_bcws_nonzero > 0,
                 "baseline_time_phased": ph_inputs.get("baseline_time_phased"),
@@ -507,24 +581,98 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
         "scurve": phasing,
         "productivity": productivity,
         "quality": localize_quality(quality, lang) if quality else None,
-        "forecast": forecast,
-        "forensics": forensics,
+        "forecast": localize_forecast(forecast, lang, wbs_labels),
+        "forensics": localize_forensics(forensics, lang, wbs_labels),
         # The executive synthesis is injected later by whoever writes it; the slot
         # exists so the template knows where it goes and how to label it.
         "narrative": None,
     }
     payload["readings"] = narrative_mod.build(payload, lang)
+    # The banner over the findings says what the verdict reading says, from the
+    # same sentences, so the two cannot disagree on how far the breach reaches.
+    gate["text"] = narrative_mod.gate_sentences(gate, lang) if gate["scope"] == "scoped" else []
     return payload
 
 
+QUALITY_ITEM_COLS = ("id", "name", "missing", "predecessor_id", "predecessor_name", "link_type",
+                     "lag_days", "float_days", "baseline_finish", "finish", "actual_finish")
+
+
 def localize_quality(q: dict, lang: str) -> dict:
+    """Metric titles, and the item tables with labelled columns and localized
+    values: a person reads "Folga total (dias úteis)", never `float_days`."""
     QT = i18n.quality_text(lang)
+    L = i18n.ui(lang)
     out = dict(q)
-    out["metrics"] = [
-        {**m, "title": QT.get(m["code"], (m["code"], ""))[0],
-         "description": QT.get(m["code"], (m["code"], ""))[1]}
-        for m in q.get("metrics", [])
-    ]
+    metrics = []
+    for m in q.get("metrics", []):
+        items = m.get("items") or []
+        keys = [k for k in QUALITY_ITEM_COLS if any(k in it for it in items)]
+        keys += sorted({k for it in items for k in it} - set(keys) - {"uid"})
+        cols = [{"key": k, "label": {"id": L["col_row"], "name": L["col_activity"]}.get(k)
+                 or L.get("qcol_" + k, k)} for k in keys]
+        rows = []
+        for it in items:
+            r = dict(it)
+            if r.get("missing"):
+                r["missing"] = L.get("qmiss_" + r["missing"], r["missing"])
+            if r.get("link_type"):
+                r["link_type"] = i18n.link_type(lang, r["link_type"])
+            for k in ("baseline_finish", "finish", "actual_finish"):
+                if r.get(k):
+                    r[k] = fmt_date(r[k], lang)
+            rows.append(r)
+        metrics.append({**m, "title": QT.get(m["code"], (m["code"], ""))[0],
+                        "description": QT.get(m["code"], (m["code"], ""))[1],
+                        "items": rows, "item_columns": cols})
+    out["metrics"] = metrics
+    return out
+
+
+def localize_forecast(fc: dict, lang: str, labels: dict) -> dict:
+    """The forecast as a person reads it: group names instead of WBS codes, and
+    the method's sentences in the report's language. The sidecar keeps the
+    engine's own English and codes; this is a copy."""
+    import copy
+    if not fc:
+        return fc
+    L = i18n.ui(lang)
+    out = copy.deepcopy(fc)
+    for w in out.get("lookahead") or []:
+        for row in (w.get("by_group") or []) + (w.get("starts") or []) + (w.get("finishes") or []):
+            row["group"] = labels.get(row.get("group"), row.get("group"))
+    E = out.get("earned_schedule") or {}
+    if E.get("limits"):
+        E["limits"] = L["es_limits_text"]
+    RX = out.get("rain_exposure") or {}
+    if RX.get("reserve_rule") and RX.get("reserve_min_exceptions") is not None:
+        RX["reserve_rule"] = i18n.fmt(L["rx_rule"], n=RX["reserve_min_exceptions"])
+    if RX.get("basis", "").startswith("inferred: remaining cost"):
+        RX["basis"] = L["rx_basis"]
+    for m in (out.get("milestone_bands") or {}).get("milestones") or []:
+        if isinstance(m.get("critical"), bool):
+            m["critical"] = L["word_yes"] if m["critical"] else L["word_no"]
+    return out
+
+
+def localize_forensics(fx: dict, lang: str, labels: dict) -> dict:
+    """Group names, attribution words and provenance in the report's language,
+    on a copy; the sidecar keeps the engine's codes."""
+    import copy
+    if not fx:
+        return fx
+    L = i18n.ui(lang)
+    out = copy.deepcopy(fx)
+    out["provenance"] = L["fx_provenance"]
+    cy = out.get("cycle") or {}
+    for key in ("float_by_group", "became_critical", "float_consumed"):
+        for row in cy.get(key) or []:
+            row["group"] = labels.get(row.get("group"), row.get("group"))
+    words = {"execution": L["attr_execution"], "replan": L["attr_replan"],
+             "reference": L["attr_reference"], "none": L["attr_none"],
+             "outside the chain": L["attr_outside"]}
+    for row in cy.get("milestone_movements") or []:
+        row["attribution"] = words.get(row.get("attribution"), row.get("attribution"))
     return out
 
 
@@ -561,7 +709,9 @@ def _cycle_warnings(cmp_res, C, lang) -> list:
             args = {k: fmt_date(v, lang) for k, v in args.items()}
         if "gap" in args:
             g = narrative_mod.fnum(args["gap"], 2, lang)
-            args["gap"] = g if g.startswith("-") else "+" + g
+            args["gap"] = g.replace("-", "\u2212") if g.startswith("-") else "+" + g
+        if w["code"] == "residue_named":
+            args["terms"] = "; ".join(narrative_mod.residual_parts(cmp_res, lang))
         text = C.get("w_" + w["code"])
         if text:
             out.append({"text": i18n.fmt(text, **args),
@@ -732,20 +882,26 @@ def _cycle_sections(cmp_res, lang, C, readings) -> list:
         def date_row(r):
             return {"id": r["id"], "name": r["name"], "before": D(r["before"]),
                     "after": D(r["after"]) if r["after"] else C["withdrawn"],
-                    "moved": r["moved_days"]}
+                    "moved": r["moved_days"],
+                    "on_bl": C["yes"] if r.get("matches_baseline") else None}
         date_cols = ROW + [col("col_before", "before"), col("col_after", "after"),
-                           col("col_moved_cal", "moved", signed=True)]
+                           col("col_moved_cal", "moved", signed=True),
+                           col("col_matches_bl", "on_bl")]
         pct = [{"id": r["id"], "name": r["name"], "field": C["field_" + r["field"]],
                 "before": r["before"], "after": r["after"], "delta": r["delta_points"]}
                for r in pr["percent_decreased"]]
-        ns, nf, np_ = len(pr["actual_start"]), len(pr["actual_finish"]), len(pct)
+        gone = [{"id": r["id"], "name": r["name"], "pct": r["percent"], "cost": r["baseline_cost"],
+                 "ev": r["earned_erased"]} for r in pr.get("removed_with_progress") or []]
+        ns, nf, np_, ng = len(pr["actual_start"]), len(pr["actual_finish"]), len(pct), len(gone)
         section("C5", "c5", "critical" if pr["activities"] else "view", pr["activities"],
                 [{"label": C["t_past_start"], "value": ns, "caption": C["t_past_start_cap"],
                   "sev": "cr" if ns else ""},
                  {"label": C["t_past_finish"], "value": nf, "caption": C["t_past_finish_cap"],
                   "sev": "cr" if nf else ""},
                  {"label": C["t_past_pct"], "value": np_, "caption": C["t_past_pct_cap"],
-                  "sev": "cr" if np_ else ""}],
+                  "sev": "cr" if np_ else ""}]
+                + ([{"label": C["t_past_gone"], "value": ng, "caption": C["t_past_gone_cap"],
+                     "sev": "cr"}] if ng else []),
                 [{"title": C["l_past_start"], "count": ns, "columns": date_cols,
                   "rows": [date_row(r) for r in pr["actual_start"]]},
                  {"title": C["l_past_finish"], "count": nf, "columns": date_cols,
@@ -753,7 +909,11 @@ def _cycle_sections(cmp_res, lang, C, readings) -> list:
                  {"title": C["l_past_pct"], "count": np_, "rows": pct,
                   "columns": ROW + [col("col_field", "field"), col("col_before", "before"),
                                     col("col_after", "after"),
-                                    col("col_delta_pp", "delta", signed=True)]}],
+                                    col("col_delta_pp", "delta", signed=True)]},
+                 {"title": C["l_past_gone"], "count": ng, "rows": gone,
+                  "columns": [col("col_row_prev", "id"), col("col_activity", "name"),
+                              col("col_pct_prev", "pct"), col("col_bl_cost", "cost", decimals=2),
+                              col("col_ev_erased", "ev", decimals=2)]}],
                 empty=not pr["activities"])
 
     # ---- C6 network quality, side by side
