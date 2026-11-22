@@ -176,6 +176,7 @@ RES = [
     (9, "W_ICA", "Equipe de içamento e montagem (guindastes)", 1, None, 14500.0),
     (10, "W_ELE", "Equipe de eletricistas", 1, None, 760.0),
     (11, "W_ADM", "Administração local e desmobilização", 1, None, 1300.0),
+    (12, "W_RAD", "Equipe de recuperação de áreas degradadas", 1, None, 390.0),
     (20, "M_DESM", "Equipe de terraplenagem — desmatamento e limpeza", 0, "m²", 0.85),
     (21, "M_ESC1", "Equipe de terraplenagem — escavação de 1ª cat.", 0, "m³", 14.50),
     (22, "M_ESC3", "Equipe de terraplenagem — escavação 2ª e 3ª cat.", 0, "m³", 48.00),
@@ -202,8 +203,27 @@ RES = [
     (43, "M_VIGA", "Viga pré-moldada protendida", 0, "un", 148000.0),
     (44, "M_GABIAO", "Muro de gabião", 0, "m³", 520.0),
     (45, "M_CERCA", "Cerca de vedação da faixa de domínio", 0, "ml", 64.0),
+    # The crews behind the measured services. They cost nothing here, because the unit
+    # price of the service already pays for them; what they carry is the working time.
+    # MS Project keeps the progress of an activity in the work of its assignments, and
+    # an activity with nothing but a material quantity opens at zero percent.
+    (50, "W_FTER", "Frente de serviço — terraplenagem", 1, None, 0.0),
+    (51, "W_FCOM", "Frente de serviço — obras complementares", 1, None, 0.0),
+    (52, "W_FDRE", "Frente de serviço — drenagem", 1, None, 0.0),
+    (53, "W_FPAV", "Frente de serviço — pavimentação", 1, None, 0.0),
+    (54, "W_FSIN", "Frente de serviço — sinalização", 1, None, 0.0),
+    (55, "W_FILU", "Frente de serviço — iluminação", 1, None, 0.0),
+    (56, "W_FOAE", "Frente de serviço — obras de arte especiais", 1, None, 0.0),
 ]
 RES_BY_KEY = {r[1]: r for r in RES}
+CREW = {"TERRAPLENAGEM": "W_FCOM", "DRENAGEM": "W_FDRE", "PAVIMENTAÇÃO": "W_FPAV",
+        "SINALIZAÇÃO": "W_FSIN", "ILUMINAÇÃO": "W_FILU", "OAE": "W_FOAE"}
+
+
+def crew_of(r) -> tuple:
+    """The crew of a measured service. Whatever runs on the six-day calendar is the
+    earthworks crew, so that the crew's week and the activity's week are the same."""
+    return RES_BY_KEY["W_FTER" if r.cal == 2 else CREW[r.disc]]
 # Every resource owns a calendar derived from a base calendar, which is how the tool
 # itself saves a resource. Their UIDs follow the base calendars'.
 RES_CAL_UID = {r[0]: len(CALS) + i for i, r in enumerate(RES, 1)}
@@ -460,7 +480,7 @@ def build_rows(rev: str) -> list:
     A(2, "fim.limp", "Limpeza final e recomposição das áreas de apoio", 10,
       ["ms.s1", "ms.s2", "ms.s3", "ms.s4", "ms.oae"], "W_ADM")
     A(2, "fim.jaz", "Recuperação ambiental de jazidas e caminhos de serviço", 15,
-      ["ms.terr"], "W_AMB", cal=2)
+      ["ms.terr"], "W_RAD", cal=2)
     A(2, "fim.asb", "Projeto as built e data book", 25, ["s4.pav.capa", "oae.conc"], "W_ENG")
     A(2, "fim.vist", "Vistoria final com a fiscalização", 5,
       feeding("fim.limp", "fim.jaz", "fim.asb"), "W_ENG")
@@ -648,7 +668,10 @@ def resource_base_calendars(rows: list) -> dict:
     used = {}
     for r in rows:
         if r.res:
-            used.setdefault(RES_BY_KEY[r.res][0], set()).add(r.cal)
+            res = RES_BY_KEY[r.res]
+            used.setdefault(res[0], set()).add(r.cal)
+            if res[3] == 0:
+                used.setdefault(crew_of(r)[0], set()).add(r.cal)
     return {r[0]: (used[r[0]].pop() if len(used.get(r[0], ())) == 1 else 1) for r in RES}
 
 
@@ -828,12 +851,45 @@ def task_xml(r: Row, snap: dict, uid_of: dict, assignments: list) -> str:
     res = RES_BY_KEY[r.res] if r.res else None
     is_work = bool(res and res[3] == 1)
     cost = cost_of(r, s["dur"])
-    bcost_c = cents(b["cost"])
+    cost_c, bcost_c = cents(cost), cents(b["cost"])
     pct, phys = s["pct"], s["phys"]
+
+    # Where the reported work stops and where the rest resumes.
+    stop = resume = None
+    if s["AS"]:
+        if s["AF"]:
+            stop = resume = ts(s["AF"], not at_start) if ms else ts(s["AF"], True)
+        else:
+            last = cal.on_or_before(status)
+            stop, resume = ts(last, True), ts(cal.add(last, 1), False)
+
+    # The assignments, worked out before the activity is written because the activity
+    # carries their totals. Whole minutes throughout, so that actual plus remaining is
+    # the work and the days of actual work add up to the actual work exactly.
+    asg = []
+    if res:
+        current = r.qty if not is_work else s["dur"] * 8.0
+        work_min = int(round(current * 60))
+        actual_min = min(work_min, int(round(round(current * phys / 100.0, 2) * 60)))
+        asg.append({"uid": 10000 + r.uid, "res": res, "material": not is_work, "pct": phys,
+                    "work": work_min, "actual": actual_min, "cost": cost_c,
+                    "acost": int(round(cost_c * actual_min / work_min)) if work_min else 0,
+                    "units": 1 if is_work else int(r.qty),
+                    "bwork": qty_iso(r.qty if not is_work else b["dur"] * 8.0), "bcost": bcost_c})
+        if not is_work:
+            asg.append({"uid": 20000 + r.uid, "res": crew_of(r), "material": False, "pct": pct,
+                        "work": s["dur"] * DAY_MIN, "actual": s["elapsed"] * DAY_MIN, "cost": 0,
+                        "acost": 0, "units": 1, "bwork": dur_iso(b["dur"]), "bcost": 0})
+    work_t = sum(a["work"] for a in asg if not a["material"])
+    actual_t = sum(a["actual"] for a in asg if not a["material"])
+    acost_t = sum(a["acost"] for a in asg)
 
     L += [f"      <Start>{start}</Start>", f"      <Finish>{finish}</Finish>",
           f"      <Duration>{dur_iso(s['dur'])}</Duration>", "      <DurationFormat>7</DurationFormat>",
-          f"      <Work>{dur_iso(s['dur']) if is_work else 'PT0H0M0S'}</Work>",
+          f"      <Work>{min_iso(work_t)}</Work>"]
+    if stop:
+        L += [f"      <Stop>{stop}</Stop>", f"      <Resume>{resume}</Resume>"]
+    L += ["      <ResumeValid>0</ResumeValid>",
           "      <EffortDriven>0</EffortDriven>", "      <Estimated>0</Estimated>",
           f"      <Milestone>{1 if ms else 0}</Milestone>", "      <Summary>0</Summary>",
           f"      <Critical>{1 if s['critical'] else 0}</Critical>",
@@ -842,16 +898,27 @@ def task_xml(r: Row, snap: dict, uid_of: dict, assignments: list) -> str:
           f"      <LateStart>{ts(s['LS'], not at_start) if ms else ts(s['LS'], False)}</LateStart>",
           f"      <LateFinish>{ts(s['LF'], not at_start) if ms else ts(s['LF'], True)}</LateFinish>",
           f"      <TotalSlack>{s['slack'] * DAY_MIN * 10}</TotalSlack>",
+          # The whole cost comes from the assignments; said outright, so that the tool
+          # does not make up a fixed cost for what it cannot account for.
+          "      <FixedCost>0</FixedCost>",
           "      <FixedCostAccrual>3</FixedCostAccrual>",
           f"      <PercentComplete>{pct}</PercentComplete>",
-          f"      <Cost>{cents(cost)}</Cost>"]
+          f"      <PercentWorkComplete>{pct if not work_t else int(round(100.0 * actual_t / work_t))}"
+          "</PercentWorkComplete>",
+          f"      <Cost>{cost_c}</Cost>"]
     if s["AS"]:
         L.append(f"      <ActualStart>{ts(s['AS'], not at_start) if ms else ts(s['AS'], False)}</ActualStart>")
     if s["AF"]:
         L.append(f"      <ActualFinish>{ts(s['AF'], not at_start) if ms else ts(s['AF'], True)}</ActualFinish>")
     if not ms:
-        L += [f"      <ActualDuration>{dur_iso(s['elapsed'])}</ActualDuration>",
-              f"      <RemainingDuration>{dur_iso(s['dur'] - s['elapsed'])}</RemainingDuration>"]
+        L.append(f"      <ActualDuration>{dur_iso(s['elapsed'])}</ActualDuration>")
+    L += [f"      <ActualCost>{acost_t}</ActualCost>",
+          f"      <ActualWork>{min_iso(actual_t)}</ActualWork>",
+          f"      <RegularWork>{min_iso(work_t)}</RegularWork>"]
+    if not ms:
+        L.append(f"      <RemainingDuration>{dur_iso(s['dur'] - s['elapsed'])}</RemainingDuration>")
+    L += [f"      <RemainingCost>{cost_c - acost_t}</RemainingCost>",
+          f"      <RemainingWork>{min_iso(work_t - actual_t)}</RemainingWork>"]
     L += [f"      <ConstraintType>{4 if s.get('snet') else 0}</ConstraintType>",
           f"      <CalendarUID>{r.cal if r.cal != 1 else -1}</CalendarUID>"]
     if s.get("snet"):
@@ -886,7 +953,7 @@ def task_xml(r: Row, snap: dict, uid_of: dict, assignments: list) -> str:
     L += ["      <Baseline>", "        <Number>0</Number>", f"        <Start>{bstart}</Start>",
           f"        <Finish>{bfinish}</Finish>", f"        <Duration>{dur_iso(b['dur'])}</Duration>",
           "        <DurationFormat>7</DurationFormat>",
-          f"        <Work>{dur_iso(b['dur']) if is_work else 'PT0H0M0S'}</Work>",
+          f"        <Work>{'PT0H0M0S' if ms else dur_iso(b['dur'])}</Work>",
           f"        <Cost>{bcost_c}</Cost>", "      </Baseline>"]
     L += [x.replace("    <Timephased", "      <Timephased", 1) for x in blocks]
 
@@ -897,36 +964,34 @@ def task_xml(r: Row, snap: dict, uid_of: dict, assignments: list) -> str:
         L += [tp(11, r.uid, d, 2, per).replace("    <Timephased", "      <Timephased", 1) for d in actual_days]
     L.append("    </Task>")
 
-    if res:
-        planned = r.qty if not is_work else b["dur"] * 8.0
-        current = r.qty if not is_work else s["dur"] * 8.0
-        executed = round(current * phys / 100.0, 2)
-        # Whole minutes, so that actual plus remaining is the work and the days of
-        # actual work add up to the actual work exactly.
-        work_min = int(round(current * 60))
-        actual_min = min(work_min, int(round(executed * 60)))
-        A = ["    <Assignment>", f"      <UID>{10000 + r.uid}</UID>", f"      <TaskUID>{r.uid}</TaskUID>",
-             f"      <ResourceUID>{res[0]}</ResourceUID>",
-             f"      <PercentWorkComplete>{phys}</PercentWorkComplete>"]
+    for a in asg:
+        A = ["    <Assignment>", f"      <UID>{a['uid']}</UID>", f"      <TaskUID>{r.uid}</TaskUID>",
+             f"      <ResourceUID>{a['res'][0]}</ResourceUID>",
+             f"      <PercentWorkComplete>{a['pct']}</PercentWorkComplete>",
+             f"      <ActualCost>{a['acost']}</ActualCost>"]
         if s["AF"]:
             A.append(f"      <ActualFinish>{ts(s['AF'], True)}</ActualFinish>")
         if s["AS"]:
             A.append(f"      <ActualStart>{ts(s['AS'], False)}</ActualStart>")
-        A += [f"      <ActualWork>{min_iso(actual_min)}</ActualWork>",
-              f"      <Cost>{cents(cost)}</Cost>", f"      <Finish>{finish}</Finish>",
+        A += [f"      <ActualWork>{min_iso(a['actual'])}</ActualWork>",
+              f"      <Cost>{a['cost']}</Cost>", f"      <Finish>{finish}</Finish>",
               # A material quantity is consumed as one fixed amount, not as a rate per day.
               "      <HasFixedRateUnits>1</HasFixedRateUnits>",
-              f"      <FixedMaterial>{0 if is_work else 1}</FixedMaterial>",
-              f"      <RemainingWork>{min_iso(work_min - actual_min)}</RemainingWork>",
-              f"      <Start>{start}</Start>",
-              f"      <Units>{1 if is_work else int(r.qty)}</Units>",
-              f"      <Work>{min_iso(work_min)}</Work>",
+              f"      <FixedMaterial>{1 if a['material'] else 0}</FixedMaterial>",
+              f"      <RegularWork>{min_iso(a['work'])}</RegularWork>",
+              f"      <RemainingCost>{a['cost'] - a['acost']}</RemainingCost>",
+              f"      <RemainingWork>{min_iso(a['work'] - a['actual'])}</RemainingWork>",
+              f"      <Start>{start}</Start>"]
+        if stop:
+            A += [f"      <Stop>{stop}</Stop>", f"      <Resume>{resume}</Resume>"]
+        A += [f"      <Units>{a['units']}</Units>",
+              f"      <Work>{min_iso(a['work'])}</Work>", "      <WorkContour>0</WorkContour>",
               "      <Baseline>", "        <Number>0</Number>", f"        <Start>{bstart}</Start>",
-              f"        <Finish>{bfinish}</Finish>", f"        <Work>{qty_iso(planned)}</Work>",
-              f"        <Cost>{bcost_c}</Cost>", "      </Baseline>"]
-        if actual_min > 0 and actual_days:
-            A += [tp(2, 10000 + r.uid, d, 2, min_iso(v)).replace("    <Timephased", "      <Timephased", 1)
-                  for d, v in zip(actual_days, spread_cents(actual_min, len(actual_days)))]
+              f"        <Finish>{bfinish}</Finish>", f"        <Work>{a['bwork']}</Work>",
+              f"        <Cost>{a['bcost']}</Cost>", "      </Baseline>"]
+        if a["actual"] > 0 and actual_days:
+            A += [tp(2, a["uid"], d, 2, min_iso(v)).replace("    <Timephased", "      <Timephased", 1)
+                  for d, v in zip(actual_days, spread_cents(a["actual"], len(actual_days)))]
         A.append("    </Assignment>")
         assignments.append("\n".join(A))
     return "\n".join(L)
@@ -937,6 +1002,8 @@ def document(snap: dict, uid_of: dict) -> str:
     end = max(sc[r.key]["F"] for r in rows if r.kind != "sum")
     leaves = [r for r in rows if r.kind != "sum"]
     bcost = sum(snap["baseline"][r.key]["cost"] for r in leaves)
+    bstart = min(snap["baseline"][r.key]["S"] for r in leaves)
+    bfinish = max(snap["baseline"][r.key]["F"] for r in leaves)
     done = sum(sc[r.key]["elapsed"] for r in leaves)
     total = sum(sc[r.key]["dur"] for r in leaves) or 1
     title = f"{PROJECT_NAME} — Rev. {rev[-2:]}"
@@ -1017,6 +1084,9 @@ def document(snap: dict, uid_of: dict) -> str:
         f"      <ActualStart>{ts(PROJECT_START, False)}</ActualStart>",
         "      <ConstraintType>0</ConstraintType>", "      <CalendarUID>-1</CalendarUID>",
         "      <Baseline>", "        <Number>0</Number>",
+        f"        <Start>{ts(bstart, False)}</Start>", f"        <Finish>{ts(bfinish, True)}</Finish>",
+        f"        <Duration>{dur_iso(CALS[1].count(bstart, bfinish))}</Duration>",
+        "        <DurationFormat>7</DurationFormat>",
         f"        <Cost>{cents(bcost)}</Cost>", "      </Baseline>",
         "    </Task>",
     ]
