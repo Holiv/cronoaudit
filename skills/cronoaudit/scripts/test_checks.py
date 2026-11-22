@@ -394,7 +394,8 @@ def main() -> int:
     if noise or quiet["past_rewritten"]["activities"] or quiet["project_finish"]["delta_days"] != 0 \
             or any(m["change"] not in (None, "unchanged") for m in quiet["quality"]["metrics"]):
         failures.append("cycle: a file compared with itself produced findings")
-    for key in ("movement_points", "decomposition_sums_to_points", "movement_unexplained_points"):
+    for key in ("movement_points", "decomposition_sums_to_points", "movement_unexplained_points",
+                "residual_remainder_points"):
         if str(quiet[key]).startswith("-"):
             failures.append(f"cycle: {key} is a negative zero")
     # No path leaves the engine, and both languages carry every cycle string.
@@ -428,6 +429,56 @@ def main() -> int:
     quiet_pay = rd_mod.build_cycle(quiet, lang="pt")
     if not all(s["empty"] for s in quiet_pay["sections"] if s["code"] in ("C2", "C3", "C4", "C5")):
         failures.append("cycle report: a section with nothing to show is not collapsed to one line")
+
+    # ---- the residue in named terms (0.7.2). The fixture's residue comes from the
+    # BAC shrinking (7,000 removed at 0%, 5,000 inserted); then the removed row is
+    # given 100% and its erased earned value must appear as its own term, in C5,
+    # and in both languages -- the agent had to infer it on a real run.
+    import narrative as nar_mod2
+    terms = cyc["residual_terms"]
+    if terms is None or abs(cyc["residual_remainder_points"]) >= 0.01 \
+            or abs(terms["bac_change"]["points"] - cyc["movement_unexplained_points"]) >= 0.01 \
+            or terms["bac_change"]["delta"] != -2000.0:
+        failures.append(f"residual terms: the fixture's residue is not the BAC change, exactly: {terms}")
+    if any(abs(quiet["residual_terms"][k]["points"]) for k in cs_mod.TERM_KEYS):
+        failures.append("residual terms: a file compared with itself carries a residue term")
+    pv = copy_mod.deepcopy(pm_mod.parse(os.path.join(ROOT, "fixtures", "cycle_prev.xml")))
+    cv = pm_mod.parse(os.path.join(ROOT, "fixtures", "cycle_curr.xml"))
+    for t in pv["tasks"]:
+        if t["uid"] == 6:
+            t["physical_percent_complete"] = 100.0
+            t["percent_complete"] = 100.0
+    gone = cs_mod.compare(pv, cv)
+    gt = gone["residual_terms"]
+    want_rem = round(-7000.0 / gone["previous"]["budget_at_completion"] * 100, 4)
+    if abs(gt["removed_earned"]["points"] - want_rem) > 1e-4 or abs(gone["residual_remainder_points"]) >= 0.01:
+        failures.append(f"residual terms: the removed row's erased earned value is not its own term "
+                        f"({gt['removed_earned']['points']} vs {want_rem}, remainder "
+                        f"{gone['residual_remainder_points']})")
+    gpr = gone["past_rewritten"]
+    if [r["id"] for r in gpr["removed_with_progress"]] != [6] or gpr["activities"] != pr["activities"] + 1 \
+            or gpr["removed_with_progress"][0]["earned_erased"] != 7000.0:
+        failures.append(f"cycle past: a removed activity at 100% is not counted as rewritten past: {gpr}")
+    for lang, words in (("en", ("row 6 of the previous delivery", "removed from the schedule")),
+                        ("pt", ("linha 6 da entrega anterior", "removida do cronograma"))):
+        rd_ = nar_mod2.build_cycle(gone, lang, rd_mod.fmt_date)
+        mv_ = " ".join(rd_.get("movement", []))
+        c5_ = " ".join(rd_.get("c5", []))
+        if words[0] not in mv_ or words[1] not in c5_:
+            failures.append(f"residual reading ({lang}): the erased earned value is not named: {mv_} / {c5_}")
+        if re.search(r"-\d[\d,.]* (?:are not explained|não são explicados)", mv_):
+            failures.append(f"residual reading ({lang}): a negative residue is read as a count: {mv_}")
+        pay_ = rd_mod.build_cycle(gone, lang=lang)
+        c5s = next(s_ for s_ in pay_["sections"] if s_["code"] == "C5")
+        if not any(l_["rows"] and l_["rows"][0].get("ev") == 7000.0 for l_ in c5s["lists"]):
+            failures.append(f"cycle report ({lang}): C5 does not list the removed row with its earned value")
+        if not any(w_["text"].count("6") and ("has a name" in w_["text"] or "tem nome" in w_["text"])
+                   for w_ in pay_["warnings"]):
+            failures.append(f"cycle report ({lang}): the residue warning does not name its terms")
+    # A positive residue keeps the plain sentence, and names the BAC term.
+    mv_en = " ".join(nar_mod2.build_cycle(cyc, "en", rd_mod.fmt_date).get("movement", []))
+    if "are not explained by work done" not in mv_en or "budget at completion" not in mv_en:
+        failures.append(f"residual reading: the BAC term of a positive residue is not named: {mv_en}")
 
     # ---- the network rules the in-tool implementation taught, each with a control.
     a1_pairs = {(p["successor_id"], p["predecessor_id"]) for p in pos["pairs"]["A1"]}

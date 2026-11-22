@@ -1145,6 +1145,7 @@ CYCLE = {
         "t_dur": "DURATIONS EDITED", "t_dur_cap": "on work not started", "t_dur_net": "NET CHANGE",
         "t_dur_net_cap": "working days",
         "t_past_start": "ACTUAL START", "t_past_finish": "ACTUAL FINISH",
+        "t_past_gone": "REMOVED WITH PROGRESS", "t_past_gone_cap": "earned value erased with the row",
         "t_past_pct": "PERCENT DOWN", "t_past_start_cap": "changed or withdrawn",
         "t_past_finish_cap": "changed or withdrawn", "t_past_pct_cap": "reported lower than before",
         "t_q_worse": "WORSENED", "t_q_better": "IMPROVED", "t_q_crossed": "PASS TO FAIL",
@@ -1159,6 +1160,8 @@ CYCLE = {
         "l_dur": "Duration edited before any start",
         "l_past_start": "Actual start changed", "l_past_finish": "Actual finish changed",
         "l_past_pct": "Percent complete went down",
+        "l_past_gone": "Removed with recorded progress",
+        "col_row_prev": "Row (previous delivery)", "col_ev_erased": "Earned value erased",
         "l_quality": "The fourteen metrics, before and after",
         "c1_title": "Project finish",
         "c1_sub": "Where each delivery says the contract ends, and what holds the date now.",
@@ -1200,7 +1203,9 @@ CYCLE = {
                   "rested on a past that no longer exists, and neither file says so.",
         "c5_criterion": "Activities present in both files whose Actual Start or Actual Finish "
                         "differs or was withdrawn, or whose physical percent (or percent "
-                        "complete, when the physical one did not go down) is lower than before.",
+                        "complete, when the physical one did not go down) is lower than before; "
+                        "and activities of the previous file that carried progress and are absent "
+                        "from the current one.",
         "c5_reproduce": "In each file: show Unique ID, Actual Start, Actual Finish, "
                         "% Complete and Physical % Complete; compare by Unique ID.",
         "c6_title": "Network quality, before and after",
@@ -1235,8 +1240,12 @@ CYCLE = {
                      "not report the headline movement as progress until this residue is "
                      "accounted for.",
         "w_past_rewritten": "The past was rewritten on {n} {n?activity|activities}: an actual date changed or "
-                            "was withdrawn, or a percent complete went down. Ask for each "
-                            "correction to be stated.",
+                            "was withdrawn, a percent complete went down, or an activity with "
+                            "recorded progress was removed. Ask for each correction to be stated.",
+        "w_residue_named": "{gap} {gap?percentage point|percentage points} of the movement are NOT "
+                           "per-activity progress, and each part has a name: {terms}. Report the "
+                           "explained part as progress and each term as what it is, never the "
+                           "headline movement as progress.",
         "cv_matching": "Matching", "cv_population": "Population (progress)",
         "cv_logic_population": "Population (logic and record)",
         "cv_denominator": "Denominator", "cv_aggregates": "Aggregates",
@@ -1303,6 +1312,7 @@ CYCLE = {
         "t_dur": "DURAÇÕES EDITADAS", "t_dur_cap": "em atividade não iniciada",
         "t_dur_net": "SALDO", "t_dur_net_cap": "dias úteis",
         "t_past_start": "INÍCIO REAL", "t_past_finish": "TÉRMINO REAL",
+        "t_past_gone": "REMOVIDA COM AVANÇO", "t_past_gone_cap": "valor agregado apagado com a linha",
         "t_past_pct": "PERCENTUAL CAIU", "t_past_start_cap": "alterado ou retirado",
         "t_past_finish_cap": "alterado ou retirado", "t_past_pct_cap": "informado menor que antes",
         "t_q_worse": "PIORARAM", "t_q_better": "MELHORARAM", "t_q_crossed": "PASSARAM A NÃO ATENDER",
@@ -1317,6 +1327,8 @@ CYCLE = {
         "l_dur": "Duração editada antes de qualquer início",
         "l_past_start": "Início real alterado", "l_past_finish": "Término real alterado",
         "l_past_pct": "Percentual concluído caiu",
+        "l_past_gone": "Removidas com avanço registrado",
+        "col_row_prev": "Linha (entrega anterior)", "col_ev_erased": "Valor agregado apagado",
         "l_quality": "As quatorze métricas, antes e depois",
         "c1_title": "Término do projeto",
         "c1_sub": "Onde cada entrega diz que o contrato termina, e o que segura a data agora.",
@@ -1360,7 +1372,8 @@ CYCLE = {
                   "se apoiavam num passado que não existe mais, e nenhum dos arquivos avisa.",
         "c5_criterion": "Atividades presentes nos dois arquivos cujo Início Real ou Término Real "
                         "difere ou foi retirado, ou cujo percentual físico (ou percentual "
-                        "concluído, quando o físico não caiu) está menor que antes.",
+                        "concluído, quando o físico não caiu) está menor que antes; e atividades "
+                        "do arquivo anterior que tinham avanço e não estão no atual.",
         "c5_reproduce": "Em cada arquivo: mostre Id Exclusiva, Início Real, Término Real, "
                         "% Concluída e % Física Concluída; compare pela Id Exclusiva.",
         "c6_title": "Qualidade da rede, antes × depois",
@@ -1396,8 +1409,12 @@ CYCLE = {
                      "reporte o movimento de cabeçalho como avanço até este resíduo estar "
                      "explicado.",
         "w_past_rewritten": "O passado foi reescrito em {n} {n?atividade|atividades}: uma data real mudou ou "
-                            "foi retirada, ou um percentual concluído caiu. Peça que cada "
-                            "correção seja declarada.",
+                            "foi retirada, um percentual concluído caiu, ou uma atividade com "
+                            "avanço registrado foi removida. Peça que cada correção seja declarada.",
+        "w_residue_named": "{gap} {gap?ponto percentual|pontos percentuais} do movimento NÃO são "
+                           "avanço por atividade, e cada parte tem nome: {terms}. Reporte a parte "
+                           "explicada como avanço e cada termo como o que é, nunca o movimento de "
+                           "cabeçalho como avanço.",
         "cv_matching": "Casamento", "cv_population": "População (avanço)",
         "cv_logic_population": "População (lógica e registro)",
         "cv_denominator": "Denominador", "cv_aggregates": "Agregados",

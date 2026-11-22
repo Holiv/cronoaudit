@@ -562,6 +562,8 @@ def _cycle_warnings(cmp_res, C, lang) -> list:
         if "gap" in args:
             g = narrative_mod.fnum(args["gap"], 2, lang)
             args["gap"] = g if g.startswith("-") else "+" + g
+        if w["code"] == "residue_named":
+            args["terms"] = "; ".join(narrative_mod.residual_parts(cmp_res, lang))
         text = C.get("w_" + w["code"])
         if text:
             out.append({"text": i18n.fmt(text, **args),
@@ -738,14 +740,18 @@ def _cycle_sections(cmp_res, lang, C, readings) -> list:
         pct = [{"id": r["id"], "name": r["name"], "field": C["field_" + r["field"]],
                 "before": r["before"], "after": r["after"], "delta": r["delta_points"]}
                for r in pr["percent_decreased"]]
-        ns, nf, np_ = len(pr["actual_start"]), len(pr["actual_finish"]), len(pct)
+        gone = [{"id": r["id"], "name": r["name"], "pct": r["percent"], "cost": r["baseline_cost"],
+                 "ev": r["earned_erased"]} for r in pr.get("removed_with_progress") or []]
+        ns, nf, np_, ng = len(pr["actual_start"]), len(pr["actual_finish"]), len(pct), len(gone)
         section("C5", "c5", "critical" if pr["activities"] else "view", pr["activities"],
                 [{"label": C["t_past_start"], "value": ns, "caption": C["t_past_start_cap"],
                   "sev": "cr" if ns else ""},
                  {"label": C["t_past_finish"], "value": nf, "caption": C["t_past_finish_cap"],
                   "sev": "cr" if nf else ""},
                  {"label": C["t_past_pct"], "value": np_, "caption": C["t_past_pct_cap"],
-                  "sev": "cr" if np_ else ""}],
+                  "sev": "cr" if np_ else ""}]
+                + ([{"label": C["t_past_gone"], "value": ng, "caption": C["t_past_gone_cap"],
+                     "sev": "cr"}] if ng else []),
                 [{"title": C["l_past_start"], "count": ns, "columns": date_cols,
                   "rows": [date_row(r) for r in pr["actual_start"]]},
                  {"title": C["l_past_finish"], "count": nf, "columns": date_cols,
@@ -753,7 +759,11 @@ def _cycle_sections(cmp_res, lang, C, readings) -> list:
                  {"title": C["l_past_pct"], "count": np_, "rows": pct,
                   "columns": ROW + [col("col_field", "field"), col("col_before", "before"),
                                     col("col_after", "after"),
-                                    col("col_delta_pp", "delta", signed=True)]}],
+                                    col("col_delta_pp", "delta", signed=True)]},
+                 {"title": C["l_past_gone"], "count": ng, "rows": gone,
+                  "columns": [col("col_row_prev", "id"), col("col_activity", "name"),
+                              col("col_pct_prev", "pct"), col("col_bl_cost", "cost", decimals=2),
+                              col("col_ev_erased", "ev", decimals=2)]}],
                 empty=not pr["activities"])
 
     # ---- C6 network quality, side by side

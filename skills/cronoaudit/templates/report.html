@@ -703,8 +703,8 @@ function renderCycle(d){
     ${t.reference.length?`<div class="note" style="margin:12px 0 8px"><b>${esc(L.baseline_moved_title)}.</b> ${esc(L.baseline_moved_sub)}</div>`:""}
     ${titled(L.baseline_moved_title,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_bl_start,key:"baseline_start_moved_days",signed:true},{label:L.col_bl_finish,key:"baseline_finish_moved_days",signed:true}],t.reference)}</div>`);
   out.push(`<div id="p-escopo">${sub(L.scope_changes,nScope?L.scope_sub:"")}${reading("scope")}
-    ${titled(L.inserted,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"}],d.unmatched.inserted)}
-    ${titled(L.removed,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"}],d.unmatched.removed)}</div>`);
+    ${titled(L.inserted,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_pct_curr,key:"percent"},{label:L.col_bl_cost,key:"baseline_cost",decimals:2}],d.unmatched.inserted)}
+    ${titled(L.removed,[{label:L.col_row_prev||L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_pct_prev,key:"percent"},{label:L.col_bl_cost,key:"baseline_cost",decimals:2}],d.unmatched.removed)}</div>`);
   out.push(`</section>`);
 
   const lg=d.language||{};

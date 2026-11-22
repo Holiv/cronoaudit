@@ -359,7 +359,16 @@ def build(payload: dict, lang: str) -> dict:
 # ---------------------------------------------------------------------------
 RC = {
     "en": {
-        "mv": "Weighted progress went from {a}% to {b}%: {m} {m?point|points}. Per-activity progress explains {x} of them and {r} are not explained by work done.",
+        "mv": "Weighted progress went from {a}% to {b}%: {m} {m?point|points}. Per-activity progress explains {x} of them and {r} {r?is|are} not explained by work done.",
+        "mv_over": "Weighted progress went from {a}% to {b}%: {m} {m?point|points}. Per-activity progress adds up to {x}, more than the movement: {r} {r?point was|points were} taken off by something other than work done.",
+        "mv_terms": "The difference is named: {list}.",
+        "mv_terms_rest": "The difference is named in part: {list}; {r} {r?point remains|points remain} unexplained.",
+        "term_rem_1": "{p} {p?point|points} from the earned value erased with a removed activity (row {id} of the previous delivery, {name}, at {pct}%: {v})",
+        "term_rem_n": "{p} {p?point|points} from the earned value erased with {n} removed activities ({v}; the largest is row {id} of the previous delivery, {name}, at {pct}%)",
+        "term_ins": "{p} {p?point|points} from the earned value of {n} inserted {n?activity|activities}",
+        "term_chg": "{p} {p?point|points} from baseline cost changed on {n} {n?activity|activities} present in both deliveries",
+        "term_bac": "{p} {p?point|points} from the budget at completion, which went from {a} to {b} ({parts})",
+        "bac_ins": "+{v} inserted", "bac_rem": "−{v} removed", "bac_chg": "{v} in changed baselines",
         "mv_clean": "Weighted progress went from {a}% to {b}%: {m} {m?point|points}, all of it explained by per-activity progress.",
         "tr": "{e} {e?activity|activities} moved their dates with actual dates behind them and {r} with none; the baseline itself moved on {b}.",
         "tr_none": "No activity moved its dates between the two deliveries.",
@@ -390,6 +399,8 @@ RC = {
         "du": "{n} {n?activity|activities} with no actual start in either delivery had their duration edited: {up} longer and {down} shorter, a net {net} {net?working day|working days}. Nothing was executed on them; this is the plan rewritten.",
         "du_none": "No activity had its duration edited before starting.",
         "pr": "The past was rewritten on {n} {n?activity|activities}: {s} {s?actual start|actual starts} and {f} {f?actual finish|actual finishes} changed, and {p} {p?percent complete|percents complete} went down.",
+        "pr_g": "The past was rewritten on {n} {n?activity|activities}: {s} {s?actual start|actual starts} and {f} {f?actual finish|actual finishes} changed, {p} {p?percent complete|percents complete} went down, and {g} {g?activity with recorded progress was|activities with recorded progress were} removed.",
+        "pr_gone": "{n} {n?activity|activities} with recorded progress {n?was|were} removed from the schedule altogether, taking {v} of earned value with {n?it|them}; the largest is row {id} of the previous delivery, {name}, at {pct}%.",
         "pr_removed": "{n} {n?actual date was|actual dates were} withdrawn altogether: work reported as started or finished last cycle is no longer recorded as such.",
         "pr_time": "{n} of the date changes {n?stays|stay} within the same day (time of day only); {n?it is|they are} listed last and {n?weighs|weigh} less.",
         "pr_ask": "Every figure the previous cycle reported on these activities rested on a record that no longer exists. Ask for each correction to be stated.",
@@ -400,7 +411,16 @@ RC = {
         "ql_bei": "Baseline execution index: {a} before, {b} now.",
     },
     "pt": {
-        "mv": "O avanço ponderado foi de {a}% para {b}%: {m} {m?ponto|pontos}. O avanço por atividade explica {x} deles e {r} não são explicados por trabalho feito.",
+        "mv": "O avanço ponderado foi de {a}% para {b}%: {m} {m?ponto|pontos}. O avanço por atividade explica {x} deles e {r} não {r?é explicado|são explicados} por trabalho feito.",
+        "mv_over": "O avanço ponderado foi de {a}% para {b}%: {m} {m?ponto|pontos}. O avanço por atividade soma {x}, mais que o movimento: {r} {r?ponto foi retirado|pontos foram retirados} por algo que não é trabalho feito.",
+        "mv_terms": "A diferença tem nome: {list}.",
+        "mv_terms_rest": "A diferença tem nome em parte: {list}; {r} {r?ponto fica|pontos ficam} sem explicação.",
+        "term_rem_1": "{p} {p?ponto|pontos} do valor agregado apagado com uma atividade removida (linha {id} da entrega anterior, {name}, a {pct}%: {v})",
+        "term_rem_n": "{p} {p?ponto|pontos} do valor agregado apagado com {n} atividades removidas ({v}; a maior é a linha {id} da entrega anterior, {name}, a {pct}%)",
+        "term_ins": "{p} {p?ponto|pontos} do valor agregado de {n} {n?atividade inserida|atividades inseridas}",
+        "term_chg": "{p} {p?ponto|pontos} de custo de linha de base alterado em {n} {n?atividade presente|atividades presentes} nas duas entregas",
+        "term_bac": "{p} {p?ponto|pontos} do orçamento na conclusão, que foi de {a} para {b} ({parts})",
+        "bac_ins": "+{v} de inseridas", "bac_rem": "−{v} de removidas", "bac_chg": "{v} de linhas de base alteradas",
         "mv_clean": "O avanço ponderado foi de {a}% para {b}%: {m} {m?ponto|pontos}, todos explicados pelo avanço por atividade.",
         "tr": "{e} {e?atividade moveu|atividades moveram} datas com datas reais por trás e {r} sem nenhuma; a própria linha de base se moveu em {b}.",
         "tr_none": "Nenhuma atividade moveu datas entre as duas entregas.",
@@ -431,6 +451,8 @@ RC = {
         "du": "{n} {n?atividade|atividades} sem início real em nenhuma das entregas {n?teve|tiveram} a duração editada: {up} mais {up?longa|longas} e {down} mais {down?curta|curtas}, saldo de {net} {net?dia útil|dias úteis}. Nada foi executado nelas; é o plano reescrito.",
         "du_none": "Nenhuma atividade teve a duração editada antes de iniciar.",
         "pr": "O passado foi reescrito em {n} {n?atividade|atividades}: {s} {s?início real|inícios reais} e {f} {f?término real|términos reais} mudaram, e {p} {p?percentual concluído caiu|percentuais concluídos caíram}.",
+        "pr_g": "O passado foi reescrito em {n} {n?atividade|atividades}: {s} {s?início real|inícios reais} e {f} {f?término real|términos reais} mudaram, {p} {p?percentual concluído caiu|percentuais concluídos caíram} e {g} {g?atividade com avanço registrado foi removida|atividades com avanço registrado foram removidas}.",
+        "pr_gone": "{n} {n?atividade com avanço registrado foi removida|atividades com avanço registrado foram removidas} do cronograma, levando {v} de valor agregado; a maior é a linha {id} da entrega anterior, {name}, a {pct}%.",
         "pr_removed": "{n} {n?data real foi retirada|datas reais foram retiradas} por completo: trabalho informado como iniciado ou concluído no ciclo anterior não está mais registrado assim.",
         "pr_time": "{n} das mudanças de data {n?fica|ficam} dentro do mesmo dia (só o horário); {n?está listada|estão listadas} por último e {n?pesa|pesam} menos.",
         "pr_ask": "Todo número que o ciclo anterior informou sobre essas atividades se apoiava num registro que não existe mais. Peça que cada correção seja declarada.",
@@ -458,6 +480,55 @@ def fnum(v, d, lang):
     return s
 
 
+def residual_parts(cmp_res: dict, lang: str) -> list:
+    """The named terms of the movement residue, as phrases in the report's
+    language, largest first. Empty when the comparison carries no terms (an
+    older engine) or none of them is worth a hundredth of a point."""
+    T = RC.get(lang, RC["en"])
+    terms = cmp_res.get("residual_terms") or {}
+    parts = []
+
+    def pt(v):
+        s = fnum(v, 2, lang)
+        return s.replace("-", "−") if s.startswith("-") else "+" + s
+
+    def money(v):
+        return fnum(v, 0, lang)
+
+    def fmt(key, **kw):
+        return i18n.fmt(T[key], **kw)
+
+    rem = terms.get("removed_earned") or {}
+    if abs(rem.get("points") or 0) >= 0.005 and rem.get("rows"):
+        top = rem["rows"][0]
+        key = "term_rem_1" if len(rem["rows"]) == 1 else "term_rem_n"
+        parts.append((rem["points"], fmt(key, p=pt(rem["points"]), n=fnum(len(rem["rows"]), 0, lang),
+                                         v=money(rem["earned_erased"]), id=top["id"],
+                                         name=top["name"], pct=fnum(top["percent"], 0, lang))))
+    ins = terms.get("inserted_earned") or {}
+    if abs(ins.get("points") or 0) >= 0.005:
+        n = sum(1 for r in ins.get("rows") or [] if r.get("earned"))
+        parts.append((ins["points"], fmt("term_ins", p=pt(ins["points"]), n=fnum(n, 0, lang))))
+    chg = terms.get("baseline_cost_changed") or {}
+    if abs(chg.get("points") or 0) >= 0.005:
+        parts.append((chg["points"], fmt("term_chg", p=pt(chg["points"]),
+                                         n=fnum(chg.get("count") or 0, 0, lang))))
+    bac = terms.get("bac_change") or {}
+    if abs(bac.get("points") or 0) >= 0.005:
+        bits = []
+        if bac.get("inserted_cost"):
+            bits.append(fmt("bac_ins", v=money(bac["inserted_cost"])))
+        if bac.get("removed_cost"):
+            bits.append(fmt("bac_rem", v=money(bac["removed_cost"])))
+        if abs(bac.get("changed_cost") or 0) >= 0.5:
+            c = bac["changed_cost"]
+            bits.append(fmt("bac_chg", v=("+" if c > 0 else "−") + money(abs(c))))
+        parts.append((bac["points"], fmt("term_bac", p=pt(bac["points"]), a=money(bac["bac_before"]),
+                                         b=money(bac["bac_after"]), parts=", ".join(bits))))
+    parts.sort(key=lambda x: -abs(x[0]))
+    return [p for _, p in parts]
+
+
 def build_cycle(cmp_res: dict, lang: str, fmt_date, metric_title=None) -> dict:
     """Readings for the cycle report, keyed by section.
 
@@ -480,11 +551,22 @@ def build_cycle(cmp_res: dict, lang: str, fmt_date, metric_title=None) -> dict:
     prev, curr = cmp_res.get("previous") or {}, cmp_res.get("current") or {}
     mv, gap = cmp_res.get("movement_points"), cmp_res.get("movement_unexplained_points")
     if mv is not None:
+        # The residue is stated as a size with a direction in words, never as
+        # "-0,33 are not explained", which reads as a count gone negative.
         args = dict(a=fnum(prev.get("percent_earned"), 2, lang),
                     b=fnum(curr.get("percent_earned"), 2, lang), m=fnum(mv, 2, lang),
                     x=fnum(cmp_res.get("decomposition_sums_to_points"), 2, lang),
-                    r=fnum(gap, 2, lang))
-        add("movement", "mv" if abs(gap or 0) >= 0.01 else "mv_clean", **args)
+                    r=fnum(abs(gap or 0), 2, lang))
+        if abs(gap or 0) < 0.01:
+            add("movement", "mv_clean", **args)
+        else:
+            add("movement", "mv" if gap > 0 else "mv_over", **args)
+            parts = residual_parts(cmp_res, lang)
+            rest = cmp_res.get("residual_remainder_points")
+            if parts and rest is not None and abs(rest) < 0.01:
+                add("movement", "mv_terms", list="; ".join(parts))
+            elif parts and rest is not None:
+                add("movement", "mv_terms_rest", list="; ".join(parts), r=fnum(abs(rest), 2, lang))
     trend = cmp_res.get("trend") or []
     e = sum(1 for t in trend if t["reading"] == "execution")
     r = sum(1 for t in trend if t["reading"] == "replan")
@@ -578,8 +660,12 @@ def build_cycle(cmp_res: dict, lang: str, fmt_date, metric_title=None) -> dict:
     pr = cmp_res.get("past_rewritten")
     if pr:
         if pr["activities"]:
-            add("c5", "pr", n=i(pr["activities"]), s=i(len(pr["actual_start"])),
-                f=i(len(pr["actual_finish"])), p=i(len(pr["percent_decreased"])))
+            gone = pr.get("removed_with_progress") or []
+            add("c5", "pr_g" if gone else "pr", n=i(pr["activities"]), s=i(len(pr["actual_start"])),
+                f=i(len(pr["actual_finish"])), p=i(len(pr["percent_decreased"])), g=i(len(gone)))
+            if gone:
+                add("c5", "pr_gone", n=i(len(gone)), v=fnum(sum(g["earned_erased"] for g in gone), 0, lang),
+                    id=gone[0]["id"], name=gone[0]["name"], pct=fnum(gone[0]["percent"], 0, lang))
             if pr["actual_removed"]:
                 add("c5", "pr_removed", n=i(pr["actual_removed"]))
             if pr["time_of_day_only"]:
