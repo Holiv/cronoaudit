@@ -679,6 +679,43 @@ def _money_values(obj, keys) -> list:
     return found
 
 
+_VOCABULARY = {}
+
+
+def _program_vocabulary(avoid: list) -> str:
+    """Everything cronoaudit itself writes in a secret run, over a fixture that is not
+    the schedule under test: the coded work folder (whole files, template included),
+    stdout, stderr and the finish line. Fixture names are coded there, so what is
+    left legible is program text."""
+    fixture = next(n for n in ("bare.xml", "negative.xml") if n not in avoid)
+    if fixture in _VOCABULARY:
+        return _VOCABULARY[fixture]
+    import shutil
+    parts = []
+    with tempfile.TemporaryDirectory() as tmp:
+        orig = os.path.join(tmp, "orig")
+        os.makedirs(orig)
+        src = os.path.join(orig, fixture)
+        shutil.copyfile(os.path.join(ROOT, "fixtures", fixture), src)
+        env = _secret_env(os.path.join(tmp, "cfg"))
+        r = subprocess.run([sys.executable, os.path.join(HERE, "review.py"), src, "--secret",
+                            "--workdir", os.path.join(tmp, "work")], capture_output=True, text=True,
+                           env=env, stdin=subprocess.DEVNULL, encoding="utf-8", errors="replace")
+        parts += [r.stdout, r.stderr]
+        work = os.path.join(tmp, "work", os.listdir(os.path.join(tmp, "work"))[0])
+        f = subprocess.run([sys.executable, os.path.join(HERE, "secret_decode.py"), "finish", work,
+                            "--no-open", "--vault-only"], capture_output=True, text=True, env=env,
+                           encoding="utf-8", errors="replace")
+        parts += [f.stdout, f.stderr]
+        for folder, _d, fnames in os.walk(work):
+            for fname in fnames:
+                parts.append(fname)
+                with open(os.path.join(folder, fname), encoding="utf-8", errors="replace") as fh:
+                    parts.append(fh.read())
+    _VOCABULARY[fixture] = "\n".join(parts)
+    return _VOCABULARY[fixture]
+
+
 def secret_roundtrip(files: list, tmp: str, redact: bool = False) -> dict:
     """Free run and secret run of the same files; decode; compare; look for leaks.
 
@@ -853,19 +890,50 @@ def secret_roundtrip(files: list, tmp: str, redact: bool = False) -> dict:
             surfaces.append((fname, _scan_text(os.path.join(folder, fname))))
             surfaces.append(("file name", fname))
     surfaces += [("stdout", sec.stdout), ("stderr", sec.stderr), ("finish", fin.stdout + fin.stderr)]
-    hits = {"text": set(), "date": set(), "money": set(), "date shape": 0, "path": 0}
+    # Two kinds of coincidence are not leaks, and are told apart without looking at
+    # the value:
+    #  - program vocabulary: a real text that is also a word of cronoaudit's own
+    #    output (a label, a key, the guard's code). Such a word is in the work folder
+    #    of ANY schedule. It is excused only if it appears in the coded output of a
+    #    different schedule run through the same pipeline; that output holds no
+    #    names of this file, so the excuse cannot hide one of them.
+    #  - a coded figure equal by chance to a real one: money times k can land on
+    #    another real figure. A money hit is excused only if the same string is a
+    #    form of what the codec must write for some real figure (real times k). A
+    #    real figure leaking unscaled is not such a form, so it still fails; the
+    #    deliberate-break check (scaling switched off) proves it.
+    vocabulary = _program_vocabulary([os.path.basename(f) for f in files])
+    # What the codec should have written for each real figure, computed here from
+    # the real output and k, not read from the work folder: a codec that forgot to
+    # scale would otherwise excuse its own leak.
+    coded_money = set()
+    for v in costs + real_money:
+        coded_money |= _money_forms(codec.scale(v))
+        for d in (0, 2):
+            coded_money.add(secret_codec.fnum(round(v, d) * codec.k, d, codec.lang))
+    hits = {"text": {}, "date": {}, "money": {}, "date shape": 0, "path": 0}
+    excused = {"vocabulary": 0, "coded figure": 0}
     for label, blob in surfaces:
-        if rx_text:
-            hits["text"] |= set(rx_text.findall(blob))
-        if rx_dates:
-            hits["date"] |= set(rx_dates.findall(blob))
-        if rx_money:
-            hits["money"] |= set(rx_money.findall(blob))
+        for kind, rx in (("text", rx_text), ("date", rx_dates), ("money", rx_money)):
+            if not rx:
+                continue
+            for v in set(rx.findall(blob)):
+                if kind == "text" and re.search(r"(?<!\w)" + re.escape(v) + r"(?!\w)", vocabulary):
+                    excused["vocabulary"] += 1
+                    continue
+                if kind == "money" and v in coded_money:
+                    excused["coded figure"] += 1
+                    continue
+                hits[kind].setdefault(v, label)
         hits["date shape"] += len(_REAL_DATE_SHAPES.findall(blob))
         hits["path"] += sum(1 for p in paths if p in blob)
+    stats["excused"] = excused
+    stats["hit_detail"] = []
     for kind in ("text", "date", "money"):
         if hits[kind]:
             stats["leak_values"] += len(hits[kind])
+            # Kind, length and where: enough to diagnose, never the value itself.
+            stats["hit_detail"] += [(kind, len(v), where) for v, where in sorted(hits[kind].items())]
             fail(f"secret leak: {len(hits[kind])} {kind} value(s) of the file found in the work folder or output",
                  ", ".join(sorted(hits[kind])[:5]))
     for kind in ("date shape", "path"):
@@ -1063,7 +1131,10 @@ def secret_checks() -> dict:
                   "<Title>Positive fixture</Title><Subject>Contrato 4711 do Cliente Exemplar</Subject>"
                   "<Company>Construtora Exemplo Ltda</Company><Author>Fulano de Tal</Author>"
                   "<Manager>Beltrana Gerente</Manager><LastAuthor>Sicrano Revisor</LastAuthor>"
-                  "<Keywords>lote sigiloso</Keywords>", 1)
+                  "<Keywords>lote sigiloso</Keywords>"
+                  # A real value that is also a word cronoaudit writes in every work
+                  # folder: the leak test must excuse it as program vocabulary.
+                  "<Category>secret</Category>", 1)
     x = x.replace("<Name>Holiday</Name>", "<Name>Feriado Municipal de Exemplópolis</Name>", 1)
     x = x.replace("<Name>A1 successor started early</Name>",
                   "<Name>Marco 15/03/2027 — Ponte do Exemplo</Name>"
@@ -1078,6 +1149,8 @@ def secret_checks() -> dict:
         with tempfile.TemporaryDirectory() as tmp:
             r = secret_roundtrip(files, tmp)
         failures += [f"{'+'.join(os.path.basename(f) for f in files)}: {x}" for x in r["failures"]]
+        if files == [variant] and not (r["stats"].get("excused") or {}).get("vocabulary"):
+            failures.append("secret: a real value equal to a program word was not excused as vocabulary")
         totals["runs"] += 1
         for k in ("sidecars", "reports", "values_equal"):
             totals[k] += r["stats"][k]
@@ -1959,6 +2032,7 @@ def run_all() -> int:
           f"decoded equal to free mode ({t['values_equal']} report values); no text, date, money or")
     print("         path of the files in any work folder or output; guard allows the session's work and")
     print("         blocks the vault, the original, interpreters, variables and `text`; collisions resolved")
+    print("         (program words and coded figures equal to a real one by chance are excused, by rule)")
     return 0
 
 

@@ -43,6 +43,13 @@ def main() -> int:
           f"({s['values_equal']} report values)")
     print(f"  leak test: {s['texts_checked']} texts and {s['money_checked']} money forms looked for; "
           f"{s['leak_values']} found, {s['leak_hits']} date-shape or path occurrences")
+    ex = s.get("excused") or {}
+    print(f"  excused as coincidence: {ex.get('vocabulary', 0)} program word(s), "
+          f"{ex.get('coded figure', 0)} coded figure(s)")
+    for kind, length, where in s.get("hit_detail") or []:
+        # Kind, length and surface only. Surfaces are the work folder's neutral file
+        # names (schedule-*), stdout, stderr or finish: none carries the file's identity.
+        print(f"  - hit: {kind}, {length} characters, in {where}")
     for f in r["failures"]:
         print(f"  * {f}")
     return 1 if r["failures"] else 0
