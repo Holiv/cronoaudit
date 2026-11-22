@@ -198,6 +198,21 @@ def render_checks() -> dict:
                     out["failures"].append("synthesis: injected text or author missing from the report")
                 if "<b>no</b>" in body:
                     out["failures"].append("synthesis: markup in the text was interpreted, not escaped")
+        # The cycle report too, asserted on what the renderer DRAWS: the raw file
+        # always carries the text inside its embedded data, so a check on the file
+        # passed while the cycle page never showed the synthesis (fixed in 0.7.2).
+        for rel, lang_word in (("cycle_prev--to--cycle_curr-cycle.html", "Executive synthesis"),
+                               (os.path.join("ptc", "cycle_prev--to--cycle_curr-cycle.html"),
+                                "S\u00edntese executiva")):
+            target = os.path.join(tmp, rel)
+            p = subprocess.run([sys.executable, os.path.join(HERE, "inject_narrative.py"), target, syn,
+                                "--who", "the test suite"], capture_output=True, text=True)
+            if p.returncode != 0:
+                out["failures"].append(f"synthesis (cycle): injection failed: {p.stderr.strip()}")
+            for i, (name, sections) in enumerate(pairs):
+                if name == rel:
+                    pairs[i] = (name, sections + [lang_word, "Second paragraph, with",
+                                                  "the test suite"])
         for name, sections in pairs:
             path = os.path.join(tmp, name)
             if not os.path.exists(path):

@@ -315,6 +315,15 @@ function folded(cols,rows,count){
   return `<details><summary>${esc(fill(L.show_rows,{n:n(count!=null?count:rows.length)}))}</summary>${table(cols,rows)}</details>`;
 }
 
+// The executive synthesis, when someone wrote one: prose under its own label, with
+// who wrote it and when, so it is never mistaken for a measurement. Both reports
+// draw it from the one function, near the top.
+function synthesis(d){
+  if(!(d.narrative&&d.narrative.text)) return "";
+  return `<div class="sintese"><div class="eyebrow">${esc(L.syn_label)}</div>${d.narrative.text.split(/\n\s*\n/).map(pg=>`<p>${esc(pg.trim())}</p>`).join("")}
+      <div class="who">${esc(fill(L.syn_written,{who:d.narrative.who||"",when:d.narrative.when||""}))}</div></div>`;
+}
+
 function renderReview(d){
   const m=d.meta, c=d.conventions, out=[];
   const net=d.findings.filter(f=>f.code==="A1"||f.code==="A2").reduce((a,f)=>a+f.count,0);
@@ -332,10 +341,7 @@ function renderReview(d){
   if(d.profile&&d.profile.fields_missing&&d.profile.fields_missing.length){
     out.push(`<div class="note" style="margin-top:14px"><b>${esc(L.warning)}</b> ${esc(L.profile_missing)} ${esc(d.profile.fields_missing.join("; "))}</div>`);
   }
-  if(d.narrative&&d.narrative.text){
-    out.push(`<div class="sintese"><div class="eyebrow">${esc(L.syn_label)}</div>${d.narrative.text.split(/\n\s*\n/).map(pg=>`<p>${esc(pg.trim())}</p>`).join("")}
-      <div class="who">${esc(fill(L.syn_written,{who:d.narrative.who||"",when:d.narrative.when||""}))}</div></div>`);
-  }
+  out.push(synthesis(d));
 
   out.push(`<div class="veredito"><div>
       <div class="eyebrow">${esc(L.hero_label)}</div>
@@ -657,6 +663,7 @@ function renderCycle(d){
     ${ficha([[L.prev_status,esc(m.previous_status_date||L.not_set)],[L.curr_status,esc(m.current_status_date||L.not_set)],[L.ficha_finish,m.current_finish?esc(m.current_finish):null],[L.budget,n(m.budget,2)]])}${bar()}</header>`);
 
   (d.warnings||[]).forEach(w=>out.push(`<div class="note${w.severity==="critical"?" bad":""}" style="margin-top:14px"><b>${esc(L.warning)}</b> ${esc(w.text)}</div>`));
+  out.push(synthesis(d));
 
   out.push(`<div class="veredito"><div><div class="eyebrow">${esc(L.card_movement)}</div><div class="hero-num">${(m.movement_points>0?"+":"")+n(m.movement_points,2)}</div><div class="hero-cap">${esc(L.pp_headline)}</div></div>
     <div class="contra"><h2>${esc(L.how_to_read)}</h2><p>${L.cycle_read_p1}</p><p>${L.cycle_read_p2}</p></div></div>`);

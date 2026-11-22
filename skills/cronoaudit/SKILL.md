@@ -147,6 +147,7 @@ forensics name; what the next four weeks demand. Quote figures from the files, s
 
 ```
 python3 $S/inject_narrative.py <name>-review.html synthesis.txt --who "Claude, via the skill"
+python3 $S/inject_narrative.py <prev>--to--<curr>-cycle.html synthesis.txt --who "Claude, via the skill"
 ```
 
 ## Customising: two conversational flows
