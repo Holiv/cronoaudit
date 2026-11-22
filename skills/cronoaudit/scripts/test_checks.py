@@ -1209,6 +1209,51 @@ def main() -> int:
     if "caiu na data da linha de base" not in ft or "depois" in ft:
         failures.append(f"slippage reading: a median start on the baseline was given a direction: {ft}")
 
+    # ---- the network gate is as wide as the breach (0.7.2). One pair off the
+    # critical path and off the finish chain is named, with the milestones whose
+    # chain passes through it; on the critical path, or above the threshold, the
+    # absolute wording stays.
+    gate_model = pm_mod.parse(os.path.join(ROOT, "fixtures", "positive.xml"))
+    gate_res = analyse_raw(gate_model)
+    g_abs = rd_mod.network_gate(gate_model, gate_res)
+    if g_abs["scope"] != "absolute" or "total_inversion" not in g_abs["reasons"]:
+        failures.append(f"network gate: total inversion did not keep the absolute wording: {g_abs}")
+    one = copy_mod.deepcopy(gate_res)
+    one["pairs"]["A1"] = one["pairs"]["A1"][:1]
+    one["counts"]["A2"]["distinct_activities"] = 0
+    pair_uids = {one["pairs"]["A1"][0]["successor_uid"], one["pairs"]["A1"][0]["predecessor_uid"]}
+    side = copy_mod.deepcopy(gate_model)
+    for t in side["tasks"]:
+        if t["uid"] in pair_uids:
+            t["critical"], t["total_slack_minutes"] = False, 4800.0
+    fake_fx = {"milestones": [{"id": 99, "name": "Milestone M", "chain": [{"uid": u} for u in pair_uids]}]}
+    g_sc = rd_mod.network_gate(side, one, fake_fx)
+    if g_sc["scope"] != "scoped" or [m_["id"] for m_ in g_sc["milestones"]] != [99]:
+        failures.append(f"network gate: one side-branch pair was read as a broken network: {g_sc}")
+    for t in side["tasks"]:
+        if t["uid"] in pair_uids:
+            t["critical"] = True
+    if rd_mod.network_gate(side, one, fake_fx)["scope"] != "absolute":
+        failures.append("network gate: a pair on the critical path lost the absolute wording")
+    many = copy_mod.deepcopy(one)
+    many["pairs"]["A1"] = one["pairs"]["A1"] * (rd_mod.GATE_MAX_PAIRS + 1)
+    if "count" not in rd_mod.network_gate(gate_model, many)["reasons"]:
+        failures.append("network gate: more pairs than the threshold did not keep the absolute wording")
+    scoped_gate = {"scope": "scoped", "pair_count": 1, "threshold_pairs": rd_mod.GATE_MAX_PAIRS,
+                   "pairs": [{"succ_id": 36, "succ_name": "Prime coat", "pred_id": 35,
+                              "pred_name": "Base course"}],
+                   "milestones": [{"id": 5, "name": "Opening S1"}, {"id": 6, "name": "Opening S2"}]}
+    for lang, absolute, words in (("en", "settle these before discussing a date", ("row 36", "Opening S2 (row 6)")),
+                                  ("pt", "resolva isso antes de discutir uma data", ("linha 36", "Opening S2 (linha 6)"))):
+        base = {"findings": [{"code": "A1", "count": 2}, {"code": "A2", "count": 0}]}
+        sc_ = " ".join(nar_mod.build({**base, "meta": {"inputs": {"network_gate": scoped_gate}}}, lang)["verdict"])
+        ab_ = " ".join(nar_mod.build({**base, "meta": {"inputs": {"network_gate": {
+            **scoped_gate, "scope": "absolute", "reasons": ["critical"]}}}}, lang)["verdict"])
+        if absolute in sc_ or not all(w_ in sc_ for w_ in words):
+            failures.append(f"network gate reading ({lang}): one side pair is not named and scoped: {sc_}")
+        if absolute not in ab_ or "36" not in ab_:
+            failures.append(f"network gate reading ({lang}): a critical pair lost the absolute wording: {ab_}")
+
     # ---- the report must actually render. A valid file that runs to a blank page
     # is the failure mode this guards; see scripts/test_render.js for the real bug.
     rendered = render_checks()

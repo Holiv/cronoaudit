@@ -118,7 +118,9 @@ identifies an activity.
 ## Rules the implementation never breaks
 
 - **Network first.** When the tool recalculates over a violated network, every forecast date
-  is derived from logic the works does not follow. A1 and A2 gate everything.
+  is derived from logic the works does not follow. A1 and A2 gate everything; one to three
+  pairs off the critical and finish chains are named with the milestones they reach, not read
+  as a broken network (`references/checks.md`).
 - **The conversion basis is per activity.** Working time on each activity's own calendar,
   never the header's day, never a five-day week. A real programme had 107 calendars; counting
   Monday to Friday flagged 27% of it as inconsistent, the calendar brought it to 2%.

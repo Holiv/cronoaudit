@@ -99,6 +99,75 @@ def network_state(model, quality=None) -> dict:
                      "no predecessor or no successor, against its quoted threshold"}
 
 
+# How many out-of-sequence pairs, off the critical path and off the chain that
+# drives the project finish, are NAMED rather than read as a broken network.
+# Ours, not a published threshold: one or two pairs on a side branch do not make
+# every date in the file derive from logic the works ignores; four or more read
+# as a practice, not an incident. Total inversion (A2) is never scaled.
+GATE_MAX_PAIRS = 3
+
+
+def network_gate(model, res, forensics=None) -> dict:
+    """How far the violated logic reaches, so the warning is as wide as the breach.
+
+    absolute  A2 present, more than GATE_MAX_PAIRS pairs, or a pair touching an
+              unfinished critical activity (the tool's flag, or total float at or
+              below zero) or the chain that drives the project finish
+    scoped    otherwise: the pairs are named, and the milestones whose driving
+              chain passes through them (from the forensics, when run)
+    none      no A1 or A2 pair
+    """
+    import calendars as cal_mod
+    import forensics as fx_mod
+    pairs = (res.get("pairs") or {}).get("A1") or []
+    a2 = (res.get("counts") or {}).get("A2", {}).get("distinct_activities") or 0
+    if not pairs and not a2:
+        return {"scope": "none", "pairs": [], "milestones": [], "reasons": [],
+                "threshold_pairs": GATE_MAX_PAIRS}
+    by_uid = {t["uid"]: t for t in model["tasks"]}
+    uids = {u for p in pairs for u in (p["successor_uid"], p["predecessor_uid"])}
+
+    def critical(t):
+        if not t or t.get("actual_finish"):
+            return False
+        sl = t.get("total_slack_minutes")
+        return bool(t.get("critical")) or (sl is not None and sl <= 0)
+
+    blob = model.get("calendars") or {}
+    cals = cal_mod.from_dict(blob.get("definitions"))
+    slot = (model.get("prevailing_baseline") or {}).get("slot")
+    pool = [t for t in model["tasks"] if fx_mod.considered(t) and t.get("finish")
+            and not t.get("actual_finish")]
+    finish_chain = set()
+    if pool:
+        end = max(pool, key=lambda t: (t["finish"], bool(t.get("critical")),
+                                       bool(t.get("milestone")), t["id"] or 0))
+        finish_chain = {n["uid"] for n in fx_mod.driving_chain(
+            end, by_uid, cals, blob.get("default_uid"), slot)}
+    reasons = []
+    if a2:
+        reasons.append("total_inversion")
+    if len(pairs) > GATE_MAX_PAIRS:
+        reasons.append("count")
+    if any(critical(by_uid.get(u)) for u in uids):
+        reasons.append("critical")
+    if uids & finish_chain:
+        reasons.append("finish_chain")
+    milestones = []
+    for m in (forensics or {}).get("milestones") or []:
+        if uids & {n.get("uid") for n in m.get("chain") or []}:
+            milestones.append({"id": m["id"], "name": m["name"]})
+    named = [{"succ_id": p["successor_id"], "succ_name": by_uid[p["successor_uid"]]["name"],
+              "pred_id": p["predecessor_id"], "pred_name": by_uid[p["predecessor_uid"]]["name"]}
+             for p in pairs if p["successor_uid"] in by_uid and p["predecessor_uid"] in by_uid]
+    return {"scope": "absolute" if reasons else "scoped", "pairs": named[:GATE_MAX_PAIRS + 1],
+            "pair_count": len(pairs), "milestones": milestones, "reasons": reasons,
+            "threshold_pairs": GATE_MAX_PAIRS,
+            "basis": "absolute with total inversion, more than threshold_pairs pairs, or a pair on "
+                     "an unfinished critical activity or on the chain driving the project finish; "
+                     "the threshold is ours"}
+
+
 def leaves(model):
     return [
         t for t in model["tasks"]
@@ -298,6 +367,7 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
     # input and is reported as unavailable, not as zero.
     planned_available = file_bcws_nonzero > 0 or bool(ph_inputs.get("baseline_time_phased"))
     network = network_state(model, quality)
+    gate = network_gate(model, res, forensics)
 
     # ---- findings, enriched with the columns a planner reads
     marked = {code: {f["uid"] for f in res["findings"][code]} for code in ORDER}
@@ -450,6 +520,7 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
             # whose input is missing is replaced by a sentence saying so.
             "inputs": {
                 "network": network,
+                "network_gate": gate,
                 "file_earned_value": file_computed_ev,
                 "file_planned_value": file_bcws_nonzero > 0,
                 "baseline_time_phased": ph_inputs.get("baseline_time_phased"),
@@ -514,6 +585,9 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
         "narrative": None,
     }
     payload["readings"] = narrative_mod.build(payload, lang)
+    # The banner over the findings says what the verdict reading says, from the
+    # same sentences, so the two cannot disagree on how far the breach reaches.
+    gate["text"] = narrative_mod.gate_sentences(gate, lang) if gate["scope"] == "scoped" else []
     return payload
 
 

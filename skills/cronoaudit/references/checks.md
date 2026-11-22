@@ -81,6 +81,17 @@ its activities with a deadline populated. Note the distinction: **a deadline is 
 constraint** — it does not move dates, it only reveals slippage. Its absence hides the
 slippage rather than causing it.
 
+## How wide the network warning is
+
+A1 and A2 gate the dates, but the warning is as wide as the breach. With **total inversion
+(A2)**, **more than three out-of-sequence pairs**, or a pair touching an **unfinished critical
+activity** (the tool's flag, or total float at or below zero) or the **chain that drives the
+project finish**, the report keeps the absolute wording: settle the network before discussing a
+date. Otherwise the pairs are named, together with the milestones whose driving chain passes
+through them (from the forensics), and only those dates carry the caveat. The threshold of three
+is ours, not a published figure; `network_gate` in `report_data.py` declares it, and the
+verdict reading and the banner over the findings read the same field.
+
 ## The codes are stable identifiers
 
 A finding keeps its code when the implementation changes. Without that you cannot discuss a

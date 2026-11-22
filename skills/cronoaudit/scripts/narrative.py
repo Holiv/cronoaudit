@@ -27,6 +27,11 @@ R = {
         "rain_none": "The calendars in use carry no non-working exceptions, so no period is reserved for bad weather and the exposure cannot be read from them. That is absence of data, not absence of risk.",
         "rain_few": "The calendars in use carry non-working exceptions, but no month reaches the reserve rule, so the weather exposure cannot be read from them. That is absence of data, not absence of risk.",
         "net_broken": "{n} {n?activity sits|activities sit} in violated logic ({a1} out of sequence, {a2} in total inversion). Every forecast date below is derived from a network the works does not follow; settle these before discussing a date.",
+        "net_broken_crit": "The violated logic touches the critical path or the chain that drives the project finish: {pairs}.",
+        "net_scoped": "{n} {n?pair|pairs} executed out of sequence: {pairs}. {n?It is|They are} off the critical path and off the chain that drives the project finish, so not every forecast date rests on {n?it|them}; up to {t} pairs in that position are named rather than read as a broken network (the threshold is ours).",
+        "net_scoped_ms": "The driving {mm?chain|chains} of {ms} {mm?passes|pass} through {n?it|them}: settle {n?it|them} before quoting {mm?that milestone's date|those milestones' dates}.",
+        "net_ms_item": "{name} (row {id})",
+        "net_pair": "row {s}, {sn}, against its predecessor row {p}, {pn}",
         "progress": "Weighted progress is {e}% against {p}% planned: {d} {d?point|points} behind.",
         "progress_ahead": "Weighted progress is {e}% against {p}% planned: {d} {d?point|points} ahead.",
         "progress_even": "Weighted progress is {e}%, level with the {p}% planned.",
@@ -83,6 +88,11 @@ R = {
         "rain_none": "Os calendários em uso não têm nenhuma exceção de dia não útil, então nenhum período está reservado para tempo ruim e a exposição não pode ser lida deles. É ausência de dado, não ausência de risco.",
         "rain_few": "Os calendários em uso têm exceções de dia não útil, mas nenhum mês alcança a regra de reserva, então a exposição ao tempo ruim não pode ser lida deles. É ausência de dado, não ausência de risco.",
         "net_broken": "{n} {n?atividade está|atividades estão} em lógica violada ({a1} fora de sequência, {a2} em inversão total). Toda data de tendência abaixo deriva de uma rede que a obra não segue; resolva isso antes de discutir uma data.",
+        "net_broken_crit": "A lógica violada toca o caminho crítico ou a cadeia que conduz o término do projeto: {pairs}.",
+        "net_scoped": "{n} {n?par executado|pares executados} fora de sequência: {pairs}. {n?Ele não está|Eles não estão} no caminho crítico nem na cadeia que conduz o término do projeto, então nem toda data de tendência se apoia {n?nele|neles}; até {t} pares nessa posição são nomeados em vez de lidos como rede quebrada (o limite é nosso).",
+        "net_scoped_ms": "{mm?A cadeia condutora|As cadeias condutoras} de {ms} {mm?passa|passam} por {n?esse par|esses pares}: resolva antes de citar {mm?a data desse marco|as datas desses marcos}.",
+        "net_ms_item": "{name} (linha {id})",
+        "net_pair": "linha {s}, {sn}, contra a predecessora linha {p}, {pn}",
         "progress": "O avanço ponderado é {e}% contra {p}% previsto: {d} {d?ponto|pontos} atrás.",
         "progress_ahead": "O avanço ponderado é {e}% contra {p}% previsto: {d} {d?ponto|pontos} à frente.",
         "progress_even": "O avanço ponderado é {e}%, igual aos {p}% previstos.",
@@ -149,6 +159,29 @@ def _dates(text: str, lang: str) -> str:
     return _ISO_DATE.sub(lambda m: f"{m.group(1)}-{m.group(2)}-{m.group(3)}", text)
 
 
+def gate_sentences(gate: dict, lang: str) -> list:
+    """The scoped network warning: the pairs by name and the milestones whose
+    driving chain passes through them. Shared by the verdict reading and the
+    banner over the findings."""
+    T = R.get(lang, R["en"])
+    pairs = gate.get("pairs") or []
+    if not pairs:
+        return []
+    n = gate.get("pair_count") or len(pairs)
+    names = "; ".join(i18n.fmt(T["net_pair"], s=p["succ_id"], sn=p["succ_name"],
+                               p=p["pred_id"], pn=p["pred_name"]) for p in pairs)
+    out = [i18n.fmt(T["net_scoped"], n=fnum(n, 0, lang), pairs=names,
+                    t=fnum(gate.get("threshold_pairs"), 0, lang))]
+    ms = gate.get("milestones") or []
+    if ms:
+        sep = " e " if lang == "pt" else " and "
+        lst = [i18n.fmt(T["net_ms_item"], id=m["id"], name=m["name"]) for m in ms]
+        joined = lst[0] if len(lst) == 1 else ", ".join(lst[:-1]) + sep + lst[-1]
+        out.append(i18n.fmt(T["net_scoped_ms"], ms=joined, n=fnum(n, 0, lang),
+                            mm=fnum(len(ms), 0, lang)))
+    return out
+
+
 def build(payload: dict, lang: str) -> dict:
     T = R.get(lang, R["en"])
     m = payload.get("meta") or {}
@@ -175,8 +208,18 @@ def build(payload: dict, lang: str) -> dict:
     # reading a zero that is only the absence of data.
     inputs = m.get("inputs") or {}
     netw = inputs.get("network") or {}
-    if net:
+    gate = inputs.get("network_gate") or {}
+    if net and gate.get("scope") == "scoped":
+        # One or few pairs on a side branch are named, not read as a broken network.
+        for sentence in gate_sentences(gate, lang):
+            out.setdefault("verdict", []).append(_dates(sentence, lang))
+    elif net:
         add("verdict", "net_broken", n=_n(net, 0), a1=_n(f["A1"]["count"], 0), a2=_n(f["A2"]["count"], 0))
+        if gate.get("pairs") and set(gate.get("reasons") or []) & {"critical", "finish_chain"} \
+                and "count" not in (gate.get("reasons") or []):
+            add("verdict", "net_broken_crit", pairs="; ".join(
+                i18n.fmt(T["net_pair"], s=p["succ_id"], sn=p["succ_name"], p=p["pred_id"],
+                         pn=p["pred_name"]) for p in gate["pairs"]))
     elif netw.get("state") == "none":
         add("verdict", "net_none")
     elif netw.get("state") == "open":

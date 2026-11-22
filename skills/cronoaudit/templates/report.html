@@ -355,7 +355,10 @@ function renderReview(d){
 
   // "The network holds" is only said of a network that exists.
   const NW=(m.inputs||{}).network||{};
-  out.push(net
+  const GATE=(m.inputs||{}).network_gate||{};
+  out.push(net&&GATE.scope==="scoped"&&(GATE.text||[]).length
+    ? `<div class="note">${GATE.text.map(x=>esc(x)).join(" ")}</div>`
+    : net
     ? `<div class="note bad">${L.net_bad_1} ${n(net)} ${esc(L.net_bad_2)}</div>`
     : NW.state==="none" ? `<div class="note bad">${L.net_none}</div>`
     : NW.state==="open" ? `<div class="note">${fill(L.net_open,{u:n(NW.unlinked),o:n(NW.open),s:n(NW.share_pct,1),t:n(NW.threshold_pct,0)})}</div>`
