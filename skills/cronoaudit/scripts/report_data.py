@@ -709,7 +709,7 @@ def _cycle_warnings(cmp_res, C, lang) -> list:
             args = {k: fmt_date(v, lang) for k, v in args.items()}
         if "gap" in args:
             g = narrative_mod.fnum(args["gap"], 2, lang)
-            args["gap"] = g if g.startswith("-") else "+" + g
+            args["gap"] = g.replace("-", "\u2212") if g.startswith("-") else "+" + g
         if w["code"] == "residue_named":
             args["terms"] = "; ".join(narrative_mod.residual_parts(cmp_res, lang))
         text = C.get("w_" + w["code"])

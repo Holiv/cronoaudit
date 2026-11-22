@@ -73,7 +73,7 @@ R = {
         "fx_origins": "{o} of {m} {m?future milestone|future milestones} trace to a named origin; activity {id}, {name}, originates delay on {k} of them.",
         "fx_origins_unnamed": "{o} of {m} {m?future milestone|future milestones} trace to a named origin; no single activity originates delay on more than one.",
         "fx_none": "No future milestone carries variance above the threshold, so no origin is named.",
-        "fx_bl_moved": "On the driving chain of {m}, row {id}, {name}, shows a variance of {v} working {v?day|days} against a baseline that moved {b} calendar {b?day|days} this cycle: part of that variance is the reference moving, not the works.",
+        "fx_bl_moved": "On the driving chain of {m}, row {id}, {name}, shows a variance of {v} working {v?day|days} against a baseline that moved {sb}{b} calendar {b?day|days} this cycle: part of that variance is the reference moving, not the works.",
         "fx_cal": "Calendar forensics flags {n} {n?calendar|calendars}: {list}.",
         "fx_oos_rising": "Out-of-sequence execution is rising, from {a} {a?pair|pairs} a month to {b}: the practice is accelerating.",
         "fx_oos_falling": "Out-of-sequence execution is falling, from {a} {a?pair|pairs} a month to {b}.",
@@ -138,7 +138,7 @@ R = {
         "fx_origins": "{o} de {m} {m?marco futuro|marcos futuros} têm origem nomeada; a atividade {id}, {name}, origina atraso em {k} deles.",
         "fx_origins_unnamed": "{o} de {m} {m?marco futuro|marcos futuros} têm origem nomeada; nenhuma atividade isolada origina atraso em mais de um.",
         "fx_none": "Nenhum marco futuro carrega variação acima do limiar, então nenhuma origem é nomeada.",
-        "fx_bl_moved": "Na cadeia condutora de {m}, a linha {id}, {name}, mostra variação de {v} {v?dia útil|dias úteis} contra uma linha de base que se moveu {b} {b?dia corrido|dias corridos} neste ciclo: parte dessa variação é a referência se movendo, não a obra.",
+        "fx_bl_moved": "Na cadeia condutora de {m}, a linha {id}, {name}, mostra variação de {v} {v?dia útil|dias úteis} contra uma linha de base que se moveu {sb}{b} {b?dia corrido|dias corridos} neste ciclo: parte dessa variação é a referência se movendo, não a obra.",
         "fx_cal": "A forense de calendário sinaliza {n} {n?calendário|calendários}: {list}.",
         "fx_oos_rising": "A execução fora de sequência está subindo, de {a} {a?par|pares} por mês para {b}: a prática está acelerando.",
         "fx_oos_falling": "A execução fora de sequência está caindo, de {a} {a?par|pares} por mês para {b}.",
@@ -399,8 +399,8 @@ def build(payload: dict, lang: str) -> dict:
                 seen_bl.add(node["id"])
                 bm = node["baseline_moved_days"]
                 add("forensics", "fx_bl_moved", m=ms["name"], id=node["id"], name=node["name"],
-                    v=_n(node.get("variance_days"), 0),
-                    b=(("+" if bm > 0 else "") + _n(bm, 0)))
+                    v=_n(node.get("variance_days"), 0), b=_n(abs(bm), 0),
+                    sb="+" if bm > 0 else "−")
     flagged = [c for c in fx.get("calendars") or [] if c.get("flags")]
     if flagged:
         add("forensics", "fx_cal", n=_n(len(flagged), 0), list="; ".join(f"{c['name']}: {', '.join(c['flags'])}" for c in flagged[:3]))

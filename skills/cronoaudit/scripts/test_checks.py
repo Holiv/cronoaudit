@@ -153,6 +153,14 @@ def render_checks() -> dict:
         )
         pairs.append((os.path.join("ptc", "cycle_prev--to--cycle_curr-cycle.html"),
                       CYCLE_PT_SECTIONS + FORBID_PT))
+        # The review of the current file from a pair run: the only page that shows
+        # the cycle forensics (attribution words, calendar-day movement, the moved
+        # baseline column) end to end. Milestone 8 moves in the fixture, so the
+        # attribution column has a row to leak through.
+        pairs.append((os.path.join("ptc", "cycle_curr-review.html"),
+                      PT_SECTIONS + ["Atribui\u00e7\u00e3o", "replanejamento", "Moveu (dias corridos)",
+                                     "LB movida neste ciclo"]
+                      + FORBID_PT_REVIEW + ["--forbid=\\b(replan|execution)\\b"]))
         subprocess.run(
             [sys.executable, os.path.join(HERE, "review.py"),
              os.path.join(ROOT, "fixtures", "positive.xml"),
@@ -189,6 +197,29 @@ def render_checks() -> dict:
                 head = fh.read(600)
             if want not in head:
                 out["failures"].append(f"report {rel}: the tab title is not in the report's language")
+        # A scoped network gate, rendered: one side-branch pair must not raise the
+        # absolute banner over the findings (0.7.2).
+        import copy as _cp
+        import parse_mspdi
+        import report_data
+        import report_html as _rh
+        import run_checks as _rc
+        gm = parse_mspdi.parse(os.path.join(ROOT, "fixtures", "positive.xml"))
+        gr = _rc.run(gm, _rc.DEFAULT_THRESHOLD_DAYS, _rc.DEFAULT_TOLERANCE_DAYS)
+        gr = _cp.deepcopy(gr)
+        gr["pairs"]["A1"] = gr["pairs"]["A1"][:1]
+        gr["counts"]["A2"]["distinct_activities"] = 0
+        gr["findings"]["A2"] = []
+        keep = {gr["pairs"]["A1"][0]["successor_uid"], gr["pairs"]["A1"][0]["predecessor_uid"]}
+        for t in gm["tasks"]:
+            if t["uid"] in keep:
+                t["critical"], t["total_slack_minutes"] = False, 4800.0
+        for lang_, quiet_ in (("en", "Read this before any date"), ("pt", "Leia isto antes")):
+            gp = report_data.build_review(gm, gr, lang=lang_)
+            gpath = os.path.join(tmp, f"gate-{lang_}.html")
+            _rh.write(gp, gpath)
+            pairs.append((f"gate-{lang_}.html",
+                          ["row 2" if lang_ == "en" else "linha 2", "--forbid=" + quiet_]))
         if not os.path.exists(os.path.join(tmp, "cycle_prev--to--cycle_curr-cycle-readings.json")):
             out["failures"].append("cycle: the readings sidecar was not written")
         # Executive synthesis injection: rebuild from embedded data, no recomputation.
