@@ -21,6 +21,7 @@ import sys
 import xml.etree.ElementTree as ET
 from collections import Counter
 from datetime import datetime
+from decimal import Decimal, InvalidOperation
 
 # Run by path from anywhere, on any interpreter: an isolated Python (-I), and the
 # embeddable Windows package with its ._pth file, do not put the script's own
@@ -36,6 +37,49 @@ NS = {"p": "http://schemas.microsoft.com/project"}
 
 # MSPDI stores these as tenths of a minute, not minutes and not days.
 TENTHS_FIELDS = {"TotalSlack", "FreeSlack", "StartSlack", "FinishSlack", "LinkLag"}
+
+# MSPDI stores money in HUNDREDTHS of the currency unit: <Cost>17630891800</Cost>
+# is 176,308,918.00 on Project's own screen. Measured 22/11/2026: a fictitious
+# MSPDI with costs x100, opened in MS Project 16 pt-BR, showed exactly the XML
+# value / 100; and a real export read raw reported a budget ~100x its contract.
+# Microsoft's MSPDI reference does not state the unit (decimal, no wording on
+# cents); MPXJ applies the same /100 to every currency field it reads from MSPDI
+# (DatatypeConverter.parseCurrency, also used for time-phased cost).
+# Rates are a different convention -- StandardRate/OvertimeRate are not scaled by
+# MPXJ (parseRate) -- and the engine reads no rate, so none is converted here.
+MONEY_SCALE = 100
+
+
+def money(raw):
+    """Raw MSPDI money text -> float in currency units, divided exactly once.
+
+    The division is done in Decimal and rounded to a float a single time, so a
+    figure carries no more float error than if the file had held currency units.
+    Every money field the engine reads goes through here: one place to convert,
+    and the rest of the engine sees currency units only.
+    """
+    if raw is None:
+        return None
+    raw = str(raw).strip()
+    if not raw:
+        return None
+    try:
+        return float(Decimal(raw) / MONEY_SCALE)
+    except (InvalidOperation, ValueError):
+        return None
+
+
+def money_tolerance(raw_units: float) -> float:
+    """A money tolerance stated against the RAW file values, in currency units.
+
+    The reconciliation tolerances (0.005, 0.01, 0.5) were tuned when raw values
+    were read as currency; every count measured with them (e.g. 374 of 375 on a
+    real export) is a count of raw-value agreements. Dividing them by the scale
+    keeps each comparison returning the same answer, so no measured count moves.
+    Read at call time, so a test can patch MONEY_SCALE and compare.
+    """
+    return raw_units / MONEY_SCALE
+
 
 LINK_TYPE = {"0": "FF", "1": "FS", "2": "SF", "3": "SS"}
 
@@ -82,6 +126,11 @@ def as_float(node, tag: str):
         return float(raw)
     except ValueError:
         return None
+
+
+def as_money(node, tag: str):
+    """A money element, in currency units. See `money()`."""
+    return money(text(node, tag))
 
 
 def as_bool(node, tag: str):
@@ -154,7 +203,8 @@ def units(root) -> dict:
         "days_per_month": as_float(root, "DaysPerMonth"),
         "minutes_per_day_assumed": mpd is None,
         "note": (
-            "Durations are ISO 8601 in MSPDI; slack and lag are tenths of a minute. "
+            "Durations are ISO 8601 in MSPDI; slack and lag are tenths of a minute; "
+            "money is hundredths of the currency unit and is converted at parse time. "
             "Day counts are derived from minutes_per_day, which is the configured "
             "working day, not 1440."
         ),
@@ -174,7 +224,7 @@ def parse_baselines(task_el) -> dict:
             "start": as_date(bl, "Start"),
             "finish": as_date(bl, "Finish"),
             "duration_minutes": iso_duration_minutes(text(bl, "Duration")),
-            "cost": as_float(bl, "Cost"),
+            "cost": as_money(bl, "Cost"),
             "work_minutes": iso_duration_minutes(text(bl, "Work")),
         }
     return out
@@ -241,12 +291,12 @@ def parse_task(task_el) -> dict:
         # Earned value as the tool itself computed it. The .mpp binary read through
         # a library leaves these null; the XML export carries them, which lets the
         # skill reconcile its own calculation against the tool's, to the cent.
-        "bcws": as_float(task_el, "BCWS"),
-        "bcwp": as_float(task_el, "BCWP"),
-        "acwp": as_float(task_el, "ACWP"),
+        "bcws": as_money(task_el, "BCWS"),
+        "bcwp": as_money(task_el, "BCWP"),
+        "acwp": as_money(task_el, "ACWP"),
         "earned_value_method": as_int(task_el, "EarnedValueMethod"),
-        "cost": as_float(task_el, "Cost"),
-        "fixed_cost": as_float(task_el, "FixedCost"),
+        "cost": as_money(task_el, "Cost"),
+        "fixed_cost": as_money(task_el, "FixedCost"),
         "baselines": parse_baselines(task_el),
         "predecessors": parse_links(task_el),
         # Custom field values, keyed by the STABLE field id. Field names arrive

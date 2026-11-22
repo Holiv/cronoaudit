@@ -20,6 +20,16 @@ import os
 NS = "http://schemas.microsoft.com/project"
 STATUS = "2026-06-30T17:00:00"
 MPD = 480
+# Project writes money in HUNDREDTHS of the currency unit (measured 22/11/2026:
+# an MSPDI with <Cost>17630891800</Cost> shows R$ 176.308.918,00 in MS Project).
+# The amounts below are stated in currency units, as a person reads them, and
+# written x100 -- the way Project itself would write them.
+MONEY_SCALE = 100
+
+
+def money_xml(amount: float) -> str:
+    """A currency amount as Project writes it in MSPDI: hundredths, two decimals."""
+    return f"{amount * MONEY_SCALE:.2f}"
 
 
 # Two calendars, because a real programme has many and they disagree. The default
@@ -151,7 +161,7 @@ def _phasing(kw):
             lines += ["    <TimephasedData>", "      <Type>10</Type>", f"      <UID>{kw['_uid']}</UID>",
                       f"      <Start>{d.isoformat()}T08:00:00</Start>",
                       f"      <Finish>{d.isoformat()}T17:00:00</Finish>",
-                      "      <Unit>1</Unit>", f"      <Value>{per:.2f}</Value>", "    </TimephasedData>"]
+                      "      <Unit>1</Unit>", f"      <Value>{money_xml(per)}</Value>", "    </TimephasedData>"]
             if d.isoformat() <= STATUS[:10]:
                 bcws += per
     # One empty-valued block, as real exports carry them; it must be skipped.
@@ -292,11 +302,11 @@ def task(uid, tid, name, **kw):
     phasing_lines, bcws = _phasing(kw)
     parts += phasing_lines
     if bl:
-        parts.append(f"    <BCWS>{bcws:.2f}</BCWS>")
+        parts.append(f"    <BCWS>{money_xml(bcws)}</BCWS>")
     if bl and kw.get("phys") is not None:
         bstart, bfinish, bcost, bhours = bl
         bcwp = kw["bcwp_override"] if "bcwp_override" in kw else bcost * kw["phys"] / 100.0
-        parts.append(f"    <BCWP>{bcwp:.2f}</BCWP>")
+        parts.append(f"    <BCWP>{money_xml(bcwp)}</BCWP>")
         parts.append("    <EarnedValueMethod>1</EarnedValueMethod>")
     if bl:
         bstart, bfinish, bcost, bhours = bl
@@ -306,7 +316,7 @@ def task(uid, tid, name, **kw):
             f"      <Start>{bstart}</Start>",
             f"      <Finish>{bfinish}</Finish>",
             f"      <Duration>PT{bhours}H0M0S</Duration>",
-            f"      <Cost>{bcost}</Cost>",
+            f"      <Cost>{money_xml(bcost)}</Cost>",
             f"      <Work>PT{bhours}H0M0S</Work>",
             "    </Baseline>",
         ]
