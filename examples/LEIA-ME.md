@@ -23,7 +23,9 @@ representado.
   6 km (terraplenagem, drenagem, pavimentação, sinalização, iluminação), um viaduto,
   desmobilização.
 - Dois calendários, ambos com os feriados nacionais e uma reserva de chuva de dezembro
-  a março: o da obra (cinco dias) e o de terraplenagem (seis dias).
+  a março: o da obra (cinco dias) e o de terraplenagem (seis dias). Cada recurso tem
+  ainda o seu próprio calendário, derivado de um dos dois — é como o MS Project grava
+  um recurso e o que ele espera ao abrir o arquivo.
 - Nove marcos, todos com data limite.
 - Linha de base com custo (preço unitário vezes quantidade), **distribuído no tempo**,
   um bloco por dia útil, de modo que previsto até a data, SV, IDP e Earned Schedule

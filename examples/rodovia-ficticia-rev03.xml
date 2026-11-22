@@ -1410,6 +1410,265 @@
         </Exception>
       </Exceptions>
     </Calendar>
+    <Calendar>
+      <UID>3</UID>
+      <Name>Equipe de mobilização e canteiro</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>4</UID>
+      <Name>Equipe de topografia</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>5</UID>
+      <Name>Engenharia e projetos</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>6</UID>
+      <Name>Meio ambiente e licenciamento</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>7</UID>
+      <Name>Montagem industrial — usina de asfalto e britagem</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>8</UID>
+      <Name>Equipe de sinalização de obras</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>9</UID>
+      <Name>Equipe de remanejamento de interferências</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>10</UID>
+      <Name>Equipe de OAE — Estruturas Fictícias Beta Ltda.</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>11</UID>
+      <Name>Equipe de içamento e montagem (guindastes)</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>12</UID>
+      <Name>Equipe de eletricistas</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>13</UID>
+      <Name>Administração local e desmobilização</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>14</UID>
+      <Name>Equipe de terraplenagem — desmatamento e limpeza</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>2</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>15</UID>
+      <Name>Equipe de terraplenagem — escavação de 1ª cat.</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>2</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>16</UID>
+      <Name>Equipe de terraplenagem — escavação 2ª e 3ª cat.</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>2</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>17</UID>
+      <Name>Equipe de terraplenagem — aterro compactado</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>2</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>18</UID>
+      <Name>Regularização e compactação do subleito</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>2</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>19</UID>
+      <Name>Hidrossemeadura</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>20</UID>
+      <Name>Bueiro tubular de concreto</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>21</UID>
+      <Name>Concreto estrutural armado</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>22</UID>
+      <Name>Dreno profundo longitudinal</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>23</UID>
+      <Name>Sarjetas e valetas de concreto</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>24</UID>
+      <Name>Meio-fio e descidas d'água</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>25</UID>
+      <Name>Sub-base granular</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>26</UID>
+      <Name>Base de brita graduada simples (BGS)</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>27</UID>
+      <Name>Imprimação e pintura de ligação</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>28</UID>
+      <Name>Usina de asfalto — CBUQ aplicado</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>29</UID>
+      <Name>Fresagem de pavimento</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>30</UID>
+      <Name>Sinalização horizontal</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>31</UID>
+      <Name>Placas e pórticos de sinalização</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>32</UID>
+      <Name>Defensas metálicas</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>33</UID>
+      <Name>Tachas refletivas</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>34</UID>
+      <Name>Dutos e caixas de passagem</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>35</UID>
+      <Name>Postes e luminárias LED</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>36</UID>
+      <Name>Estaca escavada de grande diâmetro</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>37</UID>
+      <Name>Viga pré-moldada protendida</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>38</UID>
+      <Name>Muro de gabião</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
+    <Calendar>
+      <UID>39</UID>
+      <Name>Cerca de vedação da faixa de domínio</Name>
+      <IsBaseCalendar>0</IsBaseCalendar>
+      <IsBaselineCalendar>0</IsBaselineCalendar>
+      <BaseCalendarUID>1</BaseCalendarUID>
+    </Calendar>
   </Calendars>
   <Tasks>
     <Task>
@@ -1448,7 +1707,7 @@
       <Name>Marcos Contratuais</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>1</WBS>
@@ -1517,6 +1776,7 @@
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
       <Deadline>2026-03-02T08:00:00</Deadline>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -1576,6 +1836,7 @@
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
       <Deadline>2026-06-25T17:00:00</Deadline>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -1640,6 +1901,7 @@
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
       <Deadline>2027-02-16T17:00:00</Deadline>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -1704,6 +1966,7 @@
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
       <Deadline>2027-04-09T17:00:00</Deadline>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -1796,6 +2059,7 @@
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
       <Deadline>2027-06-18T17:00:00</Deadline>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -1881,6 +2145,7 @@
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
       <Deadline>2027-05-17T17:00:00</Deadline>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -1966,6 +2231,7 @@
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
       <Deadline>2027-07-23T17:00:00</Deadline>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -2051,6 +2317,7 @@
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
       <Deadline>2027-08-27T17:00:00</Deadline>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -2115,6 +2382,7 @@
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
       <Deadline>2027-11-03T17:00:00</Deadline>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -2150,7 +2418,7 @@
       <Name>Mobilização e Serviços Preliminares</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>2</WBS>
@@ -2221,6 +2489,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>22200000</BCWS>
       <BCWP>22200000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -2318,6 +2587,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>37000000</BCWS>
       <BCWP>37000000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -2434,6 +2704,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>6240000</BCWS>
       <BCWP>6240000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -2541,6 +2812,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>6720000</BCWS>
       <BCWP>6720000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -2648,6 +2920,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>13600000</BCWS>
       <BCWP>13600000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -2763,6 +3036,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>313600000</BCWS>
       <BCWP>313600000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -2915,6 +3189,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>2480000</BCWS>
       <BCWP>2480000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -3002,6 +3277,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>27600000</BCWS>
       <BCWP>27600000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -3097,7 +3373,7 @@
       <Name>Segmento 1 — km 12+000 ao km 18+000</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>3</WBS>
@@ -3135,7 +3411,7 @@
       <Name>Terraplenagem</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>3.1</WBS>
@@ -3205,6 +3481,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>15300000</BCWS>
       <BCWP>15300000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -3316,6 +3593,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>319000000</BCWS>
       <BCWP>319000000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -3468,6 +3746,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>168000000</BCWS>
       <BCWP>168000000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -3585,6 +3864,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>186200000</BCWS>
       <BCWP>186200000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -3758,6 +4038,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>20160000</BCWS>
       <BCWP>20160000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -3847,6 +4128,7 @@
       <RemainingDuration>PT80H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -3899,7 +4181,7 @@
       <Name>Drenagem e Obras de Arte Correntes</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>3.2</WBS>
@@ -3969,6 +4251,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>69600000</BCWS>
       <BCWP>69600000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -4089,6 +4372,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>96200000</BCWS>
       <BCWP>96200000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -4185,6 +4469,7 @@
       <RemainingDuration>PT88H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>46933336</BCWS>
       <BCWP>41184000.00</BCWP>
       <PhysicalPercentComplete>39</PhysicalPercentComplete>
@@ -4275,6 +4560,7 @@
       <RemainingDuration>PT120H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -4332,7 +4618,7 @@
       <Name>Pavimentação</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>3.3</WBS>
@@ -4401,6 +4687,7 @@
       <RemainingDuration>PT88H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>119911112</BCWS>
       <BCWP>105222000.00</BCWP>
       <PhysicalPercentComplete>39</PhysicalPercentComplete>
@@ -4499,6 +4786,7 @@
       <RemainingDuration>PT136H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>37400000</BCWS>
       <BCWP>20196000.00</BCWP>
       <PhysicalPercentComplete>6</PhysicalPercentComplete>
@@ -4583,6 +4871,7 @@
       <RemainingDuration>PT48H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -4668,6 +4957,7 @@
       <RemainingDuration>PT120H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -4748,6 +5038,7 @@
       <RemainingDuration>PT120H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -4828,6 +5119,7 @@
       <RemainingDuration>PT144H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -4918,6 +5210,7 @@
       <RemainingDuration>PT80H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -4963,7 +5256,7 @@
       <Name>Sinalização e Segurança Viária</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>3.4</WBS>
@@ -5030,6 +5323,7 @@
       <RemainingDuration>PT64H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -5103,6 +5397,7 @@
       <RemainingDuration>PT80H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -5185,6 +5480,7 @@
       <RemainingDuration>PT96H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -5262,6 +5558,7 @@
       <RemainingDuration>PT40H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -5302,7 +5599,7 @@
       <Name>Iluminação</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>3.5</WBS>
@@ -5369,6 +5666,7 @@
       <RemainingDuration>PT96H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -5446,6 +5744,7 @@
       <RemainingDuration>PT80H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -5528,6 +5827,7 @@
       <RemainingDuration>PT64H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -5571,7 +5871,7 @@
       <Name>Segmento 2 — km 18+000 ao km 24+000</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>4</WBS>
@@ -5609,7 +5909,7 @@
       <Name>Terraplenagem</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>4.1</WBS>
@@ -5679,6 +5979,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>16830000</BCWS>
       <BCWP>16830000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -5776,6 +6077,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>350900000</BCWS>
       <BCWP>350900000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -5933,6 +6235,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>184800000</BCWS>
       <BCWP>184800000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -6049,6 +6352,7 @@
       <RemainingDuration>PT128H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>130340000</BCWS>
       <BCWP>77831600.00</BCWP>
       <PhysicalPercentComplete>38</PhysicalPercentComplete>
@@ -6214,6 +6518,7 @@
       <RemainingDuration>PT96H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -6291,6 +6596,7 @@
       <RemainingDuration>PT80H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -6343,7 +6649,7 @@
       <Name>Drenagem e Obras de Arte Correntes</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>4.2</WBS>
@@ -6413,6 +6719,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>76560000</BCWS>
       <BCWP>76560000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -6534,6 +6841,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>122430000</BCWS>
       <BCWP>122430000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -6639,6 +6947,7 @@
       <RemainingDuration>PT120H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -6719,6 +7028,7 @@
       <RemainingDuration>PT144H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -6802,6 +7112,7 @@
       <RemainingDuration>PT120H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -6859,7 +7170,7 @@
       <Name>Pavimentação</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>4.3</WBS>
@@ -6926,6 +7237,7 @@
       <RemainingDuration>PT144H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -7023,6 +7335,7 @@
       <RemainingDuration>PT144H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -7106,6 +7419,7 @@
       <RemainingDuration>PT48H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -7184,6 +7498,7 @@
       <RemainingDuration>PT120H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -7271,6 +7586,7 @@
       <RemainingDuration>PT120H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -7351,6 +7667,7 @@
       <RemainingDuration>PT144H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -7441,6 +7758,7 @@
       <RemainingDuration>PT80H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -7486,7 +7804,7 @@
       <Name>Sinalização e Segurança Viária</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>4.4</WBS>
@@ -7553,6 +7871,7 @@
       <RemainingDuration>PT64H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -7626,6 +7945,7 @@
       <RemainingDuration>PT80H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -7708,6 +8028,7 @@
       <RemainingDuration>PT96H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -7785,6 +8106,7 @@
       <RemainingDuration>PT40H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -7825,7 +8147,7 @@
       <Name>Iluminação</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>4.5</WBS>
@@ -7892,6 +8214,7 @@
       <RemainingDuration>PT96H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -7969,6 +8292,7 @@
       <RemainingDuration>PT80H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -8051,6 +8375,7 @@
       <RemainingDuration>PT64H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -8094,7 +8419,7 @@
       <Name>Segmento 3 — km 24+000 ao km 30+000</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>5</WBS>
@@ -8132,7 +8457,7 @@
       <Name>Terraplenagem</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>5.1</WBS>
@@ -8202,6 +8527,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>14076000</BCWS>
       <BCWP>14076000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -8299,6 +8625,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>293480000</BCWS>
       <BCWP>293480000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -8452,6 +8779,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>154560000</BCWS>
       <BCWP>154560000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -8568,6 +8896,7 @@
       <RemainingDuration>PT40H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>163517456</BCWS>
       <BCWP>152460560.00</BCWP>
       <PhysicalPercentComplete>89</PhysicalPercentComplete>
@@ -8733,6 +9062,7 @@
       <RemainingDuration>PT96H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -8810,6 +9140,7 @@
       <RemainingDuration>PT80H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -8862,7 +9193,7 @@
       <Name>Drenagem e Obras de Arte Correntes</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>5.2</WBS>
@@ -8932,6 +9263,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>64090000</BCWS>
       <BCWP>64090000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -9054,6 +9386,7 @@
       <RemainingDuration>PT120H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -9134,6 +9467,7 @@
       <RemainingDuration>PT144H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -9217,6 +9551,7 @@
       <RemainingDuration>PT120H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -9274,7 +9609,7 @@
       <Name>Pavimentação</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>5.3</WBS>
@@ -9341,6 +9676,7 @@
       <RemainingDuration>PT144H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -9431,6 +9767,7 @@
       <RemainingDuration>PT144H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -9514,6 +9851,7 @@
       <RemainingDuration>PT48H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -9592,6 +9930,7 @@
       <RemainingDuration>PT120H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -9672,6 +10011,7 @@
       <RemainingDuration>PT120H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -9752,6 +10092,7 @@
       <RemainingDuration>PT144H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -9842,6 +10183,7 @@
       <RemainingDuration>PT80H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -9887,7 +10229,7 @@
       <Name>Sinalização e Segurança Viária</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>5.4</WBS>
@@ -9954,6 +10296,7 @@
       <RemainingDuration>PT64H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -10027,6 +10370,7 @@
       <RemainingDuration>PT80H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -10109,6 +10453,7 @@
       <RemainingDuration>PT96H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -10186,6 +10531,7 @@
       <RemainingDuration>PT40H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -10226,7 +10572,7 @@
       <Name>Iluminação</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>5.5</WBS>
@@ -10293,6 +10639,7 @@
       <RemainingDuration>PT96H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -10370,6 +10717,7 @@
       <RemainingDuration>PT80H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -10452,6 +10800,7 @@
       <RemainingDuration>PT64H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -10495,7 +10844,7 @@
       <Name>Segmento 4 — km 30+000 ao km 36+000</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>6</WBS>
@@ -10533,7 +10882,7 @@
       <Name>Terraplenagem</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>6.1</WBS>
@@ -10603,6 +10952,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>16065000</BCWS>
       <BCWP>16065000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -10700,6 +11050,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>334950000</BCWS>
       <BCWP>334950000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -10854,6 +11205,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>176400000</BCWS>
       <BCWP>176400000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -10967,6 +11319,7 @@
       <RemainingDuration>PT352H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -11104,6 +11457,7 @@
       <RemainingDuration>PT96H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -11181,6 +11535,7 @@
       <RemainingDuration>PT80H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -11265,6 +11620,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>47360000</BCWS>
       <BCWP>47360000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -11324,7 +11680,7 @@
       <Name>Drenagem e Obras de Arte Correntes</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>6.2</WBS>
@@ -11394,6 +11750,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>73080000</BCWS>
       <BCWP>73080000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -11517,6 +11874,7 @@
       <RemainingDuration>PT80H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>58432500</BCWS>
       <BCWP>58432500.00</BCWP>
       <PhysicalPercentComplete>50</PhysicalPercentComplete>
@@ -11612,6 +11970,7 @@
       <RemainingDuration>PT120H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -11692,6 +12051,7 @@
       <RemainingDuration>PT144H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -11775,6 +12135,7 @@
       <RemainingDuration>PT120H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -11832,7 +12193,7 @@
       <Name>Pavimentação</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>6.3</WBS>
@@ -11899,6 +12260,7 @@
       <RemainingDuration>PT144H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -11996,6 +12358,7 @@
       <RemainingDuration>PT144H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -12079,6 +12442,7 @@
       <RemainingDuration>PT48H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -12157,6 +12521,7 @@
       <RemainingDuration>PT120H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -12244,6 +12609,7 @@
       <RemainingDuration>PT120H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -12324,6 +12690,7 @@
       <RemainingDuration>PT144H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -12414,6 +12781,7 @@
       <RemainingDuration>PT80H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -12459,7 +12827,7 @@
       <Name>Sinalização e Segurança Viária</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>6.4</WBS>
@@ -12526,6 +12894,7 @@
       <RemainingDuration>PT64H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -12599,6 +12968,7 @@
       <RemainingDuration>PT80H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -12681,6 +13051,7 @@
       <RemainingDuration>PT96H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -12758,6 +13129,7 @@
       <RemainingDuration>PT40H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -12798,7 +13170,7 @@
       <Name>Iluminação</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>6.5</WBS>
@@ -12865,6 +13237,7 @@
       <RemainingDuration>PT96H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -12942,6 +13315,7 @@
       <RemainingDuration>PT80H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -13024,6 +13398,7 @@
       <RemainingDuration>PT64H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -13067,7 +13442,7 @@
       <Name>Obras de Arte Especiais — Viaduto V-01 (km 27+400)</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>7</WBS>
@@ -13105,7 +13480,7 @@
       <Name>Infraestrutura</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>7.1</WBS>
@@ -13175,6 +13550,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>3360000</BCWS>
       <BCWP>3360000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -13262,6 +13638,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>16320000</BCWS>
       <BCWP>16320000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -13400,6 +13777,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>200100000</BCWS>
       <BCWP>200100000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -13536,6 +13914,7 @@
       <RemainingDuration>PT0H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>135240000</BCWS>
       <BCWP>135240000.00</BCWP>
       <PhysicalPercentComplete>100</PhysicalPercentComplete>
@@ -13651,6 +14030,7 @@
       <RemainingDuration>PT168H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>125496431</BCWS>
       <BCWP>51675000.00</BCWP>
       <PhysicalPercentComplete>25</PhysicalPercentComplete>
@@ -13721,7 +14101,7 @@
       <Name>Mesoestrutura</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>7.2</WBS>
@@ -13788,6 +14168,7 @@
       <RemainingDuration>PT304H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -13891,6 +14272,7 @@
       <RemainingDuration>PT200H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -13981,6 +14363,7 @@
       <RemainingDuration>PT240H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -14076,6 +14459,7 @@
       <RemainingDuration>PT48H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -14124,7 +14508,7 @@
       <Name>Superestrutura</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>7.3</WBS>
@@ -14191,6 +14575,7 @@
       <RemainingDuration>PT320H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -14296,6 +14681,7 @@
       <RemainingDuration>PT96H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -14380,6 +14766,7 @@
       <RemainingDuration>PT224H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -14473,6 +14860,7 @@
       <RemainingDuration>PT144H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -14556,6 +14944,7 @@
       <RemainingDuration>PT80H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -14638,6 +15027,7 @@
       <RemainingDuration>PT120H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -14718,6 +15108,7 @@
       <RemainingDuration>PT48H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -14766,7 +15157,7 @@
       <Name>Acabamentos e Acessos</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>7.4</WBS>
@@ -14833,6 +15224,7 @@
       <RemainingDuration>PT200H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -14923,6 +15315,7 @@
       <RemainingDuration>PT64H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -14996,6 +15389,7 @@
       <RemainingDuration>PT64H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -15069,6 +15463,7 @@
       <RemainingDuration>PT40H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -15109,7 +15504,7 @@
       <Name>Desmobilização e Entrega</Name>
       <Active>1</Active>
       <Manual>0</Manual>
-      <Type>0</Type>
+      <Type>1</Type>
       <IsNull>0</IsNull>
       <CreateDate>2026-02-10T08:00:00</CreateDate>
       <WBS>8</WBS>
@@ -15176,6 +15571,7 @@
       <RemainingDuration>PT80H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -15279,6 +15675,7 @@
       <RemainingDuration>PT120H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>2</CalendarUID>
+      <IgnoreResourceCalendar>1</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -15359,6 +15756,7 @@
       <RemainingDuration>PT200H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -15456,6 +15854,7 @@
       <RemainingDuration>PT40H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -15533,6 +15932,7 @@
       <RemainingDuration>PT80H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -15608,6 +16008,7 @@
       <RemainingDuration>PT120H0M0S</RemainingDuration>
       <ConstraintType>0</ConstraintType>
       <CalendarUID>-1</CalendarUID>
+      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>
       <BCWS>0</BCWS>
       <BCWP>0.00</BCWP>
       <PhysicalPercentComplete>0</PhysicalPercentComplete>
@@ -15663,6 +16064,7 @@
       <MaxUnits>1</MaxUnits>
       <StandardRate>1850.00</StandardRate>
       <StandardRateFormat>2</StandardRateFormat>
+      <CalendarUID>3</CalendarUID>
     </Resource>
     <Resource>
       <UID>2</UID>
@@ -15673,6 +16075,7 @@
       <MaxUnits>1</MaxUnits>
       <StandardRate>420.00</StandardRate>
       <StandardRateFormat>2</StandardRateFormat>
+      <CalendarUID>4</CalendarUID>
     </Resource>
     <Resource>
       <UID>3</UID>
@@ -15683,6 +16086,7 @@
       <MaxUnits>1</MaxUnits>
       <StandardRate>680.00</StandardRate>
       <StandardRateFormat>2</StandardRateFormat>
+      <CalendarUID>5</CalendarUID>
     </Resource>
     <Resource>
       <UID>4</UID>
@@ -15693,6 +16097,7 @@
       <MaxUnits>1</MaxUnits>
       <StandardRate>390.00</StandardRate>
       <StandardRateFormat>2</StandardRateFormat>
+      <CalendarUID>6</CalendarUID>
     </Resource>
     <Resource>
       <UID>5</UID>
@@ -15703,6 +16108,7 @@
       <MaxUnits>1</MaxUnits>
       <StandardRate>9800.00</StandardRate>
       <StandardRateFormat>2</StandardRateFormat>
+      <CalendarUID>7</CalendarUID>
     </Resource>
     <Resource>
       <UID>6</UID>
@@ -15713,6 +16119,7 @@
       <MaxUnits>1</MaxUnits>
       <StandardRate>310.00</StandardRate>
       <StandardRateFormat>2</StandardRateFormat>
+      <CalendarUID>8</CalendarUID>
     </Resource>
     <Resource>
       <UID>7</UID>
@@ -15723,6 +16130,7 @@
       <MaxUnits>1</MaxUnits>
       <StandardRate>1150.00</StandardRate>
       <StandardRateFormat>2</StandardRateFormat>
+      <CalendarUID>9</CalendarUID>
     </Resource>
     <Resource>
       <UID>8</UID>
@@ -15733,6 +16141,7 @@
       <MaxUnits>1</MaxUnits>
       <StandardRate>2900.00</StandardRate>
       <StandardRateFormat>2</StandardRateFormat>
+      <CalendarUID>10</CalendarUID>
     </Resource>
     <Resource>
       <UID>9</UID>
@@ -15743,6 +16152,7 @@
       <MaxUnits>1</MaxUnits>
       <StandardRate>14500.00</StandardRate>
       <StandardRateFormat>2</StandardRateFormat>
+      <CalendarUID>11</CalendarUID>
     </Resource>
     <Resource>
       <UID>10</UID>
@@ -15753,6 +16163,7 @@
       <MaxUnits>1</MaxUnits>
       <StandardRate>760.00</StandardRate>
       <StandardRateFormat>2</StandardRateFormat>
+      <CalendarUID>12</CalendarUID>
     </Resource>
     <Resource>
       <UID>11</UID>
@@ -15763,6 +16174,7 @@
       <MaxUnits>1</MaxUnits>
       <StandardRate>1300.00</StandardRate>
       <StandardRateFormat>2</StandardRateFormat>
+      <CalendarUID>13</CalendarUID>
     </Resource>
     <Resource>
       <UID>20</UID>
@@ -15771,20 +16183,20 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>m²</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>0.85</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>14</CalendarUID>
     </Resource>
     <Resource>
       <UID>21</UID>
       <ID>13</ID>
-      <Name>Equipe de terraplenagem — escavação, carga e transporte 1ª cat.</Name>
+      <Name>Equipe de terraplenagem — escavação de 1ª cat.</Name>
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>m³</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>14.50</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>15</CalendarUID>
     </Resource>
     <Resource>
       <UID>22</UID>
@@ -15793,9 +16205,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>m³</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>48.00</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>16</CalendarUID>
     </Resource>
     <Resource>
       <UID>23</UID>
@@ -15804,9 +16216,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>m³</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>9.80</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>17</CalendarUID>
     </Resource>
     <Resource>
       <UID>24</UID>
@@ -15815,9 +16227,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>m²</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>2.10</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>18</CalendarUID>
     </Resource>
     <Resource>
       <UID>25</UID>
@@ -15826,9 +16238,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>m²</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>3.40</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>19</CalendarUID>
     </Resource>
     <Resource>
       <UID>26</UID>
@@ -15837,9 +16249,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>ml</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>1450.00</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>20</CalendarUID>
     </Resource>
     <Resource>
       <UID>27</UID>
@@ -15848,9 +16260,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>m³</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>2650.00</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>21</CalendarUID>
     </Resource>
     <Resource>
       <UID>28</UID>
@@ -15859,9 +16271,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>ml</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>185.00</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>22</CalendarUID>
     </Resource>
     <Resource>
       <UID>29</UID>
@@ -15870,9 +16282,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>ml</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>96.00</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>23</CalendarUID>
     </Resource>
     <Resource>
       <UID>30</UID>
@@ -15881,9 +16293,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>ml</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>78.00</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>24</CalendarUID>
     </Resource>
     <Resource>
       <UID>31</UID>
@@ -15892,9 +16304,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>m³</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>142.00</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>25</CalendarUID>
     </Resource>
     <Resource>
       <UID>32</UID>
@@ -15903,9 +16315,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>m³</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>198.00</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>26</CalendarUID>
     </Resource>
     <Resource>
       <UID>33</UID>
@@ -15914,9 +16326,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>m²</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>6.90</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>27</CalendarUID>
     </Resource>
     <Resource>
       <UID>34</UID>
@@ -15925,9 +16337,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>ton</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>465.00</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>28</CalendarUID>
     </Resource>
     <Resource>
       <UID>35</UID>
@@ -15936,9 +16348,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>m²</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>11.50</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>29</CalendarUID>
     </Resource>
     <Resource>
       <UID>36</UID>
@@ -15947,9 +16359,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>m²</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>38.00</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>30</CalendarUID>
     </Resource>
     <Resource>
       <UID>37</UID>
@@ -15958,9 +16370,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>un</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>720.00</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>31</CalendarUID>
     </Resource>
     <Resource>
       <UID>38</UID>
@@ -15969,9 +16381,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>ml</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>410.00</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>32</CalendarUID>
     </Resource>
     <Resource>
       <UID>39</UID>
@@ -15980,9 +16392,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>un</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>21.00</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>33</CalendarUID>
     </Resource>
     <Resource>
       <UID>40</UID>
@@ -15991,9 +16403,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>ml</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>115.00</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>34</CalendarUID>
     </Resource>
     <Resource>
       <UID>41</UID>
@@ -16002,9 +16414,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>un</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>6900.00</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>35</CalendarUID>
     </Resource>
     <Resource>
       <UID>42</UID>
@@ -16013,9 +16425,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>ml</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>1380.00</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>36</CalendarUID>
     </Resource>
     <Resource>
       <UID>43</UID>
@@ -16024,9 +16436,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>un</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>148000.00</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>37</CalendarUID>
     </Resource>
     <Resource>
       <UID>44</UID>
@@ -16035,9 +16447,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>m³</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>520.00</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>38</CalendarUID>
     </Resource>
     <Resource>
       <UID>45</UID>
@@ -16046,9 +16458,9 @@
       <Type>0</Type>
       <IsNull>0</IsNull>
       <MaterialLabel>ml</MaterialLabel>
-      <MaxUnits>1</MaxUnits>
       <StandardRate>64.00</StandardRate>
       <StandardRateFormat>8</StandardRateFormat>
+      <CalendarUID>39</CalendarUID>
     </Resource>
   </Resources>
   <Assignments>
@@ -16062,6 +16474,8 @@
       <ActualWork>PT120H0M0S</ActualWork>
       <Cost>22200000</Cost>
       <Finish>2026-03-20T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-03-02T08:00:00</Start>
       <Units>1</Units>
@@ -16099,6 +16513,8 @@
       <ActualWork>PT192H0M0S</ActualWork>
       <Cost>35520000</Cost>
       <Finish>2026-04-02T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-03-02T08:00:00</Start>
       <Units>1</Units>
@@ -16145,6 +16561,8 @@
       <ActualWork>PT160H0M0S</ActualWork>
       <Cost>6240000</Cost>
       <Finish>2026-03-27T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-03-02T08:00:00</Start>
       <Units>1</Units>
@@ -16187,6 +16605,8 @@
       <ActualWork>PT160H0M0S</ActualWork>
       <Cost>6720000</Cost>
       <Finish>2026-04-20T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-03-23T08:00:00</Start>
       <Units>1</Units>
@@ -16229,6 +16649,8 @@
       <ActualWork>PT184H0M0S</ActualWork>
       <Cost>12512000</Cost>
       <Finish>2026-04-01T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-03-02T08:00:00</Start>
       <Units>1</Units>
@@ -16274,6 +16696,8 @@
       <ActualWork>PT360H0M0S</ActualWork>
       <Cost>352800000</Cost>
       <Finish>2026-06-10T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-04-06T08:00:00</Start>
       <Units>1</Units>
@@ -16341,6 +16765,8 @@
       <ActualWork>PT80H0M0S</ActualWork>
       <Cost>2480000</Cost>
       <Finish>2026-04-06T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-03-23T08:00:00</Start>
       <Units>1</Units>
@@ -16373,6 +16799,8 @@
       <ActualWork>PT240H0M0S</ActualWork>
       <Cost>27600000</Cost>
       <Finish>2026-05-18T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-04-02T08:00:00</Start>
       <Units>1</Units>
@@ -16425,6 +16853,8 @@
       <ActualWork>PT180000H0M0S</ActualWork>
       <Cost>15300000</Cost>
       <Finish>2026-04-24T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-04-07T08:00:00</Start>
       <Units>180000</Units>
@@ -16462,6 +16892,8 @@
       <ActualWork>PT220000H0M0S</ActualWork>
       <Cost>319000000</Cost>
       <Finish>2026-07-02T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-05-19T08:00:00</Start>
       <Units>220000</Units>
@@ -16473,22 +16905,22 @@
         <Work>PT220000H0M0S</Work>
         <Cost>319000000</Cost>
       </Baseline>
-      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-19T08:00:00</Start><Finish>2026-05-19T17:00:00</Finish><Unit>2</Unit><Value>PT5789H28M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-20T08:00:00</Start><Finish>2026-05-20T17:00:00</Finish><Unit>2</Unit><Value>PT5789H28M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-21T08:00:00</Start><Finish>2026-05-21T17:00:00</Finish><Unit>2</Unit><Value>PT5789H28M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-22T08:00:00</Start><Finish>2026-05-22T17:00:00</Finish><Unit>2</Unit><Value>PT5789H28M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-23T08:00:00</Start><Finish>2026-05-23T17:00:00</Finish><Unit>2</Unit><Value>PT5789H28M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-25T08:00:00</Start><Finish>2026-05-25T17:00:00</Finish><Unit>2</Unit><Value>PT5789H28M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-26T08:00:00</Start><Finish>2026-05-26T17:00:00</Finish><Unit>2</Unit><Value>PT5789H28M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-27T08:00:00</Start><Finish>2026-05-27T17:00:00</Finish><Unit>2</Unit><Value>PT5789H28M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-28T08:00:00</Start><Finish>2026-05-28T17:00:00</Finish><Unit>2</Unit><Value>PT5789H28M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-29T08:00:00</Start><Finish>2026-05-29T17:00:00</Finish><Unit>2</Unit><Value>PT5789H28M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-30T08:00:00</Start><Finish>2026-05-30T17:00:00</Finish><Unit>2</Unit><Value>PT5789H28M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-06-01T08:00:00</Start><Finish>2026-06-01T17:00:00</Finish><Unit>2</Unit><Value>PT5789H28M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-06-02T08:00:00</Start><Finish>2026-06-02T17:00:00</Finish><Unit>2</Unit><Value>PT5789H28M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-06-03T08:00:00</Start><Finish>2026-06-03T17:00:00</Finish><Unit>2</Unit><Value>PT5789H28M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-06-05T08:00:00</Start><Finish>2026-06-05T17:00:00</Finish><Unit>2</Unit><Value>PT5789H28M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-06-06T08:00:00</Start><Finish>2026-06-06T17:00:00</Finish><Unit>2</Unit><Value>PT5789H28M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-19T08:00:00</Start><Finish>2026-05-19T17:00:00</Finish><Unit>2</Unit><Value>PT5789H29M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-20T08:00:00</Start><Finish>2026-05-20T17:00:00</Finish><Unit>2</Unit><Value>PT5789H29M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-21T08:00:00</Start><Finish>2026-05-21T17:00:00</Finish><Unit>2</Unit><Value>PT5789H29M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-22T08:00:00</Start><Finish>2026-05-22T17:00:00</Finish><Unit>2</Unit><Value>PT5789H29M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-23T08:00:00</Start><Finish>2026-05-23T17:00:00</Finish><Unit>2</Unit><Value>PT5789H29M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-25T08:00:00</Start><Finish>2026-05-25T17:00:00</Finish><Unit>2</Unit><Value>PT5789H29M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-26T08:00:00</Start><Finish>2026-05-26T17:00:00</Finish><Unit>2</Unit><Value>PT5789H29M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-27T08:00:00</Start><Finish>2026-05-27T17:00:00</Finish><Unit>2</Unit><Value>PT5789H29M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-28T08:00:00</Start><Finish>2026-05-28T17:00:00</Finish><Unit>2</Unit><Value>PT5789H29M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-29T08:00:00</Start><Finish>2026-05-29T17:00:00</Finish><Unit>2</Unit><Value>PT5789H29M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-05-30T08:00:00</Start><Finish>2026-05-30T17:00:00</Finish><Unit>2</Unit><Value>PT5789H29M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-06-01T08:00:00</Start><Finish>2026-06-01T17:00:00</Finish><Unit>2</Unit><Value>PT5789H29M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-06-02T08:00:00</Start><Finish>2026-06-02T17:00:00</Finish><Unit>2</Unit><Value>PT5789H29M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-06-03T08:00:00</Start><Finish>2026-06-03T17:00:00</Finish><Unit>2</Unit><Value>PT5789H29M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-06-05T08:00:00</Start><Finish>2026-06-05T17:00:00</Finish><Unit>2</Unit><Value>PT5789H29M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-06-06T08:00:00</Start><Finish>2026-06-06T17:00:00</Finish><Unit>2</Unit><Value>PT5789H29M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-06-08T08:00:00</Start><Finish>2026-06-08T17:00:00</Finish><Unit>2</Unit><Value>PT5789H28M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-06-09T08:00:00</Start><Finish>2026-06-09T17:00:00</Finish><Unit>2</Unit><Value>PT5789H28M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10023</UID><Start>2026-06-10T08:00:00</Start><Finish>2026-06-10T17:00:00</Finish><Unit>2</Unit><Value>PT5789H28M0S</Value></TimephasedData>
@@ -16522,6 +16954,8 @@
       <ActualWork>PT35000H0M0S</ActualWork>
       <Cost>168000000</Cost>
       <Finish>2026-06-29T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-05-30T08:00:00</Start>
       <Units>35000</Units>
@@ -16569,6 +17003,8 @@
       <ActualWork>PT190000H0M0S</ActualWork>
       <Cost>186200000</Cost>
       <Finish>2026-08-27T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-07-03T08:00:00</Start>
       <Units>190000</Units>
@@ -16639,6 +17075,8 @@
       <ActualWork>PT96000H0M0S</ActualWork>
       <Cost>20160000</Cost>
       <Finish>2026-09-11T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-08-28T08:00:00</Start>
       <Units>96000</Units>
@@ -16671,6 +17109,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>20400000</Cost>
       <Finish>2027-03-12T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT60000H0M0S</RemainingWork>
       <Start>2027-02-25T08:00:00</Start>
       <Units>60000</Units>
@@ -16693,6 +17133,8 @@
       <ActualWork>PT480H0M0S</ActualWork>
       <Cost>69600000</Cost>
       <Finish>2026-06-05T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-04-27T08:00:00</Start>
       <Units>480</Units>
@@ -16720,18 +17162,18 @@
       <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-05-15T08:00:00</Start><Finish>2026-05-15T17:00:00</Finish><Unit>2</Unit><Value>PT17H9M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-05-18T08:00:00</Start><Finish>2026-05-18T17:00:00</Finish><Unit>2</Unit><Value>PT17H9M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-05-19T08:00:00</Start><Finish>2026-05-19T17:00:00</Finish><Unit>2</Unit><Value>PT17H9M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-05-20T08:00:00</Start><Finish>2026-05-20T17:00:00</Finish><Unit>2</Unit><Value>PT17H9M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-05-21T08:00:00</Start><Finish>2026-05-21T17:00:00</Finish><Unit>2</Unit><Value>PT17H9M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-05-22T08:00:00</Start><Finish>2026-05-22T17:00:00</Finish><Unit>2</Unit><Value>PT17H9M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-05-25T08:00:00</Start><Finish>2026-05-25T17:00:00</Finish><Unit>2</Unit><Value>PT17H9M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-05-26T08:00:00</Start><Finish>2026-05-26T17:00:00</Finish><Unit>2</Unit><Value>PT17H9M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-05-27T08:00:00</Start><Finish>2026-05-27T17:00:00</Finish><Unit>2</Unit><Value>PT17H9M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-05-28T08:00:00</Start><Finish>2026-05-28T17:00:00</Finish><Unit>2</Unit><Value>PT17H9M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-05-29T08:00:00</Start><Finish>2026-05-29T17:00:00</Finish><Unit>2</Unit><Value>PT17H9M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-06-01T08:00:00</Start><Finish>2026-06-01T17:00:00</Finish><Unit>2</Unit><Value>PT17H9M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-06-02T08:00:00</Start><Finish>2026-06-02T17:00:00</Finish><Unit>2</Unit><Value>PT17H9M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-06-03T08:00:00</Start><Finish>2026-06-03T17:00:00</Finish><Unit>2</Unit><Value>PT17H9M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-06-05T08:00:00</Start><Finish>2026-06-05T17:00:00</Finish><Unit>2</Unit><Value>PT17H9M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-05-20T08:00:00</Start><Finish>2026-05-20T17:00:00</Finish><Unit>2</Unit><Value>PT17H8M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-05-21T08:00:00</Start><Finish>2026-05-21T17:00:00</Finish><Unit>2</Unit><Value>PT17H8M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-05-22T08:00:00</Start><Finish>2026-05-22T17:00:00</Finish><Unit>2</Unit><Value>PT17H8M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-05-25T08:00:00</Start><Finish>2026-05-25T17:00:00</Finish><Unit>2</Unit><Value>PT17H8M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-05-26T08:00:00</Start><Finish>2026-05-26T17:00:00</Finish><Unit>2</Unit><Value>PT17H8M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-05-27T08:00:00</Start><Finish>2026-05-27T17:00:00</Finish><Unit>2</Unit><Value>PT17H8M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-05-28T08:00:00</Start><Finish>2026-05-28T17:00:00</Finish><Unit>2</Unit><Value>PT17H8M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-05-29T08:00:00</Start><Finish>2026-05-29T17:00:00</Finish><Unit>2</Unit><Value>PT17H8M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-06-01T08:00:00</Start><Finish>2026-06-01T17:00:00</Finish><Unit>2</Unit><Value>PT17H8M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-06-02T08:00:00</Start><Finish>2026-06-02T17:00:00</Finish><Unit>2</Unit><Value>PT17H8M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-06-03T08:00:00</Start><Finish>2026-06-03T17:00:00</Finish><Unit>2</Unit><Value>PT17H8M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10029</UID><Start>2026-06-05T08:00:00</Start><Finish>2026-06-05T17:00:00</Finish><Unit>2</Unit><Value>PT17H8M0S</Value></TimephasedData>
     </Assignment>
     <Assignment>
       <UID>10030</UID>
@@ -16743,6 +17185,8 @@
       <ActualWork>PT5200H0M0S</ActualWork>
       <Cost>96200000</Cost>
       <Finish>2026-09-21T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-08-31T08:00:00</Start>
       <Units>5200</Units>
@@ -16779,6 +17223,8 @@
       <ActualWork>PT4290H0M0S</ActualWork>
       <Cost>105600000</Cost>
       <Finish>2026-10-16T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT6710H0M0S</RemainingWork>
       <Start>2026-09-22T08:00:00</Start>
       <Units>11000</Units>
@@ -16790,9 +17236,9 @@
         <Work>PT11000H0M0S</Work>
         <Cost>105600000</Cost>
       </Baseline>
-      <TimephasedData><Type>2</Type><UID>10031</UID><Start>2026-09-22T08:00:00</Start><Finish>2026-09-22T17:00:00</Finish><Unit>2</Unit><Value>PT612H51M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10031</UID><Start>2026-09-23T08:00:00</Start><Finish>2026-09-23T17:00:00</Finish><Unit>2</Unit><Value>PT612H51M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10031</UID><Start>2026-09-24T08:00:00</Start><Finish>2026-09-24T17:00:00</Finish><Unit>2</Unit><Value>PT612H51M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10031</UID><Start>2026-09-22T08:00:00</Start><Finish>2026-09-22T17:00:00</Finish><Unit>2</Unit><Value>PT612H52M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10031</UID><Start>2026-09-23T08:00:00</Start><Finish>2026-09-23T17:00:00</Finish><Unit>2</Unit><Value>PT612H52M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10031</UID><Start>2026-09-24T08:00:00</Start><Finish>2026-09-24T17:00:00</Finish><Unit>2</Unit><Value>PT612H52M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10031</UID><Start>2026-09-25T08:00:00</Start><Finish>2026-09-25T17:00:00</Finish><Unit>2</Unit><Value>PT612H51M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10031</UID><Start>2026-09-28T08:00:00</Start><Finish>2026-09-28T17:00:00</Finish><Unit>2</Unit><Value>PT612H51M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10031</UID><Start>2026-09-29T08:00:00</Start><Finish>2026-09-29T17:00:00</Finish><Unit>2</Unit><Value>PT612H51M0S</Value></TimephasedData>
@@ -16806,6 +17252,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>70200000</Cost>
       <Finish>2026-12-23T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT9000H0M0S</RemainingWork>
       <Start>2026-11-27T08:00:00</Start>
       <Units>9000</Units>
@@ -16827,6 +17275,8 @@
       <ActualWork>PT7410H0M0S</ActualWork>
       <Cost>269800000</Cost>
       <Finish>2026-10-16T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT11590H0M0S</RemainingWork>
       <Start>2026-09-22T08:00:00</Start>
       <Units>19000</Units>
@@ -16838,8 +17288,8 @@
         <Work>PT19000H0M0S</Work>
         <Cost>269800000</Cost>
       </Baseline>
-      <TimephasedData><Type>2</Type><UID>10034</UID><Start>2026-09-22T08:00:00</Start><Finish>2026-09-22T17:00:00</Finish><Unit>2</Unit><Value>PT1058H34M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10034</UID><Start>2026-09-23T08:00:00</Start><Finish>2026-09-23T17:00:00</Finish><Unit>2</Unit><Value>PT1058H34M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10034</UID><Start>2026-09-22T08:00:00</Start><Finish>2026-09-22T17:00:00</Finish><Unit>2</Unit><Value>PT1058H35M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10034</UID><Start>2026-09-23T08:00:00</Start><Finish>2026-09-23T17:00:00</Finish><Unit>2</Unit><Value>PT1058H35M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10034</UID><Start>2026-09-24T08:00:00</Start><Finish>2026-09-24T17:00:00</Finish><Unit>2</Unit><Value>PT1058H34M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10034</UID><Start>2026-09-25T08:00:00</Start><Finish>2026-09-25T17:00:00</Finish><Unit>2</Unit><Value>PT1058H34M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10034</UID><Start>2026-09-28T08:00:00</Start><Finish>2026-09-28T17:00:00</Finish><Unit>2</Unit><Value>PT1058H34M0S</Value></TimephasedData>
@@ -16855,6 +17305,8 @@
       <ActualWork>PT1020H0M0S</ActualWork>
       <Cost>336600000</Cost>
       <Finish>2026-10-26T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT15980H0M0S</RemainingWork>
       <Start>2026-09-30T08:00:00</Start>
       <Units>17000</Units>
@@ -16876,6 +17328,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>66240000</Cost>
       <Finish>2026-11-04T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT96000H0M0S</RemainingWork>
       <Start>2026-10-27T08:00:00</Start>
       <Units>96000</Units>
@@ -16896,6 +17350,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>627750000</Cost>
       <Finish>2026-11-26T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT13500H0M0S</RemainingWork>
       <Start>2026-11-05T08:00:00</Start>
       <Units>13500</Units>
@@ -16916,6 +17372,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>59800000</Cost>
       <Finish>2026-12-23T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT52000H0M0S</RemainingWork>
       <Start>2026-11-27T08:00:00</Start>
       <Units>52000</Units>
@@ -16936,6 +17394,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>744000000</Cost>
       <Finish>2027-02-01T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT16000H0M0S</RemainingWork>
       <Start>2026-12-28T08:00:00</Start>
       <Units>16000</Units>
@@ -16956,6 +17416,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>139500000</Cost>
       <Finish>2027-02-23T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT3000H0M0S</RemainingWork>
       <Start>2027-02-03T08:00:00</Start>
       <Units>3000</Units>
@@ -16976,6 +17438,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>18240000</Cost>
       <Finish>2027-02-19T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT4800H0M0S</RemainingWork>
       <Start>2027-02-03T08:00:00</Start>
       <Units>4800</Units>
@@ -16996,6 +17460,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>18720000</Cost>
       <Finish>2027-02-23T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT260H0M0S</RemainingWork>
       <Start>2027-02-03T08:00:00</Start>
       <Units>260</Units>
@@ -17016,6 +17482,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>155800000</Cost>
       <Finish>2027-03-17T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT3800H0M0S</RemainingWork>
       <Start>2027-02-25T08:00:00</Start>
       <Units>3800</Units>
@@ -17036,6 +17504,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>13650000</Cost>
       <Finish>2027-03-01T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT6500H0M0S</RemainingWork>
       <Start>2027-02-22T08:00:00</Start>
       <Units>6500</Units>
@@ -17056,6 +17526,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>27600000</Cost>
       <Finish>2027-01-20T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT2400H0M0S</RemainingWork>
       <Start>2026-12-28T08:00:00</Start>
       <Units>2400</Units>
@@ -17076,6 +17548,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>62100000</Cost>
       <Finish>2027-02-23T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT90H0M0S</RemainingWork>
       <Start>2027-02-03T08:00:00</Start>
       <Units>90</Units>
@@ -17096,6 +17570,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>4864000</Cost>
       <Finish>2027-03-10T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT64H0M0S</RemainingWork>
       <Start>2027-02-25T08:00:00</Start>
       <Units>1</Units>
@@ -17118,6 +17594,8 @@
       <ActualWork>PT198000H0M0S</ActualWork>
       <Cost>16830000</Cost>
       <Finish>2026-05-13T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-04-25T08:00:00</Start>
       <Units>198000</Units>
@@ -17155,6 +17633,8 @@
       <ActualWork>PT242000H0M0S</ActualWork>
       <Cost>350900000</Cost>
       <Finish>2026-08-21T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-07-03T08:00:00</Start>
       <Units>242000</Units>
@@ -17166,24 +17646,24 @@
         <Work>PT242000H0M0S</Work>
         <Cost>350900000</Cost>
       </Baseline>
-      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-03T08:00:00</Start><Finish>2026-07-03T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-04T08:00:00</Start><Finish>2026-07-04T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-06T08:00:00</Start><Finish>2026-07-06T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-07T08:00:00</Start><Finish>2026-07-07T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-08T08:00:00</Start><Finish>2026-07-08T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-09T08:00:00</Start><Finish>2026-07-09T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-10T08:00:00</Start><Finish>2026-07-10T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-11T08:00:00</Start><Finish>2026-07-11T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-13T08:00:00</Start><Finish>2026-07-13T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-14T08:00:00</Start><Finish>2026-07-14T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-15T08:00:00</Start><Finish>2026-07-15T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-16T08:00:00</Start><Finish>2026-07-16T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-17T08:00:00</Start><Finish>2026-07-17T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-18T08:00:00</Start><Finish>2026-07-18T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-20T08:00:00</Start><Finish>2026-07-20T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-21T08:00:00</Start><Finish>2026-07-21T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-22T08:00:00</Start><Finish>2026-07-22T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-23T08:00:00</Start><Finish>2026-07-23T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-03T08:00:00</Start><Finish>2026-07-03T17:00:00</Finish><Unit>2</Unit><Value>PT5627H55M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-04T08:00:00</Start><Finish>2026-07-04T17:00:00</Finish><Unit>2</Unit><Value>PT5627H55M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-06T08:00:00</Start><Finish>2026-07-06T17:00:00</Finish><Unit>2</Unit><Value>PT5627H55M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-07T08:00:00</Start><Finish>2026-07-07T17:00:00</Finish><Unit>2</Unit><Value>PT5627H55M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-08T08:00:00</Start><Finish>2026-07-08T17:00:00</Finish><Unit>2</Unit><Value>PT5627H55M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-09T08:00:00</Start><Finish>2026-07-09T17:00:00</Finish><Unit>2</Unit><Value>PT5627H55M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-10T08:00:00</Start><Finish>2026-07-10T17:00:00</Finish><Unit>2</Unit><Value>PT5627H55M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-11T08:00:00</Start><Finish>2026-07-11T17:00:00</Finish><Unit>2</Unit><Value>PT5627H55M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-13T08:00:00</Start><Finish>2026-07-13T17:00:00</Finish><Unit>2</Unit><Value>PT5627H55M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-14T08:00:00</Start><Finish>2026-07-14T17:00:00</Finish><Unit>2</Unit><Value>PT5627H55M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-15T08:00:00</Start><Finish>2026-07-15T17:00:00</Finish><Unit>2</Unit><Value>PT5627H55M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-16T08:00:00</Start><Finish>2026-07-16T17:00:00</Finish><Unit>2</Unit><Value>PT5627H55M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-17T08:00:00</Start><Finish>2026-07-17T17:00:00</Finish><Unit>2</Unit><Value>PT5627H55M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-18T08:00:00</Start><Finish>2026-07-18T17:00:00</Finish><Unit>2</Unit><Value>PT5627H55M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-20T08:00:00</Start><Finish>2026-07-20T17:00:00</Finish><Unit>2</Unit><Value>PT5627H55M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-21T08:00:00</Start><Finish>2026-07-21T17:00:00</Finish><Unit>2</Unit><Value>PT5627H55M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-22T08:00:00</Start><Finish>2026-07-22T17:00:00</Finish><Unit>2</Unit><Value>PT5627H55M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-23T08:00:00</Start><Finish>2026-07-23T17:00:00</Finish><Unit>2</Unit><Value>PT5627H55M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-24T08:00:00</Start><Finish>2026-07-24T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-25T08:00:00</Start><Finish>2026-07-25T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10053</UID><Start>2026-07-27T08:00:00</Start><Finish>2026-07-27T17:00:00</Finish><Unit>2</Unit><Value>PT5627H54M0S</Value></TimephasedData>
@@ -17220,6 +17700,8 @@
       <ActualWork>PT38500H0M0S</ActualWork>
       <Cost>184800000</Cost>
       <Finish>2026-08-12T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-07-15T08:00:00</Start>
       <Units>38500</Units>
@@ -17266,6 +17748,8 @@
       <ActualWork>PT79420H0M0S</ActualWork>
       <Cost>204820000</Cost>
       <Finish>2026-10-20T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT129580H0M0S</RemainingWork>
       <Start>2026-08-28T08:00:00</Start>
       <Units>209000</Units>
@@ -17297,14 +17781,14 @@
       <TimephasedData><Type>2</Type><UID>10055</UID><Start>2026-09-18T08:00:00</Start><Finish>2026-09-18T17:00:00</Finish><Unit>2</Unit><Value>PT2836H26M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10055</UID><Start>2026-09-19T08:00:00</Start><Finish>2026-09-19T17:00:00</Finish><Unit>2</Unit><Value>PT2836H26M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10055</UID><Start>2026-09-21T08:00:00</Start><Finish>2026-09-21T17:00:00</Finish><Unit>2</Unit><Value>PT2836H26M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10055</UID><Start>2026-09-22T08:00:00</Start><Finish>2026-09-22T17:00:00</Finish><Unit>2</Unit><Value>PT2836H26M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10055</UID><Start>2026-09-23T08:00:00</Start><Finish>2026-09-23T17:00:00</Finish><Unit>2</Unit><Value>PT2836H26M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10055</UID><Start>2026-09-24T08:00:00</Start><Finish>2026-09-24T17:00:00</Finish><Unit>2</Unit><Value>PT2836H26M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10055</UID><Start>2026-09-25T08:00:00</Start><Finish>2026-09-25T17:00:00</Finish><Unit>2</Unit><Value>PT2836H26M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10055</UID><Start>2026-09-26T08:00:00</Start><Finish>2026-09-26T17:00:00</Finish><Unit>2</Unit><Value>PT2836H26M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10055</UID><Start>2026-09-28T08:00:00</Start><Finish>2026-09-28T17:00:00</Finish><Unit>2</Unit><Value>PT2836H26M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10055</UID><Start>2026-09-29T08:00:00</Start><Finish>2026-09-29T17:00:00</Finish><Unit>2</Unit><Value>PT2836H26M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10055</UID><Start>2026-09-30T08:00:00</Start><Finish>2026-09-30T17:00:00</Finish><Unit>2</Unit><Value>PT2836H26M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10055</UID><Start>2026-09-22T08:00:00</Start><Finish>2026-09-22T17:00:00</Finish><Unit>2</Unit><Value>PT2836H25M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10055</UID><Start>2026-09-23T08:00:00</Start><Finish>2026-09-23T17:00:00</Finish><Unit>2</Unit><Value>PT2836H25M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10055</UID><Start>2026-09-24T08:00:00</Start><Finish>2026-09-24T17:00:00</Finish><Unit>2</Unit><Value>PT2836H25M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10055</UID><Start>2026-09-25T08:00:00</Start><Finish>2026-09-25T17:00:00</Finish><Unit>2</Unit><Value>PT2836H25M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10055</UID><Start>2026-09-26T08:00:00</Start><Finish>2026-09-26T17:00:00</Finish><Unit>2</Unit><Value>PT2836H25M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10055</UID><Start>2026-09-28T08:00:00</Start><Finish>2026-09-28T17:00:00</Finish><Unit>2</Unit><Value>PT2836H25M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10055</UID><Start>2026-09-29T08:00:00</Start><Finish>2026-09-29T17:00:00</Finish><Unit>2</Unit><Value>PT2836H25M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10055</UID><Start>2026-09-30T08:00:00</Start><Finish>2026-09-30T17:00:00</Finish><Unit>2</Unit><Value>PT2836H25M0S</Value></TimephasedData>
     </Assignment>
     <Assignment>
       <UID>10056</UID>
@@ -17314,6 +17798,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>22176000</Cost>
       <Finish>2026-11-04T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT105600H0M0S</RemainingWork>
       <Start>2026-10-21T08:00:00</Start>
       <Units>105600</Units>
@@ -17334,6 +17820,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>22440000</Cost>
       <Finish>2027-05-26T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT66000H0M0S</RemainingWork>
       <Start>2027-05-13T08:00:00</Start>
       <Units>66000</Units>
@@ -17356,6 +17844,8 @@
       <ActualWork>PT528H0M0S</ActualWork>
       <Cost>76560000</Cost>
       <Finish>2026-07-07T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-06-08T08:00:00</Start>
       <Units>528</Units>
@@ -17400,6 +17890,8 @@
       <ActualWork>PT462H0M0S</ActualWork>
       <Cost>122430000</Cost>
       <Finish>2026-08-04T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-07-08T08:00:00</Start>
       <Units>462</Units>
@@ -17440,6 +17932,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>105820000</Cost>
       <Finish>2026-11-11T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT5720H0M0S</RemainingWork>
       <Start>2026-10-21T08:00:00</Start>
       <Units>5720</Units>
@@ -17460,6 +17954,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>116160000</Cost>
       <Finish>2026-12-10T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT12100H0M0S</RemainingWork>
       <Start>2026-11-12T08:00:00</Start>
       <Units>12100</Units>
@@ -17480,6 +17976,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>77220000</Cost>
       <Finish>2027-04-01T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT9900H0M0S</RemainingWork>
       <Start>2027-03-05T08:00:00</Start>
       <Units>9900</Units>
@@ -17500,6 +17998,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>296780000</Cost>
       <Finish>2026-12-10T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT20900H0M0S</RemainingWork>
       <Start>2026-11-12T08:00:00</Start>
       <Units>20900</Units>
@@ -17520,6 +18020,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>370260000</Cost>
       <Finish>2026-12-22T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT18700H0M0S</RemainingWork>
       <Start>2026-11-23T08:00:00</Start>
       <Units>18700</Units>
@@ -17540,6 +18042,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>72864000</Cost>
       <Finish>2027-01-07T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT105600H0M0S</RemainingWork>
       <Start>2026-12-23T08:00:00</Start>
       <Units>105600</Units>
@@ -17560,6 +18064,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>690525000</Cost>
       <Finish>2027-03-04T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT14850H0M0S</RemainingWork>
       <Start>2027-02-03T08:00:00</Start>
       <Units>14850</Units>
@@ -17580,6 +18086,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>65780000</Cost>
       <Finish>2027-04-01T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT57200H0M0S</RemainingWork>
       <Start>2027-03-05T08:00:00</Start>
       <Units>57200</Units>
@@ -17600,6 +18108,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>818400000</Cost>
       <Finish>2027-04-28T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT17600H0M0S</RemainingWork>
       <Start>2027-04-02T08:00:00</Start>
       <Units>17600</Units>
@@ -17620,6 +18130,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>153450000</Cost>
       <Finish>2027-05-12T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT3300H0M0S</RemainingWork>
       <Start>2027-04-29T08:00:00</Start>
       <Units>3300</Units>
@@ -17640,6 +18152,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>20064000</Cost>
       <Finish>2027-05-10T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT5280H0M0S</RemainingWork>
       <Start>2027-04-29T08:00:00</Start>
       <Units>5280</Units>
@@ -17660,6 +18174,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>20592000</Cost>
       <Finish>2027-05-12T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT286H0M0S</RemainingWork>
       <Start>2027-04-29T08:00:00</Start>
       <Units>286</Units>
@@ -17680,6 +18196,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>171380000</Cost>
       <Finish>2027-05-31T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT4180H0M0S</RemainingWork>
       <Start>2027-05-13T08:00:00</Start>
       <Units>4180</Units>
@@ -17700,6 +18218,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>15015000</Cost>
       <Finish>2027-05-17T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT7150H0M0S</RemainingWork>
       <Start>2027-05-11T08:00:00</Start>
       <Units>7150</Units>
@@ -17720,6 +18240,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>30360000</Cost>
       <Finish>2027-04-19T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT2640H0M0S</RemainingWork>
       <Start>2027-04-02T08:00:00</Start>
       <Units>2640</Units>
@@ -17740,6 +18262,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>68310000</Cost>
       <Finish>2027-05-12T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT99H0M0S</RemainingWork>
       <Start>2027-04-29T08:00:00</Start>
       <Units>99</Units>
@@ -17760,6 +18284,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>4864000</Cost>
       <Finish>2027-05-24T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT64H0M0S</RemainingWork>
       <Start>2027-05-13T08:00:00</Start>
       <Units>1</Units>
@@ -17782,6 +18308,8 @@
       <ActualWork>PT165600H0M0S</ActualWork>
       <Cost>14076000</Cost>
       <Finish>2026-05-30T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-05-14T08:00:00</Start>
       <Units>165600</Units>
@@ -17819,6 +18347,8 @@
       <ActualWork>PT202400H0M0S</ActualWork>
       <Cost>293480000</Cost>
       <Finish>2026-07-16T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-06-01T08:00:00</Start>
       <Units>202400</Units>
@@ -17854,21 +18384,21 @@
       <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-06-26T08:00:00</Start><Finish>2026-06-26T17:00:00</Finish><Unit>2</Unit><Value>PT5189H45M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-06-27T08:00:00</Start><Finish>2026-06-27T17:00:00</Finish><Unit>2</Unit><Value>PT5189H45M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-06-29T08:00:00</Start><Finish>2026-06-29T17:00:00</Finish><Unit>2</Unit><Value>PT5189H45M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-06-30T08:00:00</Start><Finish>2026-06-30T17:00:00</Finish><Unit>2</Unit><Value>PT5189H45M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-01T08:00:00</Start><Finish>2026-07-01T17:00:00</Finish><Unit>2</Unit><Value>PT5189H45M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-02T08:00:00</Start><Finish>2026-07-02T17:00:00</Finish><Unit>2</Unit><Value>PT5189H45M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-03T08:00:00</Start><Finish>2026-07-03T17:00:00</Finish><Unit>2</Unit><Value>PT5189H45M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-04T08:00:00</Start><Finish>2026-07-04T17:00:00</Finish><Unit>2</Unit><Value>PT5189H45M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-06T08:00:00</Start><Finish>2026-07-06T17:00:00</Finish><Unit>2</Unit><Value>PT5189H45M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-07T08:00:00</Start><Finish>2026-07-07T17:00:00</Finish><Unit>2</Unit><Value>PT5189H45M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-08T08:00:00</Start><Finish>2026-07-08T17:00:00</Finish><Unit>2</Unit><Value>PT5189H45M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-09T08:00:00</Start><Finish>2026-07-09T17:00:00</Finish><Unit>2</Unit><Value>PT5189H45M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-10T08:00:00</Start><Finish>2026-07-10T17:00:00</Finish><Unit>2</Unit><Value>PT5189H45M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-11T08:00:00</Start><Finish>2026-07-11T17:00:00</Finish><Unit>2</Unit><Value>PT5189H45M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-13T08:00:00</Start><Finish>2026-07-13T17:00:00</Finish><Unit>2</Unit><Value>PT5189H45M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-14T08:00:00</Start><Finish>2026-07-14T17:00:00</Finish><Unit>2</Unit><Value>PT5189H45M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-15T08:00:00</Start><Finish>2026-07-15T17:00:00</Finish><Unit>2</Unit><Value>PT5189H45M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-16T08:00:00</Start><Finish>2026-07-16T17:00:00</Finish><Unit>2</Unit><Value>PT5189H45M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-06-30T08:00:00</Start><Finish>2026-06-30T17:00:00</Finish><Unit>2</Unit><Value>PT5189H44M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-01T08:00:00</Start><Finish>2026-07-01T17:00:00</Finish><Unit>2</Unit><Value>PT5189H44M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-02T08:00:00</Start><Finish>2026-07-02T17:00:00</Finish><Unit>2</Unit><Value>PT5189H44M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-03T08:00:00</Start><Finish>2026-07-03T17:00:00</Finish><Unit>2</Unit><Value>PT5189H44M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-04T08:00:00</Start><Finish>2026-07-04T17:00:00</Finish><Unit>2</Unit><Value>PT5189H44M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-06T08:00:00</Start><Finish>2026-07-06T17:00:00</Finish><Unit>2</Unit><Value>PT5189H44M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-07T08:00:00</Start><Finish>2026-07-07T17:00:00</Finish><Unit>2</Unit><Value>PT5189H44M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-08T08:00:00</Start><Finish>2026-07-08T17:00:00</Finish><Unit>2</Unit><Value>PT5189H44M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-09T08:00:00</Start><Finish>2026-07-09T17:00:00</Finish><Unit>2</Unit><Value>PT5189H44M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-10T08:00:00</Start><Finish>2026-07-10T17:00:00</Finish><Unit>2</Unit><Value>PT5189H44M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-11T08:00:00</Start><Finish>2026-07-11T17:00:00</Finish><Unit>2</Unit><Value>PT5189H44M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-13T08:00:00</Start><Finish>2026-07-13T17:00:00</Finish><Unit>2</Unit><Value>PT5189H44M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-14T08:00:00</Start><Finish>2026-07-14T17:00:00</Finish><Unit>2</Unit><Value>PT5189H44M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-15T08:00:00</Start><Finish>2026-07-15T17:00:00</Finish><Unit>2</Unit><Value>PT5189H44M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10084</UID><Start>2026-07-16T08:00:00</Start><Finish>2026-07-16T17:00:00</Finish><Unit>2</Unit><Value>PT5189H44M0S</Value></TimephasedData>
     </Assignment>
     <Assignment>
       <UID>10085</UID>
@@ -17880,6 +18410,8 @@
       <ActualWork>PT32200H0M0S</ActualWork>
       <Cost>154560000</Cost>
       <Finish>2026-07-11T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-06-13T08:00:00</Start>
       <Units>32200</Units>
@@ -17926,6 +18458,8 @@
       <ActualWork>PT155572H0M0S</ActualWork>
       <Cost>171304000</Cost>
       <Finish>2026-10-06T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT19228H0M0S</RemainingWork>
       <Start>2026-08-12T08:00:00</Start>
       <Units>174800</Units>
@@ -17967,18 +18501,18 @@
       <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-14T08:00:00</Start><Finish>2026-09-14T17:00:00</Finish><Unit>2</Unit><Value>PT3704H6M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-15T08:00:00</Start><Finish>2026-09-15T17:00:00</Finish><Unit>2</Unit><Value>PT3704H6M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-16T08:00:00</Start><Finish>2026-09-16T17:00:00</Finish><Unit>2</Unit><Value>PT3704H6M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-17T08:00:00</Start><Finish>2026-09-17T17:00:00</Finish><Unit>2</Unit><Value>PT3704H6M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-18T08:00:00</Start><Finish>2026-09-18T17:00:00</Finish><Unit>2</Unit><Value>PT3704H6M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-19T08:00:00</Start><Finish>2026-09-19T17:00:00</Finish><Unit>2</Unit><Value>PT3704H6M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-21T08:00:00</Start><Finish>2026-09-21T17:00:00</Finish><Unit>2</Unit><Value>PT3704H6M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-22T08:00:00</Start><Finish>2026-09-22T17:00:00</Finish><Unit>2</Unit><Value>PT3704H6M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-23T08:00:00</Start><Finish>2026-09-23T17:00:00</Finish><Unit>2</Unit><Value>PT3704H6M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-24T08:00:00</Start><Finish>2026-09-24T17:00:00</Finish><Unit>2</Unit><Value>PT3704H6M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-25T08:00:00</Start><Finish>2026-09-25T17:00:00</Finish><Unit>2</Unit><Value>PT3704H6M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-26T08:00:00</Start><Finish>2026-09-26T17:00:00</Finish><Unit>2</Unit><Value>PT3704H6M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-28T08:00:00</Start><Finish>2026-09-28T17:00:00</Finish><Unit>2</Unit><Value>PT3704H6M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-29T08:00:00</Start><Finish>2026-09-29T17:00:00</Finish><Unit>2</Unit><Value>PT3704H6M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-30T08:00:00</Start><Finish>2026-09-30T17:00:00</Finish><Unit>2</Unit><Value>PT3704H6M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-17T08:00:00</Start><Finish>2026-09-17T17:00:00</Finish><Unit>2</Unit><Value>PT3704H5M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-18T08:00:00</Start><Finish>2026-09-18T17:00:00</Finish><Unit>2</Unit><Value>PT3704H5M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-19T08:00:00</Start><Finish>2026-09-19T17:00:00</Finish><Unit>2</Unit><Value>PT3704H5M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-21T08:00:00</Start><Finish>2026-09-21T17:00:00</Finish><Unit>2</Unit><Value>PT3704H5M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-22T08:00:00</Start><Finish>2026-09-22T17:00:00</Finish><Unit>2</Unit><Value>PT3704H5M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-23T08:00:00</Start><Finish>2026-09-23T17:00:00</Finish><Unit>2</Unit><Value>PT3704H5M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-24T08:00:00</Start><Finish>2026-09-24T17:00:00</Finish><Unit>2</Unit><Value>PT3704H5M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-25T08:00:00</Start><Finish>2026-09-25T17:00:00</Finish><Unit>2</Unit><Value>PT3704H5M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-26T08:00:00</Start><Finish>2026-09-26T17:00:00</Finish><Unit>2</Unit><Value>PT3704H5M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-28T08:00:00</Start><Finish>2026-09-28T17:00:00</Finish><Unit>2</Unit><Value>PT3704H5M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-29T08:00:00</Start><Finish>2026-09-29T17:00:00</Finish><Unit>2</Unit><Value>PT3704H5M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10086</UID><Start>2026-09-30T08:00:00</Start><Finish>2026-09-30T17:00:00</Finish><Unit>2</Unit><Value>PT3704H5M0S</Value></TimephasedData>
     </Assignment>
     <Assignment>
       <UID>10087</UID>
@@ -17988,6 +18522,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>18547200</Cost>
       <Finish>2026-10-21T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT88320H0M0S</RemainingWork>
       <Start>2026-10-07T08:00:00</Start>
       <Units>88320</Units>
@@ -18008,6 +18544,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>18768000</Cost>
       <Finish>2027-04-26T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT55200H0M0S</RemainingWork>
       <Start>2027-04-12T08:00:00</Start>
       <Units>55200</Units>
@@ -18030,6 +18568,8 @@
       <ActualWork>PT442H0M0S</ActualWork>
       <Cost>64090000</Cost>
       <Finish>2026-08-11T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-07-08T08:00:00</Start>
       <Units>442</Units>
@@ -18061,11 +18601,11 @@
       <TimephasedData><Type>2</Type><UID>10090</UID><Start>2026-07-31T08:00:00</Start><Finish>2026-07-31T17:00:00</Finish><Unit>2</Unit><Value>PT17H41M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10090</UID><Start>2026-08-03T08:00:00</Start><Finish>2026-08-03T17:00:00</Finish><Unit>2</Unit><Value>PT17H41M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10090</UID><Start>2026-08-04T08:00:00</Start><Finish>2026-08-04T17:00:00</Finish><Unit>2</Unit><Value>PT17H41M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10090</UID><Start>2026-08-05T08:00:00</Start><Finish>2026-08-05T17:00:00</Finish><Unit>2</Unit><Value>PT17H41M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10090</UID><Start>2026-08-06T08:00:00</Start><Finish>2026-08-06T17:00:00</Finish><Unit>2</Unit><Value>PT17H41M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10090</UID><Start>2026-08-07T08:00:00</Start><Finish>2026-08-07T17:00:00</Finish><Unit>2</Unit><Value>PT17H41M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10090</UID><Start>2026-08-10T08:00:00</Start><Finish>2026-08-10T17:00:00</Finish><Unit>2</Unit><Value>PT17H41M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10090</UID><Start>2026-08-11T08:00:00</Start><Finish>2026-08-11T17:00:00</Finish><Unit>2</Unit><Value>PT17H41M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10090</UID><Start>2026-08-05T08:00:00</Start><Finish>2026-08-05T17:00:00</Finish><Unit>2</Unit><Value>PT17H40M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10090</UID><Start>2026-08-06T08:00:00</Start><Finish>2026-08-06T17:00:00</Finish><Unit>2</Unit><Value>PT17H40M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10090</UID><Start>2026-08-07T08:00:00</Start><Finish>2026-08-07T17:00:00</Finish><Unit>2</Unit><Value>PT17H40M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10090</UID><Start>2026-08-10T08:00:00</Start><Finish>2026-08-10T17:00:00</Finish><Unit>2</Unit><Value>PT17H40M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10090</UID><Start>2026-08-11T08:00:00</Start><Finish>2026-08-11T17:00:00</Finish><Unit>2</Unit><Value>PT17H40M0S</Value></TimephasedData>
     </Assignment>
     <Assignment>
       <UID>10091</UID>
@@ -18075,6 +18615,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>88504000</Cost>
       <Finish>2026-10-28T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT4784H0M0S</RemainingWork>
       <Start>2026-10-07T08:00:00</Start>
       <Units>4784</Units>
@@ -18095,6 +18637,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>97152000</Cost>
       <Finish>2026-11-25T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT10120H0M0S</RemainingWork>
       <Start>2026-10-29T08:00:00</Start>
       <Units>10120</Units>
@@ -18115,6 +18659,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>64584000</Cost>
       <Finish>2027-02-19T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT8280H0M0S</RemainingWork>
       <Start>2027-01-20T08:00:00</Start>
       <Units>8280</Units>
@@ -18135,6 +18681,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>248216000</Cost>
       <Finish>2026-11-25T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT17480H0M0S</RemainingWork>
       <Start>2026-10-29T08:00:00</Start>
       <Units>17480</Units>
@@ -18155,6 +18703,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>309672000</Cost>
       <Finish>2026-12-04T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT15640H0M0S</RemainingWork>
       <Start>2026-11-09T08:00:00</Start>
       <Units>15640</Units>
@@ -18175,6 +18725,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>60940800</Cost>
       <Finish>2026-12-16T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT88320H0M0S</RemainingWork>
       <Start>2026-12-07T08:00:00</Start>
       <Units>88320</Units>
@@ -18195,6 +18747,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>577530000</Cost>
       <Finish>2027-01-19T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT12420H0M0S</RemainingWork>
       <Start>2026-12-17T08:00:00</Start>
       <Units>12420</Units>
@@ -18215,6 +18769,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>55016000</Cost>
       <Finish>2027-02-19T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT47840H0M0S</RemainingWork>
       <Start>2027-01-20T08:00:00</Start>
       <Units>47840</Units>
@@ -18235,6 +18791,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>684480000</Cost>
       <Finish>2027-03-24T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT14720H0M0S</RemainingWork>
       <Start>2027-02-22T08:00:00</Start>
       <Units>14720</Units>
@@ -18255,6 +18813,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>128340000</Cost>
       <Finish>2027-04-09T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT2760H0M0S</RemainingWork>
       <Start>2027-03-25T08:00:00</Start>
       <Units>2760</Units>
@@ -18275,6 +18835,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>16780800</Cost>
       <Finish>2027-04-07T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT4416H0M0S</RemainingWork>
       <Start>2027-03-25T08:00:00</Start>
       <Units>4416</Units>
@@ -18295,6 +18857,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>17208000</Cost>
       <Finish>2027-04-09T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT239H0M0S</RemainingWork>
       <Start>2027-03-25T08:00:00</Start>
       <Units>239</Units>
@@ -18315,6 +18879,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>143336000</Cost>
       <Finish>2027-04-28T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT3496H0M0S</RemainingWork>
       <Start>2027-04-12T08:00:00</Start>
       <Units>3496</Units>
@@ -18335,6 +18901,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>12558000</Cost>
       <Finish>2027-04-14T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT5980H0M0S</RemainingWork>
       <Start>2027-04-08T08:00:00</Start>
       <Units>5980</Units>
@@ -18355,6 +18923,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>25392000</Cost>
       <Finish>2027-03-12T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT2208H0M0S</RemainingWork>
       <Start>2027-02-22T08:00:00</Start>
       <Units>2208</Units>
@@ -18375,6 +18945,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>57270000</Cost>
       <Finish>2027-04-09T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT83H0M0S</RemainingWork>
       <Start>2027-03-25T08:00:00</Start>
       <Units>83</Units>
@@ -18395,6 +18967,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>4864000</Cost>
       <Finish>2027-04-22T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT64H0M0S</RemainingWork>
       <Start>2027-04-12T08:00:00</Start>
       <Units>1</Units>
@@ -18417,6 +18991,8 @@
       <ActualWork>PT189000H0M0S</ActualWork>
       <Cost>16065000</Cost>
       <Finish>2026-06-18T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-06-01T08:00:00</Start>
       <Units>189000</Units>
@@ -18454,6 +19030,8 @@
       <ActualWork>PT231000H0M0S</ActualWork>
       <Cost>334950000</Cost>
       <Finish>2026-09-01T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-07-17T08:00:00</Start>
       <Units>231000</Units>
@@ -18516,6 +19094,8 @@
       <ActualWork>PT36750H0M0S</ActualWork>
       <Cost>176400000</Cost>
       <Finish>2026-08-24T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-07-29T08:00:00</Start>
       <Units>36750</Units>
@@ -18540,16 +19120,16 @@
       <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-10T08:00:00</Start><Finish>2026-08-10T17:00:00</Finish><Unit>2</Unit><Value>PT1597H50M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-11T08:00:00</Start><Finish>2026-08-11T17:00:00</Finish><Unit>2</Unit><Value>PT1597H50M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-12T08:00:00</Start><Finish>2026-08-12T17:00:00</Finish><Unit>2</Unit><Value>PT1597H50M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-13T08:00:00</Start><Finish>2026-08-13T17:00:00</Finish><Unit>2</Unit><Value>PT1597H50M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-14T08:00:00</Start><Finish>2026-08-14T17:00:00</Finish><Unit>2</Unit><Value>PT1597H50M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-15T08:00:00</Start><Finish>2026-08-15T17:00:00</Finish><Unit>2</Unit><Value>PT1597H50M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-17T08:00:00</Start><Finish>2026-08-17T17:00:00</Finish><Unit>2</Unit><Value>PT1597H50M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-18T08:00:00</Start><Finish>2026-08-18T17:00:00</Finish><Unit>2</Unit><Value>PT1597H50M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-19T08:00:00</Start><Finish>2026-08-19T17:00:00</Finish><Unit>2</Unit><Value>PT1597H50M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-20T08:00:00</Start><Finish>2026-08-20T17:00:00</Finish><Unit>2</Unit><Value>PT1597H50M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-21T08:00:00</Start><Finish>2026-08-21T17:00:00</Finish><Unit>2</Unit><Value>PT1597H50M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-22T08:00:00</Start><Finish>2026-08-22T17:00:00</Finish><Unit>2</Unit><Value>PT1597H50M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-24T08:00:00</Start><Finish>2026-08-24T17:00:00</Finish><Unit>2</Unit><Value>PT1597H50M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-13T08:00:00</Start><Finish>2026-08-13T17:00:00</Finish><Unit>2</Unit><Value>PT1597H49M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-14T08:00:00</Start><Finish>2026-08-14T17:00:00</Finish><Unit>2</Unit><Value>PT1597H49M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-15T08:00:00</Start><Finish>2026-08-15T17:00:00</Finish><Unit>2</Unit><Value>PT1597H49M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-17T08:00:00</Start><Finish>2026-08-17T17:00:00</Finish><Unit>2</Unit><Value>PT1597H49M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-18T08:00:00</Start><Finish>2026-08-18T17:00:00</Finish><Unit>2</Unit><Value>PT1597H49M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-19T08:00:00</Start><Finish>2026-08-19T17:00:00</Finish><Unit>2</Unit><Value>PT1597H49M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-20T08:00:00</Start><Finish>2026-08-20T17:00:00</Finish><Unit>2</Unit><Value>PT1597H49M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-21T08:00:00</Start><Finish>2026-08-21T17:00:00</Finish><Unit>2</Unit><Value>PT1597H49M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-22T08:00:00</Start><Finish>2026-08-22T17:00:00</Finish><Unit>2</Unit><Value>PT1597H49M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10115</UID><Start>2026-08-24T08:00:00</Start><Finish>2026-08-24T17:00:00</Finish><Unit>2</Unit><Value>PT1597H49M0S</Value></TimephasedData>
     </Assignment>
     <Assignment>
       <UID>10116</UID>
@@ -18559,6 +19139,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>195510000</Cost>
       <Finish>2026-12-11T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT199500H0M0S</RemainingWork>
       <Start>2026-10-16T08:00:00</Start>
       <Units>199500</Units>
@@ -18579,6 +19161,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>21168000</Cost>
       <Finish>2027-01-05T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT100800H0M0S</RemainingWork>
       <Start>2026-12-12T08:00:00</Start>
       <Units>100800</Units>
@@ -18599,6 +19183,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>21420000</Cost>
       <Finish>2027-07-02T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT63000H0M0S</RemainingWork>
       <Start>2027-06-21T08:00:00</Start>
       <Units>63000</Units>
@@ -18621,6 +19207,8 @@
       <ActualWork>PT7400H0M0S</ActualWork>
       <Cost>47360000</Cost>
       <Finish>2026-07-06T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-06-19T08:00:00</Start>
       <Units>7400</Units>
@@ -18655,6 +19243,8 @@
       <ActualWork>PT504H0M0S</ActualWork>
       <Cost>73080000</Cost>
       <Finish>2026-09-16T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-08-12T08:00:00</Start>
       <Units>504</Units>
@@ -18681,16 +19271,16 @@
       <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-08-28T08:00:00</Start><Finish>2026-08-28T17:00:00</Finish><Unit>2</Unit><Value>PT20H10M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-08-31T08:00:00</Start><Finish>2026-08-31T17:00:00</Finish><Unit>2</Unit><Value>PT20H10M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-01T08:00:00</Start><Finish>2026-09-01T17:00:00</Finish><Unit>2</Unit><Value>PT20H10M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-02T08:00:00</Start><Finish>2026-09-02T17:00:00</Finish><Unit>2</Unit><Value>PT20H10M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-03T08:00:00</Start><Finish>2026-09-03T17:00:00</Finish><Unit>2</Unit><Value>PT20H10M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-04T08:00:00</Start><Finish>2026-09-04T17:00:00</Finish><Unit>2</Unit><Value>PT20H10M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-08T08:00:00</Start><Finish>2026-09-08T17:00:00</Finish><Unit>2</Unit><Value>PT20H10M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-09T08:00:00</Start><Finish>2026-09-09T17:00:00</Finish><Unit>2</Unit><Value>PT20H10M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-10T08:00:00</Start><Finish>2026-09-10T17:00:00</Finish><Unit>2</Unit><Value>PT20H10M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-11T08:00:00</Start><Finish>2026-09-11T17:00:00</Finish><Unit>2</Unit><Value>PT20H10M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-14T08:00:00</Start><Finish>2026-09-14T17:00:00</Finish><Unit>2</Unit><Value>PT20H10M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-15T08:00:00</Start><Finish>2026-09-15T17:00:00</Finish><Unit>2</Unit><Value>PT20H10M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-16T08:00:00</Start><Finish>2026-09-16T17:00:00</Finish><Unit>2</Unit><Value>PT20H10M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-02T08:00:00</Start><Finish>2026-09-02T17:00:00</Finish><Unit>2</Unit><Value>PT20H9M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-03T08:00:00</Start><Finish>2026-09-03T17:00:00</Finish><Unit>2</Unit><Value>PT20H9M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-04T08:00:00</Start><Finish>2026-09-04T17:00:00</Finish><Unit>2</Unit><Value>PT20H9M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-08T08:00:00</Start><Finish>2026-09-08T17:00:00</Finish><Unit>2</Unit><Value>PT20H9M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-09T08:00:00</Start><Finish>2026-09-09T17:00:00</Finish><Unit>2</Unit><Value>PT20H9M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-10T08:00:00</Start><Finish>2026-09-10T17:00:00</Finish><Unit>2</Unit><Value>PT20H9M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-11T08:00:00</Start><Finish>2026-09-11T17:00:00</Finish><Unit>2</Unit><Value>PT20H9M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-14T08:00:00</Start><Finish>2026-09-14T17:00:00</Finish><Unit>2</Unit><Value>PT20H9M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-15T08:00:00</Start><Finish>2026-09-15T17:00:00</Finish><Unit>2</Unit><Value>PT20H9M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10121</UID><Start>2026-09-16T08:00:00</Start><Finish>2026-09-16T17:00:00</Finish><Unit>2</Unit><Value>PT20H9M0S</Value></TimephasedData>
     </Assignment>
     <Assignment>
       <UID>10122</UID>
@@ -18701,6 +19291,8 @@
       <ActualWork>PT220H30M0S</ActualWork>
       <Cost>116865000</Cost>
       <Finish>2026-10-15T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT220H30M0S</RemainingWork>
       <Start>2026-09-17T08:00:00</Start>
       <Units>441</Units>
@@ -18731,6 +19323,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>101010000</Cost>
       <Finish>2027-01-14T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT5460H0M0S</RemainingWork>
       <Start>2026-12-14T08:00:00</Start>
       <Units>5460</Units>
@@ -18751,6 +19345,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>110880000</Cost>
       <Finish>2027-02-22T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT11550H0M0S</RemainingWork>
       <Start>2027-01-15T08:00:00</Start>
       <Units>11550</Units>
@@ -18771,6 +19367,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>73710000</Cost>
       <Finish>2027-05-10T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT9450H0M0S</RemainingWork>
       <Start>2027-04-19T08:00:00</Start>
       <Units>9450</Units>
@@ -18791,6 +19389,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>283290000</Cost>
       <Finish>2027-02-22T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT19950H0M0S</RemainingWork>
       <Start>2027-01-15T08:00:00</Start>
       <Units>19950</Units>
@@ -18811,6 +19411,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>353430000</Cost>
       <Finish>2027-03-04T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT17850H0M0S</RemainingWork>
       <Start>2027-01-27T08:00:00</Start>
       <Units>17850</Units>
@@ -18831,6 +19433,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>69552000</Cost>
       <Finish>2027-03-16T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT100800H0M0S</RemainingWork>
       <Start>2027-03-05T08:00:00</Start>
       <Units>100800</Units>
@@ -18851,6 +19455,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>659137500</Cost>
       <Finish>2027-04-16T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT14175H0M0S</RemainingWork>
       <Start>2027-03-25T08:00:00</Start>
       <Units>14175</Units>
@@ -18871,6 +19477,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>62790000</Cost>
       <Finish>2027-05-10T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT54600H0M0S</RemainingWork>
       <Start>2027-04-19T08:00:00</Start>
       <Units>54600</Units>
@@ -18891,6 +19499,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>781200000</Cost>
       <Finish>2027-06-04T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT16800H0M0S</RemainingWork>
       <Start>2027-05-11T08:00:00</Start>
       <Units>16800</Units>
@@ -18911,6 +19521,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>146475000</Cost>
       <Finish>2027-06-18T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT3150H0M0S</RemainingWork>
       <Start>2027-06-07T08:00:00</Start>
       <Units>3150</Units>
@@ -18931,6 +19543,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>19152000</Cost>
       <Finish>2027-06-16T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT5040H0M0S</RemainingWork>
       <Start>2027-06-07T08:00:00</Start>
       <Units>5040</Units>
@@ -18951,6 +19565,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>19656000</Cost>
       <Finish>2027-06-18T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT273H0M0S</RemainingWork>
       <Start>2027-06-07T08:00:00</Start>
       <Units>273</Units>
@@ -18971,6 +19587,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>163590000</Cost>
       <Finish>2027-07-06T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT3990H0M0S</RemainingWork>
       <Start>2027-06-21T08:00:00</Start>
       <Units>3990</Units>
@@ -18991,6 +19609,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>14332500</Cost>
       <Finish>2027-06-23T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT6825H0M0S</RemainingWork>
       <Start>2027-06-17T08:00:00</Start>
       <Units>6825</Units>
@@ -19011,6 +19631,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>28980000</Cost>
       <Finish>2027-05-26T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT2520H0M0S</RemainingWork>
       <Start>2027-05-11T08:00:00</Start>
       <Units>2520</Units>
@@ -19031,6 +19653,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>64860000</Cost>
       <Finish>2027-06-18T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT94H0M0S</RemainingWork>
       <Start>2027-06-07T08:00:00</Start>
       <Units>94</Units>
@@ -19051,6 +19675,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>4864000</Cost>
       <Finish>2027-06-30T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT64H0M0S</RemainingWork>
       <Start>2027-06-21T08:00:00</Start>
       <Units>1</Units>
@@ -19073,6 +19699,8 @@
       <ActualWork>PT80H0M0S</ActualWork>
       <Cost>3360000</Cost>
       <Finish>2026-05-06T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-04-22T08:00:00</Start>
       <Units>1</Units>
@@ -19105,6 +19733,8 @@
       <ActualWork>PT272H0M0S</ActualWork>
       <Cost>18496000</Cost>
       <Finish>2026-06-24T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-05-07T08:00:00</Start>
       <Units>1</Units>
@@ -19161,6 +19791,8 @@
       <ActualWork>PT1450H0M0S</ActualWork>
       <Cost>200100000</Cost>
       <Finish>2026-08-14T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-06-25T08:00:00</Start>
       <Units>1450</Units>
@@ -19172,19 +19804,19 @@
         <Work>PT1450H0M0S</Work>
         <Cost>200100000</Cost>
       </Baseline>
-      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-06-25T08:00:00</Start><Finish>2026-06-25T17:00:00</Finish><Unit>2</Unit><Value>PT39H11M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-06-26T08:00:00</Start><Finish>2026-06-26T17:00:00</Finish><Unit>2</Unit><Value>PT39H11M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-06-29T08:00:00</Start><Finish>2026-06-29T17:00:00</Finish><Unit>2</Unit><Value>PT39H11M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-06-30T08:00:00</Start><Finish>2026-06-30T17:00:00</Finish><Unit>2</Unit><Value>PT39H11M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-01T08:00:00</Start><Finish>2026-07-01T17:00:00</Finish><Unit>2</Unit><Value>PT39H11M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-02T08:00:00</Start><Finish>2026-07-02T17:00:00</Finish><Unit>2</Unit><Value>PT39H11M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-03T08:00:00</Start><Finish>2026-07-03T17:00:00</Finish><Unit>2</Unit><Value>PT39H11M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-06T08:00:00</Start><Finish>2026-07-06T17:00:00</Finish><Unit>2</Unit><Value>PT39H11M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-07T08:00:00</Start><Finish>2026-07-07T17:00:00</Finish><Unit>2</Unit><Value>PT39H11M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-08T08:00:00</Start><Finish>2026-07-08T17:00:00</Finish><Unit>2</Unit><Value>PT39H11M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-09T08:00:00</Start><Finish>2026-07-09T17:00:00</Finish><Unit>2</Unit><Value>PT39H11M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-10T08:00:00</Start><Finish>2026-07-10T17:00:00</Finish><Unit>2</Unit><Value>PT39H11M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-13T08:00:00</Start><Finish>2026-07-13T17:00:00</Finish><Unit>2</Unit><Value>PT39H11M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-06-25T08:00:00</Start><Finish>2026-06-25T17:00:00</Finish><Unit>2</Unit><Value>PT39H12M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-06-26T08:00:00</Start><Finish>2026-06-26T17:00:00</Finish><Unit>2</Unit><Value>PT39H12M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-06-29T08:00:00</Start><Finish>2026-06-29T17:00:00</Finish><Unit>2</Unit><Value>PT39H12M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-06-30T08:00:00</Start><Finish>2026-06-30T17:00:00</Finish><Unit>2</Unit><Value>PT39H12M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-01T08:00:00</Start><Finish>2026-07-01T17:00:00</Finish><Unit>2</Unit><Value>PT39H12M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-02T08:00:00</Start><Finish>2026-07-02T17:00:00</Finish><Unit>2</Unit><Value>PT39H12M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-03T08:00:00</Start><Finish>2026-07-03T17:00:00</Finish><Unit>2</Unit><Value>PT39H12M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-06T08:00:00</Start><Finish>2026-07-06T17:00:00</Finish><Unit>2</Unit><Value>PT39H12M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-07T08:00:00</Start><Finish>2026-07-07T17:00:00</Finish><Unit>2</Unit><Value>PT39H12M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-08T08:00:00</Start><Finish>2026-07-08T17:00:00</Finish><Unit>2</Unit><Value>PT39H12M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-09T08:00:00</Start><Finish>2026-07-09T17:00:00</Finish><Unit>2</Unit><Value>PT39H12M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-10T08:00:00</Start><Finish>2026-07-10T17:00:00</Finish><Unit>2</Unit><Value>PT39H12M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-13T08:00:00</Start><Finish>2026-07-13T17:00:00</Finish><Unit>2</Unit><Value>PT39H12M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-14T08:00:00</Start><Finish>2026-07-14T17:00:00</Finish><Unit>2</Unit><Value>PT39H11M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-15T08:00:00</Start><Finish>2026-07-15T17:00:00</Finish><Unit>2</Unit><Value>PT39H11M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10147</UID><Start>2026-07-16T08:00:00</Start><Finish>2026-07-16T17:00:00</Finish><Unit>2</Unit><Value>PT39H11M0S</Value></TimephasedData>
@@ -19220,6 +19852,8 @@
       <ActualWork>PT980H0M0S</ActualWork>
       <Cost>135240000</Cost>
       <Finish>2026-09-21T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT0H0M0S</RemainingWork>
       <Start>2026-08-17T08:00:00</Start>
       <Units>980</Units>
@@ -19266,6 +19900,8 @@
       <ActualWork>PT195H0M0S</ActualWork>
       <Cost>206700000</Cost>
       <Finish>2026-10-30T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT585H0M0S</RemainingWork>
       <Start>2026-09-22T08:00:00</Start>
       <Units>780</Units>
@@ -19277,9 +19913,9 @@
         <Work>PT780H0M0S</Work>
         <Cost>206700000</Cost>
       </Baseline>
-      <TimephasedData><Type>2</Type><UID>10149</UID><Start>2026-09-22T08:00:00</Start><Finish>2026-09-22T17:00:00</Finish><Unit>2</Unit><Value>PT27H51M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10149</UID><Start>2026-09-23T08:00:00</Start><Finish>2026-09-23T17:00:00</Finish><Unit>2</Unit><Value>PT27H51M0S</Value></TimephasedData>
-      <TimephasedData><Type>2</Type><UID>10149</UID><Start>2026-09-24T08:00:00</Start><Finish>2026-09-24T17:00:00</Finish><Unit>2</Unit><Value>PT27H51M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10149</UID><Start>2026-09-22T08:00:00</Start><Finish>2026-09-22T17:00:00</Finish><Unit>2</Unit><Value>PT27H52M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10149</UID><Start>2026-09-23T08:00:00</Start><Finish>2026-09-23T17:00:00</Finish><Unit>2</Unit><Value>PT27H52M0S</Value></TimephasedData>
+      <TimephasedData><Type>2</Type><UID>10149</UID><Start>2026-09-24T08:00:00</Start><Finish>2026-09-24T17:00:00</Finish><Unit>2</Unit><Value>PT27H52M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10149</UID><Start>2026-09-25T08:00:00</Start><Finish>2026-09-25T17:00:00</Finish><Unit>2</Unit><Value>PT27H51M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10149</UID><Start>2026-09-28T08:00:00</Start><Finish>2026-09-28T17:00:00</Finish><Unit>2</Unit><Value>PT27H51M0S</Value></TimephasedData>
       <TimephasedData><Type>2</Type><UID>10149</UID><Start>2026-09-29T08:00:00</Start><Finish>2026-09-29T17:00:00</Finish><Unit>2</Unit><Value>PT27H51M0S</Value></TimephasedData>
@@ -19293,6 +19929,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>169600000</Cost>
       <Finish>2027-01-08T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT640H0M0S</RemainingWork>
       <Start>2026-11-03T08:00:00</Start>
       <Units>640</Units>
@@ -19313,6 +19951,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>108650000</Cost>
       <Finish>2027-03-01T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT410H0M0S</RemainingWork>
       <Start>2027-01-11T08:00:00</Start>
       <Units>410</Units>
@@ -19333,6 +19973,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>190800000</Cost>
       <Finish>2027-01-13T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT720H0M0S</RemainingWork>
       <Start>2026-11-17T08:00:00</Start>
       <Units>720</Units>
@@ -19353,6 +19995,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>13920000</Cost>
       <Finish>2027-03-11T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT48H0M0S</RemainingWork>
       <Start>2027-03-02T08:00:00</Start>
       <Units>1</Units>
@@ -19373,6 +20017,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>296000000</Cost>
       <Finish>2027-01-13T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT20H0M0S</RemainingWork>
       <Start>2026-11-03T08:00:00</Start>
       <Units>20</Units>
@@ -19393,6 +20039,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>139200000</Cost>
       <Finish>2027-04-02T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT96H0M0S</RemainingWork>
       <Start>2027-03-12T08:00:00</Start>
       <Units>1</Units>
@@ -19413,6 +20061,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>64960000</Cost>
       <Finish>2027-05-13T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT224H0M0S</RemainingWork>
       <Start>2027-04-05T08:00:00</Start>
       <Units>1</Units>
@@ -19433,6 +20083,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>235850000</Cost>
       <Finish>2027-06-09T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT890H0M0S</RemainingWork>
       <Start>2027-05-14T08:00:00</Start>
       <Units>890</Units>
@@ -19453,6 +20105,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>42400000</Cost>
       <Finish>2027-06-23T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT160H0M0S</RemainingWork>
       <Start>2027-06-10T08:00:00</Start>
       <Units>160</Units>
@@ -19473,6 +20127,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>55650000</Cost>
       <Finish>2027-06-30T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT210H0M0S</RemainingWork>
       <Start>2027-06-10T08:00:00</Start>
       <Units>210</Units>
@@ -19493,6 +20149,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>13920000</Cost>
       <Finish>2027-07-08T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT48H0M0S</RemainingWork>
       <Start>2027-07-01T08:00:00</Start>
       <Units>1</Units>
@@ -19513,6 +20171,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>41160000</Cost>
       <Finish>2027-05-03T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT42000H0M0S</RemainingWork>
       <Start>2027-04-03T08:00:00</Start>
       <Units>42000</Units>
@@ -19533,6 +20193,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>17670000</Cost>
       <Finish>2027-07-20T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>1</FixedMaterial>
       <RemainingWork>PT380H0M0S</RemainingWork>
       <Start>2027-07-09T08:00:00</Start>
       <Units>380</Units>
@@ -19553,6 +20215,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>4864000</Cost>
       <Finish>2027-07-30T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT64H0M0S</RemainingWork>
       <Start>2027-07-21T08:00:00</Start>
       <Units>1</Units>
@@ -19573,6 +20237,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>2720000</Cost>
       <Finish>2027-08-06T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT40H0M0S</RemainingWork>
       <Start>2027-08-02T08:00:00</Start>
       <Units>1</Units>
@@ -19593,6 +20259,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>10400000</Cost>
       <Finish>2027-08-20T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT80H0M0S</RemainingWork>
       <Start>2027-08-09T08:00:00</Start>
       <Units>1</Units>
@@ -19613,6 +20281,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>4680000</Cost>
       <Finish>2027-01-29T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT120H0M0S</RemainingWork>
       <Start>2027-01-06T08:00:00</Start>
       <Units>1</Units>
@@ -19633,6 +20303,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>13600000</Cost>
       <Finish>2027-07-14T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT200H0M0S</RemainingWork>
       <Start>2027-06-10T08:00:00</Start>
       <Units>1</Units>
@@ -19653,6 +20325,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>2720000</Cost>
       <Finish>2027-08-27T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT40H0M0S</RemainingWork>
       <Start>2027-08-23T08:00:00</Start>
       <Units>1</Units>
@@ -19673,6 +20347,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>10400000</Cost>
       <Finish>2027-09-13T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT80H0M0S</RemainingWork>
       <Start>2027-08-30T08:00:00</Start>
       <Units>1</Units>
@@ -19693,6 +20369,8 @@
       <ActualWork>PT0H0M0S</ActualWork>
       <Cost>22200000</Cost>
       <Finish>2027-10-04T17:00:00</Finish>
+      <HasFixedRateUnits>1</HasFixedRateUnits>
+      <FixedMaterial>0</FixedMaterial>
       <RemainingWork>PT120H0M0S</RemainingWork>
       <Start>2027-09-14T08:00:00</Start>
       <Units>1</Units>

@@ -177,7 +177,7 @@ RES = [
     (10, "W_ELE", "Equipe de eletricistas", 1, None, 760.0),
     (11, "W_ADM", "Administração local e desmobilização", 1, None, 1300.0),
     (20, "M_DESM", "Equipe de terraplenagem — desmatamento e limpeza", 0, "m²", 0.85),
-    (21, "M_ESC1", "Equipe de terraplenagem — escavação, carga e transporte 1ª cat.", 0, "m³", 14.50),
+    (21, "M_ESC1", "Equipe de terraplenagem — escavação de 1ª cat.", 0, "m³", 14.50),
     (22, "M_ESC3", "Equipe de terraplenagem — escavação 2ª e 3ª cat.", 0, "m³", 48.00),
     (23, "M_ATER", "Equipe de terraplenagem — aterro compactado", 0, "m³", 9.80),
     (24, "M_SUBL", "Regularização e compactação do subleito", 0, "m²", 2.10),
@@ -204,6 +204,9 @@ RES = [
     (45, "M_CERCA", "Cerca de vedação da faixa de domínio", 0, "ml", 64.0),
 ]
 RES_BY_KEY = {r[1]: r for r in RES}
+# Every resource owns a calendar derived from a base calendar, which is how the tool
+# itself saves a resource. Their UIDs follow the base calendars'.
+RES_CAL_UID = {r[0]: len(CALS) + i for i, r in enumerate(RES, 1)}
 
 
 # ---------------------------------------------------------------------------
@@ -627,12 +630,29 @@ def qty_iso(q: float) -> str:
     return f"PT{h}H{m}M0S"
 
 
+def min_iso(minutes: int) -> str:
+    return f"PT{minutes // 60}H{minutes % 60}M0S"
+
+
 def cents(v: float) -> int:
     """MSPDI stores money in hundredths of the currency unit."""
     return int(round(v * 100))
 
 
-def calendars_xml() -> str:
+def resource_base_calendars(rows: list) -> dict:
+    """Resource UID -> UID of the base calendar its own calendar derives from.
+
+    A crew that only ever works on six-day activities keeps the six-day week; any
+    other resource follows the project calendar.
+    """
+    used = {}
+    for r in rows:
+        if r.res:
+            used.setdefault(RES_BY_KEY[r.res][0], set()).add(r.cal)
+    return {r[0]: (used[r[0]].pop() if len(used.get(r[0], ())) == 1 else 1) for r in RES}
+
+
+def calendars_xml(res_base: dict) -> str:
     L = ["  <Calendars>"]
     for cal in CALS.values():
         L += ["    <Calendar>", f"      <UID>{cal.uid}</UID>", f"      <Name>{escape(cal.name)}</Name>",
@@ -657,6 +677,11 @@ def calendars_xml() -> str:
                   "          <Occurrences>1</Occurrences>", f"          <Name>{escape(cal.exceptions[d])}</Name>",
                   "          <Type>1</Type>", "          <DayWorking>0</DayWorking>", "        </Exception>"]
         L += ["      </Exceptions>", "    </Calendar>"]
+    # A resource calendar carries no week of its own: it inherits its base calendar's.
+    for uid, _, name, _, _, _ in RES:
+        L += ["    <Calendar>", f"      <UID>{RES_CAL_UID[uid]}</UID>", f"      <Name>{escape(name)}</Name>",
+              "      <IsBaseCalendar>0</IsBaseCalendar>", "      <IsBaselineCalendar>0</IsBaselineCalendar>",
+              f"      <BaseCalendarUID>{res_base[uid]}</BaseCalendarUID>", "    </Calendar>"]
     L.append("  </Calendars>")
     return "\n".join(L)
 
@@ -764,7 +789,7 @@ def task_xml(r: Row, snap: dict, uid_of: dict, assignments: list) -> str:
     cal = CALS[r.cal]
     L = ["    <Task>", f"      <UID>{r.uid}</UID>", f"      <ID>{r.id}</ID>",
          f"      <Name>{escape(r.name)}</Name>", "      <Active>1</Active>", "      <Manual>0</Manual>",
-         "      <Type>0</Type>", "      <IsNull>0</IsNull>",
+         f"      <Type>{1 if r.kind == 'sum' else 0}</Type>", "      <IsNull>0</IsNull>",
          "      <CreateDate>2026-02-10T08:00:00</CreateDate>",
          f"      <WBS>{r.outline}</WBS>", f"      <OutlineNumber>{r.outline}</OutlineNumber>",
          f"      <OutlineLevel>{r.level}</OutlineLevel>", "      <Priority>500</Priority>"]
@@ -833,6 +858,10 @@ def task_xml(r: Row, snap: dict, uid_of: dict, assignments: list) -> str:
         L.append(f"      <ConstraintDate>{ts(s['snet'], False)}</ConstraintDate>")
     if r.key in snap["deadlines"]:
         L.append(f"      <Deadline>{ts(snap['deadlines'][r.key], not at_start)}</Deadline>")
+    # An activity with a calendar of its own is scheduled by that calendar alone. Left
+    # at zero, the tool intersects it with the resource calendar and refuses the file
+    # when work was reported on a day the two do not share.
+    L.append(f"      <IgnoreResourceCalendar>{1 if r.cal != 1 else 0}</IgnoreResourceCalendar>")
 
     # The planned value to the status date is the baseline phasing itself, added up.
     blocks, bcws = [], 0
@@ -872,6 +901,10 @@ def task_xml(r: Row, snap: dict, uid_of: dict, assignments: list) -> str:
         planned = r.qty if not is_work else b["dur"] * 8.0
         current = r.qty if not is_work else s["dur"] * 8.0
         executed = round(current * phys / 100.0, 2)
+        # Whole minutes, so that actual plus remaining is the work and the days of
+        # actual work add up to the actual work exactly.
+        work_min = int(round(current * 60))
+        actual_min = min(work_min, int(round(executed * 60)))
         A = ["    <Assignment>", f"      <UID>{10000 + r.uid}</UID>", f"      <TaskUID>{r.uid}</TaskUID>",
              f"      <ResourceUID>{res[0]}</ResourceUID>",
              f"      <PercentWorkComplete>{phys}</PercentWorkComplete>"]
@@ -879,19 +912,21 @@ def task_xml(r: Row, snap: dict, uid_of: dict, assignments: list) -> str:
             A.append(f"      <ActualFinish>{ts(s['AF'], True)}</ActualFinish>")
         if s["AS"]:
             A.append(f"      <ActualStart>{ts(s['AS'], False)}</ActualStart>")
-        A += [f"      <ActualWork>{qty_iso(executed)}</ActualWork>",
+        A += [f"      <ActualWork>{min_iso(actual_min)}</ActualWork>",
               f"      <Cost>{cents(cost)}</Cost>", f"      <Finish>{finish}</Finish>",
-              f"      <RemainingWork>{qty_iso(max(0.0, current - executed))}</RemainingWork>",
+              # A material quantity is consumed as one fixed amount, not as a rate per day.
+              "      <HasFixedRateUnits>1</HasFixedRateUnits>",
+              f"      <FixedMaterial>{0 if is_work else 1}</FixedMaterial>",
+              f"      <RemainingWork>{min_iso(work_min - actual_min)}</RemainingWork>",
               f"      <Start>{start}</Start>",
               f"      <Units>{1 if is_work else int(r.qty)}</Units>",
-              f"      <Work>{qty_iso(current)}</Work>",
+              f"      <Work>{min_iso(work_min)}</Work>",
               "      <Baseline>", "        <Number>0</Number>", f"        <Start>{bstart}</Start>",
               f"        <Finish>{bfinish}</Finish>", f"        <Work>{qty_iso(planned)}</Work>",
               f"        <Cost>{bcost_c}</Cost>", "      </Baseline>"]
-        if executed > 0 and actual_days:
-            each = executed / len(actual_days)
-            A += [tp(2, 10000 + r.uid, d, 2, qty_iso(each)).replace("    <Timephased", "      <Timephased", 1)
-                  for d in actual_days]
+        if actual_min > 0 and actual_days:
+            A += [tp(2, 10000 + r.uid, d, 2, min_iso(v)).replace("    <Timephased", "      <Timephased", 1)
+                  for d, v in zip(actual_days, spread_cents(actual_min, len(actual_days)))]
         A.append("    </Assignment>")
         assignments.append("\n".join(A))
     return "\n".join(L)
@@ -905,6 +940,7 @@ def document(snap: dict, uid_of: dict) -> str:
     done = sum(sc[r.key]["elapsed"] for r in leaves)
     total = sum(sc[r.key]["dur"] for r in leaves) or 1
     title = f"{PROJECT_NAME} — Rev. {rev[-2:]}"
+    res_base = resource_base_calendars(rows)
     head = [
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
         f'<Project xmlns="{NS}">',
@@ -965,7 +1001,7 @@ def document(snap: dict, uid_of: dict) -> str:
         f"    <ExtendedAttribute><FieldID>{FIELD_SEG}</FieldID><FieldName>Text2</FieldName>"
         "<Alias>SEGMENTO</Alias></ExtendedAttribute>",
         "  </ExtendedAttributes>",
-        calendars_xml(),
+        calendars_xml(res_base),
         "  <Tasks>",
         # Row zero, the project summary the tool itself writes.
         "    <Task>", "      <UID>0</UID>", "      <ID>0</ID>", f"      <Name>{escape(title)}</Name>",
@@ -992,8 +1028,11 @@ def document(snap: dict, uid_of: dict) -> str:
                 f"      <Name>{escape(name)}</Name>", f"      <Type>{typ}</Type>", "      <IsNull>0</IsNull>"]
         if label:
             res.append(f"      <MaterialLabel>{escape(label)}</MaterialLabel>")
-        res += ["      <MaxUnits>1</MaxUnits>", f"      <StandardRate>{rate:.2f}</StandardRate>",
+        if typ == 1:                                 # availability belongs to work resources only
+            res.append("      <MaxUnits>1</MaxUnits>")
+        res += [f"      <StandardRate>{rate:.2f}</StandardRate>",
                 f"      <StandardRateFormat>{2 if typ == 1 else 8}</StandardRateFormat>",
+                f"      <CalendarUID>{RES_CAL_UID[uid]}</CalendarUID>",
                 "    </Resource>"]
     res += ["  </Resources>", "  <Assignments>"]
     return "\n".join(head + body + res + assignments + ["  </Assignments>", "</Project>"]) + "\n"
