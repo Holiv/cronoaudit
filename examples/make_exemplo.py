@@ -203,27 +203,8 @@ RES = [
     (43, "M_VIGA", "Viga pré-moldada protendida", 0, "un", 148000.0),
     (44, "M_GABIAO", "Muro de gabião", 0, "m³", 520.0),
     (45, "M_CERCA", "Cerca de vedação da faixa de domínio", 0, "ml", 64.0),
-    # The crews behind the measured services. They cost nothing here, because the unit
-    # price of the service already pays for them; what they carry is the working time.
-    # MS Project keeps the progress of an activity in the work of its assignments, and
-    # an activity with nothing but a material quantity opens at zero percent.
-    (50, "W_FTER", "Frente de serviço — terraplenagem", 1, None, 0.0),
-    (51, "W_FCOM", "Frente de serviço — obras complementares", 1, None, 0.0),
-    (52, "W_FDRE", "Frente de serviço — drenagem", 1, None, 0.0),
-    (53, "W_FPAV", "Frente de serviço — pavimentação", 1, None, 0.0),
-    (54, "W_FSIN", "Frente de serviço — sinalização", 1, None, 0.0),
-    (55, "W_FILU", "Frente de serviço — iluminação", 1, None, 0.0),
-    (56, "W_FOAE", "Frente de serviço — obras de arte especiais", 1, None, 0.0),
 ]
 RES_BY_KEY = {r[1]: r for r in RES}
-CREW = {"TERRAPLENAGEM": "W_FCOM", "DRENAGEM": "W_FDRE", "PAVIMENTAÇÃO": "W_FPAV",
-        "SINALIZAÇÃO": "W_FSIN", "ILUMINAÇÃO": "W_FILU", "OAE": "W_FOAE"}
-
-
-def crew_of(r) -> tuple:
-    """The crew of a measured service. Whatever runs on the six-day calendar is the
-    earthworks crew, so that the crew's week and the activity's week are the same."""
-    return RES_BY_KEY["W_FTER" if r.cal == 2 else CREW[r.disc]]
 # Every resource owns a calendar derived from a base calendar, which is how the tool
 # itself saves a resource. Their UIDs follow the base calendars'.
 RES_CAL_UID = {r[0]: len(CALS) + i for i, r in enumerate(RES, 1)}
@@ -644,12 +625,6 @@ def dur_iso(days: float) -> str:
     return f"PT{int(round(days * 8))}H0M0S"
 
 
-def qty_iso(q: float) -> str:
-    h = int(q)
-    m = int(round((q - h) * 60))
-    return f"PT{h}H{m}M0S"
-
-
 def min_iso(minutes: int) -> str:
     return f"PT{minutes // 60}H{minutes % 60}M0S"
 
@@ -662,17 +637,16 @@ def cents(v: float) -> int:
 def resource_base_calendars(rows: list) -> dict:
     """Resource UID -> UID of the base calendar its own calendar derives from.
 
-    A crew that only ever works on six-day activities keeps the six-day week; any
-    other resource follows the project calendar.
+    A resource takes the week of the activities it works on -- one week only, which
+    is asserted -- and one that is not used follows the project calendar.
     """
     used = {}
     for r in rows:
         if r.res:
-            res = RES_BY_KEY[r.res]
-            used.setdefault(res[0], set()).add(r.cal)
-            if res[3] == 0:
-                used.setdefault(crew_of(r)[0], set()).add(r.cal)
-    return {r[0]: (used[r[0]].pop() if len(used.get(r[0], ())) == 1 else 1) for r in RES}
+            used.setdefault(RES_BY_KEY[r.res][0], set()).add(r.cal)
+    mixed = sorted(k for k, v in used.items() if len(v) > 1)
+    assert not mixed, f"resources working on two different weeks: {mixed}"
+    return {r[0]: (used[r[0]].pop() if r[0] in used else 1) for r in RES}
 
 
 def calendars_xml(res_base: dict) -> str:
@@ -709,10 +683,37 @@ def calendars_xml(res_base: dict) -> str:
     return "\n".join(L)
 
 
-def tp(kind: int, uid: int, d: date, unit: int, value: str) -> str:
-    return (f"    <TimephasedData><Type>{kind}</Type><UID>{uid}</UID>"
-            f"<Start>{d.isoformat()}T08:00:00</Start><Finish>{d.isoformat()}T17:00:00</Finish>"
-            f"<Unit>{unit}</Unit><Value>{value}</Value></TimephasedData>")
+def tp(kind: int, uid: int, a: str, b: str, unit: int, value: str) -> str:
+    return (f"      <TimephasedData><Type>{kind}</Type><UID>{uid}</UID><Start>{a}</Start>"
+            f"<Finish>{b}</Finish><Unit>{unit}</Unit><Value>{value}</Value></TimephasedData>")
+
+
+def day_blocks(kind: int, uid: int, days: list, values: list, unit: int = 1,
+               gap: str = "PT0H0M0S", gap_by_day: bool = False) -> list:
+    """Daily blocks as MS Project saves them: each working day runs from its opening
+    hour to the opening hour of the next calendar day, the last one stops at the end of
+    its day, and the days off in between are a block of their own (one block with
+    nothing in it, or -- for the percent blocks -- one per day)."""
+    out = []
+    for i, (d, v) in enumerate(zip(days, values)):
+        if i == len(days) - 1:
+            out.append(tp(kind, uid, ts(d, False), ts(d, True), unit, v))
+            break
+        nxt, cur = days[i + 1], d + timedelta(days=1)
+        out.append(tp(kind, uid, ts(d, False), ts(cur, False), unit, v))
+        if gap_by_day:
+            while cur < nxt:
+                out.append(tp(kind, uid, ts(cur, False), ts(cur + timedelta(days=1), False), unit, gap))
+                cur += timedelta(days=1)
+        elif cur < nxt:
+            out.append(tp(kind, uid, ts(cur, False), ts(nxt, False), unit, gap))
+    return out
+
+
+def percent_steps(total: int, n: int) -> list:
+    """`total` percent over n days, to two decimals, adding up to the total exactly."""
+    cum = [round(total * (i + 1) / n, 2) for i in range(n)]
+    return [f"{round(c - (cum[i - 1] if i else 0), 2):g}" for i, c in enumerate(cum)]
 
 
 def spread_cents(total: int, n: int) -> list:
@@ -826,7 +827,7 @@ def task_xml(r: Row, snap: dict, uid_of: dict, assignments: list) -> str:
               "      <Milestone>0</Milestone>", "      <Summary>1</Summary>",
               f"      <Critical>{1 if u['critical'] else 0}</Critical>",
               "      <ExternalTask>0</ExternalTask>",
-              "      <FixedCostAccrual>3</FixedCostAccrual>",
+              "      <FixedCost>0</FixedCost>", "      <FixedCostAccrual>3</FixedCostAccrual>",
               f"      <PercentComplete>{u['pct']}</PercentComplete>",
               f"      <Cost>{cents(u['cost'])}</Cost>"]
         if u["AS"]:
@@ -855,34 +856,33 @@ def task_xml(r: Row, snap: dict, uid_of: dict, assignments: list) -> str:
     pct, phys = s["pct"], s["phys"]
 
     # Where the reported work stops and where the rest resumes.
+    all_days = [] if ms else cal.days_list(s["S"], s["F"])
+    assert len(all_days) == s["dur"], f"{r.key}: the span is not the duration"
+    done_days = all_days[:s["elapsed"]] if (s["AS"] and not ms) else []
+    left_days = all_days[len(done_days):]
     stop = resume = None
     if s["AS"]:
         if s["AF"]:
             stop = resume = ts(s["AF"], not at_start) if ms else ts(s["AF"], True)
         else:
-            last = cal.on_or_before(status)
-            stop, resume = ts(last, True), ts(cal.add(last, 1), False)
+            stop, resume = ts(done_days[-1], True), ts(left_days[0], False)
 
-    # The assignments, worked out before the activity is written because the activity
-    # carries their totals. Whole minutes throughout, so that actual plus remaining is
-    # the work and the days of actual work add up to the actual work exactly.
-    asg = []
+    # The assignment, worked out before the activity is written because the activity
+    # carries its totals. The quantity (or the hours) is spread evenly over the working
+    # days, in whole minutes; the days already worked are the actual work and the rest
+    # is the remaining work. That is the tool's own rule for an activity updated by
+    # percent complete -- the physical percent is a separate field and may disagree.
+    asg = None
     if res:
-        current = r.qty if not is_work else s["dur"] * 8.0
-        work_min = int(round(current * 60))
-        actual_min = min(work_min, int(round(round(current * phys / 100.0, 2) * 60)))
-        asg.append({"uid": 10000 + r.uid, "res": res, "material": not is_work, "pct": phys,
-                    "work": work_min, "actual": actual_min, "cost": cost_c,
-                    "acost": int(round(cost_c * actual_min / work_min)) if work_min else 0,
-                    "units": 1 if is_work else int(r.qty),
-                    "bwork": qty_iso(r.qty if not is_work else b["dur"] * 8.0), "bcost": bcost_c})
-        if not is_work:
-            asg.append({"uid": 20000 + r.uid, "res": crew_of(r), "material": False, "pct": pct,
-                        "work": s["dur"] * DAY_MIN, "actual": s["elapsed"] * DAY_MIN, "cost": 0,
-                        "acost": 0, "units": 1, "bwork": dur_iso(b["dur"]), "bcost": 0})
-    work_t = sum(a["work"] for a in asg if not a["material"])
-    actual_t = sum(a["actual"] for a in asg if not a["material"])
-    acost_t = sum(a["acost"] for a in asg)
+        work_min = int(round((r.qty if not is_work else s["dur"] * 8.0) * 60))
+        per_day = spread_cents(work_min, len(all_days))
+        actual_min = sum(per_day[:len(done_days)])
+        asg = {"uid": 10000 + r.uid, "work": work_min, "actual": actual_min, "per_day": per_day,
+               "acost": int(round(cost_c * actual_min / work_min)),
+               "bwork": min_iso(int(round((r.qty if not is_work else b["dur"] * 8.0) * 60)))}
+    work_t = asg["work"] if is_work else 0            # material adds no work to the activity
+    actual_t = asg["actual"] if is_work else 0
+    acost_t = asg["acost"] if asg else 0
 
     L += [f"      <Start>{start}</Start>", f"      <Finish>{finish}</Finish>",
           f"      <Duration>{dur_iso(s['dur'])}</Duration>", "      <DurationFormat>7</DurationFormat>",
@@ -890,7 +890,8 @@ def task_xml(r: Row, snap: dict, uid_of: dict, assignments: list) -> str:
     if stop:
         L += [f"      <Stop>{stop}</Stop>", f"      <Resume>{resume}</Resume>"]
     L += ["      <ResumeValid>0</ResumeValid>",
-          "      <EffortDriven>0</EffortDriven>", "      <Estimated>0</Estimated>",
+          "      <EffortDriven>0</EffortDriven>", "      <Recurring>0</Recurring>",
+          "      <OverAllocated>0</OverAllocated>", "      <Estimated>0</Estimated>",
           f"      <Milestone>{1 if ms else 0}</Milestone>", "      <Summary>0</Summary>",
           f"      <Critical>{1 if s['critical'] else 0}</Critical>",
           "      <ExternalTask>0</ExternalTask>",
@@ -898,46 +899,44 @@ def task_xml(r: Row, snap: dict, uid_of: dict, assignments: list) -> str:
           f"      <LateStart>{ts(s['LS'], not at_start) if ms else ts(s['LS'], False)}</LateStart>",
           f"      <LateFinish>{ts(s['LF'], not at_start) if ms else ts(s['LF'], True)}</LateFinish>",
           f"      <TotalSlack>{s['slack'] * DAY_MIN * 10}</TotalSlack>",
-          # The whole cost comes from the assignments; said outright, so that the tool
-          # does not make up a fixed cost for what it cannot account for.
+          # The whole cost comes from the assignment; said outright.
           "      <FixedCost>0</FixedCost>",
           "      <FixedCostAccrual>3</FixedCostAccrual>",
           f"      <PercentComplete>{pct}</PercentComplete>",
-          f"      <PercentWorkComplete>{pct if not work_t else int(round(100.0 * actual_t / work_t))}"
-          "</PercentWorkComplete>",
-          f"      <Cost>{cost_c}</Cost>"]
+          f"      <PercentWorkComplete>{pct if asg else 0}</PercentWorkComplete>",
+          f"      <Cost>{cost_c}</Cost>",
+          "      <OvertimeCost>0</OvertimeCost>", "      <OvertimeWork>PT0H0M0S</OvertimeWork>"]
     if s["AS"]:
         L.append(f"      <ActualStart>{ts(s['AS'], not at_start) if ms else ts(s['AS'], False)}</ActualStart>")
     if s["AF"]:
         L.append(f"      <ActualFinish>{ts(s['AF'], not at_start) if ms else ts(s['AF'], True)}</ActualFinish>")
-    if not ms:
-        L.append(f"      <ActualDuration>{dur_iso(s['elapsed'])}</ActualDuration>")
-    L += [f"      <ActualCost>{acost_t}</ActualCost>",
+    L += [f"      <ActualDuration>{dur_iso(s['elapsed'])}</ActualDuration>",
+          f"      <ActualCost>{acost_t}</ActualCost>", "      <ActualOvertimeCost>0</ActualOvertimeCost>",
           f"      <ActualWork>{min_iso(actual_t)}</ActualWork>",
-          f"      <RegularWork>{min_iso(work_t)}</RegularWork>"]
-    if not ms:
-        L.append(f"      <RemainingDuration>{dur_iso(s['dur'] - s['elapsed'])}</RemainingDuration>")
-    L += [f"      <RemainingCost>{cost_c - acost_t}</RemainingCost>",
-          f"      <RemainingWork>{min_iso(work_t - actual_t)}</RemainingWork>"]
+          "      <ActualOvertimeWork>PT0H0M0S</ActualOvertimeWork>",
+          f"      <RegularWork>{min_iso(work_t)}</RegularWork>",
+          f"      <RemainingDuration>{dur_iso(s['dur'] - s['elapsed'])}</RemainingDuration>",
+          f"      <RemainingCost>{cost_c - acost_t}</RemainingCost>",
+          f"      <RemainingWork>{min_iso(work_t - actual_t)}</RemainingWork>",
+          "      <RemainingOvertimeCost>0</RemainingOvertimeCost>",
+          "      <RemainingOvertimeWork>PT0H0M0S</RemainingOvertimeWork>"]
     L += [f"      <ConstraintType>{4 if s.get('snet') else 0}</ConstraintType>",
           f"      <CalendarUID>{r.cal if r.cal != 1 else -1}</CalendarUID>"]
     if s.get("snet"):
         L.append(f"      <ConstraintDate>{ts(s['snet'], False)}</ConstraintDate>")
     if r.key in snap["deadlines"]:
         L.append(f"      <Deadline>{ts(snap['deadlines'][r.key], not at_start)}</Deadline>")
-    # An activity with a calendar of its own is scheduled by that calendar alone. Left
-    # at zero, the tool intersects it with the resource calendar and refuses the file
-    # when work was reported on a day the two do not share.
-    L.append(f"      <IgnoreResourceCalendar>{1 if r.cal != 1 else 0}</IgnoreResourceCalendar>")
+    # Every resource's week is the week of the activities it works on (the generator
+    # checks it), so nothing has to be ignored.
+    L += ["      <LevelAssignments>1</LevelAssignments>", "      <LevelingCanSplit>1</LevelingCanSplit>",
+          "      <LevelingDelay>0</LevelingDelay>", "      <LevelingDelayFormat>8</LevelingDelayFormat>",
+          "      <IgnoreResourceCalendar>0</IgnoreResourceCalendar>",
+          "      <HideBar>0</HideBar>", "      <Rollup>0</Rollup>"]
 
     # The planned value to the status date is the baseline phasing itself, added up.
-    blocks, bcws = [], 0
-    if bcost_c > 0:
-        days = cal.days_list(b["S"], b["F"])
-        for d, v in zip(days, spread_cents(bcost_c, len(days))):
-            blocks.append(tp(10, r.uid, d, 2, str(v)))
-            if d <= status:
-                bcws += v
+    bdays = cal.days_list(b["S"], b["F"]) if bcost_c > 0 else []
+    bvals = spread_cents(bcost_c, len(bdays)) if bdays else []
+    bcws = sum(v for d, v in zip(bdays, bvals) if d <= status)
     L += [f"      <BCWS>{bcws}</BCWS>", f"      <BCWP>{bcost_c * phys / 100.0:.2f}</BCWP>",
           f"      <PhysicalPercentComplete>{phys}</PhysicalPercentComplete>",
           "      <EarnedValueMethod>1</EarnedValueMethod>"]
@@ -951,48 +950,68 @@ def task_xml(r: Row, snap: dict, uid_of: dict, assignments: list) -> str:
         L += ["      <ExtendedAttribute>", f"        <FieldID>{fid}</FieldID>",
               f"        <Value>{escape(val)}</Value>", "      </ExtendedAttribute>"]
     L += ["      <Baseline>", "        <Number>0</Number>", f"        <Start>{bstart}</Start>",
-          f"        <Finish>{bfinish}</Finish>", f"        <Duration>{dur_iso(b['dur'])}</Duration>",
-          "        <DurationFormat>7</DurationFormat>",
-          f"        <Work>{'PT0H0M0S' if ms else dur_iso(b['dur'])}</Work>",
-          f"        <Cost>{bcost_c}</Cost>", "      </Baseline>"]
-    L += [x.replace("    <Timephased", "      <Timephased", 1) for x in blocks]
+          f"        <Finish>{bfinish}</Finish>", f"        <Duration>{dur_iso(b['dur'])}</Duration>"]
+    if is_work:
+        L.append(f"        <Work>{asg['bwork']}</Work>")
+    L += [f"        <Cost>{bcost_c}</Cost>", "      </Baseline>"]
 
-    # Physical percent by day, the way the tool spreads it over the actual span.
-    actual_days = cal.days_list(s["AS"], s["AF"] or status) if (s["AS"] and not ms) else []
-    if phys > 0 and actual_days:
-        per = f"{phys / len(actual_days):.4f}"
-        L += [tp(11, r.uid, d, 2, per).replace("    <Timephased", "      <Timephased", 1) for d in actual_days]
+    # Percent complete by day over the days worked (32768 marks a day off), then the
+    # baseline: its work as one block, its cost day by day.
+    if pct > 0 and done_days:
+        L += day_blocks(11, r.uid, done_days, percent_steps(pct, len(done_days)), unit=2,
+                        gap="32768", gap_by_day=True)
+    if is_work:
+        L.append(tp(9, r.uid, bstart, bfinish, 1, asg["bwork"]))
+    L += day_blocks(10, r.uid, bdays, [str(v) for v in bvals], gap="0")
     L.append("    </Task>")
 
-    for a in asg:
-        A = ["    <Assignment>", f"      <UID>{a['uid']}</UID>", f"      <TaskUID>{r.uid}</TaskUID>",
-             f"      <ResourceUID>{a['res'][0]}</ResourceUID>",
-             f"      <PercentWorkComplete>{a['pct']}</PercentWorkComplete>",
-             f"      <ActualCost>{a['acost']}</ActualCost>"]
+    if asg:
+        material = not is_work
+        A = ["    <Assignment>", f"      <UID>{asg['uid']}</UID>", f"      <TaskUID>{r.uid}</TaskUID>",
+             f"      <ResourceUID>{res[0]}</ResourceUID>",
+             f"      <PercentWorkComplete>{pct}</PercentWorkComplete>",
+             f"      <ActualCost>{asg['acost']}</ActualCost>"]
         if s["AF"]:
             A.append(f"      <ActualFinish>{ts(s['AF'], True)}</ActualFinish>")
+        if is_work:
+            A.append("      <ActualOvertimeCost>0</ActualOvertimeCost>")
+        A.append("      <ActualOvertimeWork>PT0H0M0S</ActualOvertimeWork>")
         if s["AS"]:
             A.append(f"      <ActualStart>{ts(s['AS'], False)}</ActualStart>")
-        A += [f"      <ActualWork>{min_iso(a['actual'])}</ActualWork>",
-              f"      <Cost>{a['cost']}</Cost>", f"      <Finish>{finish}</Finish>",
+        A += [f"      <ActualWork>{min_iso(asg['actual'])}</ActualWork>", "      <Confirmed>0</Confirmed>",
+              f"      <Cost>{cost_c}</Cost>", "      <CostRateTable>0</CostRateTable>",
+              "      <Delay>0</Delay>", f"      <Finish>{finish}</Finish>",
               # A material quantity is consumed as one fixed amount, not as a rate per day.
               "      <HasFixedRateUnits>1</HasFixedRateUnits>",
-              f"      <FixedMaterial>{1 if a['material'] else 0}</FixedMaterial>",
-              f"      <RegularWork>{min_iso(a['work'])}</RegularWork>",
-              f"      <RemainingCost>{a['cost'] - a['acost']}</RemainingCost>",
-              f"      <RemainingWork>{min_iso(a['work'] - a['actual'])}</RemainingWork>",
-              f"      <Start>{start}</Start>"]
+              f"      <FixedMaterial>{1 if material else 0}</FixedMaterial>",
+              "      <LevelingDelay>0</LevelingDelay>", "      <LevelingDelayFormat>7</LevelingDelayFormat>",
+              "      <LinkedFields>0</LinkedFields>", "      <Milestone>0</Milestone>",
+              "      <Overallocated>0</Overallocated>"]
+        if is_work:
+            A.append("      <OvertimeCost>0</OvertimeCost>")
+        A += ["      <OvertimeWork>PT0H0M0S</OvertimeWork>",
+              f"      <RegularWork>{min_iso(asg['work'])}</RegularWork>",
+              f"      <RemainingCost>{cost_c - asg['acost']}</RemainingCost>"]
+        if is_work:
+            A.append("      <RemainingOvertimeCost>0</RemainingOvertimeCost>")
+        A += ["      <RemainingOvertimeWork>PT0H0M0S</RemainingOvertimeWork>",
+              f"      <RemainingWork>{min_iso(asg['work'] - asg['actual'])}</RemainingWork>",
+              "      <ResponsePending>0</ResponsePending>", f"      <Start>{start}</Start>"]
         if stop:
             A += [f"      <Stop>{stop}</Stop>", f"      <Resume>{resume}</Resume>"]
-        A += [f"      <Units>{a['units']}</Units>",
-              f"      <Work>{min_iso(a['work'])}</Work>", "      <WorkContour>0</WorkContour>",
+        A += [f"      <Units>{1 if is_work else int(r.qty)}</Units>", "      <UpdateNeeded>0</UpdateNeeded>",
+              f"      <Work>{min_iso(asg['work'])}</Work>", "      <WorkContour>0</WorkContour>",
+              "      <BookingType>0</BookingType>",
               "      <Baseline>", "        <Number>0</Number>", f"        <Start>{bstart}</Start>",
-              f"        <Finish>{bfinish}</Finish>", f"        <Work>{a['bwork']}</Work>",
-              f"        <Cost>{a['bcost']}</Cost>", "      </Baseline>"]
-        if a["actual"] > 0 and actual_days:
-            A += [tp(2, a["uid"], d, 2, min_iso(v)).replace("    <Timephased", "      <Timephased", 1)
-                  for d, v in zip(actual_days, spread_cents(a["actual"], len(actual_days)))]
-        A.append("    </Assignment>")
+              f"        <Finish>{bfinish}</Finish>", f"        <Work>{asg['bwork']}</Work>",
+              f"        <Cost>{bcost_c}</Cost>", "      </Baseline>"]
+        # Actual work day by day, remaining work day by day, then the baseline work
+        # and the baseline cost, each as one block.
+        n = len(done_days)
+        A += day_blocks(2, asg["uid"], done_days, [min_iso(v) for v in asg["per_day"][:n]])
+        A += day_blocks(1, asg["uid"], left_days, [min_iso(v) for v in asg["per_day"][n:]])
+        A += [tp(4, asg["uid"], bstart, bfinish, 1, asg["bwork"]),
+              tp(5, asg["uid"], bstart, bfinish, 1, str(bcost_c)), "    </Assignment>"]
         assignments.append("\n".join(A))
     return "\n".join(L)
 
@@ -1099,8 +1118,8 @@ def document(snap: dict, uid_of: dict) -> str:
         if label:
             res.append(f"      <MaterialLabel>{escape(label)}</MaterialLabel>")
         if typ == 1:                                 # availability belongs to work resources only
-            res.append("      <MaxUnits>1</MaxUnits>")
-        res += [f"      <StandardRate>{rate:.2f}</StandardRate>",
+            res.append("      <MaxUnits>1.00</MaxUnits>")
+        res += [f"      <CanLevel>{typ}</CanLevel>", "      <AccrueAt>3</AccrueAt>",f"      <StandardRate>{rate:.2f}</StandardRate>",
                 f"      <StandardRateFormat>{2 if typ == 1 else 8}</StandardRateFormat>",
                 f"      <CalendarUID>{RES_CAL_UID[uid]}</CalendarUID>",
                 "    </Resource>"]

@@ -17,7 +17,7 @@ representado.
 
 ## O que há no cronograma
 
-- 142 atividades sob 32 linhas de resumo, cerca de 220 vínculos, 45 recursos, nomes em
+- 142 atividades sob 32 linhas de resumo, cerca de 220 vínculos, 38 recursos, nomes em
   português.
 - EAP por trecho e disciplina: marcos contratuais, mobilização, quatro segmentos de
   6 km (terraplenagem, drenagem, pavimentação, sinalização, iluminação), um viaduto,
@@ -26,10 +26,6 @@ representado.
   a março: o da obra (cinco dias) e o de terraplenagem (seis dias). Cada recurso tem
   ainda o seu próprio calendário, derivado de um dos dois — é como o MS Project grava
   um recurso e o que ele espera ao abrir o arquivo.
-- Cada serviço medido tem duas atribuições: a quantidade (recurso material com preço
-  unitário, que é o custo inteiro) e a frente de serviço que o executa (recurso de
-  trabalho sem taxa). O MS Project guarda o avanço da atividade no trabalho das
-  atribuições; só com a quantidade, a atividade abriria em zero por cento.
 - Nove marcos, todos com data limite.
 - Linha de base com custo (preço unitário vezes quantidade), **distribuído no tempo**,
   um bloco por dia útil, de modo que previsto até a data, SV, IDP e Earned Schedule
