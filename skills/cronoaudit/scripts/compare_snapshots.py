@@ -334,7 +334,7 @@ def duration_changes(pairs, bp: Basis, bc: Basis) -> list:
     return out
 
 
-def past_rewritten(pairs, removed=(), slot=None) -> dict:
+def past_rewritten(pairs, removed=(), slot=None, curr_slot=None) -> dict:
     """What was already recorded as done, and reads differently now.
 
     An actual date is a record of something that happened; a percent complete is
@@ -353,9 +353,15 @@ def past_rewritten(pairs, removed=(), slot=None) -> dict:
             b, a = p.get(key), c.get(key)
             if not b or b == a:
                 continue
+            # An actual date rewritten to land exactly on the baseline date is the
+            # record made to agree with the plan: worth asking for the evidence.
+            bl = (((c.get("baselines") or {}).get(curr_slot) or {}).get(key.replace("actual_", ""))
+                  if curr_slot else None)
             bucket.append({**base, "before": b, "after": a, "removed": a is None,
                            "moved_days": days_between(b, a) if a else None,
-                           "same_day": bool(a) and a[:10] == b[:10]})
+                           "same_day": bool(a) and a[:10] == b[:10],
+                           "matches_baseline": bool(a and bl) and a[:10] == bl[:10]
+                                               and b[:10] != bl[:10]})
             touched.add(c["uid"])
         # One row per activity: the physical percent first, because it is the one
         # the earned value reads; the duration percent only when the physical one
@@ -392,6 +398,7 @@ def past_rewritten(pairs, removed=(), slot=None) -> dict:
         "removed_with_progress": gone,
         "actual_removed": sum(1 for r in starts + finishes if r["removed"]),
         "time_of_day_only": sum(1 for r in starts + finishes if r["same_day"]),
+        "matches_baseline": sum(1 for r in starts + finishes if r["matches_baseline"]),
         "population": "leaf, active, non-external, matched in both snapshots; milestones included; "
                       "plus removed activities that carried progress (row number of the previous delivery)",
     }
@@ -772,7 +779,7 @@ def compare(prev: dict, curr: dict) -> dict:
                                      prev, curr, bp, bc)
     logic = logic_changes(pairs, inserted_all, removed_all, prev, curr, bp, bc)
     durations = duration_changes(pairs, bp, bc)
-    past = past_rewritten(pairs, removed, agg_prev["baseline_slot"])
+    past = past_rewritten(pairs, removed, agg_prev["baseline_slot"], agg_curr["baseline_slot"])
     quality = quality_side_by_side(prev, curr)
     if past["activities"]:
         warning_codes.append({"code": "past_rewritten", "n": past["activities"]})

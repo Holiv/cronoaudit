@@ -173,7 +173,12 @@ neither file says so. It is always a finding about the record, to be answered wi
 correction. Changes that stay within the same day (time of day only) are listed and counted
 apart, because a calendar edit can produce them. **A removed activity that carried progress is
 rewritten past too**: executed, measured work erased from the record together with its row. It is
-listed by its row number in the previous delivery, with the earned value that left the aggregate.
+listed by its row number in the previous delivery, with the earned value that left the aggregate. An actual
+date rewritten to land **exactly on the baseline date** is flagged apart ("now on the baseline
+date"): the record was made to agree with the plan, and the evidence behind it is worth asking
+for. In the review of the current file, a row on a milestone's driving chain whose baseline moved
+this cycle carries the movement beside its variance, because that variance is measured against a
+reference that moved.
 
 Conventions and limits, all declared in the output:
 

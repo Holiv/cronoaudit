@@ -808,9 +808,11 @@ def _cycle_sections(cmp_res, lang, C, readings) -> list:
         def date_row(r):
             return {"id": r["id"], "name": r["name"], "before": D(r["before"]),
                     "after": D(r["after"]) if r["after"] else C["withdrawn"],
-                    "moved": r["moved_days"]}
+                    "moved": r["moved_days"],
+                    "on_bl": C["yes"] if r.get("matches_baseline") else None}
         date_cols = ROW + [col("col_before", "before"), col("col_after", "after"),
-                           col("col_moved_cal", "moved", signed=True)]
+                           col("col_moved_cal", "moved", signed=True),
+                           col("col_matches_bl", "on_bl")]
         pct = [{"id": r["id"], "name": r["name"], "field": C["field_" + r["field"]],
                 "before": r["before"], "after": r["after"], "delta": r["delta_points"]}
                for r in pr["percent_decreased"]]

@@ -1209,6 +1209,36 @@ def main() -> int:
     if "caiu na data da linha de base" not in ft or "depois" in ft:
         failures.append(f"slippage reading: a median start on the baseline was given a direction: {ft}")
 
+    # ---- an actual date rewritten onto the baseline, and a variance measured against
+    # a baseline that moved (0.7.2). Row 16 had its actual finish moved AWAY from the
+    # baseline in the fixture (not flagged); here it is moved ONTO it (flagged).
+    pv5 = copy_mod.deepcopy(pm_mod.parse(os.path.join(ROOT, "fixtures", "cycle_prev.xml")))
+    cv5 = copy_mod.deepcopy(pm_mod.parse(os.path.join(ROOT, "fixtures", "cycle_curr.xml")))
+    for t in pv5["tasks"]:
+        if t["uid"] == 16:
+            t["actual_finish"] = "2026-04-14T17:00:00"
+    for t in cv5["tasks"]:
+        if t["uid"] == 16:
+            t["actual_finish"] = t["baselines"]["1"]["finish"]
+    c5 = cs_mod.compare(pv5, cv5)
+    flagged = [r["id"] for r in c5["past_rewritten"]["actual_finish"] if r["matches_baseline"]]
+    if flagged != [16] or any(r["matches_baseline"] for r in cyc["past_rewritten"]["actual_finish"]):
+        failures.append(f"cycle past: an actual date rewritten onto the baseline not flagged, or a control flagged: {flagged}")
+    for lang, word in (("en", "exactly on the baseline date (row 16"), ("pt", "coincidir exatamente com a linha de base (linha 16")):
+        if word not in " ".join(nar_mod.build_cycle(c5, lang, rd_mod.fmt_date).get("c5", [])):
+            failures.append(f"cycle past reading ({lang}): the date rewritten onto the baseline is not said")
+    import forensics as fx_mod5
+    cv0 = pm_mod.parse(os.path.join(ROOT, "fixtures", "cycle_curr.xml"))
+    fx5 = fx_mod5.build(cv0, analyse_raw(cv0), pv5, {"baseline_moved": [
+        {"uid": 7, "id": 7, "baseline_finish_moved_days": 12.0}], "trend": []})
+    marked5 = [n["id"] for m_ in fx5["milestones"] for n in m_["chain"] if n.get("baseline_moved_days")]
+    if marked5 != [7]:
+        failures.append(f"forensics: a chain row whose baseline moved is not marked: {marked5}")
+    for lang, word in (("en", "the reference moving"), ("pt", "a referência se movendo")):
+        txt = " ".join(nar_mod.build({"meta": {}, "findings": [], "forensics": fx5}, lang).get("forensics", []))
+        if word not in txt or "+12" not in txt:
+            failures.append(f"forensics reading ({lang}): the moved baseline is not cross-referenced: {txt}")
+
     # ---- the network gate is as wide as the breach (0.7.2). One pair off the
     # critical path and off the finish chain is named, with the milestones whose
     # chain passes through it; on the critical path, or above the threshold, the

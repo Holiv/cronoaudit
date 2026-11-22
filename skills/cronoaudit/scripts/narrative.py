@@ -69,6 +69,7 @@ R = {
         "rain": "{s}% of the remaining cost sits in months the calendars reserve for bad weather, {t}% if everything slips thirty days.",
         "fx_origins": "{o} of {m} {m?future milestone|future milestones} trace to a named origin; activity {id} originates delay on {k} of them.",
         "fx_none": "No future milestone carries variance above the threshold, so no origin is named.",
+        "fx_bl_moved": "On the driving chain of {m}, row {id}, {name}, shows a variance of {v} working {v?day|days} against a baseline that moved {b} calendar {b?day|days} this cycle: part of that variance is the reference moving, not the works.",
         "fx_cal": "Calendar forensics flags {n} {n?calendar|calendars}: {list}.",
         "fx_oos_rising": "Out-of-sequence execution is rising, from {a} {a?pair|pairs} a month to {b}: the practice is accelerating.",
         "fx_oos_falling": "Out-of-sequence execution is falling, from {a} {a?pair|pairs} a month to {b}.",
@@ -130,6 +131,7 @@ R = {
         "rain": "{s}% do custo remanescente cai em meses que os calendários reservam para tempo ruim, {t}% se tudo escorregar trinta dias.",
         "fx_origins": "{o} de {m} {m?marco futuro|marcos futuros} têm origem nomeada; a atividade {id} origina atraso em {k} deles.",
         "fx_none": "Nenhum marco futuro carrega variação acima do limiar, então nenhuma origem é nomeada.",
+        "fx_bl_moved": "Na cadeia condutora de {m}, a linha {id}, {name}, mostra variação de {v} {v?dia útil|dias úteis} contra uma linha de base que se moveu {b} {b?dia corrido|dias corridos} neste ciclo: parte dessa variação é a referência se movendo, não a obra.",
         "fx_cal": "A forense de calendário sinaliza {n} {n?calendário|calendários}: {list}.",
         "fx_oos_rising": "A execução fora de sequência está subindo, de {a} {a?par|pares} por mês para {b}: a prática está acelerando.",
         "fx_oos_falling": "A execução fora de sequência está caindo, de {a} {a?par|pares} por mês para {b}.",
@@ -373,6 +375,15 @@ def build(payload: dict, lang: str) -> dict:
             add("forensics", "fx_origins", o=_n(FS["with_origin"], 0), m=_n(FS["milestones"], 0), id=o["id"], k=_n(o["milestones"], 0))
         else:
             add("forensics", "fx_none")
+    seen_bl = set()
+    for ms in fx.get("milestones") or []:
+        for node in ms.get("chain") or []:
+            if node.get("baseline_moved_days") and node["id"] not in seen_bl:
+                seen_bl.add(node["id"])
+                bm = node["baseline_moved_days"]
+                add("forensics", "fx_bl_moved", m=ms["name"], id=node["id"], name=node["name"],
+                    v=_n(node.get("variance_days"), 0),
+                    b=(("+" if bm > 0 else "") + _n(bm, 0)))
     flagged = [c for c in fx.get("calendars") or [] if c.get("flags")]
     if flagged:
         add("forensics", "fx_cal", n=_n(len(flagged), 0), list="; ".join(f"{c['name']}: {', '.join(c['flags'])}" for c in flagged[:3]))
@@ -444,6 +455,8 @@ RC = {
         "pr": "The past was rewritten on {n} {n?activity|activities}: {s} {s?actual start|actual starts} and {f} {f?actual finish|actual finishes} changed, and {p} {p?percent complete|percents complete} went down.",
         "pr_g": "The past was rewritten on {n} {n?activity|activities}: {s} {s?actual start|actual starts} and {f} {f?actual finish|actual finishes} changed, {p} {p?percent complete|percents complete} went down, and {g} {g?activity with recorded progress was|activities with recorded progress were} removed.",
         "pr_gone": "{n} {n?activity|activities} with recorded progress {n?was|were} removed from the schedule altogether, taking {v} of earned value with {n?it|them}; the largest is row {id} of the previous delivery, {name}, at {pct}%.",
+        "pr_bl_item": "row {id}, {name}, {a} → {b}",
+        "pr_baseline": "{n} of the changed actual dates now {n?falls|fall} exactly on the baseline date ({list}): the record was made to agree with the plan; ask for the evidence behind {n?it|them}.",
         "pr_removed": "{n} {n?actual date was|actual dates were} withdrawn altogether: work reported as started or finished last cycle is no longer recorded as such.",
         "pr_time": "{n} of the date changes {n?stays|stay} within the same day (time of day only); {n?it is|they are} listed last and {n?weighs|weigh} less.",
         "pr_ask": "Every figure the previous cycle reported on these activities rested on a record that no longer exists. Ask for each correction to be stated.",
@@ -496,6 +509,8 @@ RC = {
         "pr": "O passado foi reescrito em {n} {n?atividade|atividades}: {s} {s?início real|inícios reais} e {f} {f?término real|términos reais} mudaram, e {p} {p?percentual concluído caiu|percentuais concluídos caíram}.",
         "pr_g": "O passado foi reescrito em {n} {n?atividade|atividades}: {s} {s?início real|inícios reais} e {f} {f?término real|términos reais} mudaram, {p} {p?percentual concluído caiu|percentuais concluídos caíram} e {g} {g?atividade com avanço registrado foi removida|atividades com avanço registrado foram removidas}.",
         "pr_gone": "{n} {n?atividade com avanço registrado foi removida|atividades com avanço registrado foram removidas} do cronograma, levando {v} de valor agregado; a maior é a linha {id} da entrega anterior, {name}, a {pct}%.",
+        "pr_bl_item": "linha {id}, {name}, {a} → {b}",
+        "pr_baseline": "{n} das datas reais alteradas {n?passou|passaram} a coincidir exatamente com a linha de base ({list}): o registro foi ajustado ao plano; peça a evidência.",
         "pr_removed": "{n} {n?data real foi retirada|datas reais foram retiradas} por completo: trabalho informado como iniciado ou concluído no ciclo anterior não está mais registrado assim.",
         "pr_time": "{n} das mudanças de data {n?fica|ficam} dentro do mesmo dia (só o horário); {n?está listada|estão listadas} por último e {n?pesa|pesam} menos.",
         "pr_ask": "Todo número que o ciclo anterior informou sobre essas atividades se apoiava num registro que não existe mais. Peça que cada correção seja declarada.",
@@ -709,6 +724,12 @@ def build_cycle(cmp_res: dict, lang: str, fmt_date, metric_title=None) -> dict:
             if gone:
                 add("c5", "pr_gone", n=i(len(gone)), v=fnum(sum(g["earned_erased"] for g in gone), 0, lang),
                     id=gone[0]["id"], name=gone[0]["name"], pct=fnum(gone[0]["percent"], 0, lang))
+            on_bl = [r for r in pr["actual_start"] + pr["actual_finish"] if r.get("matches_baseline")]
+            if on_bl:
+                add("c5", "pr_baseline", n=i(len(on_bl)), list="; ".join(
+                    i18n.fmt(T["pr_bl_item"], id=r["id"], name=r["name"],
+                             a=fmt_date(r["before"], lang), b=fmt_date(r["after"], lang))
+                    for r in on_bl[:5]))
             if pr["actual_removed"]:
                 add("c5", "pr_removed", n=i(pr["actual_removed"]))
             if pr["time_of_day_only"]:

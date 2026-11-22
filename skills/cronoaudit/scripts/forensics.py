@@ -314,7 +314,10 @@ def cycle_forensics(model, prev, cmp_res, cals, default_cal, group_field):
         cf = dt(m["finish"])
         if not pf or not cf:
             continue
-        moved = (cf - pf).days
+        # Calendar dates: the milestone finish is read at midnight here and the
+        # previous one at the end of a working day, and `.days` floors 20 days and
+        # 7 hours to 20 where the cycle report counts 21.
+        moved = (cf.date() - pf.date()).days
         drivers = [{"id": n["id"], "name": n["name"], "reading": readings.get(n["uid"])}
                    for n in m["chain"] if readings.get(n["uid"])]
         movements.append({"id": m["id"], "name": m["name"], "finish_before": fmt(pf),
@@ -344,6 +347,16 @@ def build(model, res, prev=None, cmp_res=None, group_field=None):
         if stamps:
             cal_mod.prepare(cals, min(stamps).date(), max(stamps).date())
     paths = milestone_paths(model, cals, default_cal, slot)
+    # A variance on a chain whose row had its BASELINE moved this cycle is measured
+    # against a reference that moved: say so on the row, so the variance is not
+    # read as the works' alone.
+    moved = {b["uid"]: b for b in (cmp_res or {}).get("baseline_moved") or []}
+    if moved:
+        for m in paths:
+            for n in m["chain"]:
+                bm = moved.get(n["uid"])
+                if bm:
+                    n["baseline_moved_days"] = bm.get("baseline_finish_moved_days")
     return {
         "status_date": model["project"].get("status_date"),
         "milestones": paths,

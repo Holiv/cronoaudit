@@ -335,6 +335,7 @@ UI = {
         "col_amplifier": "Grew most at", "col_added": "Added (d)",
         "fx_chain_show": "Show the driving chain",
         "col_via": "Via", "col_var_days": "Var. (d)", "col_started": "Started",
+        "col_bl_moved": "Baseline moved this cycle (calendar d)",
         "fx_cal_title": "Calendar forensics",
         "fx_cal_sub": "A productivity reserve registered for one year while the activities on "
                       "that calendar execute in another embeds optimism nothing in the file "
@@ -708,6 +709,7 @@ UI = {
         "col_amplifier": "Cresceu mais em", "col_added": "Acrescentou (d)",
         "fx_chain_show": "Mostrar a cadeia condutora",
         "col_via": "Via", "col_var_days": "Var. (d)", "col_started": "Iniciada",
+        "col_bl_moved": "LB movida neste ciclo (dias corridos)",
         "fx_cal_title": "Forense de calendário",
         "fx_cal_sub": "Reserva de improdutividade cadastrada num ano enquanto as atividades "
                       "daquele calendário executam em outro embute otimismo que nada no arquivo "
@@ -1162,6 +1164,7 @@ CYCLE = {
         "l_past_pct": "Percent complete went down",
         "l_past_gone": "Removed with recorded progress",
         "col_row_prev": "Row (previous delivery)", "col_ev_erased": "Earned value erased",
+        "col_matches_bl": "Now on the baseline date",
         "l_quality": "The fourteen metrics, before and after",
         "c1_title": "Project finish",
         "c1_sub": "Where each delivery says the contract ends, and what holds the date now.",
@@ -1329,6 +1332,7 @@ CYCLE = {
         "l_past_pct": "Percentual concluído caiu",
         "l_past_gone": "Removidas com avanço registrado",
         "col_row_prev": "Linha (entrega anterior)", "col_ev_erased": "Valor agregado apagado",
+        "col_matches_bl": "Passou a coincidir com a LB",
         "l_quality": "As quatorze métricas, antes e depois",
         "c1_title": "Término do projeto",
         "c1_sub": "Onde cada entrega diz que o contrato termina, e o que segura a data agora.",

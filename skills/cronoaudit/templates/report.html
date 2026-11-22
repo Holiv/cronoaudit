@@ -566,7 +566,7 @@ function renderReview(d){
       {label:L.col_origin,key:"origin_id"},{label:L.col_activity,key:"origin_name"},{label:L.col_origin_var,key:"origin_var"},{label:L.col_amplifier,key:"amp_id"},{label:L.col_added,key:"amp_added"},{label:L.col_chain,key:"chain_length"},{label:L.col_reaches,key:"reaches_t"},{label:L.col_open_end,key:"open_end_t"}],ms,ms.length)}</div>`);
     (X.milestones||[]).slice(0,12).forEach(m=>{
       out.push(`<details style="margin-top:6px"><summary>${esc(L.fx_chain_show)} · ${esc(m.id)} ${esc(m.name)} · ${esc(L.col_var_days)} ${n(m.variance_days)}</summary>
-        ${table([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_via,key:"via"},{label:L.col_fin_baseline,key:"baseline_finish"},{label:L.col_fin_trend,key:"finish"},{label:L.col_var_days,key:"variance_days"},{label:L.col_started,key:"started_t"}],
+        ${table([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_via,key:"via"},{label:L.col_fin_baseline,key:"baseline_finish"},{label:L.col_fin_trend,key:"finish"},{label:L.col_var_days,key:"variance_days"},{label:L.col_bl_moved,key:"baseline_moved_days",signed:true},{label:L.col_started,key:"started_t"}],
           m.chain.map(c=>({...c,started_t:c.finished?"✓✓":(c.started?"✓":"")})))}</details>`);
     });
     if(X.calendars&&X.calendars.length){
