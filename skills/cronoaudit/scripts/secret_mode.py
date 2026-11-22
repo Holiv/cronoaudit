@@ -280,7 +280,11 @@ def write_guard(workdir: str) -> None:
         "hooks": {"PreToolUse": [{"matcher": GUARD_MATCHER, "hooks": [{
             "type": "command",
             "command": f'"{python}" "${{CLAUDE_PROJECT_DIR}}/.claude/hooks/{GUARD_NAME}"',
-            "timeout": 30}]}]},
+            "timeout": 30,
+            # A hook that cannot start (wrong interpreter, PowerShell reading the
+            # quoted path as a string) would otherwise let every call through.
+            # Honoured from Claude Code 2.1.295; older versions ignore it.
+            "onFailure": "block"}]}]},
     })
 
 
@@ -357,11 +361,15 @@ def run(args) -> int:
         # 4. The coded copy.
         os.makedirs(workdir)
         template = args.template or (prof_mod.load(args.profile).get("template"))
+        # The coded copy is always written with the shipped template. A customised
+        # one is the organisation's own branding and can carry its name; it is used
+        # again on the way back, by `finish`, on this machine.
+        shipped = os.path.join(SKILL_DIR, "templates", "report.html")
         coded_files = []
         for n in sorted(names):
             target = os.path.join(workdir, rename(n, files))
             if n.endswith(".html"):
-                report_html.write(code_payload(codec, real_objs[n]), target, template)
+                report_html.write(code_payload(codec, real_objs[n]), target, shipped)
             else:
                 _write_json(target, code_sidecar(codec, n, real_objs[n], review_payload))
             coded_files.append(os.path.basename(target))

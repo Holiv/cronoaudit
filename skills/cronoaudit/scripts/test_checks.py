@@ -1015,6 +1015,10 @@ def guard_checks() -> list:
             ("Edit", {"file_path": original}, False, "Edit the original"),
             ("Glob", {"pattern": "/**/*.xml"}, False, "Glob from the root"),
             ("Glob", {"pattern": "*.json"}, True, "Glob in the work folder"),
+            ("Read", {"file_path": os.path.join(ROOT, "SKILL.md")}, True, "Read the skill's text"),
+            ("Read", {"file_path": os.path.join(ROOT, "templates", "report.custom.html")}, False,
+             "Read a customised template"),
+            ("Bash", {"command": "cat link.xml"}, os.name == "nt", "cat through a symlink to the original"),
             ("Bash", {"command": "echo x > ../out.txt"}, False, "redirect outside"),
         ]
         if os.name != "nt":
@@ -1050,6 +1054,25 @@ def secret_checks() -> dict:
     if os.path.isdir(folder):
         ex = [os.path.join(folder, f"rodovia-ficticia-rev0{i}.xml") for i in (3, 4)]
         sets += [[ex[0]], [ex[1]], ex]
+    # Surfaces no fixture carries: header fields, a note, a named holiday, a task
+    # name with a date inside, a hyperlink. Built from the positive fixture.
+    variant_dir = tempfile.mkdtemp()
+    with open(os.path.join(ROOT, "fixtures", "positive.xml"), encoding="utf-8") as fh:
+        x = fh.read()
+    x = x.replace("<Title>Positive fixture</Title>",
+                  "<Title>Positive fixture</Title><Subject>Contrato 4711 do Cliente Exemplar</Subject>"
+                  "<Company>Construtora Exemplo Ltda</Company><Author>Fulano de Tal</Author>"
+                  "<Manager>Beltrana Gerente</Manager><LastAuthor>Sicrano Revisor</LastAuthor>"
+                  "<Keywords>lote sigiloso</Keywords>", 1)
+    x = x.replace("<Name>Holiday</Name>", "<Name>Feriado Municipal de Exemplópolis</Name>", 1)
+    x = x.replace("<Name>A1 successor started early</Name>",
+                  "<Name>Marco 15/03/2027 — Ponte do Exemplo</Name>"
+                  "<Notes>Ver ofício 22/2026 de 03/02/2026, valor R$ 1.234.567,89</Notes>"
+                  "<Hyperlink>Pasta do Contrato</Hyperlink>", 1)
+    variant = os.path.join(variant_dir, "Contrato-4711-cronograma.xml")
+    with open(variant, "w", encoding="utf-8") as fh:
+        fh.write(x)
+    sets.append([variant])
     totals = {"runs": 0, "sidecars": 0, "reports": 0, "values_equal": 0}
     for files in sets:
         with tempfile.TemporaryDirectory() as tmp:
@@ -1058,6 +1081,29 @@ def secret_checks() -> dict:
         totals["runs"] += 1
         for k in ("sidecars", "reports", "values_equal"):
             totals[k] += r["stats"][k]
+    import shutil as _shutil
+    _shutil.rmtree(variant_dir, ignore_errors=True)
+    # A customised template is the organisation's branding: it must not reach the work folder.
+    with tempfile.TemporaryDirectory() as tmp:
+        with open(os.path.join(ROOT, "templates", "report.html"), encoding="utf-8") as fh:
+            tpl = fh.read().replace("<body>", "<body><!-- Marca Corporativa Sigilosa -->", 1)
+        custom = os.path.join(tmp, "custom.html")
+        with open(custom, "w", encoding="utf-8") as fh:
+            fh.write(tpl)
+        orig = os.path.join(tmp, "orig")
+        os.makedirs(orig)
+        _shutil.copyfile(os.path.join(ROOT, "fixtures", "positive.xml"), os.path.join(orig, "positive.xml"))
+        subprocess.run([sys.executable, os.path.join(HERE, "review.py"), os.path.join(orig, "positive.xml"),
+                        "--secret", "--quiet", "--template", custom, "--workdir", os.path.join(tmp, "work")],
+                       check=True, capture_output=True, env=_secret_env(os.path.join(tmp, "cfg")),
+                       stdin=subprocess.DEVNULL)
+        if "Marca Corporativa" not in tpl:
+            failures.append("secret: the custom-template probe was not built")
+        for folder, _d, fnames in os.walk(os.path.join(tmp, "work")):
+            for fname in fnames:
+                with open(os.path.join(folder, fname), encoding="utf-8", errors="replace") as fh:
+                    if "Marca Corporativa" in fh.read():
+                        failures.append("secret leak: a customised template reached the work folder")
     # Same project, two separate runs: one key, the same tokens on both sides.
     if os.path.isdir(folder):
         import secret_codec

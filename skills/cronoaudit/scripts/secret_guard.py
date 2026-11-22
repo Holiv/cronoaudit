@@ -83,9 +83,21 @@ class Guard:
 
     def readable(self, raw: str, cwd: str) -> None:
         p = self.resolve(raw, cwd)
-        if _inside(p, self.work) or (self.skill and _inside(p, self.skill)):
+        if _inside(p, self.work) or self._skill_public(p):
             return
         raise Blocked("outside the secret work folder")
+
+    def _skill_public(self, p: str) -> bool:
+        """The skill's own public files: its text, references, scripts and shipped
+        template. Not the rest of its folder, where an organisation keeps a
+        customised template or a profile that can carry its name."""
+        if not self.skill or not _inside(p, self.skill):
+            return False
+        if _norm(p) == _norm(self.skill):
+            return True
+        allowed = [os.path.join(self.skill, "SKILL.md"), os.path.join(self.skill, "references"),
+                   os.path.join(self.skill, "scripts"), os.path.join(self.skill, "templates", "report.html")]
+        return any(_inside(p, a) for a in allowed)
 
     def writable(self, raw: str, cwd: str) -> None:
         p = self.resolve(raw, cwd)
@@ -178,7 +190,8 @@ class Guard:
         if a.startswith("-") and "=" not in a:
             return
         if (value.startswith(("/", "\\", "~", ".")) or re.match(r"^[A-Za-z]:", value)
-                or ".." in value.replace("\\", "/").split("/")):
+                or ".." in value.replace("\\", "/").split("/")
+                or os.path.lexists(os.path.join(cwd, value))):   # a symlink in the folder is followed
             self.readable(self._glob_root(value) if re.search(r"[*?\[]", value) else value, cwd)
 
     def python(self, args: list, cwd: str) -> None:
