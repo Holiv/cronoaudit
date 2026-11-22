@@ -113,7 +113,7 @@
       <Start>2026-03-02T08:00:00</Start>
       <Finish>2026-03-02T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -121,7 +121,7 @@
       <Start>2026-03-03T08:00:00</Start>
       <Finish>2026-03-03T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -129,7 +129,7 @@
       <Start>2026-03-04T08:00:00</Start>
       <Finish>2026-03-04T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -137,7 +137,7 @@
       <Start>2026-03-05T08:00:00</Start>
       <Finish>2026-03-05T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -145,7 +145,7 @@
       <Start>2026-03-06T08:00:00</Start>
       <Finish>2026-03-06T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -195,15 +195,15 @@
       <Unit>2</Unit>
       <Value>20.0000</Value>
     </TimephasedData>
-    <BCWS>10000.00</BCWS>
-    <BCWP>10000.00</BCWP>
+    <BCWS>1000000.00</BCWS>
+    <BCWP>1000000.00</BCWP>
     <EarnedValueMethod>1</EarnedValueMethod>
     <Baseline>
       <Number>1</Number>
       <Start>2026-03-02T08:00:00</Start>
       <Finish>2026-03-06T17:00:00</Finish>
       <Duration>PT40H0M0S</Duration>
-      <Cost>10000.0</Cost>
+      <Cost>1000000.00</Cost>
       <Work>PT40H0M0S</Work>
     </Baseline>
     <ExtendedAttribute>
@@ -242,7 +242,7 @@
       <Start>2026-06-01T08:00:00</Start>
       <Finish>2026-06-01T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -250,7 +250,7 @@
       <Start>2026-06-02T08:00:00</Start>
       <Finish>2026-06-02T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -258,7 +258,7 @@
       <Start>2026-06-03T08:00:00</Start>
       <Finish>2026-06-03T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -266,7 +266,7 @@
       <Start>2026-06-04T08:00:00</Start>
       <Finish>2026-06-04T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -274,7 +274,7 @@
       <Start>2026-06-05T08:00:00</Start>
       <Finish>2026-06-05T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -282,7 +282,7 @@
       <Start>2026-06-08T08:00:00</Start>
       <Finish>2026-06-08T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -290,7 +290,7 @@
       <Start>2026-06-09T08:00:00</Start>
       <Finish>2026-06-09T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -298,7 +298,7 @@
       <Start>2026-06-10T08:00:00</Start>
       <Finish>2026-06-10T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -306,7 +306,7 @@
       <Start>2026-06-11T08:00:00</Start>
       <Finish>2026-06-11T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -314,7 +314,7 @@
       <Start>2026-06-12T08:00:00</Start>
       <Finish>2026-06-12T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -322,7 +322,7 @@
       <Start>2026-06-15T08:00:00</Start>
       <Finish>2026-06-15T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -330,7 +330,7 @@
       <Start>2026-06-16T08:00:00</Start>
       <Finish>2026-06-16T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -338,7 +338,7 @@
       <Start>2026-06-17T08:00:00</Start>
       <Finish>2026-06-17T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -346,7 +346,7 @@
       <Start>2026-06-18T08:00:00</Start>
       <Finish>2026-06-18T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -354,7 +354,7 @@
       <Start>2026-06-19T08:00:00</Start>
       <Finish>2026-06-19T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -362,7 +362,7 @@
       <Start>2026-06-22T08:00:00</Start>
       <Finish>2026-06-22T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -370,7 +370,7 @@
       <Start>2026-06-23T08:00:00</Start>
       <Finish>2026-06-23T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -378,7 +378,7 @@
       <Start>2026-06-24T08:00:00</Start>
       <Finish>2026-06-24T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -386,7 +386,7 @@
       <Start>2026-06-25T08:00:00</Start>
       <Finish>2026-06-25T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -394,7 +394,7 @@
       <Start>2026-06-26T08:00:00</Start>
       <Finish>2026-06-26T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -402,7 +402,7 @@
       <Start>2026-06-29T08:00:00</Start>
       <Finish>2026-06-29T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -410,7 +410,7 @@
       <Start>2026-06-30T08:00:00</Start>
       <Finish>2026-06-30T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -418,7 +418,7 @@
       <Start>2026-07-01T08:00:00</Start>
       <Finish>2026-07-01T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -426,7 +426,7 @@
       <Start>2026-07-02T08:00:00</Start>
       <Finish>2026-07-02T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -434,7 +434,7 @@
       <Start>2026-07-03T08:00:00</Start>
       <Finish>2026-07-03T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1600.00</Value>
+      <Value>160000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -684,15 +684,15 @@
       <Unit>2</Unit>
       <Value>2.5000</Value>
     </TimephasedData>
-    <BCWS>35200.00</BCWS>
-    <BCWP>22000.00</BCWP>
+    <BCWS>3520000.00</BCWS>
+    <BCWP>2200000.00</BCWP>
     <EarnedValueMethod>1</EarnedValueMethod>
     <Baseline>
       <Number>1</Number>
       <Start>2026-06-01T08:00:00</Start>
       <Finish>2026-07-03T17:00:00</Finish>
       <Duration>PT160H0M0S</Duration>
-      <Cost>40000.0</Cost>
+      <Cost>4000000.00</Cost>
       <Work>PT160H0M0S</Work>
     </Baseline>
     <ExtendedAttribute>
@@ -724,7 +724,7 @@
       <Start>2026-07-06T08:00:00</Start>
       <Finish>2026-07-06T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -732,7 +732,7 @@
       <Start>2026-07-07T08:00:00</Start>
       <Finish>2026-07-07T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -740,7 +740,7 @@
       <Start>2026-07-08T08:00:00</Start>
       <Finish>2026-07-08T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -748,7 +748,7 @@
       <Start>2026-07-09T08:00:00</Start>
       <Finish>2026-07-09T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -756,7 +756,7 @@
       <Start>2026-07-10T08:00:00</Start>
       <Finish>2026-07-10T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -764,7 +764,7 @@
       <Start>2026-07-13T08:00:00</Start>
       <Finish>2026-07-13T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -772,7 +772,7 @@
       <Start>2026-07-14T08:00:00</Start>
       <Finish>2026-07-14T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -780,7 +780,7 @@
       <Start>2026-07-15T08:00:00</Start>
       <Finish>2026-07-15T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -788,7 +788,7 @@
       <Start>2026-07-16T08:00:00</Start>
       <Finish>2026-07-16T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -796,7 +796,7 @@
       <Start>2026-07-17T08:00:00</Start>
       <Finish>2026-07-17T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -812,7 +812,7 @@
       <Start>2026-07-06T08:00:00</Start>
       <Finish>2026-07-17T17:00:00</Finish>
       <Duration>PT80H0M0S</Duration>
-      <Cost>20000.0</Cost>
+      <Cost>2000000.00</Cost>
       <Work>PT80H0M0S</Work>
     </Baseline>
     <ExtendedAttribute>
@@ -844,7 +844,7 @@
       <Start>2026-08-17T08:00:00</Start>
       <Finish>2026-08-17T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1500.00</Value>
+      <Value>150000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -852,7 +852,7 @@
       <Start>2026-08-18T08:00:00</Start>
       <Finish>2026-08-18T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1500.00</Value>
+      <Value>150000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -860,7 +860,7 @@
       <Start>2026-08-19T08:00:00</Start>
       <Finish>2026-08-19T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1500.00</Value>
+      <Value>150000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -868,7 +868,7 @@
       <Start>2026-08-20T08:00:00</Start>
       <Finish>2026-08-20T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1500.00</Value>
+      <Value>150000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -876,7 +876,7 @@
       <Start>2026-08-21T08:00:00</Start>
       <Finish>2026-08-21T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1500.00</Value>
+      <Value>150000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -884,7 +884,7 @@
       <Start>2026-08-24T08:00:00</Start>
       <Finish>2026-08-24T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1500.00</Value>
+      <Value>150000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -892,7 +892,7 @@
       <Start>2026-08-25T08:00:00</Start>
       <Finish>2026-08-25T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1500.00</Value>
+      <Value>150000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -900,7 +900,7 @@
       <Start>2026-08-26T08:00:00</Start>
       <Finish>2026-08-26T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1500.00</Value>
+      <Value>150000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -908,7 +908,7 @@
       <Start>2026-08-27T08:00:00</Start>
       <Finish>2026-08-27T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1500.00</Value>
+      <Value>150000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -916,7 +916,7 @@
       <Start>2026-08-28T08:00:00</Start>
       <Finish>2026-08-28T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1500.00</Value>
+      <Value>150000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -932,7 +932,7 @@
       <Start>2026-08-17T08:00:00</Start>
       <Finish>2026-08-28T17:00:00</Finish>
       <Duration>PT80H0M0S</Duration>
-      <Cost>15000.0</Cost>
+      <Cost>1500000.00</Cost>
       <Work>PT80H0M0S</Work>
     </Baseline>
     <ExtendedAttribute>
@@ -964,7 +964,7 @@
       <Start>2026-09-01T08:00:00</Start>
       <Finish>2026-09-01T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1250.00</Value>
+      <Value>125000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -972,7 +972,7 @@
       <Start>2026-09-02T08:00:00</Start>
       <Finish>2026-09-02T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1250.00</Value>
+      <Value>125000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -980,7 +980,7 @@
       <Start>2026-09-03T08:00:00</Start>
       <Finish>2026-09-03T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1250.00</Value>
+      <Value>125000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -988,7 +988,7 @@
       <Start>2026-09-04T08:00:00</Start>
       <Finish>2026-09-04T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1250.00</Value>
+      <Value>125000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1004,7 +1004,7 @@
       <Start>2026-09-01T08:00:00</Start>
       <Finish>2026-09-04T17:00:00</Finish>
       <Duration>PT32H0M0S</Duration>
-      <Cost>5000.0</Cost>
+      <Cost>500000.00</Cost>
       <Work>PT32H0M0S</Work>
     </Baseline>
     <ExtendedAttribute>
@@ -1039,7 +1039,7 @@
       <Start>2026-09-14T08:00:00</Start>
       <Finish>2026-09-14T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1047,7 +1047,7 @@
       <Start>2026-09-15T08:00:00</Start>
       <Finish>2026-09-15T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1055,7 +1055,7 @@
       <Start>2026-09-16T08:00:00</Start>
       <Finish>2026-09-16T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1063,7 +1063,7 @@
       <Start>2026-09-17T08:00:00</Start>
       <Finish>2026-09-17T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1071,7 +1071,7 @@
       <Start>2026-09-18T08:00:00</Start>
       <Finish>2026-09-18T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1079,7 +1079,7 @@
       <Start>2026-09-21T08:00:00</Start>
       <Finish>2026-09-21T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1087,7 +1087,7 @@
       <Start>2026-09-22T08:00:00</Start>
       <Finish>2026-09-22T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1095,7 +1095,7 @@
       <Start>2026-09-23T08:00:00</Start>
       <Finish>2026-09-23T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1103,7 +1103,7 @@
       <Start>2026-09-24T08:00:00</Start>
       <Finish>2026-09-24T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1111,7 +1111,7 @@
       <Start>2026-09-25T08:00:00</Start>
       <Finish>2026-09-25T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1119,7 +1119,7 @@
       <Start>2026-09-28T08:00:00</Start>
       <Finish>2026-09-28T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1127,7 +1127,7 @@
       <Start>2026-09-29T08:00:00</Start>
       <Finish>2026-09-29T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1135,7 +1135,7 @@
       <Start>2026-09-30T08:00:00</Start>
       <Finish>2026-09-30T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1143,7 +1143,7 @@
       <Start>2026-10-01T08:00:00</Start>
       <Finish>2026-10-01T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1151,7 +1151,7 @@
       <Start>2026-10-02T08:00:00</Start>
       <Finish>2026-10-02T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>2000.00</Value>
+      <Value>200000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1167,7 +1167,7 @@
       <Start>2026-09-14T08:00:00</Start>
       <Finish>2026-10-02T17:00:00</Finish>
       <Duration>PT120H0M0S</Duration>
-      <Cost>30000.0</Cost>
+      <Cost>3000000.00</Cost>
       <Work>PT120H0M0S</Work>
     </Baseline>
     <ExtendedAttribute>
@@ -1224,7 +1224,7 @@
       <Start>2026-10-02T17:00:00</Start>
       <Finish>2026-10-02T17:00:00</Finish>
       <Duration>PT0H0M0S</Duration>
-      <Cost>0.0</Cost>
+      <Cost>0.00</Cost>
       <Work>PT0H0M0S</Work>
     </Baseline>
     <ExtendedAttribute>
@@ -1259,7 +1259,7 @@
       <Start>2026-08-17T08:00:00</Start>
       <Finish>2026-08-17T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1267,7 +1267,7 @@
       <Start>2026-08-18T08:00:00</Start>
       <Finish>2026-08-18T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1275,7 +1275,7 @@
       <Start>2026-08-19T08:00:00</Start>
       <Finish>2026-08-19T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1283,7 +1283,7 @@
       <Start>2026-08-20T08:00:00</Start>
       <Finish>2026-08-20T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1291,7 +1291,7 @@
       <Start>2026-08-21T08:00:00</Start>
       <Finish>2026-08-21T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1299,7 +1299,7 @@
       <Start>2026-08-24T08:00:00</Start>
       <Finish>2026-08-24T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1307,7 +1307,7 @@
       <Start>2026-08-25T08:00:00</Start>
       <Finish>2026-08-25T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1315,7 +1315,7 @@
       <Start>2026-08-26T08:00:00</Start>
       <Finish>2026-08-26T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1323,7 +1323,7 @@
       <Start>2026-08-27T08:00:00</Start>
       <Finish>2026-08-27T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1331,7 +1331,7 @@
       <Start>2026-08-28T08:00:00</Start>
       <Finish>2026-08-28T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1347,7 +1347,7 @@
       <Start>2026-08-17T08:00:00</Start>
       <Finish>2026-08-28T17:00:00</Finish>
       <Duration>PT80H0M0S</Duration>
-      <Cost>8000.0</Cost>
+      <Cost>800000.00</Cost>
       <Work>PT80H0M0S</Work>
     </Baseline>
     <ExtendedAttribute>
@@ -1382,7 +1382,7 @@
       <Start>2026-08-03T08:00:00</Start>
       <Finish>2026-08-03T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1390,7 +1390,7 @@
       <Start>2026-08-04T08:00:00</Start>
       <Finish>2026-08-04T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1398,7 +1398,7 @@
       <Start>2026-08-05T08:00:00</Start>
       <Finish>2026-08-05T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1406,7 +1406,7 @@
       <Start>2026-08-06T08:00:00</Start>
       <Finish>2026-08-06T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1414,7 +1414,7 @@
       <Start>2026-08-07T08:00:00</Start>
       <Finish>2026-08-07T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1422,7 +1422,7 @@
       <Start>2026-08-10T08:00:00</Start>
       <Finish>2026-08-10T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1430,7 +1430,7 @@
       <Start>2026-08-11T08:00:00</Start>
       <Finish>2026-08-11T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1438,7 +1438,7 @@
       <Start>2026-08-12T08:00:00</Start>
       <Finish>2026-08-12T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1446,7 +1446,7 @@
       <Start>2026-08-13T08:00:00</Start>
       <Finish>2026-08-13T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1454,7 +1454,7 @@
       <Start>2026-08-14T08:00:00</Start>
       <Finish>2026-08-14T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1470,7 +1470,7 @@
       <Start>2026-08-03T08:00:00</Start>
       <Finish>2026-08-14T17:00:00</Finish>
       <Duration>PT80H0M0S</Duration>
-      <Cost>8000.0</Cost>
+      <Cost>800000.00</Cost>
       <Work>PT80H0M0S</Work>
     </Baseline>
     <ExtendedAttribute>
@@ -1505,7 +1505,7 @@
       <Start>2026-07-20T08:00:00</Start>
       <Finish>2026-07-20T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1513,7 +1513,7 @@
       <Start>2026-07-21T08:00:00</Start>
       <Finish>2026-07-21T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1521,7 +1521,7 @@
       <Start>2026-07-22T08:00:00</Start>
       <Finish>2026-07-22T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1529,7 +1529,7 @@
       <Start>2026-07-23T08:00:00</Start>
       <Finish>2026-07-23T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1537,7 +1537,7 @@
       <Start>2026-07-24T08:00:00</Start>
       <Finish>2026-07-24T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1545,7 +1545,7 @@
       <Start>2026-07-27T08:00:00</Start>
       <Finish>2026-07-27T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1553,7 +1553,7 @@
       <Start>2026-07-28T08:00:00</Start>
       <Finish>2026-07-28T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1561,7 +1561,7 @@
       <Start>2026-07-29T08:00:00</Start>
       <Finish>2026-07-29T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1569,7 +1569,7 @@
       <Start>2026-07-30T08:00:00</Start>
       <Finish>2026-07-30T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1577,7 +1577,7 @@
       <Start>2026-07-31T08:00:00</Start>
       <Finish>2026-07-31T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>800.00</Value>
+      <Value>80000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1593,7 +1593,7 @@
       <Start>2026-07-20T08:00:00</Start>
       <Finish>2026-07-31T17:00:00</Finish>
       <Duration>PT80H0M0S</Duration>
-      <Cost>8000.0</Cost>
+      <Cost>800000.00</Cost>
       <Work>PT80H0M0S</Work>
     </Baseline>
     <ExtendedAttribute>
@@ -1652,7 +1652,7 @@
       <Start>2026-09-01T08:00:00</Start>
       <Finish>2026-09-01T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1000.00</Value>
+      <Value>100000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1660,7 +1660,7 @@
       <Start>2026-09-02T08:00:00</Start>
       <Finish>2026-09-02T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1000.00</Value>
+      <Value>100000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1668,7 +1668,7 @@
       <Start>2026-09-03T08:00:00</Start>
       <Finish>2026-09-03T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1000.00</Value>
+      <Value>100000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1676,7 +1676,7 @@
       <Start>2026-09-04T08:00:00</Start>
       <Finish>2026-09-04T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1000.00</Value>
+      <Value>100000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1684,7 +1684,7 @@
       <Start>2026-09-07T08:00:00</Start>
       <Finish>2026-09-07T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1000.00</Value>
+      <Value>100000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1692,7 +1692,7 @@
       <Start>2026-09-08T08:00:00</Start>
       <Finish>2026-09-08T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1000.00</Value>
+      <Value>100000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1700,7 +1700,7 @@
       <Start>2026-09-09T08:00:00</Start>
       <Finish>2026-09-09T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1000.00</Value>
+      <Value>100000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1708,7 +1708,7 @@
       <Start>2026-09-10T08:00:00</Start>
       <Finish>2026-09-10T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1000.00</Value>
+      <Value>100000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1716,7 +1716,7 @@
       <Start>2026-09-11T08:00:00</Start>
       <Finish>2026-09-11T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1000.00</Value>
+      <Value>100000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1732,7 +1732,7 @@
       <Start>2026-09-01T08:00:00</Start>
       <Finish>2026-09-11T17:00:00</Finish>
       <Duration>PT72H0M0S</Duration>
-      <Cost>9000.0</Cost>
+      <Cost>900000.00</Cost>
       <Work>PT72H0M0S</Work>
     </Baseline>
     <ExtendedAttribute>
@@ -1769,7 +1769,7 @@
       <Start>2026-08-10T08:00:00</Start>
       <Finish>2026-08-10T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1000.00</Value>
+      <Value>100000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1777,7 +1777,7 @@
       <Start>2026-08-11T08:00:00</Start>
       <Finish>2026-08-11T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1000.00</Value>
+      <Value>100000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1785,7 +1785,7 @@
       <Start>2026-08-12T08:00:00</Start>
       <Finish>2026-08-12T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1000.00</Value>
+      <Value>100000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1793,7 +1793,7 @@
       <Start>2026-08-13T08:00:00</Start>
       <Finish>2026-08-13T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1000.00</Value>
+      <Value>100000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1801,7 +1801,7 @@
       <Start>2026-08-14T08:00:00</Start>
       <Finish>2026-08-14T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1000.00</Value>
+      <Value>100000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1817,7 +1817,7 @@
       <Start>2026-08-10T08:00:00</Start>
       <Finish>2026-08-14T17:00:00</Finish>
       <Duration>PT40H0M0S</Duration>
-      <Cost>5000.0</Cost>
+      <Cost>500000.00</Cost>
       <Work>PT40H0M0S</Work>
     </Baseline>
     <ExtendedAttribute>
@@ -1854,7 +1854,7 @@
       <Start>2026-08-17T08:00:00</Start>
       <Finish>2026-08-17T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1000.00</Value>
+      <Value>100000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1862,7 +1862,7 @@
       <Start>2026-08-18T08:00:00</Start>
       <Finish>2026-08-18T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1000.00</Value>
+      <Value>100000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1870,7 +1870,7 @@
       <Start>2026-08-19T08:00:00</Start>
       <Finish>2026-08-19T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1000.00</Value>
+      <Value>100000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1878,7 +1878,7 @@
       <Start>2026-08-20T08:00:00</Start>
       <Finish>2026-08-20T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1000.00</Value>
+      <Value>100000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1886,7 +1886,7 @@
       <Start>2026-08-21T08:00:00</Start>
       <Finish>2026-08-21T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1000.00</Value>
+      <Value>100000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1902,7 +1902,7 @@
       <Start>2026-08-17T08:00:00</Start>
       <Finish>2026-08-21T17:00:00</Finish>
       <Duration>PT40H0M0S</Duration>
-      <Cost>5000.0</Cost>
+      <Cost>500000.00</Cost>
       <Work>PT40H0M0S</Work>
     </Baseline>
     <ExtendedAttribute>
@@ -1940,7 +1940,7 @@
       <Start>2026-05-04T08:00:00</Start>
       <Finish>2026-05-04T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1948,7 +1948,7 @@
       <Start>2026-05-05T08:00:00</Start>
       <Finish>2026-05-05T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1956,7 +1956,7 @@
       <Start>2026-05-06T08:00:00</Start>
       <Finish>2026-05-06T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1964,7 +1964,7 @@
       <Start>2026-05-07T08:00:00</Start>
       <Finish>2026-05-07T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1972,7 +1972,7 @@
       <Start>2026-05-08T08:00:00</Start>
       <Finish>2026-05-08T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1980,7 +1980,7 @@
       <Start>2026-05-11T08:00:00</Start>
       <Finish>2026-05-11T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1988,7 +1988,7 @@
       <Start>2026-05-12T08:00:00</Start>
       <Finish>2026-05-12T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -1996,7 +1996,7 @@
       <Start>2026-05-13T08:00:00</Start>
       <Finish>2026-05-13T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2004,7 +2004,7 @@
       <Start>2026-05-14T08:00:00</Start>
       <Finish>2026-05-14T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2012,7 +2012,7 @@
       <Start>2026-05-15T08:00:00</Start>
       <Finish>2026-05-15T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2020,7 +2020,7 @@
       <Start>2026-05-18T08:00:00</Start>
       <Finish>2026-05-18T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2028,7 +2028,7 @@
       <Start>2026-05-19T08:00:00</Start>
       <Finish>2026-05-19T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2036,7 +2036,7 @@
       <Start>2026-05-20T08:00:00</Start>
       <Finish>2026-05-20T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2044,7 +2044,7 @@
       <Start>2026-05-21T08:00:00</Start>
       <Finish>2026-05-21T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2052,7 +2052,7 @@
       <Start>2026-05-22T08:00:00</Start>
       <Finish>2026-05-22T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2060,7 +2060,7 @@
       <Start>2026-05-25T08:00:00</Start>
       <Finish>2026-05-25T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2068,7 +2068,7 @@
       <Start>2026-05-26T08:00:00</Start>
       <Finish>2026-05-26T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2076,7 +2076,7 @@
       <Start>2026-05-27T08:00:00</Start>
       <Finish>2026-05-27T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2084,7 +2084,7 @@
       <Start>2026-05-28T08:00:00</Start>
       <Finish>2026-05-28T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2092,7 +2092,7 @@
       <Start>2026-05-29T08:00:00</Start>
       <Finish>2026-05-29T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2100,7 +2100,7 @@
       <Start>2026-06-01T08:00:00</Start>
       <Finish>2026-06-01T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2108,7 +2108,7 @@
       <Start>2026-06-02T08:00:00</Start>
       <Finish>2026-06-02T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2116,7 +2116,7 @@
       <Start>2026-06-03T08:00:00</Start>
       <Finish>2026-06-03T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2124,7 +2124,7 @@
       <Start>2026-06-04T08:00:00</Start>
       <Finish>2026-06-04T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2132,7 +2132,7 @@
       <Start>2026-06-05T08:00:00</Start>
       <Finish>2026-06-05T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2140,7 +2140,7 @@
       <Start>2026-06-08T08:00:00</Start>
       <Finish>2026-06-08T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2148,7 +2148,7 @@
       <Start>2026-06-09T08:00:00</Start>
       <Finish>2026-06-09T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2156,7 +2156,7 @@
       <Start>2026-06-10T08:00:00</Start>
       <Finish>2026-06-10T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2164,7 +2164,7 @@
       <Start>2026-06-11T08:00:00</Start>
       <Finish>2026-06-11T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2172,7 +2172,7 @@
       <Start>2026-06-12T08:00:00</Start>
       <Finish>2026-06-12T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2180,7 +2180,7 @@
       <Start>2026-06-15T08:00:00</Start>
       <Finish>2026-06-15T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2188,7 +2188,7 @@
       <Start>2026-06-16T08:00:00</Start>
       <Finish>2026-06-16T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2196,7 +2196,7 @@
       <Start>2026-06-17T08:00:00</Start>
       <Finish>2026-06-17T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2204,7 +2204,7 @@
       <Start>2026-06-18T08:00:00</Start>
       <Finish>2026-06-18T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2212,7 +2212,7 @@
       <Start>2026-06-19T08:00:00</Start>
       <Finish>2026-06-19T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2220,7 +2220,7 @@
       <Start>2026-06-22T08:00:00</Start>
       <Finish>2026-06-22T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2228,7 +2228,7 @@
       <Start>2026-06-23T08:00:00</Start>
       <Finish>2026-06-23T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2236,7 +2236,7 @@
       <Start>2026-06-24T08:00:00</Start>
       <Finish>2026-06-24T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2244,7 +2244,7 @@
       <Start>2026-06-25T08:00:00</Start>
       <Finish>2026-06-25T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2252,7 +2252,7 @@
       <Start>2026-06-26T08:00:00</Start>
       <Finish>2026-06-26T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2260,7 +2260,7 @@
       <Start>2026-06-29T08:00:00</Start>
       <Finish>2026-06-29T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2268,7 +2268,7 @@
       <Start>2026-06-30T08:00:00</Start>
       <Finish>2026-06-30T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2276,7 +2276,7 @@
       <Start>2026-07-01T08:00:00</Start>
       <Finish>2026-07-01T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2284,7 +2284,7 @@
       <Start>2026-07-02T08:00:00</Start>
       <Finish>2026-07-02T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2292,7 +2292,7 @@
       <Start>2026-07-03T08:00:00</Start>
       <Finish>2026-07-03T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2300,7 +2300,7 @@
       <Start>2026-07-06T08:00:00</Start>
       <Finish>2026-07-06T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2308,7 +2308,7 @@
       <Start>2026-07-07T08:00:00</Start>
       <Finish>2026-07-07T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2316,7 +2316,7 @@
       <Start>2026-07-08T08:00:00</Start>
       <Finish>2026-07-08T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2324,7 +2324,7 @@
       <Start>2026-07-09T08:00:00</Start>
       <Finish>2026-07-09T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2332,7 +2332,7 @@
       <Start>2026-07-10T08:00:00</Start>
       <Finish>2026-07-10T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2340,7 +2340,7 @@
       <Start>2026-07-13T08:00:00</Start>
       <Finish>2026-07-13T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2348,7 +2348,7 @@
       <Start>2026-07-14T08:00:00</Start>
       <Finish>2026-07-14T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2356,7 +2356,7 @@
       <Start>2026-07-15T08:00:00</Start>
       <Finish>2026-07-15T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2364,7 +2364,7 @@
       <Start>2026-07-16T08:00:00</Start>
       <Finish>2026-07-16T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2372,7 +2372,7 @@
       <Start>2026-07-17T08:00:00</Start>
       <Finish>2026-07-17T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2380,7 +2380,7 @@
       <Start>2026-07-20T08:00:00</Start>
       <Finish>2026-07-20T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2388,7 +2388,7 @@
       <Start>2026-07-21T08:00:00</Start>
       <Finish>2026-07-21T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2396,7 +2396,7 @@
       <Start>2026-07-22T08:00:00</Start>
       <Finish>2026-07-22T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2404,7 +2404,7 @@
       <Start>2026-07-23T08:00:00</Start>
       <Finish>2026-07-23T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2412,7 +2412,7 @@
       <Start>2026-07-24T08:00:00</Start>
       <Finish>2026-07-24T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2420,7 +2420,7 @@
       <Start>2026-07-27T08:00:00</Start>
       <Finish>2026-07-27T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2428,7 +2428,7 @@
       <Start>2026-07-28T08:00:00</Start>
       <Finish>2026-07-28T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2436,7 +2436,7 @@
       <Start>2026-07-29T08:00:00</Start>
       <Finish>2026-07-29T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2444,7 +2444,7 @@
       <Start>2026-07-30T08:00:00</Start>
       <Finish>2026-07-30T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2452,7 +2452,7 @@
       <Start>2026-07-31T08:00:00</Start>
       <Finish>2026-07-31T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>400.00</Value>
+      <Value>40000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2870,15 +2870,15 @@
       <Unit>2</Unit>
       <Value>1.2162</Value>
     </TimephasedData>
-    <BCWS>16800.00</BCWS>
-    <BCWP>11700.00</BCWP>
+    <BCWS>1680000.00</BCWS>
+    <BCWP>1170000.00</BCWP>
     <EarnedValueMethod>1</EarnedValueMethod>
     <Baseline>
       <Number>1</Number>
       <Start>2026-05-04T08:00:00</Start>
       <Finish>2026-07-31T17:00:00</Finish>
       <Duration>PT520H0M0S</Duration>
-      <Cost>26000.0</Cost>
+      <Cost>2600000.00</Cost>
       <Work>PT520H0M0S</Work>
     </Baseline>
     <ExtendedAttribute>
@@ -2915,7 +2915,7 @@
       <Start>2026-04-06T08:00:00</Start>
       <Finish>2026-04-06T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1200.00</Value>
+      <Value>120000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2923,7 +2923,7 @@
       <Start>2026-04-07T08:00:00</Start>
       <Finish>2026-04-07T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1200.00</Value>
+      <Value>120000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2931,7 +2931,7 @@
       <Start>2026-04-08T08:00:00</Start>
       <Finish>2026-04-08T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1200.00</Value>
+      <Value>120000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2939,7 +2939,7 @@
       <Start>2026-04-09T08:00:00</Start>
       <Finish>2026-04-09T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1200.00</Value>
+      <Value>120000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -2947,7 +2947,7 @@
       <Start>2026-04-10T08:00:00</Start>
       <Finish>2026-04-10T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1200.00</Value>
+      <Value>120000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -3053,15 +3053,15 @@
       <Unit>2</Unit>
       <Value>10.0000</Value>
     </TimephasedData>
-    <BCWS>6000.00</BCWS>
-    <BCWP>6000.00</BCWP>
+    <BCWS>600000.00</BCWS>
+    <BCWP>600000.00</BCWP>
     <EarnedValueMethod>1</EarnedValueMethod>
     <Baseline>
       <Number>1</Number>
       <Start>2026-04-06T08:00:00</Start>
       <Finish>2026-04-10T17:00:00</Finish>
       <Duration>PT40H0M0S</Duration>
-      <Cost>6000.0</Cost>
+      <Cost>600000.00</Cost>
       <Work>PT40H0M0S</Work>
     </Baseline>
     <ExtendedAttribute>
@@ -3097,7 +3097,7 @@
       <Start>2026-04-13T08:00:00</Start>
       <Finish>2026-04-13T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1200.00</Value>
+      <Value>120000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -3105,7 +3105,7 @@
       <Start>2026-04-14T08:00:00</Start>
       <Finish>2026-04-14T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1200.00</Value>
+      <Value>120000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -3113,7 +3113,7 @@
       <Start>2026-04-15T08:00:00</Start>
       <Finish>2026-04-15T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1200.00</Value>
+      <Value>120000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -3121,7 +3121,7 @@
       <Start>2026-04-16T08:00:00</Start>
       <Finish>2026-04-16T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1200.00</Value>
+      <Value>120000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -3129,7 +3129,7 @@
       <Start>2026-04-17T08:00:00</Start>
       <Finish>2026-04-17T17:00:00</Finish>
       <Unit>1</Unit>
-      <Value>1200.00</Value>
+      <Value>120000.00</Value>
     </TimephasedData>
     <TimephasedData>
       <Type>10</Type>
@@ -3771,15 +3771,15 @@
       <Unit>2</Unit>
       <Value>1.4035</Value>
     </TimephasedData>
-    <BCWS>6000.00</BCWS>
-    <BCWP>4800.00</BCWP>
+    <BCWS>600000.00</BCWS>
+    <BCWP>480000.00</BCWP>
     <EarnedValueMethod>1</EarnedValueMethod>
     <Baseline>
       <Number>1</Number>
       <Start>2026-04-13T08:00:00</Start>
       <Finish>2026-04-17T17:00:00</Finish>
       <Duration>PT40H0M0S</Duration>
-      <Cost>6000.0</Cost>
+      <Cost>600000.00</Cost>
       <Work>PT40H0M0S</Work>
     </Baseline>
     <ExtendedAttribute>

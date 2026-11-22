@@ -141,6 +141,20 @@ value inherits that.
 Same category as the minutes trap: an internal unit that is not the one on screen. One file
 in the measured set carried 4,554 material assignments.
 
+## Money arrives in hundredths
+
+`measured` (22/11/2026). MSPDI writes every money field in **hundredths of the currency
+unit**: `<Cost>17630891800</Cost>` is R$ 176.308.918,00 on Project's screen. Measured by
+opening a fictitious MSPDI with costs x100 in MS Project 16 (pt-BR): the sum Project
+displayed was exactly the XML value / 100. A real export read raw had produced a budget
+about 100x its contract size. Microsoft's MSPDI reference types `Cost` as a decimal and
+says nothing of the unit; MPXJ divides every MSPDI currency field by 100
+(`DatatypeConverter.parseCurrency`, also applied to assignment time-phased cost). The task baseline-cost blocks (type 10) share the unit of baseline `Cost`: they sum to it on 4,677 of 4,677 tasks measured. Rates follow a
+different convention: MPXJ does not scale `StandardRate` / `OvertimeRate` (`parseRate`),
+though it does scale `CostPerUse`. The engine converts once, at parse time
+(`parse_mspdi.money()`), and reads no rate. Ratios -- SPI, CPI, percents, weights -- were
+never affected; until this was measured, every absolute money figure was 100x too large.
+
 ## The WBS number lies about the branch
 
 `reported`. The WBS numbering can misrepresent which branch an activity belongs to — a

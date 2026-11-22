@@ -629,6 +629,69 @@ def main() -> int:
     if any(p["earned_cum"] is not None for p in curve["periods"] if p["period"] > "2026-06"):
         failures.append("phasing: earned values appear after the status month")
 
+    # ---- money scale. MSPDI writes money in hundredths of the currency unit
+    # (measured 22/11/2026 in MS Project 16: the XML value / 100 is what Project
+    # shows). The fixture is written that way, so the model must read 10,000.00
+    # where the file says 1000000.00. And the conversion must move absolute money
+    # only: every ratio -- SPI, percents, weights, reconciliation counts -- has to be
+    # identical to what the unscaled reading gave, to the last digit.
+    bl_costs = sorted({((t.get("baselines") or {}).get("1") or {}).get("cost")
+                       for t in pm["tasks"] if (t.get("baselines") or {}).get("1")} - {None})
+    if 10000.0 not in bl_costs or max(bl_costs) >= 1e6:
+        failures.append(f"money: baseline cost not read in currency units (hundredths not divided): "
+                        f"{bl_costs[:4]}")
+    import parse_mspdi as money_pm
+    pos_xml = os.path.join(ROOT, "fixtures", "positive.xml")
+
+    def money_run(scale):
+        saved = money_pm.MONEY_SCALE
+        money_pm.MONEY_SCALE = scale
+        try:
+            mdl = money_pm.parse(pos_xml)
+            crv = phasing_mod.build(pos_xml, None)
+            pay = report_data.build_review(mdl, analyse_raw(mdl), grouping="DISCIPLINA",
+                                           lang="en", phasing=crv)
+        finally:
+            money_pm.MONEY_SCALE = saved
+        return mdl, crv, pay
+
+    m_raw, c_raw, p_raw = money_run(1)       # the reading before 22/11/2026
+    m_cur, c_cur, p_cur = money_run(100)     # currency units
+
+    def ratios(crv, pay):
+        tt = crv["totals"]
+        return {
+            "totals": {k: tt[k] for k in ("planned_pct", "earned_pct", "earned_alt_pct", "spi",
+                                          "method_gap_points")},
+            "phasing_counts": {k: v for k, v in crv["reconciliation"].items()
+                               if isinstance(v, (int, float)) and not isinstance(v, bool)},
+            "periods": [(p["period"], p["planned_cum_pct"], p["earned_cum_pct"],
+                         p["earned_alt_cum_pct"], p["spi_cum"]) for p in crv["periods"]],
+            "review_counts": {k: v for k, v in pay["meta"]["reconciliation"].items()
+                              if isinstance(v, int) and not isinstance(v, bool)},
+            "groups": [(g.get("label"), g.get("weight_pct"), g.get("planned_pct"), g.get("earned_pct"))
+                       for g in pay["charts"]["by_group"]],
+        }
+
+    r_raw, r_cur = ratios(c_raw, p_raw), ratios(c_cur, p_cur)
+    for k in r_raw:
+        if r_raw[k] != r_cur[k]:
+            failures.append(f"money: converting the scale changed a ratio ({k}): {r_raw[k]} != {r_cur[k]}")
+    for k in ("bac", ):
+        a, b = c_raw[k], c_cur[k]
+        if abs(a / 100 - b) > 0.005 + 1e-9:
+            failures.append(f"money: {k} {b} is not the unscaled {a} / 100")
+    for k in ("planned_to_date", "earned_to_date", "sv"):
+        a, b = c_raw["totals"][k], c_cur["totals"][k]
+        if (a is None) != (b is None) or (a is not None and abs(a / 100 - b) > 0.005 + 1e-9):
+            failures.append(f"money: totals.{k} {b} is not the unscaled {a} / 100")
+    for t_raw, t_cur in zip(m_raw["tasks"], m_cur["tasks"]):
+        for k in ("bcws", "bcwp", "acwp", "cost", "fixed_cost"):
+            a, b = t_raw[k], t_cur[k]
+            if (a is None) != (b is None) or (a is not None and abs(a / 100 - b) > 1e-9 * max(1.0, abs(b))):
+                failures.append(f"money: task {t_cur['uid']} {k} {b} is not the raw {a} / 100")
+                break
+
     # ---- productivity from the file's own assignments. Quantities are hours of
     # an ISO duration; three rates; four dates; three verdicts.
     import resources as resources_mod
@@ -1024,6 +1087,7 @@ def main() -> int:
     print("  network: lead honoured, both-complete ignored and recorded, SS lag violation caught")
     print("  reconciliation: file BCWP read, ahead-of-baseline classified, no unexplained gap")
     print("  phasing: blocks equal cost and BCWS on every task; sentinel dropped; curve rendered")
+    print("  money: read in hundredths, divided once; absolute figures /100, every ratio identical")
     print("  productivity: quantities from the ISO hours, three rates, projection and verdicts")
     print("  quality: fourteen metrics with controls; Q12 and Q13 declared not computable")
     print("  forecast: earned schedule, look-ahead, rates, milestone bands, rain exposure")
