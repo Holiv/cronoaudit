@@ -8,7 +8,26 @@ inventar um.
 O suplemento é só o **atalho de entrada**. Ele exporta o XML do arquivo aberto e abre um terminal
 com a skill já iniciada sobre ele. Tudo o que ele faz você pode fazer à mão (seção 7).
 
-**Estado: v0.3, beta.** A v0.2 foi usada de ponta a ponta em duas máquinas Windows: com o
+## Instalar com um comando (v0.4)
+
+Com o Project fechado, no PowerShell:
+
+```
+irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/msproject/install-msproject.ps1 | iex
+```
+
+O instalador guarda uma cópia do `Global.MPT` e do arquivo da faixa de opções, abre o Project,
+copia o módulo do modelo `cronoaudit.mpt` para o `Global.MPT` e acrescenta a aba **Cronoaudit**
+sem apagar as suas outras abas. A pessoa responde duas coisas: **Computador**, se a janela de
+Logon perguntar o perfil, e **Desabilitar macros**, no aviso do modelo. Nenhuma configuração de
+segurança é alterada. Para remover: `$env:CRONOAUDIT_MSPROJECT_REMOVE="1"` e o mesmo comando.
+
+Testado no Windows em 22/11/2026: instalação, os botões num `.mpp` recém-aberto (sem pergunta de
+salvar; a exportação lê uma cópia do arquivo salvo em disco), instalação por cima da versão
+anterior (o módulo é substituído) e remoção. As seções 3 a 5 abaixo, de instalação manual, ficam
+como alternativa. O modo secreto ainda não está disponível pelos botões.
+
+**Estado anterior: v0.3, beta.** A v0.2 foi usada de ponta a ponta em duas máquinas Windows: com o
 GitHub Copilot CLI numa e o Claude Code na outra, os dois agentes relataram os mesmos números do
 motor. Ainda não medido em máquina real: da v0.2.1, a rota pelo VS Code, a lista de arquivos no
 `pedido.md` e a tela de configuração; da v0.3, tudo o que é do modo (ler e gravar o

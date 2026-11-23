@@ -1,5 +1,5 @@
 Attribute VB_Name = "Cronoaudit"
-' cronoaudit para MS Project - v0.3 (21/11/2026)
+' cronoaudit para MS Project - v0.4.1 (22/11/2026)
 '
 ' A cronoaudit e uma SKILL: o agente le o cronograma por ela, conversa com o planejador,
 ' interpreta e personaliza o relatorio. O motor em Python e o instrumento da skill: e dele
@@ -66,7 +66,7 @@ Public Sub CronoauditExportarXml()
     pasta = NovaPastaDeRodada(base)
     If pasta = "" Then Exit Sub
     destino = pasta & "\" & base & ".xml"
-    If Not ExportarXml(destino, origem, True) Then Exit Sub
+    If Not ExportarCopia(destino, origem) Then Exit Sub
     SaveSetting APP, SEC, "ultimo", pasta
     MsgBox "XML exportado em:" & vbCrLf & destino & vbCrLf & vbCrLf & _
         "A pasta vai abrir. Para analisar, abra o seu agente nessa pasta e peca:" & vbCrLf & _
@@ -83,6 +83,17 @@ End Sub
 
 Public Sub CronoauditCompararSemIA()
     FluxoComparacao False
+End Sub
+
+' Sem interface: grava uma linha em %TEMP%\cronoaudit-ping.txt. O instalador chama por automacao
+' para confirmar que o modulo esta no Global.MPT.
+Public Sub CronoauditPing()
+    Dim f As Integer
+    On Error Resume Next
+    f = FreeFile
+    Open Environ$("TEMP") & "\cronoaudit-ping.txt" For Append As #f
+    Print #f, Format(Now, "yyyy-mm-dd hh:nn:ss") & " | modulo em: " & ThisProject.Name
+    Close #f
 End Sub
 
 Public Sub CronoauditConfigurar()
@@ -185,7 +196,7 @@ Private Sub FluxoAnalise(ByVal comIA As Boolean)
     pasta = NovaPastaDeRodada(base)
     If pasta = "" Then Exit Sub
     xmlAtual = pasta & "\" & base & ".xml"
-    If Not ExportarXml(xmlAtual, origem, True) Then Exit Sub
+    If Not ExportarCopia(xmlAtual, origem) Then Exit Sub
     SaveSetting APP, SEC, "ultimo", pasta
     If comIA Then
         If Not GravarUtf8(pasta & "\pedido.md", PedidoAnalise(base, pasta, py, rv)) Then Exit Sub
@@ -233,7 +244,7 @@ Private Sub FluxoComparacao(ByVal comIA As Boolean)
     If pasta = "" Then Exit Sub
     xmlAtivo = pasta & "\" & baseAtivo & ".xml"
     xmlOutro = pasta & "\" & baseOutro & ".xml"
-    If Not ExportarXml(xmlAtivo, origem, True) Then Exit Sub
+    If Not ExportarCopia(xmlAtivo, origem) Then Exit Sub
 
     If LCase$(Right$(outro, 4)) = ".xml" Then
         On Error Resume Next
@@ -792,9 +803,7 @@ End Function
 
 ' ===================== etapas =====================
 
-' Bloqueia antes de exportar: ha arquivo, esta em disco, sem alteracoes pendentes.
-' Alteracoes pendentes importam porque o "Salvar como" pode trocar o documento ativo e o
-' original e reaberto do disco: sem salvar, a alteracao se perderia.
+' Bloqueia antes de exportar: ha arquivo, esta em disco, nao e um XML.
 Private Function PreVoo(ByRef origem As String) As Boolean
     Dim i As Long
     If Projects.Count = 0 Then
@@ -810,30 +819,9 @@ Private Function PreVoo(ByRef origem As String) As Boolean
         MsgBox "O arquivo aberto ja e um XML. Abra o .mpp, ou use a cronoaudit direto pelo terminal sobre este XML.", vbExclamation, TITULO
         Exit Function
     End If
-    If Not ActiveProject.Saved Then
-        If MsgBox("O cronograma tem alteracoes nao salvas." & vbCrLf & vbCrLf & _
-            "Sim: salvar agora e continuar." & vbCrLf & "Nao: cancelar.", vbYesNo + vbExclamation, TITULO) <> vbYes Then Exit Function
-        On Error Resume Next
-        FileSave
-        If Err.Number <> 0 Then
-            Falha "salvar o cronograma", Err
-            On Error GoTo 0
-            Exit Function
-        End If
-        On Error GoTo 0
-        If Not ActiveProject.Saved Then
-            MsgBox "O cronograma nao foi salvo. Cancelado.", vbExclamation, TITULO
-            Exit Function
-        End If
-        origem = ActiveProject.FullName
-    End If
-    For i = 1 To Projects.Count
-        If Not Projects(i).Saved Then
-            MsgBox "Ha outro cronograma aberto com alteracoes nao salvas:" & vbCrLf & Projects(i).FullName & vbCrLf & vbCrLf & _
-                "Salve ou feche antes de continuar: a exportacao pode fechar e reabrir arquivos.", vbExclamation, TITULO
-            Exit Function
-        End If
-    Next i
+    ' Nada de perguntar por alteracoes nao salvas: o Project marca o arquivo assim so por abrir
+    ' (medido em 22/11/2026), e "salvar" gravaria o arquivo da pessoa. A exportacao le uma
+    ' COPIA do arquivo como esta em disco; a janela da pessoa nao e tocada.
     If ActiveProject.Subprojects.Count > 0 Then
         If MsgBox("Este arquivo e um mestre com " & ActiveProject.Subprojects.Count & _
             " subprojetos. A analise de um mestre e menos confiavel que a de cada subprojeto. Continuar?", _
@@ -888,6 +876,29 @@ Private Function ExportarXml(ByVal destino As String, ByVal original As String, 
         Exit Function
     End If
     ExportarXml = True
+End Function
+
+' Exporta o arquivo ATIVO sem tocar na janela da pessoa: copia o arquivo como esta em disco para
+' uma pasta temporaria, abre a copia so para leitura, exporta, fecha e apaga. Alteracoes nao
+' salvas nao entram (a analise le o que esta em disco).
+Private Function ExportarCopia(ByVal destino As String, ByVal original As String) As Boolean
+    Dim fso As Object, tmp As String, copia As String
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    tmp = Environ$("TEMP") & "\cronoaudit-copia-" & Format(Now, "yyyymmddhhnnss")
+    copia = tmp & "\" & NomeBase(Mid$(original, InStrRev(original, "\") + 1)) & " (cronoaudit).mpp"
+    On Error Resume Next
+    fso.CreateFolder tmp
+    fso.CopyFile original, copia, True
+    If Err.Number <> 0 Then
+        Falha "copiar o cronograma para exportar", Err
+        On Error GoTo 0
+        Exit Function
+    End If
+    On Error GoTo 0
+    ExportarCopia = ExportarOutro(copia, destino, original)
+    On Error Resume Next
+    fso.DeleteFolder tmp, True
+    On Error GoTo 0
 End Function
 
 ' Abre o outro cronograma so para leitura, exporta, fecha sem salvar e devolve o foco ao original.
@@ -1034,6 +1045,11 @@ End Function
 ' O Project nao expoe FileDialog de forma confiavel. Se a janela falhar, cai para InputBox.
 Private Function EscolherArquivo() As String
     Dim shApp As Object, item As Object, p As String, falhou As Boolean
+    ' Primeiro, as outras versoes na mesma pasta do arquivo ativo: e onde elas costumam estar.
+    ' O seletor do Windows (em arvore, a partir da Area de Trabalho) fica para o resto.
+    p = EscolherNaPasta()
+    If p = "-" Then Exit Function
+    If p <> "" Then GoTo validar
     On Error Resume Next
     Set shApp = CreateObject("Shell.Application")
     Set item = shApp.BrowseForFolder(0, "Escolha a outra versao do cronograma (.mpp ou .xml)", &H4000 + &H10 + &H40, 0)
@@ -1047,6 +1063,7 @@ Private Function EscolherArquivo() As String
         p = InputBox("Caminho completo da outra versao (.mpp ou .xml):", TITULO, GetSetting(APP, SEC, "outro", ""))
     End If
     If p = "" Then Exit Function
+validar:
     If InStrRev(p, ".") <= InStrRev(p, "\") Then
         MsgBox "Escolha um .mpp ou um .xml.", vbExclamation, TITULO
         Exit Function
@@ -1063,6 +1080,38 @@ Private Function EscolherArquivo() As String
     End Select
     SaveSetting APP, SEC, "outro", p
     EscolherArquivo = p
+End Function
+
+' Lista os .mpp e .xml da pasta do arquivo ativo (menos ele) e pede o numero.
+' Devolve o caminho, "" para procurar em outra pasta, ou "-" se a pessoa cancelou.
+Private Function EscolherNaPasta() As String
+    Dim pasta As String, padrao As Variant, nome As String
+    Dim lista() As String, n As Long, i As Long, txt As String, r As String
+    pasta = ActiveProject.Path
+    If pasta = "" Then Exit Function
+    ReDim lista(1 To 30)
+    For Each padrao In Array("*.mpp", "*.xml")
+        nome = Dir(pasta & "\" & padrao)
+        Do While nome <> "" And n < 30
+            If LCase$(pasta & "\" & nome) <> LCase$(ActiveProject.FullName) Then
+                n = n + 1
+                lista(n) = nome
+            End If
+            nome = Dir()
+        Loop
+    Next padrao
+    If n = 0 Then Exit Function
+    For i = 1 To n
+        txt = txt & i & "   " & lista(i) & vbCrLf
+    Next i
+    r = InputBox("Outras versoes nesta pasta:" & vbCrLf & vbCrLf & txt & vbCrLf & _
+        "Digite o numero. 0 para procurar em outra pasta.", TITULO, "1")
+    If r = "" Then EscolherNaPasta = "-": Exit Function
+    If Not IsNumeric(r) Then EscolherNaPasta = "-": Exit Function
+    i = CLng(r)
+    If i = 0 Then Exit Function
+    If i < 1 Or i > n Then EscolherNaPasta = "-": Exit Function
+    EscolherNaPasta = pasta & "\" & lista(i)
 End Function
 
 ' ===================== utilitarios =====================

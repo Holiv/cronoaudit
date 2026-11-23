@@ -373,6 +373,9 @@ def main() -> None:
                     help="run in free mode explicitly: whatever an agent reads goes to its provider")
     ap.add_argument("--config", action="store_true",
                     help="print the stored mode preference and exit")
+    ap.add_argument("--from-project", action="store_true",
+                    help="Windows: analyse the schedule open in MS Project (exported through Project "
+                         "itself); with one file given, that file is the previous version")
     ap.add_argument("--outdir", help="where to write the report (default: next to the input)")
     ap.add_argument("--threshold-days", type=int, default=run_checks.DEFAULT_THRESHOLD_DAYS,
                     help="the E and C threshold, in calendar days (default 30)")
@@ -409,14 +412,37 @@ def main() -> None:
     if args.config:
         print(describe_config(cfg_mod.load(), mode_txt))
         return
+    if getattr(args, "from_project", False):
+        import mpp_export
+        args.files = list(args.files) + [mpp_export.ACTIVE]
     if not args.files:
         ap.error(mode_txt["no_files"])
     mode = settle_mode(args, args.lang)
 
-    if mode == "secret":
-        import secret_mode
-        raise SystemExit(secret_mode.run(args))
-    analyse(args)
+    # A .mpp, or the schedule open in Project, is exported through Project itself
+    # (Windows), so nobody has to know the engine reads XML. The XML lives in a
+    # temporary folder for the run; reports go beside the file the person named.
+    import mpp_export
+    try:
+        xml_files, origins, tmpdir, notes = mpp_export.prepare(args.files, args.lang or cfg_mod.system_lang())
+    except mpp_export.ExportError as exc:
+        raise SystemExit(f"cronoaudit: {exc}")
+    for note in notes:
+        # Names the file, so not in secret mode, where the screen stays free of names.
+        if mode != "secret":
+            print(f"cronoaudit: {note}", file=sys.stderr)
+    try:
+        if tmpdir:
+            args.files = xml_files
+            if not args.outdir and mode != "secret":
+                args.outdir = os.path.dirname(origins[-1])
+        args.origin_files = origins
+        if mode == "secret":
+            import secret_mode
+            raise SystemExit(secret_mode.run(args))
+        analyse(args)
+    finally:
+        mpp_export.cleanup(tmpdir)
 
 
 def analyse(args, outdir=None) -> list:

@@ -61,7 +61,7 @@ Os números de linha são os da rev04.
 | 3 | Linha 36, *Imprimação — Seg. 1*, iniciada em 29/10 com a linha 35, *Base de brita graduada — Seg. 1*, ainda aberta | Achado A1, fora de sequência, as duas pontas marcadas |
 | 4 | As linhas 77, 89, 136 e 170 não têm sucessora | Qualidade da rede Q1 (4 de 96, abaixo do limiar, então a rede é lida como vinculada) |
 | 5 | As mesmas quatro, mais a linha 57 inserida, carregam de 79 a 205 dias de folga | Qualidade da rede Q6 |
-| 6 | Linha 55, *Aterro compactado — Seg. 2*: 95% concluída pela duração, 57% físico | Curva S: o outro método de valor agregado leria 0,44 ponto a mais; produtividade: veredicto crítico |
+| 6 | Linha 55, *Aterro compactado — Seg. 2*: 95% concluída pela duração, 57% físico | Curva S: o outro método de valor agregado leria 0,44 ponto a mais, e a leitura nomeia a linha 55 como 100% da diferença; produtividade: medição inconsistente |
 | 7 | Linha 29, *Bueiros tubulares — Seg. 1*: o término real era 05/06/2026 na rev03 e aparece como 01/06/2026, a data da linha de base, na rev04 | Ciclo: passado reescrito, um término real |
 | 8 | Um vínculo incluído (linha 106 depois da 94) e um removido (a linha 127 deixou de depender da 123) | Ciclo: lógica |
 | 9 | Linha 157, *Lançamento das vigas pré-moldadas*: 12 dias viraram 20, sem ter iniciado | Ciclo: duração alterada em atividade não iniciada |
