@@ -124,7 +124,7 @@ an enforcement. What code enforces: the engine refuses secret mode when Claude C
 it; the work folder holds only coded files (a leak test proves it on every test run); and,
 **for Claude Code only**, the folder carries deny rules and a hook that let a session read
 only its own folder and run only the finishing scripts. The hook is a tripwire, not a
-sandbox. **For Copilot CLI, Codex and Gemini nothing is enforced yet**: the folder carries
+sandbox. **For Copilot CLI, Codex and Grok nothing is enforced yet**: the folder carries
 the same rules as instructions only. Coding lowers what leaves the machine; it does not
 make the structure, durations and row IDs anonymous, and it does not replace the company's
 own policy on AI services. If the person asks whether their data is protected, say exactly
