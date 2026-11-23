@@ -47,6 +47,33 @@ Useful flags: `--outdir` to choose where the output lands, `--threshold-days` to
 threshold for the pulled-forward and delayed checks, `--tolerance-days` for the duration
 thermometer, `--quiet` to write the files without the console summary.
 
+### Modes: free and secret
+
+The engine sends nothing. The mode is about what an **agent** reads: in free mode, whatever it
+reads goes to its provider; in secret mode (experimental) the agent reads only a coded copy,
+in a work folder, and the report is decoded on this machine.
+
+| Command | Does |
+|---|---|
+| `review.py delivery.xml --free` | runs in free mode, said explicitly |
+| `review.py delivery.xml --secret` | secret mode, run by the person in a terminal: real report into the vault, coded copy into a new work folder (printed), where the agent is then started. `--workdir` chooses where work folders go (default `~/cronoaudit-work`), `--project NAME` keeps the same codes across folders. Started by Claude Code it stops with exit code 3, having read nothing. `--secreto` is the same flag |
+| `secret_decode.py finish [WORKDIR]` | decodes the work folder's report, synthesis included, beside the original and in the vault, checks it equals the engine's output, opens it; prints counts only |
+| `secret_decode.py text [WORKDIR]` | the person's own command: translates a pasted coded answer into real names, dates and money on their screen. Refuses inside an agent |
+| `review.py --secret on` · `off` · `ask` | stores the preference and exits: secret by default · free, never ask · ask (factory default) |
+| `review.py --config` | prints the stored preference; the first line is `secret: ask`, `on` or `off` |
+
+With neither flag the stored preference decides: `on` behaves as `--secret`, `off` as `--free`.
+With `ask`, at a terminal the engine asks before opening the file (`s` free, `secreto`, `nunca`
+to stop asking, `n` to cancel); when nobody can answer, as when an agent runs it, it writes one
+line to stderr saying the run is in free mode and goes on.
+
+The preference is `~/.cronoaudit/config.json` (`%USERPROFILE%\.cronoaudit\config.json` on
+Windows), key `secret`, shared with the skill and the MS Project add-in. The same folder holds
+the secret-mode vault (`vault/keys/<project>.json`: key, token table, date origin, money
+factor; `vault/<run>/`: the real outputs and the table decoding needs). A file that is missing,
+unreadable or holds another value counts as `ask`, and the engine says which. Setting the
+environment variable `CRONOAUDIT_CONFIG_DIR` moves the folder.
+
 ## Step 2b — find out what the organisation keeps in its own fields
 
 Optional, and worth doing once per organisation:

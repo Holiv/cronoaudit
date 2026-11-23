@@ -51,6 +51,22 @@ TYPE_BASELINE_COST = "10"
 TYPE_PHYSICAL_PCT = "11"
 
 
+
+# An activity whose percent complete and physical percent differ by this many points
+# or more is listed: one of the two is not what was measured.
+PVP_POINTS = 20.0
+
+
+def _pvp(rows: list, gap_total: float) -> dict:
+    rows.sort(key=lambda r: -r["value_at_stake"])
+    for r in rows:
+        r["share_of_gap_pct"] = round(r.pop("_signed") / gap_total * 100, 1) if abs(gap_total) >= 0.5 else None
+    return {"threshold_points": PVP_POINTS, "count": len(rows), "rows": rows[:200],
+            "basis": "per activity with baseline cost: |percent complete - physical percent| at or "
+                     "above the threshold; value at stake = baseline cost x the gap; share of gap = "
+                     "the activity's part of the difference between the two methods over all "
+                     "activities, cost x (physical - percent)"}
+
 def month_key(d: datetime) -> str:
     return d.strftime("%Y-%m")
 
@@ -84,6 +100,7 @@ def stream(path: str, group_field: str | None):
         rec = {
             "id": int(el.findtext(NS + "ID") or 0),
             "uid": int(el.findtext(NS + "UID") or 0),
+            "name": el.findtext(NS + "Name") or "",
             "cost": (mspdi.money(bl.findtext(NS + "Cost")) or 0.0) if bl is not None else 0.0,
             "bcws": mspdi.money(el.findtext(NS + "BCWS")) or 0.0,
             "bcwp": mspdi.money(el.findtext(NS + "BCWP")) or 0.0,
@@ -172,6 +189,10 @@ def build(path: str, group_field: str | None) -> dict:
     file_bcws_nonzero = file_bcwp_nonzero = 0
     bac = 0.0
     dropped = 0
+    # Percent complete against physical percent, per activity: the two earned-value
+    # methods disagree activity by activity before they disagree in total.
+    pvp_rows = []
+    pvp_gap_total = 0.0
     method_votes = defaultdict(int)
 
     planned = defaultdict(float)      # day -> planned cost
@@ -243,6 +264,15 @@ def build(path: str, group_field: str | None) -> dict:
             earned[day] += e
             if g is not None:
                 g["earned"][day] += e
+
+        if cost > 0:
+            pvp_gap_total += cost * (rec["physical"] - rec["percent"]) / 100.0
+            if abs(rec["percent"] - rec["physical"]) >= PVP_POINTS:
+                pvp_rows.append({"id": rec["id"], "uid": rec["uid"], "name": rec["name"],
+                                 "percent_complete": rec["percent"], "physical_percent": rec["physical"],
+                                 "gap_points": round(rec["physical"] - rec["percent"], 1),
+                                 "value_at_stake": round(cost * abs(rec["physical"] - rec["percent"]) / 100.0, 2),
+                                 "_signed": cost * (rec["physical"] - rec["percent"]) / 100.0})
 
         # Earned, duration method: derived spread of cost x percent complete.
         end = rec["actual_finish"] or (status.isoformat() if status else None)
@@ -335,6 +365,7 @@ def build(path: str, group_field: str | None) -> dict:
             "spi": round(earned_to_date / planned_to_date, 4) if planned_to_date else None,
             "method_gap_points": round((earned_to_date - alt_to_date) / bac * 100, 2) if bac else None,
         },
+        "percent_vs_physical": _pvp(pvp_rows, pvp_gap_total),
         "reconciliation": {
             "tasks": tasks, "with_cost": with_cost,
             "phasing_sum_equals_cost": sum_eq_cost,

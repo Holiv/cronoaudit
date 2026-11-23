@@ -398,6 +398,13 @@ UI = {
                   "days, from {n} {n?activity|activities}. Not a simulation with an invented premise.",
         "col_slip_now": "Slip now (calendar d)", "col_p50": "P50", "col_p80": "P80", "col_deadline": "Deadline",
         "col_critical": "Critical",
+        "dl_title": "Deadlines and milestones",
+        "dl_sub": "Each future milestone against its deadline, in calendar days: the margin in the "
+                  "current schedule, and what is left after the slippage that 80% of the activities "
+                  "have not exceeded. Negative is past the deadline. The origin is where the "
+                  "milestone's delay starts on its driving path.",
+        "col_margin": "Margin (calendar d)", "col_margin_p80": "Margin after P80 (d)",
+        "col_delay_origin": "Delay starts at", "mb_pointer": "The milestone table is in Deadlines and milestones, after the verdict.",
         "rx_title": "Exposure to the rainy season",
         "rx_sub": "Remaining cost spread over each activity's current span, read against the "
                   "months its own calendar reserves for bad weather ({rule}).",
@@ -457,6 +464,13 @@ UI = {
                               "activity enters the critical path, on the date shown.",
         "v_ahead": "ahead", "v_reprogram": "reprogram", "v_baseline_delay": "baseline delay, float absorbs",
         "v_critical": "enters critical path", "v_none": "no rate yet",
+        "v_inconsistent": "inconsistent measurement",
+        "pvp_title": "Percent complete against physical percent",
+        "pvp_sub": "Activities whose two percentages differ by {t} points or more: one of them is not "
+                   "what was measured. The value at stake is the baseline cost times the gap; the "
+                   "share is the activity's part of the gap between the two earned-value methods.",
+        "col_pct_complete": "% complete", "col_pct_physical": "% physical", "col_gap_points": "Gap (points)",
+        "col_value_at_stake": "Value at stake", "col_share_gap": "Share of the gap",
         "tile_resources": "Resources tracked", "tile_projected": "Activities projected",
         "tile_critical": "Would enter the critical path", "tile_inferred": "Executed inferred from percent",
         "prod_resources_title": "Rates by resource",
@@ -791,6 +805,13 @@ UI = {
                   "de {n} {n?atividade|atividades}. Não é simulação com premissa inventada.",
         "col_slip_now": "Escorregão hoje (dias corridos)", "col_p50": "P50", "col_p80": "P80", "col_deadline": "Data limite",
         "col_critical": "Crítico",
+        "dl_title": "Prazo e marcos",
+        "dl_sub": "Cada marco futuro contra a sua data limite, em dias corridos: a margem no "
+                  "cronograma atual e o que sobra depois do escorregamento que 80% das atividades "
+                  "não ultrapassaram. Negativo é depois da data limite. A origem é onde nasce o "
+                  "atraso do marco no seu caminho determinante.",
+        "col_margin": "Margem (dias corridos)", "col_margin_p80": "Margem com P80 (dias)",
+        "col_delay_origin": "Atraso nasce em", "mb_pointer": "A tabela dos marcos está em Prazo e marcos, logo depois do veredito.",
         "rx_title": "Exposição ao período chuvoso",
         "rx_sub": "Custo remanescente distribuído pela janela atual de cada atividade, lido "
                   "contra os meses que o calendário dela reserva para o tempo ruim ({rule}).",
@@ -850,6 +871,13 @@ UI = {
                               "atividade entra no caminho crítico, na data mostrada.",
         "v_ahead": "adiantada", "v_reprogram": "reprogramar",
         "v_baseline_delay": "atrasa a LB, folga absorve", "v_critical": "entra no caminho crítico",
+        "v_inconsistent": "medição inconsistente",
+        "pvp_title": "% concluída contra % física",
+        "pvp_sub": "Atividades cujos dois percentuais diferem em {t} pontos ou mais: um deles não é o "
+                   "que foi medido. O valor em jogo é o custo da linha de base vezes a diferença; a "
+                   "participação é a parte da atividade na diferença entre os dois métodos de valor agregado.",
+        "col_pct_complete": "% concluída", "col_pct_physical": "% física", "col_gap_points": "Diferença (pontos)",
+        "col_value_at_stake": "Valor em jogo", "col_share_gap": "Participação na diferença",
         "v_none": "ainda sem ritmo",
         "tile_resources": "Recursos acompanhados", "tile_projected": "Atividades projetadas",
         "tile_critical": "Entrariam no caminho crítico", "tile_inferred": "Executado inferido do percentual",
@@ -1114,6 +1142,139 @@ def ui(lang: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Modes: free and secret. Printed by review.py before any schedule is opened, so
+# these are terminal lines, not report labels. The question is one line on purpose:
+# the skill and the MS Project add-in ask the same thing in the same words.
+# ---------------------------------------------------------------------------
+MODES = {
+    "en": {
+        "question": "FREE mode: whatever the agent reads goes to its provider. Continue? "
+                    "[y] free / [secret] / [never] do not ask again",
+        "question_retry": "Answer y (free), secret, never (do not ask again) or n (cancel).",
+        "cancelled": "cronoaudit: cancelled. Nothing was read and nothing was run.",
+        "no_answer": "cronoaudit: no answer. Nothing was read and nothing was run. "
+                     "To run without the question: --free, or --secret off to stop asking.",
+        "never_saved": "cronoaudit: the question will not be asked again (secret: off, in {path}). "
+                       "To bring it back: --secret ask.",
+        "never_failed": "cronoaudit: could not store the preference in {path} ({error}). "
+                        "This run goes on in free mode; the question will come back.",
+        "notice": "cronoaudit: running in FREE mode (whatever an agent reads goes to its provider). "
+                  "To change: --secret for secret mode (experimental), or --secret on|off|ask "
+                  "to store a preference; --free silences this line.",
+        "secret_agent_stop": "cronoaudit: SECRET mode was requested ({origin}), but this process was "
+                             "started by an agent ({variable} is set), so the run stopped here.\n"
+                             "  Nothing was read and nothing was run.\n"
+                             "  Secret mode protects only if the agent never holds the original. Run this\n"
+                             "  same command in your own terminal: it prints a work folder, and the agent\n"
+                             "  is started inside it. cronoaudit does not fall back to free mode on its own.",
+        "secret_running": "cronoaudit: SECRET mode (experimental). The engine runs here, on the real file; "
+                          "an agent will read only the coded copy.",
+        "secret_ready": "Work folder, coded: the only thing an agent should read.\n"
+                        "  {workdir}\n"
+                        "Next: start the agent inside that folder, for example\n"
+                        "  cd \"{workdir}\"\n"
+                        "  claude\n"
+                        "Refer to activities by code or by ID: anything you type with a real name goes to "
+                        "the AI service.\n"
+                        "Enforced only for Claude Code (deny rules and a hook in the folder). For any other "
+                        "agent the folder carries instructions, not enforcement.\n"
+                        "At the end the agent runs `secret_decode.py finish`, which decodes the report on "
+                        "this machine and opens it.",
+        "secret_failed": "cronoaudit: secret mode failed ({error}). No work folder was left behind; the "
+                         "details stay on this machine, in the vault.",
+        "secret_refused_codes": "cronoaudit: the engine's output already holds {n} text(s) shaped like a "
+                                "secret-mode code, so the coded copy could not be decoded exactly. Secret "
+                                "mode refused; no work folder was written.",
+        "secret_workdir_bad": "cronoaudit: the work folder may not be inside the cronoaudit folder (where the "
+                              "vault is), nor hold the schedule's own folder. Choose another --workdir.",
+        "origin_flag": "by --secret",
+        "origin_pref": "the stored preference is \"on\", in {path}",
+        "origin_answer": "answered at the question",
+        "state_ask": "ask before a run in free mode (factory default)",
+        "state_on": "secret mode by default (experimental): a run writes a coded work folder; --free runs free",
+        "state_off": "free mode by default, never ask",
+        "config_file": "file: {path}",
+        "config_missing": "no preference stored yet: factory default",
+        "config_corrupt": "the file could not be read ({detail}), so it is treated as \"ask\". "
+                          "--secret on|off|ask writes it again",
+        "config_invalid": "the file holds {detail} for \"secret\", which is not ask, on or off, "
+                          "so it is treated as \"ask\"",
+        "config_how": "change with: --secret on | --secret off | --secret ask",
+        "set_done": "preference stored in {path}",
+        "set_no_run": "No schedule was read: --secret on|off|ask only stores the preference.",
+        "set_failed": "cronoaudit: could not write {path}: {error}",
+        "both_flags": "--secret and --free were both given. Choose one.",
+        "no_files": "Pass one schedule to review, or two to compare (previous first).",
+    },
+    "pt": {
+        "question": "Modo LIVRE: o que o agente ler vai para o provedor dele. Continuar? "
+                    "[s] livre / [secreto] / [nunca] não perguntar mais",
+        "question_retry": "Responda s (livre), secreto, nunca (não perguntar mais) ou n (cancelar).",
+        "cancelled": "cronoaudit: cancelado. Nada foi lido e nada foi executado.",
+        "no_answer": "cronoaudit: sem resposta. Nada foi lido e nada foi executado. "
+                     "Para rodar sem a pergunta: --free, ou --secret off para não perguntar mais.",
+        "never_saved": "cronoaudit: a pergunta não será feita de novo (secret: off, em {path}). "
+                       "Para ela voltar: --secret ask.",
+        "never_failed": "cronoaudit: não foi possível gravar a preferência em {path} ({error}). "
+                        "Esta rodada segue no modo livre; a pergunta vai voltar.",
+        "notice": "cronoaudit: rodando no modo LIVRE (o que um agente ler vai para o provedor dele). "
+                  "Para mudar: --secret para o modo secreto (experimental), ou --secret on|off|ask "
+                  "para gravar uma preferência; --free silencia esta linha.",
+        "secret_agent_stop": "cronoaudit: o modo SECRETO foi pedido ({origin}), mas este processo foi "
+                             "iniciado por um agente ({variable} está definida), então a rodada parou aqui.\n"
+                             "  Nada foi lido e nada foi executado.\n"
+                             "  O modo secreto só protege se o agente nunca tiver o original. Rode este\n"
+                             "  mesmo comando no seu próprio terminal: ele mostra uma pasta de trabalho, e o\n"
+                             "  agente é aberto dentro dela. A cronoaudit não cai para o modo livre sozinha.",
+        "secret_running": "cronoaudit: modo SECRETO (experimental). O motor roda aqui, sobre o arquivo real; "
+                          "um agente vai ler só a cópia codificada.",
+        "secret_ready": "Pasta de trabalho, codificada: a única coisa que um agente deve ler.\n"
+                        "  {workdir}\n"
+                        "Próximo passo: abra o agente dentro dessa pasta, por exemplo\n"
+                        "  cd \"{workdir}\"\n"
+                        "  claude\n"
+                        "Refira-se às atividades pelo código ou pelo ID: o que você digitar com um nome real "
+                        "vai para o serviço de IA.\n"
+                        "Imposto só no Claude Code (regras de bloqueio e um hook na pasta). Para qualquer outro "
+                        "agente a pasta traz instruções, não imposição.\n"
+                        "No fim o agente roda `secret_decode.py finish`, que decodifica o relatório nesta "
+                        "máquina e o abre.",
+        "secret_failed": "cronoaudit: o modo secreto falhou ({error}). Nenhuma pasta de trabalho ficou para "
+                         "trás; os detalhes ficam nesta máquina, no cofre.",
+        "secret_refused_codes": "cronoaudit: a saída do motor já traz {n} texto(s) com forma de código do "
+                                "modo secreto, então a cópia codificada não poderia ser decodificada "
+                                "exatamente. Modo secreto recusado; nenhuma pasta de trabalho foi gravada.",
+        "secret_workdir_bad": "cronoaudit: a pasta de trabalho não pode ficar dentro da pasta da cronoaudit "
+                              "(onde está o cofre), nem conter a pasta do cronograma. Escolha outro --workdir.",
+        "origin_flag": "por --secret",
+        "origin_pref": "a preferência gravada é \"on\", em {path}",
+        "origin_answer": "respondido na pergunta",
+        "state_ask": "perguntar antes de uma rodada no modo livre (padrão de fábrica)",
+        "state_on": "modo secreto por padrão (experimental): a rodada grava uma pasta de trabalho codificada; --free roda livre",
+        "state_off": "modo livre por padrão, sem perguntar",
+        "config_file": "arquivo: {path}",
+        "config_missing": "nenhuma preferência gravada ainda: padrão de fábrica",
+        "config_corrupt": "o arquivo não pôde ser lido ({detail}), então vale \"ask\". "
+                          "--secret on|off|ask grava de novo",
+        "config_invalid": "o arquivo traz {detail} em \"secret\", que não é ask, on nem off, "
+                          "então vale \"ask\"",
+        "config_how": "mude com: --secret on | --secret off | --secret ask",
+        "set_done": "preferência gravada em {path}",
+        "set_no_run": "Nenhum cronograma foi lido: --secret on|off|ask só grava a preferência.",
+        "set_failed": "cronoaudit: não foi possível gravar {path}: {error}",
+        "both_flags": "--secret e --free foram dados juntos. Escolha um.",
+        "no_files": "Passe um cronograma para analisar, ou dois para comparar (o anterior primeiro).",
+    },
+}
+
+
+def modes_text(lang: str) -> dict:
+    base = dict(MODES["en"])
+    base.update(MODES.get(lang, {}))
+    return base
+
+
+# ---------------------------------------------------------------------------
 # The cycle comparison. Kept apart from UI because these strings belong to one
 # report only; `cycle_text` merges them over the shared interface strings.
 # Every section carries a criterion and the way to reproduce it in the tool,
@@ -1150,6 +1311,46 @@ CYCLE = {
         "cy_progress_title": "Progress and dates",
         "cy_progress_sub": "The weighted movement, where it came from, and whether the dates "
                            "that moved were moved by the works or by the plan.",
+        "dm_title": "What to ask the contractor",
+        "dm_sub": "One item per piece of evidence in this comparison, the integrity of the "
+                  "measurement first. Built by the engine from the rows above; each item names "
+                  "the row so it can be found in the schedule.",
+        "dm_g_integrity": "Integrity of the measurement", "dm_g_replan": "Replanning",
+        "dm_g_logic": "Logic",
+        "dm_actual_finish": "Justify the change to the actual finish of row {id}, {name}: {a} → {b}.",
+        "dm_actual_finish_bl": "Justify the change to the actual finish of row {id}, {name}: {a} → {b}, which now equals the baseline date.",
+        "dm_actual_start": "Justify the change to the actual start of row {id}, {name}: {a} → {b}.",
+        "dm_actual_withdrawn": "Explain why the actual {what} of row {id}, {name} ({a}) was withdrawn.",
+        "dm_percent_down": "Justify the lower progress of row {id}, {name}: {a}% → {b}%.",
+        "dm_removed_progress": "Explain the removal of row {id} of the previous delivery, {name}, which was at {p}%.",
+        "dm_baseline_moved": "Show the approval of the baseline change on row {id}, {name} (baseline finish {d} {d?day|days}).",
+        "dm_duration_up": "Justify the longer duration of row {id}, {name}: {a} → {b} working days.",
+        "dm_duration_down": "Confirm the shorter duration of row {id}, {name}: {a} → {b} working days, and what makes it achievable.",
+        "dm_replan": "Justify the {d}-day postponement of the finish of row {id}, {name}, moved by the plan with no progress recorded.",
+        "dm_replan_more": "And {k} more {k?row|rows} postponed by the plan, listed in section 3.",
+        "dm_inserted": "Justify the new row {id}, {name}, and where its budget came from.",
+        "dm_link_removed": "Justify removing the link {p} → {id}, {name}.",
+        "dm_link_added": "Confirm the new link {p} → {id}, {name}.",
+        "dm_constraint_added": "Justify the {c} constraint added on row {id}, {name}.",
+        "dm_none": "Nothing in this comparison calls for a question to the contractor.",
+        "dm_what_start": "start", "dm_what_finish": "finish",
+        "cy_g_deadline": "1. Deadlines and milestones",
+        "cy_g_integrity": "2. Integrity of the measurement",
+        "cy_g_replan": "3. Replanning",
+        "cy_g_progress": "4. Progress",
+        "cy_g_float": "5. Float and critical path",
+        "cy_g_quality": "6. Quality of the network",
+        "cy_g_integrity_sub": "What could make the progress figure untrue: the record of work "
+                              "already done, a baseline that moved, activities that came in or left.",
+        "cy_g_replan_sub": "What the plan changed: logic, durations, and dates moved by the plan "
+                           "rather than by the works.",
+        "cy_hero_label": "PROJECT FINISH",
+        "cy_hero_cap": "calendar days against the previous delivery",
+        "cy_hero_read": "Read in this order: the deadlines, then whether the measurement can be "
+                        "trusted, then what the plan changed, and only then the progress figure. "
+                        "The weighted movement is in section 4, split into what the works "
+                        "explain and what they do not.",
+        "l_deadlines": "Milestones against their deadline (current delivery)",
         "cy_nothing": "Nothing to list.",
         "cy_conv_title": "Conventions this comparison used",
         "yes": "yes", "no": "no", "withdrawn": "(withdrawn)", "none_word": "none",
@@ -1317,6 +1518,45 @@ CYCLE = {
         "cy_progress_title": "Avanço e datas",
         "cy_progress_sub": "O movimento ponderado, de onde ele veio, e se as datas que se "
                            "moveram foram movidas pela obra ou pelo plano.",
+        "dm_title": "O que cobrar da contratada",
+        "dm_sub": "Um item por evidência desta comparação, a integridade da medição primeiro. "
+                  "Montado pelo motor a partir das linhas acima; cada item cita a linha para ser "
+                  "achado no cronograma.",
+        "dm_g_integrity": "Integridade da medição", "dm_g_replan": "Replanejamento",
+        "dm_g_logic": "Lógica",
+        "dm_actual_finish": "Justificar a alteração do término real da linha {id}, {name}: {a} → {b}.",
+        "dm_actual_finish_bl": "Justificar a alteração do término real da linha {id}, {name}: {a} → {b}, que passou a coincidir com a data da linha de base.",
+        "dm_actual_start": "Justificar a alteração do início real da linha {id}, {name}: {a} → {b}.",
+        "dm_actual_withdrawn": "Explicar por que o {what} real da linha {id}, {name} ({a}), foi retirado.",
+        "dm_percent_down": "Justificar a redução do avanço da linha {id}, {name}: {a}% → {b}%.",
+        "dm_removed_progress": "Explicar a remoção da linha {id} da entrega anterior, {name}, que estava a {p}%.",
+        "dm_baseline_moved": "Apresentar a aprovação da mudança de linha de base da linha {id}, {name} (término da linha de base {d} {d?dia|dias}).",
+        "dm_duration_up": "Justificar o aumento de duração da linha {id}, {name}: {a} → {b} dias úteis.",
+        "dm_duration_down": "Confirmar a redução de duração da linha {id}, {name}: {a} → {b} dias úteis, e o que a torna viável.",
+        "dm_replan": "Justificar o adiamento de {d} dias no término da linha {id}, {name}, movido pelo plano sem avanço registrado.",
+        "dm_replan_more": "E mais {k} {k?linha adiada|linhas adiadas} pelo plano, listadas na seção 3.",
+        "dm_inserted": "Justificar a nova linha {id}, {name}, e de onde veio o seu orçamento.",
+        "dm_link_removed": "Justificar a retirada do vínculo {p} → {id}, {name}.",
+        "dm_link_added": "Confirmar o novo vínculo {p} → {id}, {name}.",
+        "dm_constraint_added": "Justificar a restrição {c} incluída na linha {id}, {name}.",
+        "dm_none": "Nada nesta comparação pede uma pergunta à contratada.",
+        "dm_what_start": "início", "dm_what_finish": "término",
+        "cy_g_deadline": "1. Prazo e marcos",
+        "cy_g_integrity": "2. Integridade da medição",
+        "cy_g_replan": "3. Replanejamento",
+        "cy_g_progress": "4. Avanço",
+        "cy_g_float": "5. Folga e caminho crítico",
+        "cy_g_quality": "6. Qualidade da rede",
+        "cy_g_integrity_sub": "O que pode tornar o avanço falso: o registro do que já estava feito, "
+                              "uma linha de base que mudou, atividades que entraram ou saíram.",
+        "cy_g_replan_sub": "O que o plano mudou: lógica, durações e datas movidas pelo plano, "
+                           "e não pela obra.",
+        "cy_hero_label": "TÉRMINO DO CRONOGRAMA",
+        "cy_hero_cap": "dias corridos contra a entrega anterior",
+        "cy_hero_read": "Leia nesta ordem: o prazo, depois se a medição é confiável, depois o que "
+                        "o plano mudou, e só então o avanço. O movimento ponderado está na seção 4, "
+                        "partido entre o que a obra explica e o que não explica.",
+        "l_deadlines": "Marcos contra a data limite (entrega atual)",
         "cy_nothing": "Nada a listar.",
         "cy_conv_title": "Convenções que esta comparação usou",
         "yes": "sim", "no": "não", "withdrawn": "(retirado)", "none_word": "nenhuma",

@@ -47,6 +47,9 @@ R = {
         "weight_flat": "Everything sits in one group, so the weight distribution says nothing yet; group by a discovered field.",
         "prod_solid": "Of {n} {n?activity|activities} in progress with a trend, {s} rest on solid evidence: {ahead} ahead, {rep} to reprogram, {abs} with the baseline missed and the float absorbing it, {crit} that would enter the critical path.",
         "prod_thin": "{t} {t?projection rests|projections rest} on thin evidence or a percent-derived quantity; read them as questions, not verdicts.",
+        "prod_inconsistent": "{k} {k?activity has|activities have} an inconsistent measurement and no pace verdict: the executed quantity and the physical percent disagree. Row {id}, {name}: {q}% by quantity, {p}% physical.",
+        "method_gap_from": "{s}% of that gap comes from row {id}, {name}: {pc}% complete by duration, {pp}% physical.",
+        "method_gap_rows": "{k} {k?activity differs|activities differ} by 20 points or more between the two percentages; they are listed under the curve.",
         "rate_falling": "{r} is slowing: planned {p} a day, {g} practised to date, {rc} in the last thirty days.",
         "q_fail": "The network fails {n} of the quantitative metrics: {list}.",
         "q_pass_all": "The network passes every quantitative metric with a threshold.",
@@ -66,6 +69,14 @@ R = {
         "es_tspi_no": "TSPI is {t}: the remainder would need {pct}% above the plan, which the literature treats as unrecoverable in practice.",
         "es_tspi_plain": "TSPI is {t}: the pace the remainder needs, relative to the plan's, to finish on the planned date.",
         "la_no": "The next {w} {w?week|weeks} plan {p}% of earning; the practised rate delivers {q}%. Not reachable without a change of pace.",
+        "dl_none": "No future milestone has a deadline ({m} {m?milestone|milestones}): there is nothing in the file to measure the schedule against. Enter the contract dates as Deadline on the milestones.",
+        "dl_past": "{n} of the {m} milestones with a deadline already finish after it in the current schedule; the worst is row {id}, {name}, {d} {d?day|days} past it.",
+        "dl_ok_now": "All {m} milestones with a deadline finish within it in the current schedule. The smallest margin is row {id}, {name}: {d} {d?day|days}.",
+        "dl_p80": "With the slippage that 80% of the activities have not exceeded ({p} {p?day|days}), {k} more {k?milestone passes|milestones pass} the deadline: {k?row|rows} {ids}.",
+        "dl_origin": "The delay of row {id} starts at row {oid}, {oname} (+{od} {od?day|days} against the baseline).",
+        "dl_some_missing": "{k} future {k?milestone has|milestones have} no deadline and {k?is|are} not measured here.",
+        "dl_past_one": "The only milestone with a deadline already finishes after it in the current schedule: row {id}, {name}, {d} {d?day|days} past it.",
+        "dl_ok_now_one": "The only milestone with a deadline finishes within it in the current schedule: row {id}, {name}, with {d} {d?day|days} of margin.",
         "la_yes": "The next {w} {w?week|weeks} plan {p}% of earning and the practised rate delivers {q}%: reachable.",
         "rg_out": "{n} {n?group|groups} cannot reach their baseline finish at the practised pace; {g} needs {r}× its current rate.",
         "rg_ok": "Every group with a trend is on pace or within a stretch of its baseline finish.",
@@ -112,6 +123,9 @@ R = {
         "weight_flat": "Tudo está num único grupo, então a distribuição de peso ainda não diz nada; agrupe por um campo descoberto.",
         "prod_solid": "Das {n} {n?atividade em andamento|atividades em andamento} com tendência, {s} se apoiam em evidência sólida: {ahead} adiantadas, {rep} para reprogramar, {abs} com a linha de base perdida e a folga absorvendo, {crit} que entrariam no caminho crítico.",
         "prod_thin": "{t} {t?projeção se apoia|projeções se apoiam} em evidência fina ou em quantidade derivada de percentual; leia como pergunta, não como veredicto.",
+        "prod_inconsistent": "{k} {k?atividade tem|atividades têm} medição inconsistente e nenhum veredicto de ritmo: a quantidade executada e o % físico não batem. Linha {id}, {name}: {q}% pela quantidade, {p}% físico.",
+        "method_gap_from": "{s}% dessa diferença vem da linha {id}, {name}: {pc}% concluída pela duração, {pp}% físico.",
+        "method_gap_rows": "{k} {k?atividade difere|atividades diferem} em 20 pontos ou mais entre os dois percentuais; estão listadas abaixo da curva.",
         "rate_falling": "{r} está desacelerando: previsto {p} por dia, {g} praticado até a data, {rc} nos últimos trinta dias.",
         "q_fail": "A rede não atende {n} das métricas quantitativas: {list}.",
         "q_pass_all": "A rede atende todas as métricas quantitativas com limiar.",
@@ -131,6 +145,14 @@ R = {
         "es_tspi_no": "O TSPI é {t}: o restante precisaria de {pct}% acima do plano, o que a literatura trata como irrecuperável na prática.",
         "es_tspi_plain": "O TSPI é {t}: o ritmo de que o restante precisa, relativo ao do plano, para terminar na data prevista.",
         "la_no": "As próximas {w} {w?semana|semanas} preveem {p}% de medição; o ritmo praticado entrega {q}%. Não alcançável sem mudança de ritmo.",
+        "dl_none": "Nenhum marco futuro tem data limite ({m} {m?marco|marcos}): o arquivo não tem contra o que medir o prazo. Cadastre as datas contratuais como Data Limite nos marcos.",
+        "dl_past": "{n} dos {m} marcos com data limite já terminam depois dela no cronograma atual; o pior é a linha {id}, {name}, {d} {d?dia|dias} além.",
+        "dl_ok_now": "Os {m} marcos com data limite terminam dentro dela no cronograma atual. A menor margem é a da linha {id}, {name}: {d} {d?dia|dias}.",
+        "dl_p80": "Com o escorregamento que 80% das atividades não ultrapassaram ({p} {p?dia|dias}), mais {k} {k?marco passa|marcos passam} da data limite: {k?linha|linhas} {ids}.",
+        "dl_origin": "O atraso da linha {id} nasce na linha {oid}, {oname} (+{od} {od?dia|dias} contra a linha de base).",
+        "dl_some_missing": "{k} {k?marco futuro não tem|marcos futuros não têm} data limite e não {k?é medido|são medidos} aqui.",
+        "dl_past_one": "O único marco com data limite já termina depois dela no cronograma atual: linha {id}, {name}, {d} {d?dia|dias} além.",
+        "dl_ok_now_one": "O único marco com data limite termina dentro dela no cronograma atual: linha {id}, {name}, com {d} {d?dia|dias} de margem.",
         "la_yes": "As próximas {w} {w?semana|semanas} preveem {p}% de medição e o ritmo praticado entrega {q}%: alcançável.",
         "rg_out": "{n} {n?grupo não alcança|grupos não alcançam} o término de linha de base no ritmo praticado; {g} precisa de {r}× o ritmo atual.",
         "rg_ok": "Todo grupo com tendência está no ritmo ou a um esforço do término de linha de base.",
@@ -267,6 +289,13 @@ def build(payload: dict, lang: str) -> dict:
     if T_.get("earned_alt_pct") is not None and abs(T_.get("method_gap_points") or 0) >= 0.01:
         add("scurve", "method_gap", alt=_n(T_["earned_alt_pct"], 2), e=_n(T_.get("earned_pct"), 2),
             g=_n(abs(T_["method_gap_points"]), 2))
+        top = ((s.get("percent_vs_physical") or {}).get("rows") or [None])[0]
+        if top and (top.get("share_of_gap_pct") or 0) >= 50:
+            add("scurve", "method_gap_from", id=top["id"], name=top["name"],
+                s=_n(min(100.0, top["share_of_gap_pct"]), 0),
+                pc=_n(top["percent_complete"], 0), pp=_n(top["physical_percent"], 0))
+        elif (s.get("percent_vs_physical") or {}).get("count"):
+            add("scurve", "method_gap_rows", k=_n(s["percent_vs_physical"]["count"], 0))
     periods = s.get("periods") or []
     first_planned = next((p["period"] for p in periods if (p.get("planned") or 0) > 0), None)
     if first_planned:
@@ -304,6 +333,11 @@ def build(payload: dict, lang: str) -> dict:
             rep=_n(cnt("reprogram"), 0), abs=_n(cnt("baseline_delay"), 0), crit=_n(cnt("critical"), 0))
         if S.get("thin_evidence"):
             add("productivity", "prod_thin", t=_n(S["thin_evidence"], 0))
+        bad = [a for a in acts if a.get("measurement_inconsistent")]
+        if bad:
+            b0 = bad[0]
+            add("productivity", "prod_inconsistent", k=_n(len(bad), 0), id=b0["id"], name=b0["name"],
+                q=_n(b0.get("qty_pct"), 0), p=_n(b0.get("physical_percent"), 0))
     for r in (pr.get("resources") or [])[:3]:
         if r.get("rate_planned") and r.get("rate_global") and r.get("rate_recent") and \
                 r["rate_recent"] < r["rate_global"] < r["rate_planned"]:
@@ -378,6 +412,34 @@ def build(payload: dict, lang: str) -> dict:
         add("forecast", "rain_none" if RX.get("unreadable_reason") == "no_exceptions" else "rain_few")
     elif RX.get("share_in_reserve_pct") is not None:
         add("forecast", "rain", s=_n(RX["share_in_reserve_pct"], 0), t=_n(RX.get("share_if_slips_30_days_pct"), 0))
+
+    # ---- deadlines: each future milestone against its deadline
+    DL = payload.get("deadlines") or {}
+    if DL.get("rows"):
+        rows_by = {r["id"]: r for r in DL["rows"]}
+        if not DL.get("with_deadline"):
+            add("deadlines", "dl_none", m=_n(len(DL["rows"]), 0))
+        else:
+            tight = DL["tightest"]
+            if DL["past_now"]:
+                worst = min((rows_by[i] for i in DL["past_now"]), key=lambda r: r["margin_days"])
+                add("deadlines", "dl_past_one" if DL["with_deadline"] == 1 else "dl_past",
+                    n=_n(len(DL["past_now"]), 0), m=_n(DL["with_deadline"], 0),
+                    id=worst["id"], name=worst["name"], d=_n(-worst["margin_days"], 0))
+            else:
+                add("deadlines", "dl_ok_now_one" if DL["with_deadline"] == 1 else "dl_ok_now",
+                    m=_n(DL["with_deadline"], 0), id=tight["id"],
+                    name=tight["name"], d=_n(tight["margin_days"], 0))
+            extra = [i for i in DL["past_p80"] if i not in DL["past_now"]]
+            if extra and DL.get("p80_days"):
+                add("deadlines", "dl_p80", p=_n(DL["p80_days"], 0), k=_n(len(extra), 0),
+                    ids=", ".join(str(i) for i in extra))
+            focus = worst if DL["past_now"] else tight
+            if focus.get("origin_id") and focus["origin_id"] != focus["id"]:
+                add("deadlines", "dl_origin", id=focus["id"], oid=focus["origin_id"],
+                    oname=focus.get("origin_name") or "—", od=_n(focus.get("origin_days"), 0))
+            if DL.get("without_deadline"):
+                add("deadlines", "dl_some_missing", k=_n(DL["without_deadline"], 0))
 
     # ---- forensics
     fx = payload.get("forensics") or {}

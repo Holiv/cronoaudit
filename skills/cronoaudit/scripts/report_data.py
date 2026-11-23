@@ -583,6 +583,7 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
         "quality": localize_quality(quality, lang) if quality else None,
         "forecast": localize_forecast(forecast, lang, wbs_labels),
         "forensics": localize_forensics(forensics, lang, wbs_labels),
+        "deadlines": deadline_rows(forecast, forensics),
         # The executive synthesis is injected later by whoever writes it; the slot
         # exists so the template knows where it goes and how to label it.
         "narrative": None,
@@ -627,6 +628,39 @@ def localize_quality(q: dict, lang: str) -> dict:
                         "items": rows, "item_columns": cols})
     out["metrics"] = metrics
     return out
+
+
+def deadline_rows(forecast: dict | None, forensics: dict | None) -> dict | None:
+    """Each future milestone against its deadline: the margin now, the margin after
+    the P80 slippage, and where its delay starts (from forensics). The first thing a
+    reader of a delivery asks, so the report puts it right after the verdict."""
+    MB = (forecast or {}).get("milestone_bands") or {}
+    ms = MB.get("milestones") or []
+    if not ms:
+        return None
+    origins = {m["id"]: m for m in (forensics or {}).get("milestones") or []}
+    rows = []
+    for m in ms:
+        fx = origins.get(m["id"]) or {}
+        o = fx.get("origin") or {}
+        rows.append({
+            "id": m["id"], "name": m["name"], "baseline_finish": m.get("baseline_finish"),
+            "finish": m.get("finish"), "deadline": m.get("deadline"),
+            "margin_days": m.get("margin_days"), "p80_margin_days": m.get("p80_margin_days"),
+            "critical": bool(m.get("critical")),
+            "origin_id": o.get("id") if (o.get("variance_days") or 0) > 0 else None,
+            "origin_name": o.get("name") if (o.get("variance_days") or 0) > 0 else None,
+            "origin_days": o.get("variance_days") if (o.get("variance_days") or 0) > 0 else None,
+        })
+    dl = [r for r in rows if r["margin_days"] is not None]
+    tight = min(dl, key=lambda r: r["margin_days"]) if dl else None
+    return {
+        "rows": rows, "p80_days": MB.get("p80_days"),
+        "with_deadline": len(dl), "without_deadline": len(rows) - len(dl),
+        "past_now": [r["id"] for r in dl if r["margin_days"] < 0],
+        "past_p80": [r["id"] for r in dl if r["p80_margin_days"] < 0],
+        "tightest": tight,
+    }
 
 
 def localize_forecast(fc: dict, lang: str, labels: dict) -> dict:
@@ -956,7 +990,137 @@ def _cycle_sections(cmp_res, lang, C, readings) -> list:
     return out
 
 
-def build_cycle(cmp_res, theme=None, lang=None, detected=None) -> dict:
+CYCLE_ORDER = ("C1", "C5", "C3", "C4", "C2", "C6")
+
+
+def cycle_sections_ordered(cmp_res, lang, C, readings, deadlines=None) -> list:
+    """The six readings in the order a cycle is read: deadlines, integrity of the
+    measurement, replanning, then float and quality. Progress (P1) sits between
+    replanning and float in the report itself."""
+    secs = _cycle_sections(cmp_res, lang, C, readings)
+    _cycle_deadlines(secs, deadlines, lang, C)
+    # The readings sidecar says what the report says, deadline sentences included.
+    for s in secs:
+        if s["code"] == "C1":
+            readings["c1"] = s["reading"]
+    rank = {c: i for i, c in enumerate(CYCLE_ORDER)}
+    return sorted(secs, key=lambda s: rank.get(s["code"], 99))
+
+
+def _cycle_deadlines(sections: list, deadlines: dict | None, lang: str, C: dict) -> None:
+    """C1 opens with the current delivery's milestones against their deadline: the
+    question a cycle is read for. The rows and sentences are the review's own."""
+    c1 = next((s for s in sections if s["code"] == "C1"), None)
+    if not c1 or not deadlines or not deadlines.get("rows"):
+        return
+    said = narrative_mod.build({"deadlines": deadlines}, lang).get("deadlines") or []
+    c1["reading"] = said + c1["reading"]
+    rows = [{"id": r["id"], "name": r["name"], "finish": fmt_date(r.get("finish"), lang),
+             "deadline": fmt_date(r.get("deadline"), lang), "margin_days": r.get("margin_days"),
+             "p80_margin_days": r.get("p80_margin_days"),
+             "origin": (f"{r['origin_id']} · {r.get('origin_name') or ''} (+{r.get('origin_days')})"
+                        if r.get("origin_id") else None)} for r in deadlines["rows"]]
+    c1["lists"].insert(0, {"title": C["l_deadlines"], "count": len(rows), "rows": rows, "open": True,
+                           "columns": [{"label": C["col_row"], "key": "id"},
+                                       {"label": C["col_activity"], "key": "name"},
+                                       {"label": C["col_fin_trend"], "key": "finish"},
+                                       {"label": C["col_deadline"], "key": "deadline"},
+                                       {"label": C["col_margin"], "key": "margin_days", "signed": True},
+                                       {"label": C["col_margin_p80"], "key": "p80_margin_days", "signed": True},
+                                       {"label": C["col_delay_origin"], "key": "origin"}]})
+    if deadlines.get("past_now"):
+        c1["severity"] = "high"
+        c1["severity_word"] = i18n.severity_words(lang)["high"]
+
+
+REPLAN_DEMANDS_MAX = 10
+REPLAN_OWN_MARGIN_DAYS = 5
+
+
+def build_demands(cmp_res: dict, C: dict, lang: str, preds: dict | None = None) -> list:
+    """What to ask the contractor: one item per evidence row, integrity first.
+
+    Each item quotes the row and its before/after, in the report's language. No money
+    is written into the sentences (the figures are in the sections above), so the
+    list reads the same in free and secret mode."""
+    def D(v):
+        return fmt_date(v, lang)
+
+    def num(v, d=0):
+        return narrative_mod.fnum(v, d, lang)
+
+    out = []
+
+    def add(group, row_id, key, **kw):
+        out.append({"group": C[group], "id": row_id, "text": i18n.fmt(C[key], **kw)})
+
+    pr = cmp_res.get("past_rewritten") or {}
+    for what, rows in (("finish", pr.get("actual_finish") or []), ("start", pr.get("actual_start") or [])):
+        for r in rows:
+            if r.get("removed"):
+                add("dm_g_integrity", r["id"], "dm_actual_withdrawn", what=C["dm_what_" + what],
+                    id=r["id"], name=r["name"], a=D(r.get("before")))
+            elif what == "finish" and r.get("matches_baseline"):
+                add("dm_g_integrity", r["id"], "dm_actual_finish_bl", id=r["id"], name=r["name"],
+                    a=D(r.get("before")), b=D(r.get("after")))
+            else:
+                add("dm_g_integrity", r["id"], "dm_actual_" + what, id=r["id"], name=r["name"],
+                    a=D(r.get("before")), b=D(r.get("after")))
+    for r in pr.get("percent_decreased") or []:
+        add("dm_g_integrity", r["id"], "dm_percent_down", id=r["id"], name=r["name"],
+            a=num(r.get("before")), b=num(r.get("after")))
+    for r in pr.get("removed_with_progress") or []:
+        add("dm_g_integrity", r["id"], "dm_removed_progress", id=r["id"], name=r["name"],
+            p=num(r.get("percent")))
+    for r in cmp_res.get("baseline_moved") or []:
+        d = r.get("baseline_finish_moved_days")
+        add("dm_g_integrity", r["id"], "dm_baseline_moved", id=r["id"], name=r["name"],
+            d=("+" if (d or 0) > 0 else "") + num(d))
+
+    for r in cmp_res.get("duration_changed") or []:
+        key = "dm_duration_up" if (r.get("delta_days") or 0) > 0 else "dm_duration_down"
+        add("dm_g_replan", r["id"], key, id=r["id"], name=r["name"],
+            a=num(r.get("duration_before_days")), b=num(r.get("duration_after_days")))
+    replan = [t for t in cmp_res.get("trend") or []
+              if t.get("reading") == "replan" and (t.get("finish_moved_days") or 0) > 0]
+    if preds:
+        # Only where a postponement starts: a row whose finish moved more than every
+        # predecessor's. A successor pushed by its predecessor has nothing of its own
+        # to justify; the question belongs where the push began.
+        # Moves are calendar days, so a weekend alone can open a gap of two or three
+        # days between a row and the predecessor that pushed it; the margin is 5. A
+        # predecessor whose move is not known (a milestone, a summary) leaves the
+        # question with it, not with the row.
+        moved = {t["uid"]: t.get("finish_moved_days") or 0 for t in cmp_res.get("trend") or []}
+        same = {u for u in moved}
+        own_cause = {r["uid"] for r in cmp_res.get("duration_changed") or []}
+
+        def starts_here(t):
+            ps = preds.get(t["uid"], [])
+            if any(p not in same for p in ps):
+                return False
+            return t["finish_moved_days"] - max([moved[p] for p in ps] or [0]) >= REPLAN_OWN_MARGIN_DAYS
+        replan = [t for t in replan if t["uid"] not in own_cause and starts_here(t)]
+    replan.sort(key=lambda t: -t["finish_moved_days"])
+    for r in replan[:REPLAN_DEMANDS_MAX]:
+        add("dm_g_replan", r["id"], "dm_replan", id=r["id"], name=r["name"], d=num(r["finish_moved_days"]))
+    if len(replan) > REPLAN_DEMANDS_MAX:
+        add("dm_g_replan", None, "dm_replan_more", k=num(len(replan) - REPLAN_DEMANDS_MAX))
+    for r in (cmp_res.get("unmatched") or {}).get("inserted") or []:
+        add("dm_g_replan", r["id"], "dm_inserted", id=r["id"], name=r["name"])
+
+    lg = cmp_res.get("logic") or {}
+    for r in lg.get("links_removed") or []:
+        add("dm_g_logic", r["id"], "dm_link_removed", p=r.get("predecessor_id"), id=r["id"], name=r["name"])
+    for r in lg.get("constraints_added") or []:
+        add("dm_g_logic", r["id"], "dm_constraint_added", c=i18n.constraint(lang, r.get("type_after")),
+            id=r["id"], name=r["name"])
+    for r in lg.get("links_added") or []:
+        add("dm_g_logic", r["id"], "dm_link_added", p=r.get("predecessor_id"), id=r["id"], name=r["name"])
+    return out
+
+
+def build_cycle(cmp_res, theme=None, lang=None, detected=None, deadlines=None, model=None) -> dict:
     lang = lang or (detected or {}).get("lang") or "en"
     C = {**i18n.ui(lang), **i18n.cycle_text(lang)}
     QT = i18n.quality_text(lang)
@@ -991,6 +1155,7 @@ def build_cycle(cmp_res, theme=None, lang=None, detected=None) -> dict:
             "previous_percent_earned": prev.get("percent_earned"),
             "current_percent_earned": curr.get("percent_earned"),
             "movement_points": cmp_res.get("movement_points"),
+            "finish_delta_days": (cmp_res.get("project_finish") or {}).get("delta_days"),
             "explained_points": cmp_res.get("decomposition_sums_to_points"),
             "unexplained_points": cmp_res.get("movement_unexplained_points"),
         },
@@ -998,7 +1163,7 @@ def build_cycle(cmp_res, theme=None, lang=None, detected=None) -> dict:
         "conventions_list": conventions,
         "warnings": _cycle_warnings(cmp_res, C, lang),
         "readings": readings,
-        "sections": _cycle_sections(cmp_res, lang, C, readings),
+        "sections": cycle_sections_ordered(cmp_res, lang, C, readings, deadlines),
         "trend": {
             "execution": [t for t in cmp_res["trend"] if t["reading"] == "execution"],
             "replan": [t for t in cmp_res["trend"] if t["reading"] == "replan"],
@@ -1007,4 +1172,7 @@ def build_cycle(cmp_res, theme=None, lang=None, detected=None) -> dict:
         },
         "decomposition": cmp_res["decomposition"],
         "unmatched": cmp_res["unmatched"],
+        "demands": build_demands(cmp_res, C, lang, preds=(
+            {t["uid"]: [ln["predecessor_uid"] for ln in t.get("predecessors") or []]
+             for t in model["tasks"]} if model else None)),
     }
