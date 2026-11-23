@@ -127,7 +127,8 @@ Durante a instalação o Project abre e pede duas coisas, que são suas:
 O instalador guarda uma cópia do que muda antes de mudar, não altera nenhuma configuração de
 segurança e confere no fim que os botões respondem. Para remover, defina
 `$env:CRONOAUDIT_MSPROJECT_REMOVE="1"` na mesma janela e rode o mesmo comando. Pelo botão, o modo
-secreto ainda não está disponível. Mais detalhes em [`msproject/`](msproject/LEIA-ME.md).
+secreto é uma escolha na hora de abrir o agente: o botão roda a cópia codificada e abre o agente nela.
+Mais detalhes em [`msproject/`](msproject/LEIA-ME.md).
 
 ### C. Pelo motor, sem agente
 
@@ -213,7 +214,8 @@ Veja o [caminho B](#b-pela-aba-cronoaudit-dentro-do-project-windows).
 
 ### Modo secreto (experimental)
 
-Para conversar com o agente sem que os nomes, os valores e as datas saiam do seu computador. Você
+Para conversar com o agente sem que os nomes, os valores e as datas saiam do seu computador. Pela
+aba do Project, responda **Sim** quando Analisar ou Comparar perguntarem o modo. Sem a aba, você
 mesmo roda um comando, com o `.xml` ou, no Windows com o Project, com o `.mpp`:
 
 ```

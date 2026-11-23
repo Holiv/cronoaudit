@@ -643,6 +643,24 @@ def mode_checks() -> list:
                 failures.append(f"modes: --secret run by a person did not write a work folder only: "
                                 f"rc {r.returncode} {r.stderr[-200:]!r}")
 
+            # ---- the MS Project add-in's call: a fresh neutral root, and --project carrying a
+            # folder that may name the company. The name keeps the codes; it never shows.
+            root = os.path.join(tmp, "addin-root")
+            marker = "ZZCompanyFolderMarker"
+            r = engine([xml, "--secret", "--workdir", root, "--project", "C:/Obras/" + marker + "/Rev"], home)
+            subs = [d for d in (os.listdir(root) if os.path.isdir(root) else [])
+                    if os.path.exists(os.path.join(root, d, "cronoaudit-secret.json"))]
+            if r.returncode != 0 or len(subs) != 1:
+                failures.append(f"modes: the add-in's secret call did not leave one work folder under its "
+                                f"root: rc {r.returncode}, {subs}")
+            if marker in r.stdout + r.stderr:
+                failures.append("modes: --project was printed on the screen of a secret run")
+            for dp, _dn, fns in os.walk(root):
+                for fn in fns:
+                    with open(os.path.join(dp, fn), "rb") as fh:
+                        if marker.encode() in fh.read():
+                            failures.append(f"modes: --project reached a work-folder file: {fn}")
+
             # ---- stored "on" behaves as --secret; --free is the only way through it
             engine(["--secret", "on"], home)
             r = engine([xml, "--outdir", out, "--quiet"], home, agent=True)

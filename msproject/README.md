@@ -8,7 +8,7 @@ never invents one.
 This VBA module is only the **entry shortcut**. It exports the open schedule to XML and opens a
 terminal with the skill already started on it. Everything it does can be done by hand.
 
-## Install with one command (v0.4)
+## Install with one command (v0.5)
 
 With Project closed, in PowerShell:
 
@@ -54,13 +54,24 @@ the preference the engine and the skill also read: `%USERPROFILE%\.cronoaudit\co
 
 | `secret` | What the macro does |
 |---|---|
-| `ask` (factory default, and whenever the file is missing or unreadable) | a Yes / No / Cancel dialog. Yes: free mode this time. No: free mode and never ask again (writes `off`). Cancel: no agent |
+| `ask` (factory default, and whenever the file is missing or unreadable) | a Yes / No / Cancel dialog. Yes: secret mode. No: free mode this time. Cancel: no agent. Yes is the default button, so a stray Enter never sends the schedule to a provider |
 | `off` | goes on in free mode without asking |
-| `on` | says that secret mode is in development, and offers free mode for this one run, or cancel. It never goes on in free mode silently |
+| `on` | goes on in secret mode without asking (with a note when the agent is not Claude Code) |
 
-This dialog is code, and it runs before any agent exists. The request it then writes says the
-mode was settled, and passes `--free` to the engine, so neither the skill nor the engine asks a
-second time. The two "SemIA" macros also pass `--free`: no agent is involved there, nothing
+Secret mode (experimental), in order: the macro exports the XML to the run folder as in free
+mode, and the agent never sees that folder; it runs the engine with `--secret`, which writes the
+coded copy to a neutral folder, `%USERPROFILE%\cronoaudit-work\<date-time>\<code>`, with no
+schedule name in its path; it opens the agent there with no `pedido.md`, since the request would
+carry names (in Claude Code, answer that you trust the folder, or the guard stays off); at the
+end the agent's `finish` builds the real report in the run folder and opens it. The engine is
+given the exported XML, never the `.mpp`: exporting through Project from a process the macro is
+waiting on would hang both. The guard that keeps the agent inside the folder exists only in
+Claude Code; for the other agents the folder carries the same rules as instructions.
+
+This dialog is code, and it runs before any agent exists. In free mode the request it then
+writes says the mode was settled, and passes `--free` to the engine; in secret mode the engine
+has already run with `--secret` before the agent opens. Either way, neither the skill nor the
+engine asks a second time. The two "SemIA" macros also pass `--free`: no agent is involved there, nothing
 leaves the machine, and without the flag the engine would ask at its terminal.
 
 v0.3 needs a skill that knows `--free` (the one that ships `cronoaudit_config.py`). With an

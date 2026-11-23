@@ -127,8 +127,8 @@ During the installation Project opens and asks two things, which are yours to an
 
 The installer backs up what it changes before changing it, changes no security setting, and checks
 at the end that the buttons answer. To remove it, set `$env:CRONOAUDIT_MSPROJECT_REMOVE="1"` in the
-same window and run the same command. Secret mode is not yet available from the button. More in
-[`msproject/`](msproject/).
+same window and run the same command. From the button, secret mode is a choice when the agent
+opens: the button runs the coded copy and opens the agent in it. More in [`msproject/`](msproject/).
 
 ### C. The engine, without an agent
 
@@ -214,7 +214,8 @@ See [path B](#b-the-cronoaudit-tab-inside-project-windows).
 
 ### Secret mode (experimental)
 
-To talk to the agent without the names, values and dates leaving your computer. You run one command
+To talk to the agent without the names, values and dates leaving your computer. From the Project
+tab, answer **Yes** when Analisar or Comparar ask for the mode. Without the tab, you run one command
 yourself, with the `.xml` or, on Windows with Project, the `.mpp`:
 
 ```
