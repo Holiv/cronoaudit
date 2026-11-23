@@ -69,6 +69,8 @@ LEGIBILITY = {
         # residual terms of the cycle (0.7.2)
         "bac_before", "bac_after", "bac_delta", "inserted_cost", "removed_cost", "changed_cost",
         "earned_erased", "baseline_cost_before", "baseline_cost_after", "ev",
+        # percent complete against physical percent (0.8)
+        "value_at_stake",
     }),
     # Withheld from the coded layer altogether, and restored from the vault on the
     # way back. The rain-reserve share per month repeats every twelve month-codes

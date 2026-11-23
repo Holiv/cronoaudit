@@ -47,6 +47,9 @@ R = {
         "weight_flat": "Everything sits in one group, so the weight distribution says nothing yet; group by a discovered field.",
         "prod_solid": "Of {n} {n?activity|activities} in progress with a trend, {s} rest on solid evidence: {ahead} ahead, {rep} to reprogram, {abs} with the baseline missed and the float absorbing it, {crit} that would enter the critical path.",
         "prod_thin": "{t} {t?projection rests|projections rest} on thin evidence or a percent-derived quantity; read them as questions, not verdicts.",
+        "prod_inconsistent": "{k} {k?activity has|activities have} an inconsistent measurement and no pace verdict: the executed quantity and the physical percent disagree. Row {id}, {name}: {q}% by quantity, {p}% physical.",
+        "method_gap_from": "{s}% of that gap comes from row {id}, {name}: {pc}% complete by duration, {pp}% physical.",
+        "method_gap_rows": "{k} {k?activity differs|activities differ} by 20 points or more between the two percentages; they are listed under the curve.",
         "rate_falling": "{r} is slowing: planned {p} a day, {g} practised to date, {rc} in the last thirty days.",
         "q_fail": "The network fails {n} of the quantitative metrics: {list}.",
         "q_pass_all": "The network passes every quantitative metric with a threshold.",
@@ -120,6 +123,9 @@ R = {
         "weight_flat": "Tudo está num único grupo, então a distribuição de peso ainda não diz nada; agrupe por um campo descoberto.",
         "prod_solid": "Das {n} {n?atividade em andamento|atividades em andamento} com tendência, {s} se apoiam em evidência sólida: {ahead} adiantadas, {rep} para reprogramar, {abs} com a linha de base perdida e a folga absorvendo, {crit} que entrariam no caminho crítico.",
         "prod_thin": "{t} {t?projeção se apoia|projeções se apoiam} em evidência fina ou em quantidade derivada de percentual; leia como pergunta, não como veredicto.",
+        "prod_inconsistent": "{k} {k?atividade tem|atividades têm} medição inconsistente e nenhum veredicto de ritmo: a quantidade executada e o % físico não batem. Linha {id}, {name}: {q}% pela quantidade, {p}% físico.",
+        "method_gap_from": "{s}% dessa diferença vem da linha {id}, {name}: {pc}% concluída pela duração, {pp}% físico.",
+        "method_gap_rows": "{k} {k?atividade difere|atividades diferem} em 20 pontos ou mais entre os dois percentuais; estão listadas abaixo da curva.",
         "rate_falling": "{r} está desacelerando: previsto {p} por dia, {g} praticado até a data, {rc} nos últimos trinta dias.",
         "q_fail": "A rede não atende {n} das métricas quantitativas: {list}.",
         "q_pass_all": "A rede atende todas as métricas quantitativas com limiar.",
@@ -283,6 +289,13 @@ def build(payload: dict, lang: str) -> dict:
     if T_.get("earned_alt_pct") is not None and abs(T_.get("method_gap_points") or 0) >= 0.01:
         add("scurve", "method_gap", alt=_n(T_["earned_alt_pct"], 2), e=_n(T_.get("earned_pct"), 2),
             g=_n(abs(T_["method_gap_points"]), 2))
+        top = ((s.get("percent_vs_physical") or {}).get("rows") or [None])[0]
+        if top and (top.get("share_of_gap_pct") or 0) >= 50:
+            add("scurve", "method_gap_from", id=top["id"], name=top["name"],
+                s=_n(min(100.0, top["share_of_gap_pct"]), 0),
+                pc=_n(top["percent_complete"], 0), pp=_n(top["physical_percent"], 0))
+        elif (s.get("percent_vs_physical") or {}).get("count"):
+            add("scurve", "method_gap_rows", k=_n(s["percent_vs_physical"]["count"], 0))
     periods = s.get("periods") or []
     first_planned = next((p["period"] for p in periods if (p.get("planned") or 0) > 0), None)
     if first_planned:
@@ -320,6 +333,11 @@ def build(payload: dict, lang: str) -> dict:
             rep=_n(cnt("reprogram"), 0), abs=_n(cnt("baseline_delay"), 0), crit=_n(cnt("critical"), 0))
         if S.get("thin_evidence"):
             add("productivity", "prod_thin", t=_n(S["thin_evidence"], 0))
+        bad = [a for a in acts if a.get("measurement_inconsistent")]
+        if bad:
+            b0 = bad[0]
+            add("productivity", "prod_inconsistent", k=_n(len(bad), 0), id=b0["id"], name=b0["name"],
+                q=_n(b0.get("qty_pct"), 0), p=_n(b0.get("physical_percent"), 0))
     for r in (pr.get("resources") or [])[:3]:
         if r.get("rate_planned") and r.get("rate_global") and r.get("rate_recent") and \
                 r["rate_recent"] < r["rate_global"] < r["rate_planned"]:

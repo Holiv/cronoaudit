@@ -113,6 +113,10 @@ def stream(path: str):
             yield resources, rec
 
 
+# Executed quantity over planned against the physical percent, in points.
+INCONSISTENT_POINTS = 20.0
+
+
 def working_days_between(cal, a, b):
     if a is None or b is None:
         return None
@@ -249,8 +253,15 @@ def build(xml_path: str, model: dict, profile: dict | None = None) -> dict:
             if win_end and win_end >= win_start:
                 pr["recent_days"] += working_days_between(cal, win_start, win_end)
 
+        # The quantity says one thing, the physical percent another: a rate built on
+        # either is a verdict on a measurement that does not agree with itself.
+        qty_pct = executed / planned * 100.0 if (planned > 0 and executed_source == "actual") else None
+        inconsistent = bool(qty_pct is not None and phys is not None
+                            and abs(qty_pct - phys) >= INCONSISTENT_POINTS)
         rows.append({
             "id": t["id"], "uid": t["uid"], "name": t["name"],
+            "qty_pct": round(qty_pct, 1) if qty_pct is not None else None,
+            "physical_percent": phys, "measurement_inconsistent": inconsistent,
             "resource_uid": r["uid"], "resource": r["name"], "unit": r["label"] or r["type"],
             "planned_qty": round(planned, 2), "executed_qty": round(executed, 2),
             "executed_source": executed_source, "remaining_qty": round(remaining, 2),
@@ -314,6 +325,8 @@ def build(xml_path: str, model: dict, profile: dict | None = None) -> dict:
                 projected[k] = None
         verdicts = {k: verdict(p, row["_trend"], row["_baseline"], row["_late"])
                     for k, p in projected.items()}
+        if row.get("measurement_inconsistent"):
+            verdicts = {k: ("inconsistent" if v else v) for k, v in verdicts.items()}
         req_trend = req_late = None
         if status and row["_trend"] and row["_trend"] > status:
             req_trend = row["remaining_qty"] / working_days_after(cal, status, row["_trend"])
@@ -337,8 +350,8 @@ def build(xml_path: str, model: dict, profile: dict | None = None) -> dict:
             "days_of_float_left_global": days_to_critical,
             "thin_evidence": bool(r.get("thin_evidence")) or row["executed_source"] == "inferred",
         })
-    order = {"critical": 0, "baseline_delay": 1, "reprogram": 2, "ahead": 3, None: 4}
-    activities.sort(key=lambda a: (order.get(a["verdict_global"], 4), -(a["planned_qty"] or 0)))
+    order = {"inconsistent": 0, "critical": 1, "baseline_delay": 2, "reprogram": 3, "ahead": 4, None: 5}
+    activities.sort(key=lambda a: (order.get(a["verdict_global"], 5), -(a["planned_qty"] or 0)))
 
     return {
         "status_date": model["project"].get("status_date"),

@@ -360,6 +360,15 @@ def example_checks() -> dict:
     if not odd["percent_complete"] - odd["physical_percent_complete"] >= 20 \
             or abs(tot["method_gap_points"] or 0) < 0.01:
         fail("percent complete against physical percent: the disagreement did not reach the method gap")
+    # 0.8: the activity is named, not only the total gap; its pace gets no verdict.
+    pvp = curve.get("percent_vs_physical") or {}
+    if not pvp.get("rows") or pvp["rows"][0]["uid"] != odd["uid"] or (pvp["rows"][0]["share_of_gap_pct"] or 0) < 50:
+        fail(f"percent vs physical: the activity behind the method gap is not named first: {pvp.get('rows', [])[:1]}")
+    import resources as resources_mod
+    prod_c = resources_mod.build(paths["rev04"], curr)
+    pa = next((a for a in prod_c["activities"] if a["uid"] == odd["uid"]), None)
+    if pa and pa["verdict_global"] != "inconsistent":
+        fail(f"percent vs physical: the productivity verdict reads {pa['verdict_global']} on a measurement that disagrees with itself")
 
     quality = quality_mod.build(curr, paths["rev04"])
     by_code = {m["code"]: m for m in quality["metrics"]}

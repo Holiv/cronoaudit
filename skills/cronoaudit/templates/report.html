@@ -424,6 +424,8 @@ function renderReview(d){
         {label:L.col_planned_cum,key:"planned_cum"},{label:L.col_earned_cum,key:"earned_cum"},{label:L.col_sv,key:"sv_cum"},{label:L.col_spi,key:"spi_cum"},
         {label:L.col_planned_pct,key:"planned_cum_pct"},{label:L.col_earned_pct_cum,key:"earned_cum_pct"},{label:L.col_alt_pct,key:"earned_alt_cum_pct"}],
         s.periods||[],(s.periods||[]).length,"periods")}
+      ${((s.percent_vs_physical||{}).rows||[]).length?`<h3 class="sub-h">${esc(L.pvp_title)}</h3><p class="sec-d">${esc(fill(L.pvp_sub,{t:n(s.percent_vs_physical.threshold_points)}))}</p>
+      ${table([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_pct_complete,key:"percent_complete"},{label:L.col_pct_physical,key:"physical_percent"},{label:L.col_gap_points,key:"gap_points",signed:true,decimals:1},{label:L.col_value_at_stake,key:"value_at_stake",decimals:0},{label:L.col_share_gap,key:"share_of_gap_pct",decimals:1,pct:true}],s.percent_vs_physical.rows)}`:""}
     </section>`);
   }
 
@@ -450,7 +452,7 @@ function renderReview(d){
 
   if(d.productivity){
     const P=d.productivity, S=P.summary||{}, V=S.verdicts||{};
-    const vw = v => ({ahead:L.v_ahead,reprogram:L.v_reprogram,baseline_delay:L.v_baseline_delay,critical:L.v_critical}[v]||L.v_none);
+    const vw = v => ({ahead:L.v_ahead,reprogram:L.v_reprogram,baseline_delay:L.v_baseline_delay,critical:L.v_critical,inconsistent:L.v_inconsistent}[v]||L.v_none);
     const acts=(P.activities||[]).map(a=>({...a,
       verdict_global_t:vw(a.verdict_global),verdict_own_t:vw(a.verdict_own),
       source_t:a.executed_source==="actual"?L.src_actual:L.src_inferred,

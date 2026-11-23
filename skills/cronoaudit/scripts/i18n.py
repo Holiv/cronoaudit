@@ -464,6 +464,13 @@ UI = {
                               "activity enters the critical path, on the date shown.",
         "v_ahead": "ahead", "v_reprogram": "reprogram", "v_baseline_delay": "baseline delay, float absorbs",
         "v_critical": "enters critical path", "v_none": "no rate yet",
+        "v_inconsistent": "inconsistent measurement",
+        "pvp_title": "Percent complete against physical percent",
+        "pvp_sub": "Activities whose two percentages differ by {t} points or more: one of them is not "
+                   "what was measured. The value at stake is the baseline cost times the gap; the "
+                   "share is the activity's part of the gap between the two earned-value methods.",
+        "col_pct_complete": "% complete", "col_pct_physical": "% physical", "col_gap_points": "Gap (points)",
+        "col_value_at_stake": "Value at stake", "col_share_gap": "Share of the gap",
         "tile_resources": "Resources tracked", "tile_projected": "Activities projected",
         "tile_critical": "Would enter the critical path", "tile_inferred": "Executed inferred from percent",
         "prod_resources_title": "Rates by resource",
@@ -864,6 +871,13 @@ UI = {
                               "atividade entra no caminho crítico, na data mostrada.",
         "v_ahead": "adiantada", "v_reprogram": "reprogramar",
         "v_baseline_delay": "atrasa a LB, folga absorve", "v_critical": "entra no caminho crítico",
+        "v_inconsistent": "medição inconsistente",
+        "pvp_title": "% concluída contra % física",
+        "pvp_sub": "Atividades cujos dois percentuais diferem em {t} pontos ou mais: um deles não é o "
+                   "que foi medido. O valor em jogo é o custo da linha de base vezes a diferença; a "
+                   "participação é a parte da atividade na diferença entre os dois métodos de valor agregado.",
+        "col_pct_complete": "% concluída", "col_pct_physical": "% física", "col_gap_points": "Diferença (pontos)",
+        "col_value_at_stake": "Valor em jogo", "col_share_gap": "Participação na diferença",
         "v_none": "ainda sem ritmo",
         "tile_resources": "Recursos acompanhados", "tile_projected": "Atividades projetadas",
         "tile_critical": "Entrariam no caminho crítico", "tile_inferred": "Executado inferido do percentual",
