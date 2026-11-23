@@ -283,6 +283,9 @@ def build(path: str, group_field: str | None) -> dict:
     months = sorted(set(month_key(datetime.fromisoformat(d)) for d in
                         list(planned) + list(earned) + list(earned_alt)))
     status_month = month_key(status) if status else None
+    # Without baseline cost spread in time there is no planned curve: each month's
+    # planned value is absent, not zero, and so is everything computed against it.
+    has_plan = sum(planned.values()) > 0
     p_cum = e_cum = a_cum = 0.0
     periods = []
     for mth in months:
@@ -294,14 +297,15 @@ def build(path: str, group_field: str | None) -> dict:
         a_cum += a
         past = status_month is None or mth <= status_month
         periods.append({
-            "period": mth, "planned": round(p, 2), "earned": round(e, 2) if past else None,
+            "period": mth, "planned": round(p, 2) if has_plan else None,
+            "earned": round(e, 2) if past else None,
             "earned_alt": round(a, 2) if past else None,
-            "planned_cum": round(p_cum, 2),
+            "planned_cum": round(p_cum, 2) if has_plan else None,
             "earned_cum": round(e_cum, 2) if past else None,
             "earned_alt_cum": round(a_cum, 2) if past else None,
-            "sv_cum": round(e_cum - p_cum, 2) if past else None,
+            "sv_cum": round(e_cum - p_cum, 2) if (past and has_plan) else None,
             "spi_cum": round(e_cum / p_cum, 4) if past and p_cum > 0 else None,
-            "planned_cum_pct": round(p_cum / bac * 100, 2) if bac else None,
+            "planned_cum_pct": round(p_cum / bac * 100, 2) if (bac and has_plan) else None,
             "earned_cum_pct": round(e_cum / bac * 100, 2) if (past and bac) else None,
             "earned_alt_cum_pct": round(a_cum / bac * 100, 2) if (past and bac) else None,
         })
@@ -325,7 +329,7 @@ def build(path: str, group_field: str | None) -> dict:
             ge += sum(v for d, v in g["earned"].items() if d.startswith(mth))
             past = status_month is None or mth <= status_month
             rows.append({"period": mth,
-                         "planned_cum_pct": round(gp / g["bac"] * 100, 2) if g["bac"] else None,
+                         "planned_cum_pct": round(gp / g["bac"] * 100, 2) if (g["bac"] and has_plan) else None,
                          "earned_cum_pct": round(ge / g["bac"] * 100, 2) if (past and g["bac"]) else None})
         groups_out[name] = {"bac": round(g["bac"], 2), "periods": rows}
 

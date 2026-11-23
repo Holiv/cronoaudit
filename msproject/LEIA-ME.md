@@ -8,7 +8,7 @@ inventar um.
 O suplemento é só o **atalho de entrada**. Ele exporta o XML do arquivo aberto e abre um terminal
 com a skill já iniciada sobre ele. Tudo o que ele faz você pode fazer à mão (seção 7).
 
-## Instalar com um comando (v0.4)
+## Instalar com um comando (v0.5)
 
 Com o Project fechado, no PowerShell:
 
@@ -51,11 +51,22 @@ relatório é o mesmo, só não há conversa.
 
 ### O modo: livre ou secreto
 
-São dois modos, e hoje só um existe.
-
 - **Livre**: o agente lê o cronograma e os resultados, e o que ele lê vai para o provedor dele.
-- **Secreto**: o agente lê só uma versão codificada do cronograma, e a decodificação acontece na
-  sua máquina. **Está em desenvolvimento.**
+- **Secreto** (experimental): o motor roda na sua máquina e o agente lê só uma cópia codificada.
+  Nomes viram códigos, valores são multiplicados por um fator secreto e datas viram contagens de
+  dias. No fim, o relatório com os dados reais é montado na sua máquina.
+
+Como o botão faz o modo secreto, na ordem:
+
+1. exporta o XML para a pasta da rodada, como no modo livre. O agente nunca vê essa pasta;
+2. roda o motor com `--secret`, que grava a cópia codificada numa pasta neutra:
+   `%USERPROFILE%\cronoaudit-work\<data e hora>\<código>`, sem o nome do cronograma;
+3. abre o agente nessa pasta, sem `pedido.md` (o pedido levaria nomes). No Claude Code, responda
+   que **confia na pasta**: sem isso a trava fica desligada;
+4. no fim, o agente monta o relatório real, que aparece na pasta da rodada e abre no navegador.
+
+A trava que impede o agente de sair da pasta (regras e um hook) só existe no Claude Code. Com
+Codex, Copilot, Gemini ou VS Code, a pasta traz as mesmas regras como instrução.
 
 A preferência fica num arquivo só, que o motor e a skill também leem:
 `%USERPROFILE%\.cronoaudit\config.json`, chave `secret`. O que Analisar e Comparar fazem com ela,
@@ -63,16 +74,17 @@ antes de exportar qualquer coisa:
 
 | `secret` | O que acontece |
 |---|---|
-| `ask` (padrão de fábrica; vale também se o arquivo não existe ou está ilegível) | uma janela pergunta. **Sim**: modo livre, desta vez. **Não**: modo livre e não perguntar mais (grava `off`). **Cancelar**: não abre o agente |
+| `ask` (padrão de fábrica; vale também se o arquivo não existe ou está ilegível) | uma janela pergunta. **Sim**: modo secreto. **Não**: modo livre, desta vez. **Cancelar**: não abre o agente. O botão padrão é o Sim: um Enter distraído nunca manda o cronograma ao provedor |
 | `off` | segue no modo livre, sem perguntar |
-| `on` | avisa que o modo secreto está em desenvolvimento e oferece o modo livre só para esta rodada, ou cancelar. Nunca segue no modo livre calado |
+| `on` | segue no modo secreto, sem perguntar (com um aviso se o agente não for o Claude Code) |
 
 Para trocar: `CronoauditConfigurar`, item 5; ou, num terminal, `review.py --secret ask`, `off`
 ou `on`. Vale para os três de uma vez.
 
 O que essa pergunta garante: aqui ela é código, feita pela macro antes de existir agente. Depois
-de respondida, o `pedido.md` diz ao agente que o modo já foi escolhido e o comando do motor leva
-`--free`, para ninguém perguntar de novo. A mesma pergunta feita por um agente no terminal é o
+de respondida: no modo livre, o `pedido.md` diz ao agente que o modo já foi escolhido e o comando
+do motor leva `--free`, para ninguém perguntar de novo; no secreto, o motor já rodou com
+`--secret` antes de o agente abrir. A mesma pergunta feita por um agente no terminal é o
 agente seguindo a instrução da skill: deixa a escolha visível, mas não é uma trava.
 
 Os botões "sem IA" não perguntam o modo: ali não há agente e nada sai da máquina.

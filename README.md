@@ -2,7 +2,7 @@
 
 [Português](LEIA-ME.md)
 
-![version](https://img.shields.io/badge/version-0.9.2-1f6feb)
+![version](https://img.shields.io/badge/version-0.9.3-1f6feb)
 ![licence](https://img.shields.io/badge/licence-Apache%202.0-555)
 ![Windows · macOS · Linux](https://img.shields.io/badge/Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-runs-2ea043)
 ![data](https://img.shields.io/badge/engine-no%20network-2ea043)
@@ -127,8 +127,8 @@ During the installation Project opens and asks two things, which are yours to an
 
 The installer backs up what it changes before changing it, changes no security setting, and checks
 at the end that the buttons answer. To remove it, set `$env:CRONOAUDIT_MSPROJECT_REMOVE="1"` in the
-same window and run the same command. Secret mode is not yet available from the button. More in
-[`msproject/`](msproject/).
+same window and run the same command. From the button, secret mode is a choice when the agent
+opens: the button runs the coded copy and opens the agent in it. More in [`msproject/`](msproject/).
 
 ### C. The engine, without an agent
 
@@ -174,7 +174,7 @@ irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex
 curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash
 ```
 
-At the end you should see **`cronoaudit 0.9.2 is installed`**. cronoaudit needs Python 3.9 or
+At the end you should see **`cronoaudit 0.9.3 is installed`**. cronoaudit needs Python 3.9 or
 later; on Windows, if there is no Python, the installer brings its own copy, with no administrator
 rights. To update, run the same command again.
 
@@ -214,7 +214,8 @@ See [path B](#b-the-cronoaudit-tab-inside-project-windows).
 
 ### Secret mode (experimental)
 
-To talk to the agent without the names, values and dates leaving your computer. You run one command
+To talk to the agent without the names, values and dates leaving your computer. From the Project
+tab, answer **Yes** when Analisar or Comparar ask for the mode. Without the tab, you run one command
 yourself, with the `.xml` or, on Windows with Project, the `.mpp`:
 
 ```

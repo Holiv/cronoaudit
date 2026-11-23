@@ -1,5 +1,5 @@
 Attribute VB_Name = "Cronoaudit"
-' cronoaudit para MS Project - v0.4.1 (22/11/2026)
+' cronoaudit para MS Project - v0.5 (23/11/2026)
 '
 ' A cronoaudit e uma SKILL: o agente le o cronograma por ela, conversa com o planejador,
 ' interpreta e personaliza o relatorio. O motor em Python e o instrumento da skill: e dele
@@ -10,8 +10,9 @@ Attribute VB_Name = "Cronoaudit"
 '   CronoauditAnalisar        exporta o XML do arquivo ativo, grava pedido.md na pasta da rodada
 '                             e abre o agente nela: Claude Code, Codex, Copilot CLI ou Gemini CLI
 '                             num terminal; ou o VS Code, com o pedido na area de transferencia.
-'                             O que o agente ler vai para o provedor dele (modo LIVRE).
-'                             Antes de abrir o agente, a macro confere o modo configurado.
+'                             Antes de abrir o agente, a macro confere o modo configurado:
+'                             LIVRE, o que o agente ler vai para o provedor dele; SECRETO, o motor
+'                             roda aqui e o agente abre numa pasta so com a copia codificada.
 '   CronoauditComparar        pede a outra versao (.mpp ou .xml), exporta as duas e abre o agente
 '                             com o pedido de comparacao. Idem quanto ao dado.
 '   CronoauditExportarXml     so exporta o XML e abre a pasta. Sem agente, sem motor.
@@ -29,8 +30,13 @@ Attribute VB_Name = "Cronoaudit"
 ' leem, para os tres concordarem:  %USERPROFILE%\.cronoaudit\config.json
 '   "secret": "ask"   perguntar antes de abrir o agente (padrao de fabrica)
 '   "secret": "off"   modo livre, sem perguntar
-'   "secret": "on"    modo secreto por padrao. Ele ainda esta em desenvolvimento: a macro avisa
-'                     e so abre o agente no modo livre se a pessoa escolher isso na hora.
+'   "secret": "on"    modo secreto por padrao, sem perguntar.
+' No modo SECRETO, a macro exporta o XML na pasta da rodada (que o agente nao ve), roda o motor
+' com --secret numa pasta de trabalho neutra (%USERPROFILE%\cronoaudit-work\<data>\<codigo>,
+' sem o nome do cronograma) e abre o agente la, sem pedido.md, porque o pedido levaria nomes.
+' O motor nao recebe o .mpp: exportar pelo Project a partir de um processo que a propria macro
+' espera travaria os dois. No fim o agente roda o finish, que monta o relatorio real ao lado do
+' XML, na pasta da rodada.
 ' A pergunta daqui e feita por codigo, antes de o agente existir. A da skill e o agente seguindo
 ' instrucao. Sao coisas diferentes e o LEIA-ME diz isso.
 '
@@ -48,6 +54,11 @@ Private Const TITULO As String = "cronoaudit"
 Private Const AGENTES As String = "claude codex copilot gemini code"
 ' Curto e ASCII de proposito: e a unica frase que atravessa a linha de comando.
 Private Const PROMPT_INICIAL As String = "Use the cronoaudit skill. Read pedido.md in this folder and follow it."
+' No modo secreto nao ha pedido.md: a pasta so tem a copia codificada, e a skill reconhece a
+' pasta pelo cronoaudit-secret.json. Sem nomes, sem caminhos, e sem ( ) & | < > ^ % ! (o cmd
+' repete a frase num echo quando o agente nao abre).
+Private Const PROMPT_SECRETO_ANALISE As String = "Use the cronoaudit skill. This is a secret-mode work folder: analyse the schedule from the coded files here. Converse in Brazilian Portuguese."
+Private Const PROMPT_SECRETO_CICLO As String = "Use the cronoaudit skill. This is a secret-mode work folder: analyse this cycle, the comparison of the two versions, from the coded files here. Converse in Brazilian Portuguese."
 
 ' ===================== macros publicas =====================
 
@@ -154,7 +165,7 @@ Public Sub CronoauditConfigurar()
             v = InputBox("ask, off ou on." & vbCrLf & vbCrLf & _
                 "ask = perguntar antes de abrir o agente" & vbCrLf & _
                 "off = modo livre, sem perguntar" & vbCrLf & _
-                "on  = modo secreto (em desenvolvimento)", TITULO, LerSecret(aviso))
+                "on  = modo secreto, sem perguntar", TITULO, LerSecret(aviso))
             If StrPtr(v) = 0 Then Exit Sub
             v = LCase$(Trim$(v))
             If v <> "ask" And v <> "off" And v <> "on" Then
@@ -186,11 +197,11 @@ End Sub
 ' Sem agente disponivel, o fluxo com IA oferece o outro em vez de falhar.
 Private Sub FluxoAnalise(ByVal comIA As Boolean)
     Dim origem As String, pasta As String, base As String, xmlAtual As String
-    Dim py As String, rv As String, agente As String
+    Dim py As String, rv As String, agente As String, secreto As Boolean
     If Not PreVoo(origem) Then Exit Sub
     If Not AcharMotor(py, rv) Then Exit Sub
     If comIA Then
-        If Not ResolverAgente(agente, comIA) Then Exit Sub
+        If Not ResolverAgente(agente, comIA, secreto) Then Exit Sub
     End If
     base = NomeBase(ActiveProject.Name)
     pasta = NovaPastaDeRodada(base)
@@ -198,9 +209,11 @@ Private Sub FluxoAnalise(ByVal comIA As Boolean)
     xmlAtual = pasta & "\" & base & ".xml"
     If Not ExportarCopia(xmlAtual, origem) Then Exit Sub
     SaveSetting APP, SEC, "ultimo", pasta
-    If comIA Then
+    If comIA And secreto Then
+        AbrirSecreto agente, py, rv, """" & xmlAtual & """", PastaDe(origem), pasta, PROMPT_SECRETO_ANALISE
+    ElseIf comIA Then
         If Not GravarUtf8(pasta & "\pedido.md", PedidoAnalise(base, pasta, py, rv)) Then Exit Sub
-        AbrirAgente agente, pasta
+        AbrirAgente agente, pasta, PROMPT_INICIAL
     Else
         If RodarMotor(py, rv, """" & xmlAtual & """", pasta) Then
             AbrirRelatorio pasta & "\" & base & "-review.html"
@@ -213,10 +226,11 @@ Private Sub FluxoComparacao(ByVal comIA As Boolean)
     Dim xmlAtivo As String, xmlOutro As String, ativoEhAtual As VbMsgBoxResult
     Dim baseAtivo As String, baseOutro As String, agente As String
     Dim anterior As String, atual As String, baseAnt As String, baseAtu As String
+    Dim secreto As Boolean, pastaAtual As String
     If Not PreVoo(origem) Then Exit Sub
     If Not AcharMotor(py, rv) Then Exit Sub
     If comIA Then
-        If Not ResolverAgente(agente, comIA) Then Exit Sub
+        If Not ResolverAgente(agente, comIA, secreto) Then Exit Sub
     End If
 
     ativoEhAtual = MsgBox("O arquivo aberto e a versao MAIS NOVA?" & vbCrLf & vbCrLf & _
@@ -261,13 +275,17 @@ Private Sub FluxoComparacao(ByVal comIA As Boolean)
 
     If ativoEhAtual = vbYes Then
         anterior = xmlOutro: atual = xmlAtivo: baseAnt = baseOutro: baseAtu = baseAtivo
+        pastaAtual = PastaDe(origem)
     Else
         anterior = xmlAtivo: atual = xmlOutro: baseAnt = baseAtivo: baseAtu = baseOutro
+        pastaAtual = PastaDe(outro)
     End If
     SaveSetting APP, SEC, "ultimo", pasta
-    If comIA Then
+    If comIA And secreto Then
+        AbrirSecreto agente, py, rv, """" & anterior & """ """ & atual & """", pastaAtual, pasta, PROMPT_SECRETO_CICLO
+    ElseIf comIA Then
         If Not GravarUtf8(pasta & "\pedido.md", PedidoComparacao(baseAnt, baseAtu, pasta, py, rv)) Then Exit Sub
-        AbrirAgente agente, pasta
+        AbrirAgente agente, pasta, PROMPT_INICIAL
     Else
         If RodarMotor(py, rv, """" & anterior & """ """ & atual & """", pasta) Then
             AbrirRelatorio pasta & "\" & baseAnt & "--to--" & baseAtu & "-cycle.html"
@@ -279,7 +297,7 @@ End Sub
 
 ' Decide qual agente abrir. Devolve False para desistir. Quando nao ha agente e a pessoa
 ' aceita a rota sem IA, devolve True com comIA = False.
-Private Function ResolverAgente(ByRef agente As String, ByRef comIA As Boolean) As Boolean
+Private Function ResolverAgente(ByRef agente As String, ByRef comIA As Boolean, ByRef secreto As Boolean) As Boolean
     Dim cfg As String, motivo As String
     cfg = LCase$(Trim$(GetSetting(APP, SEC, "agente", "auto")))
     If cfg = "" Or Not (cfg = "auto" Or EhAgente(cfg)) Then cfg = "auto"
@@ -301,42 +319,51 @@ Private Function ResolverAgente(ByRef agente As String, ByRef comIA As Boolean) 
         End If
         Exit Function
     End If
-    ResolverAgente = ResolverModo(agente)
+    ResolverAgente = ResolverModo(agente, secreto)
 End Function
 
 ' ===================== modo: livre ou secreto =====================
 
 ' Decide o modo antes de o agente ser aberto e antes de qualquer XML ser exportado.
-' Devolve True para seguir no modo LIVRE, False para nao abrir o agente.
-' Nunca segue no modo livre calada quando o configurado e o secreto: ai a pessoa escolhe na hora.
-Private Function ResolverModo(ByVal agente As String) As Boolean
-    Dim aviso As String, cabeca As String
+' Devolve True para seguir (secreto diz em qual modo), False para nao abrir o agente.
+' Na pergunta, o botao padrao e o SECRETO: um Enter distraido nunca manda o cronograma ao provedor.
+Private Function ResolverModo(ByVal agente As String, ByRef secreto As Boolean) As Boolean
+    Dim aviso As String, cabeca As String, trava As String
+    secreto = False
+    If agente <> "claude" Then
+        trava = "Com o " & IIf(agente = "code", "VS Code", agente) & ", a pasta secreta traz as regras como instrucao. A trava que " & _
+            "impede o agente de sair dela so existe no Claude Code." & vbCrLf & vbCrLf
+    End If
     Select Case LerSecret(aviso)
         Case "off"
             ResolverModo = True
         Case "on"
-            ResolverModo = (MsgBox("O modo SECRETO e o padrao configurado, e ele ainda esta em desenvolvimento." & vbCrLf & vbCrLf & _
-                "Quando existir, o agente vai ler so uma versao codificada do cronograma, e a " & _
-                "decodificacao vai acontecer nesta maquina." & vbCrLf & vbCrLf & _
-                "Hoje so existe o modo LIVRE: o que o agente (" & agente & ") ler vai para o provedor dele." & vbCrLf & _
-                "Os botoes Sem IA geram o relatorio nesta maquina e nada sai dela." & vbCrLf & vbCrLf & _
-                "Sim: abrir o agente no modo LIVRE, so desta vez." & vbCrLf & _
-                "Nao: cancelar. Nada foi exportado.", vbYesNo + vbExclamation + vbDefaultButton2, TITULO) = vbYes)
+            secreto = True
+            If trava = "" Then
+                ResolverModo = True
+            Else
+                ResolverModo = (MsgBox("Modo SECRETO (o configurado)." & vbCrLf & vbCrLf & trava & _
+                    "OK: seguir no modo secreto.    Cancelar: nao abrir o agente.", _
+                    vbOKCancel + vbInformation, TITULO) = vbOK)
+            End If
         Case Else
             If aviso <> "" Then cabeca = aviso & vbCrLf & "Por isso a pergunta voltou." & vbCrLf & vbCrLf
-            Select Case MsgBox(cabeca & "Modo LIVRE: o que o agente (" & agente & ") ler vai para o provedor dele. Continuar?" & vbCrLf & vbCrLf & _
-                "Isso inclui o XML, os resultados e o que voce escrever, nas condicoes da sua conta ou da " & _
-                "sua empresa. Confira se a politica da empresa permite. Se nao permitir, use os botoes " & _
-                "Sem IA: o relatorio e gerado nesta maquina e nada sai dela." & vbCrLf & vbCrLf & _
-                "O modo SECRETO, em que o agente le so uma versao codificada, esta em desenvolvimento." & vbCrLf & vbCrLf & _
-                "Sim: continuar no modo livre, desta vez." & vbCrLf & _
-                "Nao: continuar no modo livre e nao perguntar mais." & vbCrLf & _
-                "Cancelar: nao abrir o agente.", vbYesNoCancel + vbQuestion, TITULO)
+            Select Case MsgBox(cabeca & "Abrir o agente (" & agente & ") no modo SECRETO?" & vbCrLf & vbCrLf & _
+                "SECRETO: o motor roda nesta maquina e o agente le so uma copia codificada. Nomes viram " & _
+                "codigos, valores sao multiplicados por um fator secreto e datas viram contagens de dias. " & _
+                "O relatorio final, com os dados reais, e montado nesta maquina." & vbCrLf & vbCrLf & _
+                "LIVRE: o agente le o XML e os resultados como estao, e isso vai para o provedor dele, nas " & _
+                "condicoes da sua conta ou da sua empresa. Confira se a politica da empresa permite." & vbCrLf & vbCrLf & _
+                trava & _
+                "Sim: modo SECRETO." & vbCrLf & _
+                "Nao: modo LIVRE, desta vez." & vbCrLf & _
+                "Cancelar: nao abrir o agente." & vbCrLf & vbCrLf & _
+                "Para nao perguntar mais, escolha o modo em Configurar, item 5.", _
+                vbYesNoCancel + vbQuestion + vbDefaultButton1, TITULO)
                 Case vbYes
+                    secreto = True
                     ResolverModo = True
                 Case vbNo
-                    ' Se a gravacao falhar, a mensagem ja apareceu e a pergunta volta na proxima vez.
-                    GravarSecret "off"
                     ResolverModo = True
             End Select
     End Select
@@ -345,7 +372,7 @@ End Function
 Private Function DescreverModo(ByVal v As String) As String
     Select Case v
         Case "off": DescreverModo = "off - livre, sem perguntar"
-        Case "on": DescreverModo = "on - secreto (em desenvolvimento)"
+        Case "on": DescreverModo = "on - secreto, sem perguntar"
         Case Else: DescreverModo = "ask - perguntar antes de abrir o agente"
     End Select
 End Function
@@ -540,17 +567,17 @@ End Function
 '   copilot -i "PROMPT"    --interactive: sessao interativa que executa o pedido
 '   gemini -i "PROMPT"     --prompt-interactive: executa o pedido e continua interativo
 '   code "PASTA"           abre a pasta no VS Code; o pedido vai pela area de transferencia
-Private Function AbrirAgente(ByVal agente As String, ByVal pasta As String) As Boolean
+Private Function AbrirAgente(ByVal agente As String, ByVal pasta As String, ByVal frase As String) As Boolean
     Dim sh As Object, linha As String, cmd As String
     If agente = "code" Then
-        AbrirAgente = AbrirVSCode(pasta)
+        AbrirAgente = AbrirVSCode(pasta, frase)
         Exit Function
     End If
     Select Case agente
         Case "claude", "codex"
-            linha = agente & " """ & PROMPT_INICIAL & """"
+            linha = agente & " """ & frase & """"
         Case "copilot", "gemini"
-            linha = agente & " -i """ & PROMPT_INICIAL & """"
+            linha = agente & " -i """ & frase & """"
         Case Else
             MsgBox "Agente desconhecido: " & agente, vbCritical, TITULO
             Exit Function
@@ -560,7 +587,7 @@ Private Function AbrirAgente(ByVal agente As String, ByVal pasta As String) As B
     cmd = "cmd /k ""title cronoaudit && cd /d """ & pasta & """ && " & linha & _
         " || (echo. & echo O agente terminou com erro ou nao chegou a abrir. & " & _
         "echo Para tentar de novo, abra o agente nesta pasta e digite: & " & _
-        "echo   " & PROMPT_INICIAL & ")"""
+        "echo   " & frase & ")"""
     On Error Resume Next
     Set sh = CreateObject("WScript.Shell")
     If Err.Number <> 0 Then
@@ -580,9 +607,9 @@ End Function
 
 ' O VS Code nao recebe pedido pela linha de comando. A pasta da rodada abre nele e a frase
 ' curta vai para a area de transferencia: a pessoa abre o Copilot Chat em modo agente e cola.
-Private Function AbrirVSCode(ByVal pasta As String) As Boolean
+Private Function AbrirVSCode(ByVal pasta As String, ByVal frase As String) As Boolean
     Dim sh As Object, copiou As Boolean
-    copiou = CopiarParaAreaDeTransferencia(PROMPT_INICIAL)
+    copiou = CopiarParaAreaDeTransferencia(frase)
     On Error Resume Next
     Set sh = CreateObject("WScript.Shell")
     If Err.Number <> 0 Then
@@ -678,8 +705,7 @@ Private Function PedidoCabecalho(ByVal tarefa As String) As String
         "- Tarefa: " & tarefa & vbCrLf & _
         "- Idioma: portugues do Brasil (pt-BR). Converse e escreva em pt-BR, com acentuacao normal." & vbCrLf & _
         "- Modo: LIVRE. A pessoa confirmou no suplemento do MS Project, antes de este pedido ser gravado, " & _
-        "que o que o agente ler vai para o provedor dele. Nao pergunte o modo de novo. " & _
-        "(O modo secreto esta em desenvolvimento.)" & vbCrLf
+        "que o que o agente ler vai para o provedor dele. Nao pergunte o modo de novo." & vbCrLf
 End Function
 
 ' Os nomes exatos que o motor grava, para o agente nao adivinhar. baseAnterior vazio = analise
@@ -943,6 +969,98 @@ Private Function ExportarOutro(ByVal caminho As String, ByVal destino As String,
 End Function
 
 ' Roda o review.py numa janela de terminal visivel e espera. Em erro, a janela fica aberta.
+' ===================== modo secreto =====================
+
+' Roda o motor com --secret sobre os XML ja exportados e abre o agente na pasta de trabalho.
+' pastaProjeto: a pasta do cronograma atual. So serve para manter os mesmos codigos de uma
+' versao para a outra; o motor guarda apenas um resumo dela, nunca o nome.
+' pastaRodada: onde estao os XML e onde o relatorio real aparece no fim. O agente nao a ve.
+Private Sub AbrirSecreto(ByVal agente As String, ByVal py As String, ByVal rv As String, ByVal arquivos As String, _
+                         ByVal pastaProjeto As String, ByVal pastaRodada As String, ByVal frase As String)
+    Dim raiz As String, trabalho As String, confia As String
+    ' Neutra: data e hora, sem o nome do cronograma. O agente ve o proprio caminho.
+    raiz = Environ$("USERPROFILE") & "\cronoaudit-work\" & Format(Now, "yyyymmdd-hhnnss")
+    If Not RodarMotorSecreto(py, rv, arquivos, raiz, pastaProjeto) Then Exit Sub
+    trabalho = AcharPastaDeTrabalho(raiz)
+    If trabalho = "" Then
+        MsgBox "O motor rodou, mas a pasta de trabalho codificada nao apareceu em:" & vbCrLf & raiz & vbCrLf & vbCrLf & _
+            "O agente nao foi aberto.", vbExclamation, TITULO
+        Exit Sub
+    End If
+    If agente = "claude" Then
+        confia = "No Claude Code, responda que CONFIA na pasta. Sem isso a trava fica desligada." & vbCrLf & vbCrLf
+    End If
+    MsgBox "Modo SECRETO pronto." & vbCrLf & vbCrLf & _
+        "O agente vai abrir numa pasta so com a copia codificada:" & vbCrLf & Abreviar(trabalho) & vbCrLf & vbCrLf & _
+        confia & _
+        "Refira-se as atividades pelo codigo ou pelo ID da linha: o que voce digitar com nome ou valor " & _
+        "real vai para o servico de IA." & vbCrLf & vbCrLf & _
+        "No fim, o agente monta o relatorio com os dados reais nesta maquina, nesta pasta:" & vbCrLf & _
+        Abreviar(pastaRodada), vbInformation, TITULO
+    AbrirAgente agente, trabalho, frase
+End Sub
+
+Private Function RodarMotorSecreto(ByVal py As String, ByVal rv As String, ByVal arquivos As String, _
+                                   ByVal raiz As String, ByVal pastaProjeto As String) As Boolean
+    Dim sh As Object, cmd As String, rc As Long
+    CriarPastas raiz
+    On Error Resume Next
+    Set sh = CreateObject("WScript.Shell")
+    If Err.Number <> 0 Then
+        Falha "abrir o terminal (WScript.Shell bloqueado)", Err
+        On Error GoTo 0
+        Exit Function
+    End If
+    cmd = py & " """ & rv & """ " & arquivos & " --secret --workdir """ & SemBarraFinal(raiz) & _
+        """ --project """ & SemBarraFinal(pastaProjeto) & """"
+    rc = sh.Run("cmd /c ""title cronoaudit - modo secreto && " & cmd & _
+        " || (echo. & echo A cronoaudit terminou com erro. & pause & exit /b 1)""", 1, True)
+    If Err.Number <> 0 Then
+        Falha "executar o Python (a politica da maquina pode bloquear processos abertos por macro)", Err
+        On Error GoTo 0
+        Exit Function
+    End If
+    On Error GoTo 0
+    If rc <> 0 Then
+        MsgBox "A cronoaudit terminou com codigo " & rc & " e o agente nao foi aberto. A mensagem dela " & _
+            "ficou no terminal." & vbCrLf & vbCrLf & _
+            "Se ela disse que foi iniciada por um agente, feche o Project e abra de novo pelo menu " & _
+            "Iniciar ou pelo arquivo, nao de dentro de um terminal do agente.", vbExclamation, TITULO
+        Exit Function
+    End If
+    RodarMotorSecreto = True
+End Function
+
+' A subpasta que o motor criou: a unica com cronoaudit-secret.json. FileSystemObject, nao Dir:
+' o Dir e um iterador global, e outra chamada no meio do laco o reiniciaria calado.
+Private Function AcharPastaDeTrabalho(ByVal raiz As String) As String
+    Dim fso As Object, d As Object
+    On Error Resume Next
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    If Err.Number <> 0 Then Exit Function
+    If Not fso.FolderExists(raiz) Then Exit Function
+    For Each d In fso.GetFolder(raiz).SubFolders
+        If fso.FileExists(d.Path & "\cronoaudit-secret.json") Then
+            AcharPastaDeTrabalho = d.Path
+            Exit For
+        End If
+    Next d
+    On Error GoTo 0
+End Function
+
+Private Function PastaDe(ByVal caminho As String) As String
+    If InStrRev(caminho, "\") > 0 Then PastaDe = Left$(caminho, InStrRev(caminho, "\") - 1) Else PastaDe = caminho
+End Function
+
+' Uma barra no fim, antes da aspa, faria o Python ler a aspa como parte do argumento.
+Private Function SemBarraFinal(ByVal p As String) As String
+    Do While Len(p) > 3 And Right$(p, 1) = "\"
+        p = Left$(p, Len(p) - 1)
+    Loop
+    If Len(p) = 3 And Right$(p, 1) = "\" Then p = Left$(p, 2)
+    SemBarraFinal = p
+End Function
+
 Private Function RodarMotor(ByVal py As String, ByVal rv As String, ByVal arquivos As String, ByVal pasta As String) As Boolean
     Dim sh As Object, cmd As String, rc As Long
     On Error Resume Next

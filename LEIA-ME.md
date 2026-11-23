@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-![versão](https://img.shields.io/badge/vers%C3%A3o-0.9.2-1f6feb)
+![versão](https://img.shields.io/badge/vers%C3%A3o-0.9.3-1f6feb)
 ![licença](https://img.shields.io/badge/licen%C3%A7a-Apache%202.0-555)
 ![Windows · macOS · Linux](https://img.shields.io/badge/Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-roda-2ea043)
 ![dados](https://img.shields.io/badge/motor-n%C3%A3o%20usa%20a%20rede-2ea043)
@@ -127,7 +127,8 @@ Durante a instalação o Project abre e pede duas coisas, que são suas:
 O instalador guarda uma cópia do que muda antes de mudar, não altera nenhuma configuração de
 segurança e confere no fim que os botões respondem. Para remover, defina
 `$env:CRONOAUDIT_MSPROJECT_REMOVE="1"` na mesma janela e rode o mesmo comando. Pelo botão, o modo
-secreto ainda não está disponível. Mais detalhes em [`msproject/`](msproject/LEIA-ME.md).
+secreto é uma escolha na hora de abrir o agente: o botão roda a cópia codificada e abre o agente nela.
+Mais detalhes em [`msproject/`](msproject/LEIA-ME.md).
 
 ### C. Pelo motor, sem agente
 
@@ -173,7 +174,7 @@ irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex
 curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash
 ```
 
-No fim deve aparecer **`cronoaudit 0.9.2 is installed`**. A cronoaudit precisa do Python 3.9 ou
+No fim deve aparecer **`cronoaudit 0.9.3 is installed`**. A cronoaudit precisa do Python 3.9 ou
 mais novo; no Windows, se não houver Python, o instalador traz uma cópia própria, sem precisar de
 administrador. Para atualizar, rode o mesmo comando de novo.
 
@@ -213,7 +214,8 @@ Veja o [caminho B](#b-pela-aba-cronoaudit-dentro-do-project-windows).
 
 ### Modo secreto (experimental)
 
-Para conversar com o agente sem que os nomes, os valores e as datas saiam do seu computador. Você
+Para conversar com o agente sem que os nomes, os valores e as datas saiam do seu computador. Pela
+aba do Project, responda **Sim** quando Analisar ou Comparar perguntarem o modo. Sem a aba, você
 mesmo roda um comando, com o `.xml` ou, no Windows com o Project, com o `.mpp`:
 
 ```

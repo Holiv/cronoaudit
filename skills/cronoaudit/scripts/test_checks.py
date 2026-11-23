@@ -643,6 +643,24 @@ def mode_checks() -> list:
                 failures.append(f"modes: --secret run by a person did not write a work folder only: "
                                 f"rc {r.returncode} {r.stderr[-200:]!r}")
 
+            # ---- the MS Project add-in's call: a fresh neutral root, and --project carrying a
+            # folder that may name the company. The name keeps the codes; it never shows.
+            root = os.path.join(tmp, "addin-root")
+            marker = "ZZCompanyFolderMarker"
+            r = engine([xml, "--secret", "--workdir", root, "--project", "C:/Obras/" + marker + "/Rev"], home)
+            subs = [d for d in (os.listdir(root) if os.path.isdir(root) else [])
+                    if os.path.exists(os.path.join(root, d, "cronoaudit-secret.json"))]
+            if r.returncode != 0 or len(subs) != 1:
+                failures.append(f"modes: the add-in's secret call did not leave one work folder under its "
+                                f"root: rc {r.returncode}, {subs}")
+            if marker in r.stdout + r.stderr:
+                failures.append("modes: --project was printed on the screen of a secret run")
+            for dp, _dn, fns in os.walk(root):
+                for fn in fns:
+                    with open(os.path.join(dp, fn), "rb") as fh:
+                        if marker.encode() in fh.read():
+                            failures.append(f"modes: --project reached a work-folder file: {fn}")
+
             # ---- stored "on" behaves as --secret; --free is the only way through it
             engine(["--secret", "on"], home)
             r = engine([xml, "--outdir", out, "--quiet"], home, agent=True)
@@ -1104,6 +1122,26 @@ def secret_unit_checks() -> list:
         if ("BCWS" in v) != want or "31,03" not in v:
             failures.append(f"narrative: the planned figure's source was {'not ' if want else ''}"
                             f"named with an S-curve {sc_inputs}: {v}")
+    # No time-phased baseline: the planned curve is absent, not a line of zeros, and so
+    # is the schedule variance and the look-ahead's planned earning computed against it.
+    import phasing as _ph
+    import forecast as _fc
+    _nofase = os.path.join(tempfile.mkdtemp(), "nofase.xml")
+    with open(os.path.join(os.path.dirname(os.path.dirname(ROOT)), "examples", "rodovia-ficticia-rev04.xml"),
+              encoding="utf-8") as fh:
+        _x = re.sub(r"<TimephasedData>.*?</TimephasedData>", "", fh.read(), flags=re.S)
+    with open(_nofase, "w", encoding="utf-8") as fh:
+        fh.write(_x)
+    _r = subprocess.run([sys.executable, os.path.join(HERE, "review.py"), _nofase, "--free", "--quiet",
+                         "--outdir", os.path.dirname(_nofase)], capture_output=True, text=True)
+    _sc = json.load(open(_nofase[:-4] + "-review-scurve.json", encoding="utf-8"))
+    _fo = json.load(open(_nofase[:-4] + "-review-forecast.json", encoding="utf-8"))
+    _bad = [p["period"] for p in _sc["periods"] if any(p.get(k) is not None for k in
+            ("planned", "planned_cum", "planned_cum_pct", "sv_cum"))]
+    _bad += [f"lookahead {w['weeks']}w" for w in _fo.get("lookahead") or []
+             if w.get("planned_earning") is not None or w.get("reachable") is not None]
+    if _r.returncode != 0 or _sc["inputs"]["planned_available"] is not False or _bad:
+        failures.append(f"phasing: with no time-phased baseline, planned values are not absent: {_bad[:4]}")
     # Money written into a sentence by the engine: the earned-before-plan reading.
     payload = {"lang": "pt", "meta": {}, "findings": [],
                "scurve": {"bac": 1000000.0, "totals": {},

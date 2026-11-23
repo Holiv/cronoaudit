@@ -213,14 +213,16 @@ def lookahead(model: dict, scurve: dict, group_field: str | None, weeks_list=(4,
         starts.sort(key=lambda x: -x["cost"])
         finishes.sort(key=lambda x: -x["cost"])
         projected = practised_per_week * w
+        # No planned curve, no planned earning: absent, so "reachable" has nothing to meet.
+        has_plan = any((p.get("planned") or 0) > 0 for p in periods)
         out.append({
             "weeks": w, "from": fmt(status + timedelta(days=1)), "to": fmt(end),
             "must_start": len(starts), "must_finish": len(finishes),
-            "planned_earning": round(planned_in_window, 2),
-            "planned_earning_pct": round(planned_in_window / bac * 100, 2),
+            "planned_earning": round(planned_in_window, 2) if has_plan else None,
+            "planned_earning_pct": round(planned_in_window / bac * 100, 2) if has_plan else None,
             "projected_earning_at_practised_rate": round(projected, 2),
             "projected_pct": round(projected / bac * 100, 2),
-            "reachable": bool(projected >= planned_in_window) if planned_in_window else None,
+            "reachable": bool(projected >= planned_in_window) if (has_plan and planned_in_window) else None,
             "by_group": sorted(
                 [{"group": g, **v, "cost": round(v["cost"], 2),
                   "weight_pct": round(v["cost"] / bac * 100, 2)} for g, v in by_group.items()],

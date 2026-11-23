@@ -116,6 +116,9 @@ before opening an XML, a report or a JSON sidecar, and before quoting anything f
   puts it too), then run
   `python3 <scripts>/secret_decode.py finish`. It decodes on this machine, beside the
   original, opens the report, and prints counts only.
+- **Another version, or a comparison, is a new coded run started by the person.** Point to the
+  MS Project tab (Comparar versões, answering Yes to secret mode) or to the `review.py ... --secret`
+  command they run in their own terminal; then they open you in the new work folder.
 - **Never run `secret_decode.py text`.** It prints real names, so its output would go to
   your provider. It is the person's command, typed in their own terminal, to read one of
   your answers with real names (it refuses inside Claude Code, and the guard blocks it).
