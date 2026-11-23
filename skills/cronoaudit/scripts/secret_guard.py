@@ -19,6 +19,14 @@ original. Allowed:
                            - plain reading commands (ls, cat, head, tail, wc, grep,
                              sort, uniq, cut, jq, echo, pwd, cd, diff), piped or chained
                          no variables, no command substitution, no other interpreter
+  as they are            tools that touch no file and send nothing anywhere: Skill,
+                         ToolSearch, AskUserQuestion, the task list, plan mode, and Agent
+                         (a subagent's own calls come through this hook too)
+  nothing else           every other tool is blocked, known or not: PowerShell (on by
+                         default on Windows), Monitor, MCP and connector tools, Artifact,
+                         SendUserFile, SendMessage (another session is not guarded),
+                         Workflow, and whatever a later version of the agent adds. Each
+                         of these can read a file or carry text out by another road.
 
 What this is: a tripwire against an agent wandering out of the folder by habit or
 by an instruction it misread. What it is not: a sandbox against an agent set on
@@ -36,8 +44,11 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-# Tools that run commands or reach files by another road: never in a secret session.
-EXEC_TOOLS = {"PowerShell", "Monitor", "ReadMcpResourceTool"}
+# Tools that touch no file and send nothing out: let through as they are. Every
+# tool not named here or checked below is blocked, so a tool added in a later
+# version of the agent starts closed.
+PASS_TOOLS = {"Skill", "ToolSearch", "AskUserQuestion", "TodoWrite", "TaskCreate", "TaskGet",
+              "TaskList", "TaskUpdate", "EnterPlanMode", "ExitPlanMode", "Agent", "Task"}
 
 READ_COMMANDS = {"ls", "cat", "head", "tail", "wc", "grep", "egrep", "fgrep", "sort", "uniq",
                  "cut", "jq", "echo", "printf", "pwd", "cd", "diff", "true"}
@@ -131,9 +142,9 @@ class Guard:
             self.readable(os.path.join(inp.get("path") or cwd, self._glob_root(pat)), cwd)
         elif tool == "Bash":
             self.bash(inp.get("command") or "", cwd)
-        elif tool in EXEC_TOOLS or tool.startswith("mcp__"):
-            raise Blocked(f"{tool} is not allowed in a secret session (use the allowed Bash commands)")
-        # Any other tool is not a file tool and is not this hook's business.
+        elif tool not in PASS_TOOLS:
+            raise Blocked(f"{tool or 'this tool'} is not allowed in a secret session "
+                          "(read and write the files in this folder; Bash for the finishing commands)")
 
     def bash(self, command: str, cwd: str) -> None:
         if re.search(r"[`$]|<\(|>\(|\n|\r", command):

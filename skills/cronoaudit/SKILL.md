@@ -123,8 +123,9 @@ before opening an XML, a report or a JSON sidecar, and before quoting anything f
 an enforcement. What code enforces: the engine refuses secret mode when Claude Code started
 it; the work folder holds only coded files (a leak test proves it on every test run); and,
 **for Claude Code only**, the folder carries deny rules and a hook that let a session read
-only its own folder and run only the finishing scripts, and that close PowerShell, Monitor and
-MCP tools. The hook is a tripwire, not a
+only its own folder, run only the finishing scripts and use only the tools a secret session
+needs: PowerShell, connectors, Artifact, SendUserFile, SendMessage and any tool not on its
+list are closed. The hook is a tripwire, not a
 sandbox. **For Copilot CLI, Codex and Grok nothing is enforced yet**: the folder carries
 the same rules as instructions only. Coding lowers what leaves the machine; it does not
 make the structure, durations and row IDs anonymous, and it does not replace the company's

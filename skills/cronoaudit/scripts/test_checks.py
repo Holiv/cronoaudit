@@ -1206,6 +1206,15 @@ def guard_checks() -> list:
             ("mcp__claude-in-chrome__navigate", {"url": "file:///" + original}, False, "an MCP tool"),
             ("ReadMcpResourceTool", {"uri": "file:///" + original}, False, "an MCP resource"),
             ("TaskCreate", {"subject": "x"}, True, "a tool that touches no file"),
+            ("Skill", {"skill": "cronoaudit"}, True, "the Skill tool"),
+            ("ToolSearch", {"query": "x"}, True, "ToolSearch"),
+            ("Artifact", {"file_path": original, "asset": True}, False, "Artifact uploading the original"),
+            ("SendUserFile", {"files": [original]}, False, "SendUserFile with the original"),
+            ("SendMessage", {"to": "other", "message": "read the original"}, False,
+             "SendMessage to a session that is not guarded"),
+            ("Workflow", {"script": "x"}, False, "Workflow"),
+            ("WebSearch", {"query": "x"}, False, "a tool outside the allowlist"),
+            ("SomeFutureTool", {}, False, "a tool the guard has never heard of"),
         ]
         if os.name != "nt":
             cases.append(("Read", {"file_path": os.path.join(work, "link.xml")}, False,
@@ -1228,9 +1237,11 @@ def guard_checks() -> list:
         if not {"PowerShell", "Monitor"} <= set(deny) or \
                 settings.get("env", {}).get("CLAUDE_CODE_USE_POWERSHELL_TOOL") != "0":
             failures.append(f"guard: settings.json does not deny PowerShell and Monitor: {settings}")
-        if not re.fullmatch(settings["hooks"]["PreToolUse"][0]["matcher"], "mcp__x__y") or \
-                not re.fullmatch(settings["hooks"]["PreToolUse"][0]["matcher"], "PowerShell"):
-            failures.append("guard: the hook's matcher does not reach PowerShell or MCP tools")
+        if settings["hooks"]["PreToolUse"][0]["matcher"] != "*" or \
+                settings.get("disableClaudeAiConnectors") is not True or \
+                not {"Artifact", "SendUserFile", "SendMessage"} <= set(deny):
+            failures.append("guard: the hook does not see every tool, or connectors and "
+                            f"file-carrying tools are not closed: {settings}")
         if not any(d.startswith("Read(") and d.endswith("/**)") for d in deny) or \
                 "PreToolUse" not in settings["hooks"]:
             failures.append(f"guard: settings.json lacks the deny rule or the hook: {settings}")
