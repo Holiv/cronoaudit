@@ -85,6 +85,17 @@ Public Sub CronoauditCompararSemIA()
     FluxoComparacao False
 End Sub
 
+' Sem interface: grava uma linha em %TEMP%\cronoaudit-ping.txt. O instalador chama por automacao
+' para confirmar que o modulo esta no Global.MPT.
+Public Sub CronoauditPing()
+    Dim f As Integer
+    On Error Resume Next
+    f = FreeFile
+    Open Environ$("TEMP") & "\cronoaudit-ping.txt" For Append As #f
+    Print #f, Format(Now, "yyyy-mm-dd hh:nn:ss") & " | modulo em: " & ThisProject.Name
+    Close #f
+End Sub
+
 Public Sub CronoauditConfigurar()
     Dim op As String, v As String, aviso As String
     ' O estado vai num MsgBox, que cresce com o texto. O InputBox corta o que nao cabe,
