@@ -165,8 +165,9 @@ it, the one responsible for updating it, a regulator, or someone studying. Never
 6. **The report need not be opened.** A conversation about one finding, one rate or one
    milestone is a complete use of the skill. Write the executive synthesis only when asked, or
    when the person asks for a report to hand over. After a cycle run, offer both in one line:
-   the synthesis, and a list of what to demand from the other party (one item per evidence row:
-   line, before → after).
+   the synthesis, and the list of what to demand from the other party. The engine builds that
+   list: `demands` in `<prev>--to--<curr>-cycle-readings.json`, also the last section of the
+   cycle report. Quote it; add to it only what the person brings, and say so.
 
 ## How to speak about the results
 
@@ -252,7 +253,8 @@ read in two minutes: whether the network holds and what that means; where the we
 whether progress happened there; the Earned Schedule reading with its limit; the activities the
 forensics name; what the next four weeks demand. For a cycle: the finish and milestones against
 their deadlines; the integrity of the measurement (rewritten past, moved baseline, the residue
-by its terms); replan against execution; what to demand from the other party. Quote figures
+by its terms); replan against execution; what to demand from the other party (the engine's
+`demands` list). Quote figures
 from the files, say what is `inferred`, add nothing the files do not support. Then:
 
 ```

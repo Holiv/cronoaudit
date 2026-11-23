@@ -471,12 +471,12 @@ def analyse(args, outdir=None) -> list:
     import i18n
     detected = i18n.detect(curr)
     cycle_payload = report_data.build_cycle(res, theme=theme, lang=lang, detected=detected,
-                                            deadlines=(rev or {}).get("_deadlines"))
+                                            deadlines=(rev or {}).get("_deadlines"), model=curr)
     with open(base + "-readings.json", "w", encoding="utf-8") as fh:
         # The rule-built sentences the cycle report shows, section by section, so
         # an assistant can quote them instead of composing its own.
-        json.dump({"lang": cycle_payload["lang"], "readings": cycle_payload["readings"]},
-                  fh, indent=2, ensure_ascii=False)
+        json.dump({"lang": cycle_payload["lang"], "readings": cycle_payload["readings"],
+                   "demands": cycle_payload["demands"]}, fh, indent=2, ensure_ascii=False)
     report_html.write(cycle_payload, base + ".html", template)
     if not args.quiet:
         print("\n=== Cycle comparison ===\n")

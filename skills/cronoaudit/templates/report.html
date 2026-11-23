@@ -166,6 +166,7 @@ td.neg{color:var(--crit)} td.pos{color:var(--good)}
 .arquivos{font:500 13px/1.4 var(--mono);color:var(--ink-3);margin:-6px 0 14px;word-break:break-word}
 .arquivos span{color:var(--accent);padding:0 4px}
 .sub-h{font-size:16px;margin:26px 0 6px}
+ol.cobrar{margin:6px 0 0;padding-left:22px;display:flex;flex-direction:column;gap:6px;max-width:72ch}
 .lista summary .qtd,.lista-t .qtd{font:600 12px var(--mono);color:var(--ink-3);margin-left:6px}
 .lista-t{font-size:14px;font-weight:600;margin:0 0 8px}
 .cap-print{display:none}
@@ -703,7 +704,7 @@ function renderCycle(d){
   const slink=s=>s?`<a href="#${esc(s.id)}"><span class="cod">${esc(s.code)}</span><span class="tt">${esc(s.title)}<small>${esc(s.subtitle)}</small></span><span class="qtd">${s.badge==null?"":n(s.badge)}</span><span class="sev ${SEV[s.severity]||"vs"}">${esc(s.severity_word)}</span></a>`:"";
   out.push(`<section id="indice"><div class="sec-h"><span class="eyebrow">${esc(L.roteiro)}</span><h2>${esc(L.index)}</h2></div>
     <p class="sec-d">${esc(L.cy_index_sub)}</p><nav class="indice">
-    ${slink(S.C1)}${slink(S.C5)}${vlink("p-escopo","P3",L.scope_changes,nScope)}${slink(S.C3)}${slink(S.C4)}${vlink("p-datas","P2",L.exec_or_plan,nDates+t.reference.length)}${vlink("p-mov","P1",L.movement_from,d.decomposition.length)}${slink(S.C2)}${slink(S.C6)}
+    ${slink(S.C1)}${slink(S.C5)}${vlink("p-escopo","P3",L.scope_changes,nScope)}${slink(S.C3)}${slink(S.C4)}${vlink("p-datas","P2",L.exec_or_plan,nDates+t.reference.length)}${vlink("p-mov","P1",L.movement_from,d.decomposition.length)}${slink(S.C2)}${slink(S.C6)}${vlink("cobrar","→",L.dm_title,(d.demands||[]).filter(x=>x.id!=null).length)}
     </nav></section>`);
 
   const group=(id,title,subtitle,body)=>body?`<section id="${id}"><div class="sec-h"><h2>${esc(title)}</h2></div>${subtitle?`<p class="sec-d">${esc(subtitle)}</p>`:""}${body}</section>`:"";
@@ -747,6 +748,12 @@ function renderCycle(d){
   // 5 and 6.
   out.push(group("g-folga",L.cy_g_float,"",one("C2")));
   out.push(group("g-qualidade",L.cy_g_quality,"",one("C6")));
+
+  // What to ask the contractor: built by the engine, one item per evidence row.
+  const DM=d.demands||[];
+  const dmGroups=[]; DM.forEach(x=>{let g=dmGroups.find(y=>y.g===x.group); if(!g){g={g:x.group,items:[]};dmGroups.push(g);} g.items.push(x);});
+  out.push(`<section id="cobrar"><div class="sec-h"><h2>${esc(L.dm_title)}</h2></div><p class="sec-d">${esc(L.dm_sub)}</p>
+    ${DM.length?dmGroups.map(g=>`<h3 class="sub-h">${esc(g.g)}</h3><ol class="cobrar">${g.items.map(x=>`<li>${esc(dates(x.text))}</li>`).join("")}</ol>`).join(""):`<p class="quieto-p">${esc(L.dm_none)}</p>`}</section>`);
 
   const lg=d.language||{};
   out.push(`<section><div class="sec-h"><h2>${esc(L.cy_conv_title)}</h2></div><dl class="conv">

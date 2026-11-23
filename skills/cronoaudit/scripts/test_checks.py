@@ -460,6 +460,20 @@ def example_checks() -> dict:
             fail("cycle order: C1 does not open with the milestones against their deadline")
         if pay["meta"]["finish_delta_days"] != cyc["project_finish"]["delta_days"]:
             fail("cycle order: the hero is not the project finish movement")
+        # What to ask the contractor: every planted evidence row, integrity first, and
+        # no question on a row that was only pushed by its predecessor.
+        pay = report_data.build_cycle(cyc, lang="pt", deadlines=dl, model=curr)
+        import i18n as i18n_mod
+        dm = pay["demands"]
+        asked = {x["id"] for x in dm if x["id"] is not None}
+        if not dm or dm[0]["group"] != i18n_mod.cycle_text("pt")["dm_g_integrity"]:
+            fail("demands: the list does not open with the integrity of the measurement")
+        if id_of[uid[P["duration"]["task"]]] not in asked:
+            fail("demands: the planted duration change is not asked about")
+        if id_of[uid["fim.desmob"]] in asked:
+            fail("demands: a row pushed only by its predecessor is asked to justify itself")
+        if not any("linha de base" in x["text"] and "coincidir" in x["text"] for x in dm):
+            fail("demands: an actual finish rewritten onto the baseline date is not called out")
     return {"failures": failures, "skipped": False}
 
 
