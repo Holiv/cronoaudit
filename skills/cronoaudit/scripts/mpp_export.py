@@ -34,8 +34,8 @@ MESSAGES = {
         "nothing_open": "MS Project is open, but no schedule is. Open the schedule, or pass the .mpp file.",
         "never_saved": "The schedule open in Project was never saved to disk. Save it, then try again.",
         "already_xml": "The schedule open in Project is already an XML file. Pass that file directly.",
-        "unsaved": "The schedule is open in Project with unsaved changes. Save it (or close without "
-                   "saving), then try again: the analysis reads the file as it is on disk.",
+        "unsaved_note": "Note: {name} is open in Project with unsaved changes (Project marks a file so "
+                        "just by opening it). The analysis read the file as saved on disk.",
         "open_failed": "MS Project did not open the file. Open it in Project once to see what it asks.",
         "export_failed": "MS Project could not export the file ({detail}). Export it by hand: "
                          "File > Save As > XML Format.",
@@ -54,8 +54,8 @@ MESSAGES = {
         "nothing_open": "O MS Project está aberto, mas sem cronograma. Abra o cronograma, ou passe o arquivo .mpp.",
         "never_saved": "O cronograma aberto no Project nunca foi salvo em disco. Salve e tente de novo.",
         "already_xml": "O cronograma aberto no Project já é um XML. Passe esse arquivo direto.",
-        "unsaved": "O cronograma está aberto no Project com alterações não salvas. Salve (ou feche sem "
-                   "salvar) e tente de novo: a análise lê o arquivo como está em disco.",
+        "unsaved_note": "Aviso: {name} está aberto no Project com alterações não salvas (o Project marca "
+                        "o arquivo assim só por abrir). A análise leu o arquivo como está salvo em disco.",
         "open_failed": "O MS Project não abriu o arquivo. Abra uma vez no Project para ver o que ele pergunta.",
         "export_failed": "O MS Project não conseguiu exportar o arquivo ({detail}). Exporte à mão: "
                          "Arquivo > Salvar como > Formato XML.",
@@ -81,10 +81,11 @@ def _say(code: str, lang: str, **kw) -> str:
     return t.get(code, t["no_output"]).format(**kw)
 
 
-def export(path: str, tmpdir: str, lang: str = "en") -> tuple[str, str]:
+def export(path: str, tmpdir: str, lang: str = "en") -> tuple:
     """Export one .mpp (or the project open in Project, for ACTIVE) to XML in tmpdir.
 
-    Returns (xml_path, source_path). Raises ExportError with a sentence for a person.
+    Returns (xml_path, source_path, note or ""). Raises ExportError with a sentence
+    for a person.
     """
     name = ({"pt": "o cronograma aberto no Project"}.get(lang, "the schedule open in Project")
             if path == ACTIVE else os.path.basename(path))
@@ -97,7 +98,7 @@ def export(path: str, tmpdir: str, lang: str = "en") -> tuple[str, str]:
     cmd = ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", PS1, "-Out", out]
     cmd += ["-Active"] if path == ACTIVE else ["-Path", os.path.abspath(path)]
     try:
-        r = subprocess.run(cmd, capture_output=True, text=True, timeout=TIMEOUT_S)
+        r = subprocess.run(cmd, capture_output=True, encoding="utf-8", errors="replace", timeout=TIMEOUT_S)
     except subprocess.TimeoutExpired:
         raise ExportError(_say("timeout", lang, s=TIMEOUT_S))
     except OSError:
@@ -117,25 +118,28 @@ def export(path: str, tmpdir: str, lang: str = "en") -> tuple[str, str]:
         if named != out:
             os.replace(out, named)
             out = named
-    return out, source
+    note = _say("unsaved_note", lang, name=os.path.basename(source)) if res.get("unsaved") else ""
+    return out, source, note
 
 
 def prepare(files: list, lang: str = "en"):
     """The engine's inputs with every .mpp exported. Returns (xml_files, origin_files,
-    tmpdir or None). The caller removes tmpdir with cleanup().
+    tmpdir or None, notes). The caller removes tmpdir with cleanup().
 
     Off Windows a .mpp is left alone: the optional reader, or the help that says
     how to export, takes it from there in review.load()."""
     if not any(needs_export(f) for f in files) or (os.name != "nt" and ACTIVE not in files):
-        return files, [os.path.abspath(f) for f in files], None
+        return files, [os.path.abspath(f) for f in files], None, []
     tmpdir = tempfile.mkdtemp(prefix="cronoaudit-export-")
-    xml_files, origins = [], []
+    xml_files, origins, notes = [], [], []
     try:
         for i, f in enumerate(files):
             if needs_export(f):
                 sub = os.path.join(tmpdir, str(i))
                 os.makedirs(sub)
-                x, src = export(f, sub, lang)
+                x, src, note = export(f, sub, lang)
+                if note:
+                    notes.append(note)
                 xml_files.append(x)
                 origins.append(os.path.abspath(src))
             else:
@@ -144,7 +148,7 @@ def prepare(files: list, lang: str = "en"):
     except Exception:
         cleanup(tmpdir)
         raise
-    return xml_files, origins, tmpdir
+    return xml_files, origins, tmpdir, notes
 
 
 def cleanup(tmpdir) -> None:

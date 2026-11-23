@@ -424,9 +424,13 @@ def main() -> None:
     # temporary folder for the run; reports go beside the file the person named.
     import mpp_export
     try:
-        xml_files, origins, tmpdir = mpp_export.prepare(args.files, args.lang or cfg_mod.system_lang())
+        xml_files, origins, tmpdir, notes = mpp_export.prepare(args.files, args.lang or cfg_mod.system_lang())
     except mpp_export.ExportError as exc:
         raise SystemExit(f"cronoaudit: {exc}")
+    for note in notes:
+        # Names the file, so not in secret mode, where the screen stays free of names.
+        if mode != "secret":
+            print(f"cronoaudit: {note}", file=sys.stderr)
     try:
         if tmpdir:
             args.files = xml_files

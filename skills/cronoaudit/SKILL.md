@@ -151,7 +151,9 @@ it, the one responsible for updating it, a regulator, or someone studying. Never
    **A `.mpp` needs nothing from the person on Windows**: pass it to `review.py` as it is, and
    the engine exports it through the MS Project installed on the machine (read-only; the file
    is not changed). Do not ask for an XML and do not explain XML unless the export fails; its
-   message says what to do. "The one I have open" is `--from-project`. Off Windows, a `.mpp`
+   message says what to do. "The one I have open" is `--from-project`. A schedule open in
+   Project is never touched: the file as saved on disk is copied and the copy exported, so
+   changes not yet saved are not in the analysis (the engine prints a note; tell the person). Off Windows, a `.mpp`
    still needs the XML export, done in Project by whoever has it.
 2. **Run the analysis once.** `review.py <file> --free` writes the report and the JSON sidecars beside
    the XML; `--outdir <folder>` when the person names a folder (it is created if missing,

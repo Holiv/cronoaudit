@@ -2457,11 +2457,11 @@ def run_all() -> int:
     import mpp_export
     if not mpp_export.needs_export("Rev04.MPP") or mpp_export.needs_export("Rev04.xml"):
         failures.append("mpp export: a .mpp is not recognised as needing export, or an .xml is")
-    xs, origins, tmp = mpp_export.prepare([os.path.join(ROOT, "fixtures", "positive.xml")])
+    xs, origins, tmp, _ = mpp_export.prepare([os.path.join(ROOT, "fixtures", "positive.xml")])
     if tmp is not None or xs != [os.path.join(ROOT, "fixtures", "positive.xml")]:
         failures.append("mpp export: an .xml input was touched")
     if os.name != "nt":
-        xs, origins, tmp = mpp_export.prepare(["x.mpp"])
+        xs, origins, tmp, _ = mpp_export.prepare(["x.mpp"])
         if tmp is not None or xs != ["x.mpp"]:
             failures.append("mpp export: off Windows a .mpp must keep the old route")
         try:
