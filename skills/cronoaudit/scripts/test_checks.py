@@ -1200,6 +1200,12 @@ def guard_checks() -> list:
              "Read a customised template"),
             ("Bash", {"command": "cat link.xml"}, os.name == "nt", "cat through a symlink to the original"),
             ("Bash", {"command": "echo x > ../out.txt"}, False, "redirect outside"),
+            ("PowerShell", {"command": f'Get-Content "{original}"'}, False, "PowerShell reading the original"),
+            ("PowerShell", {"command": "Get-ChildItem"}, False, "PowerShell even inside the folder"),
+            ("Monitor", {"command": f"cat {original}"}, False, "Monitor running a command"),
+            ("mcp__claude-in-chrome__navigate", {"url": "file:///" + original}, False, "an MCP tool"),
+            ("ReadMcpResourceTool", {"uri": "file:///" + original}, False, "an MCP resource"),
+            ("TaskCreate", {"subject": "x"}, True, "a tool that touches no file"),
         ]
         if os.name != "nt":
             cases.append(("Read", {"file_path": os.path.join(work, "link.xml")}, False,
@@ -1219,6 +1225,12 @@ def guard_checks() -> list:
                 failures.append(f"guard: the hook process returned {r.returncode}, not {code}")
         settings = json.load(open(os.path.join(work, ".claude", "settings.json"), encoding="utf-8"))
         deny = settings["permissions"]["deny"]
+        if not {"PowerShell", "Monitor"} <= set(deny) or \
+                settings.get("env", {}).get("CLAUDE_CODE_USE_POWERSHELL_TOOL") != "0":
+            failures.append(f"guard: settings.json does not deny PowerShell and Monitor: {settings}")
+        if not re.fullmatch(settings["hooks"]["PreToolUse"][0]["matcher"], "mcp__x__y") or \
+                not re.fullmatch(settings["hooks"]["PreToolUse"][0]["matcher"], "PowerShell"):
+            failures.append("guard: the hook's matcher does not reach PowerShell or MCP tools")
         if not any(d.startswith("Read(") and d.endswith("/**)") for d in deny) or \
                 "PreToolUse" not in settings["hooks"]:
             failures.append(f"guard: settings.json lacks the deny rule or the hook: {settings}")

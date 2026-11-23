@@ -36,6 +36,9 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
+# Tools that run commands or reach files by another road: never in a secret session.
+EXEC_TOOLS = {"PowerShell", "Monitor", "ReadMcpResourceTool"}
+
 READ_COMMANDS = {"ls", "cat", "head", "tail", "wc", "grep", "egrep", "fgrep", "sort", "uniq",
                  "cut", "jq", "echo", "printf", "pwd", "cd", "diff", "true"}
 SKILL_SCRIPTS = {"inject_narrative.py", "secret_decode.py"}
@@ -128,6 +131,8 @@ class Guard:
             self.readable(os.path.join(inp.get("path") or cwd, self._glob_root(pat)), cwd)
         elif tool == "Bash":
             self.bash(inp.get("command") or "", cwd)
+        elif tool in EXEC_TOOLS or tool.startswith("mcp__"):
+            raise Blocked(f"{tool} is not allowed in a secret session (use the allowed Bash commands)")
         # Any other tool is not a file tool and is not this hook's business.
 
     def bash(self, command: str, cwd: str) -> None:
