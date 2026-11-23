@@ -66,6 +66,14 @@ R = {
         "es_tspi_no": "TSPI is {t}: the remainder would need {pct}% above the plan, which the literature treats as unrecoverable in practice.",
         "es_tspi_plain": "TSPI is {t}: the pace the remainder needs, relative to the plan's, to finish on the planned date.",
         "la_no": "The next {w} {w?week|weeks} plan {p}% of earning; the practised rate delivers {q}%. Not reachable without a change of pace.",
+        "dl_none": "No future milestone has a deadline ({m} {m?milestone|milestones}): there is nothing in the file to measure the schedule against. Enter the contract dates as Deadline on the milestones.",
+        "dl_past": "{n} of the {m} milestones with a deadline already finish after it in the current schedule; the worst is row {id}, {name}, {d} {d?day|days} past it.",
+        "dl_ok_now": "All {m} milestones with a deadline finish within it in the current schedule. The smallest margin is row {id}, {name}: {d} {d?day|days}.",
+        "dl_p80": "With the slippage that 80% of the activities have not exceeded ({p} {p?day|days}), {k} more {k?milestone passes|milestones pass} the deadline: {k?row|rows} {ids}.",
+        "dl_origin": "The delay of row {id} starts at row {oid}, {oname} (+{od} {od?day|days} against the baseline).",
+        "dl_some_missing": "{k} future {k?milestone has|milestones have} no deadline and {k?is|are} not measured here.",
+        "dl_past_one": "The only milestone with a deadline already finishes after it in the current schedule: row {id}, {name}, {d} {d?day|days} past it.",
+        "dl_ok_now_one": "The only milestone with a deadline finishes within it in the current schedule: row {id}, {name}, with {d} {d?day|days} of margin.",
         "la_yes": "The next {w} {w?week|weeks} plan {p}% of earning and the practised rate delivers {q}%: reachable.",
         "rg_out": "{n} {n?group|groups} cannot reach their baseline finish at the practised pace; {g} needs {r}× its current rate.",
         "rg_ok": "Every group with a trend is on pace or within a stretch of its baseline finish.",
@@ -131,6 +139,14 @@ R = {
         "es_tspi_no": "O TSPI é {t}: o restante precisaria de {pct}% acima do plano, o que a literatura trata como irrecuperável na prática.",
         "es_tspi_plain": "O TSPI é {t}: o ritmo de que o restante precisa, relativo ao do plano, para terminar na data prevista.",
         "la_no": "As próximas {w} {w?semana|semanas} preveem {p}% de medição; o ritmo praticado entrega {q}%. Não alcançável sem mudança de ritmo.",
+        "dl_none": "Nenhum marco futuro tem data limite ({m} {m?marco|marcos}): o arquivo não tem contra o que medir o prazo. Cadastre as datas contratuais como Data Limite nos marcos.",
+        "dl_past": "{n} dos {m} marcos com data limite já terminam depois dela no cronograma atual; o pior é a linha {id}, {name}, {d} {d?dia|dias} além.",
+        "dl_ok_now": "Os {m} marcos com data limite terminam dentro dela no cronograma atual. A menor margem é a da linha {id}, {name}: {d} {d?dia|dias}.",
+        "dl_p80": "Com o escorregamento que 80% das atividades não ultrapassaram ({p} {p?dia|dias}), mais {k} {k?marco passa|marcos passam} da data limite: {k?linha|linhas} {ids}.",
+        "dl_origin": "O atraso da linha {id} nasce na linha {oid}, {oname} (+{od} {od?dia|dias} contra a linha de base).",
+        "dl_some_missing": "{k} {k?marco futuro não tem|marcos futuros não têm} data limite e não {k?é medido|são medidos} aqui.",
+        "dl_past_one": "O único marco com data limite já termina depois dela no cronograma atual: linha {id}, {name}, {d} {d?dia|dias} além.",
+        "dl_ok_now_one": "O único marco com data limite termina dentro dela no cronograma atual: linha {id}, {name}, com {d} {d?dia|dias} de margem.",
         "la_yes": "As próximas {w} {w?semana|semanas} preveem {p}% de medição e o ritmo praticado entrega {q}%: alcançável.",
         "rg_out": "{n} {n?grupo não alcança|grupos não alcançam} o término de linha de base no ritmo praticado; {g} precisa de {r}× o ritmo atual.",
         "rg_ok": "Todo grupo com tendência está no ritmo ou a um esforço do término de linha de base.",
@@ -378,6 +394,34 @@ def build(payload: dict, lang: str) -> dict:
         add("forecast", "rain_none" if RX.get("unreadable_reason") == "no_exceptions" else "rain_few")
     elif RX.get("share_in_reserve_pct") is not None:
         add("forecast", "rain", s=_n(RX["share_in_reserve_pct"], 0), t=_n(RX.get("share_if_slips_30_days_pct"), 0))
+
+    # ---- deadlines: each future milestone against its deadline
+    DL = payload.get("deadlines") or {}
+    if DL.get("rows"):
+        rows_by = {r["id"]: r for r in DL["rows"]}
+        if not DL.get("with_deadline"):
+            add("deadlines", "dl_none", m=_n(len(DL["rows"]), 0))
+        else:
+            tight = DL["tightest"]
+            if DL["past_now"]:
+                worst = min((rows_by[i] for i in DL["past_now"]), key=lambda r: r["margin_days"])
+                add("deadlines", "dl_past_one" if DL["with_deadline"] == 1 else "dl_past",
+                    n=_n(len(DL["past_now"]), 0), m=_n(DL["with_deadline"], 0),
+                    id=worst["id"], name=worst["name"], d=_n(-worst["margin_days"], 0))
+            else:
+                add("deadlines", "dl_ok_now_one" if DL["with_deadline"] == 1 else "dl_ok_now",
+                    m=_n(DL["with_deadline"], 0), id=tight["id"],
+                    name=tight["name"], d=_n(tight["margin_days"], 0))
+            extra = [i for i in DL["past_p80"] if i not in DL["past_now"]]
+            if extra and DL.get("p80_days"):
+                add("deadlines", "dl_p80", p=_n(DL["p80_days"], 0), k=_n(len(extra), 0),
+                    ids=", ".join(str(i) for i in extra))
+            focus = worst if DL["past_now"] else tight
+            if focus.get("origin_id") and focus["origin_id"] != focus["id"]:
+                add("deadlines", "dl_origin", id=focus["id"], oid=focus["origin_id"],
+                    oname=focus.get("origin_name") or "—", od=_n(focus.get("origin_days"), 0))
+            if DL.get("without_deadline"):
+                add("deadlines", "dl_some_missing", k=_n(DL["without_deadline"], 0))
 
     # ---- forensics
     fx = payload.get("forensics") or {}

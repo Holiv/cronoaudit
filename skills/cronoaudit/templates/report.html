@@ -369,7 +369,17 @@ function renderReview(d){
     : NW.state==="open" ? `<div class="note">${fill(L.net_open,{u:n(NW.unlinked),o:n(NW.open),s:n(NW.share_pct,1),t:n(NW.threshold_pct,0)})}</div>`
     : `<div class="note good">${L.net_good}</div>`);
 
+  // Deadlines first: the question a delivery is read for.
+  const DL=d.deadlines||{};
+  if((DL.rows||[]).length){
+    const dlRows=DL.rows.map(r=>({...r,critical:r.critical?L.word_yes:L.word_no,
+      origin:r.origin_id?`${r.origin_id} · ${r.origin_name||""} (+${n(r.origin_days)})`:""}));
+    out.push(`<section id="prazo"><div class="sec-h"><span class="eyebrow">PZ</span><h2>${esc(L.dl_title)}</h2></div><p class="sec-d">${esc(L.dl_sub)}</p>${reading("deadlines")}
+      ${table([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_fin_baseline,key:"baseline_finish"},{label:L.col_fin_trend,key:"finish"},{label:L.col_deadline,key:"deadline"},{label:L.col_margin,key:"margin_days",signed:true},{label:L.col_margin_p80,key:"p80_margin_days",signed:true},{label:L.col_critical,key:"critical"},{label:L.col_origin,key:"origin"}],dlRows)}</section>`);
+  }
+
   const views=[];
+  if((DL.rows||[]).length) views.push({cod:"PZ",tt:L.dl_title,sub:"",id:"prazo"});
   if(d.scurve) views.push({cod:"V0",tt:L.scurve_title,sub:"",id:"v0"});
   views.push(
     {cod:"V1",tt:fill(L.view_group,{group:groupName}),sub:L.view_group_sub,id:"v1"},
@@ -541,7 +551,7 @@ function renderReview(d){
     }
     if(MB.milestones&&MB.milestones.length){
       out.push(`<h3 style="font-size:16px;margin:18px 0 8px">${esc(L.mb_title)}</h3><p class="sec-d">${esc(fill(L.mb_sub,{a:n(MB.p50_days),b:n(MB.p80_days),n:n(MB.sample)}))}</p>
-        ${folded([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_fin_baseline,key:"baseline_finish"},{label:L.col_fin_trend,key:"finish"},{label:L.col_slip_now,key:"slip_now_days"},{label:L.col_p50,key:"p50"},{label:L.col_p80,key:"p80"},{label:L.col_deadline,key:"deadline"},{label:L.col_critical,key:"critical"}],MB.milestones,MB.milestones.length,"milestones")}`);
+        <p class="sec-d"><a href="#prazo">${esc(L.mb_pointer)}</a></p>`);
     }
     if(RX.available&&RX.readable===false){
       // No reserved period on any calendar in use: the exposure is not zero, it is unread.

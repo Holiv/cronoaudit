@@ -429,6 +429,26 @@ def example_checks() -> dict:
             or trp["amplifier"]["id"] != next(t["id"] for t in curr["tasks"]
                                                if t["uid"] == uid[P["duration"]["task"]]):
         fail(f"forensics: the final milestone's delay is not traced to the viaduct: {trp and trp['amplifier']}")
+
+    # ---- deadlines (0.8): each milestone against its deadline, right after the verdict.
+    from datetime import date as _date
+    dl = report_data.deadline_rows(fc, fx)
+    id_of = {t["uid"]: t["id"] for t in curr["tasks"]}
+    oae = id_of.get(uid["ms.oae"])
+    if not dl or dl["with_deadline"] < 5:
+        fail(f"deadlines: the milestones' deadlines were not read: {dl and dl['with_deadline']}")
+    else:
+        if not dl["tightest"] or dl["tightest"]["id"] != oae:
+            fail(f"deadlines: the tightest margin is not the viaduct milestone: {dl['tightest']}")
+        for r in dl["rows"]:
+            if r["deadline"] and r["finish"] and r["margin_days"] != \
+                    (_date.fromisoformat(r["deadline"]) - _date.fromisoformat(r["finish"])).days:
+                fail(f"deadlines: row {r['id']} margin is not deadline minus finish")
+            if r["margin_days"] is not None and r["p80_margin_days"] != r["margin_days"] - dl["p80_days"]:
+                fail(f"deadlines: row {r['id']} P80 margin is not the margin minus the P80 slippage")
+        row_oae = next((r for r in dl["rows"] if r["id"] == oae), {})
+        if not row_oae.get("origin_id") or row_oae["origin_id"] == oae:
+            fail("deadlines: the viaduct milestone's row does not name where its delay starts")
     return {"failures": failures, "skipped": False}
 
 

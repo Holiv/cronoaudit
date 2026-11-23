@@ -583,6 +583,7 @@ def build_review(model, res, theme=None, grouping="wbs", lang=None, phasing=None
         "quality": localize_quality(quality, lang) if quality else None,
         "forecast": localize_forecast(forecast, lang, wbs_labels),
         "forensics": localize_forensics(forensics, lang, wbs_labels),
+        "deadlines": deadline_rows(forecast, forensics),
         # The executive synthesis is injected later by whoever writes it; the slot
         # exists so the template knows where it goes and how to label it.
         "narrative": None,
@@ -627,6 +628,39 @@ def localize_quality(q: dict, lang: str) -> dict:
                         "items": rows, "item_columns": cols})
     out["metrics"] = metrics
     return out
+
+
+def deadline_rows(forecast: dict | None, forensics: dict | None) -> dict | None:
+    """Each future milestone against its deadline: the margin now, the margin after
+    the P80 slippage, and where its delay starts (from forensics). The first thing a
+    reader of a delivery asks, so the report puts it right after the verdict."""
+    MB = (forecast or {}).get("milestone_bands") or {}
+    ms = MB.get("milestones") or []
+    if not ms:
+        return None
+    origins = {m["id"]: m for m in (forensics or {}).get("milestones") or []}
+    rows = []
+    for m in ms:
+        fx = origins.get(m["id"]) or {}
+        o = fx.get("origin") or {}
+        rows.append({
+            "id": m["id"], "name": m["name"], "baseline_finish": m.get("baseline_finish"),
+            "finish": m.get("finish"), "deadline": m.get("deadline"),
+            "margin_days": m.get("margin_days"), "p80_margin_days": m.get("p80_margin_days"),
+            "critical": bool(m.get("critical")),
+            "origin_id": o.get("id") if (o.get("variance_days") or 0) > 0 else None,
+            "origin_name": o.get("name") if (o.get("variance_days") or 0) > 0 else None,
+            "origin_days": o.get("variance_days") if (o.get("variance_days") or 0) > 0 else None,
+        })
+    dl = [r for r in rows if r["margin_days"] is not None]
+    tight = min(dl, key=lambda r: r["margin_days"]) if dl else None
+    return {
+        "rows": rows, "p80_days": MB.get("p80_days"),
+        "with_deadline": len(dl), "without_deadline": len(rows) - len(dl),
+        "past_now": [r["id"] for r in dl if r["margin_days"] < 0],
+        "past_p80": [r["id"] for r in dl if r["p80_margin_days"] < 0],
+        "tightest": tight,
+    }
 
 
 def localize_forecast(fc: dict, lang: str, labels: dict) -> dict:

@@ -314,11 +314,16 @@ def milestone_bands(model: dict) -> dict:
         bf = dt(((t.get("baselines") or {}).get(slot) or {}).get("finish"))
         if f is None or f <= status:
             continue
+        dl = dt(t.get("deadline"))
         ms.append({
             "id": t["id"], "name": t["name"], "finish": fmt(f), "baseline_finish": fmt(bf),
             "slip_now_days": (f - bf).days if bf else None,
             "p50": fmt(f + timedelta(days=p50)), "p80": fmt(f + timedelta(days=p80)),
-            "deadline": t.get("deadline"), "critical": bool(t.get("critical")),
+            "deadline": fmt(dl), "critical": bool(t.get("critical")),
+            # Room to the deadline, calendar days: now, and after the P80 slippage.
+            # Negative is past the deadline.
+            "margin_days": (dl.date() - f.date()).days if dl else None,
+            "p80_margin_days": (dl.date() - f.date()).days - p80 if dl else None,
         })
     ms.sort(key=lambda m: m["finish"])
     return {

@@ -398,6 +398,13 @@ UI = {
                   "days, from {n} {n?activity|activities}. Not a simulation with an invented premise.",
         "col_slip_now": "Slip now (calendar d)", "col_p50": "P50", "col_p80": "P80", "col_deadline": "Deadline",
         "col_critical": "Critical",
+        "dl_title": "Deadlines and milestones",
+        "dl_sub": "Each future milestone against its deadline, in calendar days: the margin in the "
+                  "current schedule, and what is left after the slippage that 80% of the activities "
+                  "have not exceeded. Negative is past the deadline. The origin is where the "
+                  "milestone's delay starts on its driving path.",
+        "col_margin": "Margin (calendar d)", "col_margin_p80": "Margin after P80 (d)",
+        "col_origin": "Delay starts at", "mb_pointer": "The milestone table is in Deadlines and milestones, after the verdict.",
         "rx_title": "Exposure to the rainy season",
         "rx_sub": "Remaining cost spread over each activity's current span, read against the "
                   "months its own calendar reserves for bad weather ({rule}).",
@@ -791,6 +798,13 @@ UI = {
                   "de {n} {n?atividade|atividades}. Não é simulação com premissa inventada.",
         "col_slip_now": "Escorregão hoje (dias corridos)", "col_p50": "P50", "col_p80": "P80", "col_deadline": "Data limite",
         "col_critical": "Crítico",
+        "dl_title": "Prazo e marcos",
+        "dl_sub": "Cada marco futuro contra a sua data limite, em dias corridos: a margem no "
+                  "cronograma atual e o que sobra depois do escorregamento que 80% das atividades "
+                  "não ultrapassaram. Negativo é depois da data limite. A origem é onde nasce o "
+                  "atraso do marco no seu caminho determinante.",
+        "col_margin": "Margem (dias corridos)", "col_margin_p80": "Margem com P80 (dias)",
+        "col_origin": "Atraso nasce em", "mb_pointer": "A tabela dos marcos está em Prazo e marcos, logo depois do veredito.",
         "rx_title": "Exposição ao período chuvoso",
         "rx_sub": "Custo remanescente distribuído pela janela atual de cada atividade, lido "
                   "contra os meses que o calendário dela reserva para o tempo ruim ({rule}).",
