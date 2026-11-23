@@ -112,12 +112,17 @@ before opening an XML, a report or a JSON sidecar, and before quoting anything f
   contractual milestone?"). Refuse those plainly and point to the way out: the decoded
   report on the person's machine, the person's own `secret_decode.py text`, or free mode.
 - Synthesis: write it in codes, inject it with `inject_narrative.py` into
-  `schedule-review.html` (`current-review.html` for a cycle), then run
+  `schedule-review.html`, or `previous--to--current-cycle.html` for a cycle (where free mode
+  puts it too), then run
   `python3 <scripts>/secret_decode.py finish`. It decodes on this machine, beside the
   original, opens the report, and prints counts only.
 - **Never run `secret_decode.py text`.** It prints real names, so its output would go to
   your provider. It is the person's command, typed in their own terminal, to read one of
   your answers with real names (it refuses inside Claude Code, and the guard blocks it).
+  When you point the person to it, write it whole, with the absolute path of the scripts
+  and of this folder, no `~` and no variables (Windows PowerShell does not expand `~` for
+  Python), and `python` on Windows: `python C:/.../scripts/secret_decode.py text "C:/.../<this
+  folder>"`. Then: paste, and on a line of its own Ctrl-Z Enter (Windows) or Ctrl-D.
 
 **Be plain about what protects what.** The mode question is you following this skill, not
 an enforcement. What code enforces: the engine refuses secret mode when Claude Code started

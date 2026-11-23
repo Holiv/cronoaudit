@@ -900,6 +900,10 @@ def secret_roundtrip(files: list, tmp: str, redact: bool = False) -> dict:
     # ---- 2. equality of the report, after a fake agent wrote a synthesis in codes
     names = [n for n in os.listdir(free_dir) if n.endswith(".html")]
     review_coded = next(c for c, real in run["html"].items() if real.endswith("-review.html"))
+    # The synthesis goes where it goes in free mode: the cycle report for a cycle.
+    target_coded = next((c for c, real in run["html"].items() if real.endswith("-cycle.html")),
+                        review_coded)
+    target_real = run["html"][target_coded]
     coded_payload = _payload_of(os.path.join(work, review_coded))
     some_task = next((t["name"] for f in (coded_payload.get("findings") or []) for t in f.get("items") or []
                       if t.get("name")), None) or next(iter(codec.back))
@@ -909,7 +913,7 @@ def secret_roundtrip(files: list, tmp: str, redact: bool = False) -> dict:
         fh.write(f"The activity {some_task} finishes on D+0400 and is worth {secret_codec.MONEY_MARK}"
                  f"{secret_codec.fnum(1234567.0 * codec.k, 2, codec.lang)}.\n\nSecond paragraph.")
     subprocess.run([sys.executable, os.path.join(HERE, "inject_narrative.py"),
-                    os.path.join(work, review_coded), syn, "--who", "the test suite"],
+                    os.path.join(work, target_coded), syn, "--who", "the test suite"],
                    check=True, capture_output=True)
     fin = subprocess.run([sys.executable, os.path.join(HERE, "secret_decode.py"), "finish", work,
                           "--no-open"], capture_output=True, text=True, env=env,
@@ -934,7 +938,7 @@ def secret_roundtrip(files: list, tmp: str, redact: bool = False) -> dict:
         else:
             stats["reports"] += 1
             stats["values_equal"] += secret_decode.count_leaves(dec_p, free_p)[0]
-        if name.endswith("-review.html"):
+        if name == target_real:
             text = (narrative or {}).get("text", "")
             want_day = codec._from_day(400)
             want_day = want_day.strftime("%d/%m/%Y" if codec.lang == "pt" else "%Y-%m-%d")
@@ -1090,6 +1094,16 @@ def secret_unit_checks() -> list:
     c2.add([("T", "Nova atividade")] + [("T", n) for n in names])
     if any(c2.tokens[n] != c.tokens[n] for n in names):
         failures.append("secret codec: a persisted token changed when new names were added")
+    # The planned figure from the file's own BCWS, with no time-phased baseline for the
+    # S-curve (a .mpp saved by Project): the verdict names its source.
+    for sc_inputs, want in (({"planned_available": False}, True), ({"planned_available": True}, False)):
+        pl = {"lang": "pt", "meta": {"percent_earned": 28.01, "percent_planned_file": 31.03,
+                                     "inputs": {"planned_available": True}},
+              "findings": [], "scurve": {"inputs": sc_inputs, "totals": {}, "periods": []}}
+        v = " ".join(narrative.build(pl, "pt").get("verdict", []))
+        if ("BCWS" in v) != want or "31,03" not in v:
+            failures.append(f"narrative: the planned figure's source was {'not ' if want else ''}"
+                            f"named with an S-curve {sc_inputs}: {v}")
     # Money written into a sentence by the engine: the earned-before-plan reading.
     payload = {"lang": "pt", "meta": {}, "findings": [],
                "scurve": {"bac": 1000000.0, "totals": {},

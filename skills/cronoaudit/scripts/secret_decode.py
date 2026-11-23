@@ -161,6 +161,9 @@ def main() -> int:
             if sys.stdin.isatty():
                 print("Paste the coded text, then Ctrl-D (Ctrl-Z Enter on Windows):", file=sys.stderr)
             src = sys.stdin.read()
+        # A Ctrl-Z typed at the end of a line on Windows arrives as a character, not as
+        # the end of the input; it is a keystroke, not text.
+        src = src.replace("\x1a", "")
         print(codec.decode_text(src, narrative=True))
         return 0
 
