@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-![versão](https://img.shields.io/badge/vers%C3%A3o-0.9.2-1f6feb)
+![versão](https://img.shields.io/badge/vers%C3%A3o-0.9.3-1f6feb)
 ![licença](https://img.shields.io/badge/licen%C3%A7a-Apache%202.0-555)
 ![Windows · macOS · Linux](https://img.shields.io/badge/Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-roda-2ea043)
 ![dados](https://img.shields.io/badge/motor-n%C3%A3o%20usa%20a%20rede-2ea043)
@@ -174,7 +174,7 @@ irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex
 curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash
 ```
 
-No fim deve aparecer **`cronoaudit 0.9.2 is installed`**. A cronoaudit precisa do Python 3.9 ou
+No fim deve aparecer **`cronoaudit 0.9.3 is installed`**. A cronoaudit precisa do Python 3.9 ou
 mais novo; no Windows, se não houver Python, o instalador traz uma cópia própria, sem precisar de
 administrador. Para atualizar, rode o mesmo comando de novo.
 
