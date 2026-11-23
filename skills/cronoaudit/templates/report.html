@@ -375,7 +375,7 @@ function renderReview(d){
     const dlRows=DL.rows.map(r=>({...r,critical:r.critical?L.word_yes:L.word_no,
       origin:r.origin_id?`${r.origin_id} · ${r.origin_name||""} (+${n(r.origin_days)})`:""}));
     out.push(`<section id="prazo"><div class="sec-h"><span class="eyebrow">PZ</span><h2>${esc(L.dl_title)}</h2></div><p class="sec-d">${esc(L.dl_sub)}</p>${reading("deadlines")}
-      ${table([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_fin_baseline,key:"baseline_finish"},{label:L.col_fin_trend,key:"finish"},{label:L.col_deadline,key:"deadline"},{label:L.col_margin,key:"margin_days",signed:true},{label:L.col_margin_p80,key:"p80_margin_days",signed:true},{label:L.col_critical,key:"critical"},{label:L.col_origin,key:"origin"}],dlRows)}</section>`);
+      ${table([{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_fin_baseline,key:"baseline_finish"},{label:L.col_fin_trend,key:"finish"},{label:L.col_deadline,key:"deadline"},{label:L.col_margin,key:"margin_days",signed:true},{label:L.col_margin_p80,key:"p80_margin_days",signed:true},{label:L.col_critical,key:"critical"},{label:L.col_delay_origin,key:"origin"}],dlRows)}</section>`);
   }
 
   const views=[];
@@ -690,47 +690,63 @@ function renderCycle(d){
   (d.warnings||[]).forEach(w=>out.push(`<div class="note${w.severity==="critical"?" bad":""}" style="margin-top:14px"><b>${esc(L.warning)}</b> ${esc(w.text)}</div>`));
   out.push(synthesis(d));
 
-  out.push(`<div class="veredito"><div><div class="eyebrow">${esc(L.card_movement)}</div><div class="hero-num">${(m.movement_points>0?"+":"")+n(m.movement_points,2)}</div><div class="hero-cap">${esc(L.pp_headline)}</div></div>
-    <div class="contra"><h2>${esc(L.how_to_read)}</h2><p>${L.cycle_read_p1}</p><p>${L.cycle_read_p2}</p></div></div>`);
-  out.push(reading("movement"));
-  out.push(`<div class="tiles">
-    <div class="tile"><div class="c">${esc(L.card_previous)}</div><div class="v">${n(m.previous_percent_earned,2)}%</div><div class="t">${esc(L.weighted_progress)}</div></div>
-    <div class="tile"><div class="c">${esc(L.card_current)}</div><div class="v">${n(m.current_percent_earned,2)}%</div><div class="t">${esc(L.weighted_progress)}</div></div>
-    <div class="tile pd"><div class="c">${esc(L.card_explained)}</div><div class="v">${n(m.explained_points,2)}</div><div class="t">${esc(L.by_progress)}</div></div>
-    <div class="tile ${Math.abs(m.unexplained_points||0)>=0.01?"cr":""}"><div class="c">${esc(L.card_residue)}</div><div class="v${Math.abs(m.unexplained_points||0)>=0.01?"":" zero"}">${n(m.unexplained_points,2)}</div><div class="t">${esc(L.not_work)}</div></div></div>`);
+  // The hero is the end date, not the movement: the movement is a figure the report
+  // itself says not to quote before the integrity checks.
+  const pfd=m.finish_delta_days;
+  out.push(`<div class="veredito"><div><div class="eyebrow">${esc(L.cy_hero_label)}</div><div class="hero-num">${pfd==null?"&mdash;":(pfd>0?"+":"")+n(pfd,0)}</div><div class="hero-cap">${esc(L.cy_hero_cap)}</div></div>
+    <div class="contra"><h2>${esc(L.how_to_read)}</h2><p>${esc(L.cy_hero_read)}</p></div></div>`);
 
-  // Index: the six readings of the model first, then progress and dates.
+  const S={}; secs.forEach(s=>{S[s.code]=s;});
+  const one=c=>S[c]?cycleSection(S[c]):"";
   const nDates=t.execution.length+t.replan.length, nScope=d.unmatched.inserted.length+d.unmatched.removed.length;
+  const vlink=(href,cod,tt,q)=>`<a href="#${href}"><span class="cod">${cod}</span><span class="tt">${esc(tt)}</span><span class="qtd">${q==null?"":n(q)}</span><span class="sev vs">${esc(L.severity_view||"")}</span></a>`;
+  const slink=s=>s?`<a href="#${esc(s.id)}"><span class="cod">${esc(s.code)}</span><span class="tt">${esc(s.title)}<small>${esc(s.subtitle)}</small></span><span class="qtd">${s.badge==null?"":n(s.badge)}</span><span class="sev ${SEV[s.severity]||"vs"}">${esc(s.severity_word)}</span></a>`:"";
   out.push(`<section id="indice"><div class="sec-h"><span class="eyebrow">${esc(L.roteiro)}</span><h2>${esc(L.index)}</h2></div>
     <p class="sec-d">${esc(L.cy_index_sub)}</p><nav class="indice">
-    ${secs.map(s=>`<a href="#${esc(s.id)}"><span class="cod">${esc(s.code)}</span><span class="tt">${esc(s.title)}<small>${esc(s.subtitle)}</small></span><span class="qtd">${s.badge==null?"":n(s.badge)}</span><span class="sev ${SEV[s.severity]||"vs"}">${esc(s.severity_word)}</span></a>`).join("")}
-    <a href="#p-mov"><span class="cod">P1</span><span class="tt">${esc(L.movement_from)}</span><span class="qtd">${n(d.decomposition.length)}</span><span class="sev vs">${esc(L.severity_view||"")}</span></a>
-    <a href="#p-datas"><span class="cod">P2</span><span class="tt">${esc(L.exec_or_plan)}</span><span class="qtd">${n(nDates+t.reference.length)}</span><span class="sev vs">${esc(L.severity_view||"")}</span></a>
-    <a href="#p-escopo"><span class="cod">P3</span><span class="tt">${esc(L.scope_changes)}</span><span class="qtd">${n(nScope)}</span><span class="sev vs">${esc(L.severity_view||"")}</span></a>
+    ${slink(S.C1)}${slink(S.C5)}${vlink("p-escopo","P3",L.scope_changes,nScope)}${slink(S.C3)}${slink(S.C4)}${vlink("p-datas","P2",L.exec_or_plan,nDates+t.reference.length)}${vlink("p-mov","P1",L.movement_from,d.decomposition.length)}${slink(S.C2)}${slink(S.C6)}
     </nav></section>`);
 
-  if(secs.length){
-    out.push(`<section id="modelo"><div class="sec-h"><h2>${esc(L.cy_model_title)}</h2></div><p class="sec-d">${esc(L.cy_model_sub)}</p>
-      ${secs.map(cycleSection).join("")}</section>`);
-  }
-
-  out.push(`<section id="avanco"><div class="sec-h"><h2>${esc(L.cy_progress_title)}</h2></div><p class="sec-d">${esc(L.cy_progress_sub)}</p>`);
-  out.push(`<div id="p-mov">${sub(L.movement_from,fill(L.movement_from_sub,{denom:d.conventions.denominator}))}
-    ${d.decomposition.length?chart(d.decomposition.slice(0,25).map(x=>({label:`${x.id} ${x.name}`,value:x.contribution_points})),{fmt:v=>(v>0?"+":"")+n(v,3)+" pp"}):""}
-    ${titled(L.movement_from,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_wbs,key:"wbs"},{label:L.col_pct_prev,key:"percent_previous"},{label:L.col_pct_curr,key:"percent_current"},{label:L.col_bl_cost,key:"baseline_cost"},{label:L.col_contribution,key:"contribution_points",signed:true,decimals:3}],d.decomposition)||`<p class="quieto-p">${esc(L.cy_nothing)}</p>`}</div>`);
+  const group=(id,title,subtitle,body)=>body?`<section id="${id}"><div class="sec-h"><h2>${esc(title)}</h2></div>${subtitle?`<p class="sec-d">${esc(subtitle)}</p>`:""}${body}</section>`:"";
   const moved=t.execution.concat(t.replan).map(x=>({...x,reading:(t.words||{})[x.reading]||x.reading}));
-  out.push(`<div id="p-datas">${sub(L.exec_or_plan,L.exec_or_plan_sub)}${reading("trend")}
+
+  // 1. Deadlines and milestones
+  out.push(group("g-prazo",L.cy_g_deadline,"",one("C1")));
+
+  // 2. Integrity: the record of work done, a moved baseline, rows in and out.
+  out.push(group("g-integridade",L.cy_g_integrity,L.cy_g_integrity_sub,
+    one("C5")
+    +(t.reference.length?`<div id="p-lb">${sub(L.baseline_moved_title,L.baseline_moved_sub)}${titled(L.baseline_moved_title,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_bl_start,key:"baseline_start_moved_days",signed:true},{label:L.col_bl_finish,key:"baseline_finish_moved_days",signed:true}],t.reference)}</div>`:"")
+    +`<div id="p-escopo">${sub(L.scope_changes,nScope?L.scope_sub:"")}${reading("scope")}
+    ${titled(L.inserted,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_pct_curr,key:"percent"},{label:L.col_bl_cost,key:"baseline_cost",decimals:2}],d.unmatched.inserted)}
+    ${titled(L.removed,[{label:L.col_row_prev||L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_pct_prev,key:"percent"},{label:L.col_bl_cost,key:"baseline_cost",decimals:2}],d.unmatched.removed)}</div>`));
+
+  // 3. Replanning: logic, durations, dates moved by the plan.
+  out.push(group("g-replan",L.cy_g_replan,L.cy_g_replan_sub,
+    one("C3")+one("C4")
+    +`<div id="p-datas">${sub(L.exec_or_plan,L.exec_or_plan_sub)}${reading("trend")}
     <div class="tiles">
     <div class="tile pd"><div class="c">${esc(L.card_execution)}</div><div class="v${t.execution.length?"":" zero"}">${n(t.execution.length)}</div><div class="t">${esc(L.exec_sub)}</div></div>
     <div class="tile al"><div class="c">${esc(L.card_replan)}</div><div class="v${t.replan.length?"":" zero"}">${n(t.replan.length)}</div><div class="t">${esc(L.replan_sub)}</div></div>
     <div class="tile ${t.reference.length?"cr":""}"><div class="c">${esc(L.card_reference)}</div><div class="v${t.reference.length?"":" zero"}">${n(t.reference.length)}</div><div class="t">${esc(L.reference_sub)}</div></div></div>
-    ${titled(L.dates_moved,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_start_moved,key:"start_moved_days",signed:true},{label:L.col_finish_moved,key:"finish_moved_days",signed:true},{label:L.col_reading,key:"reading"},{label:L.col_matched,key:"matched_by"}],moved)}
-    ${t.reference.length?`<div class="note" style="margin:12px 0 8px"><b>${esc(L.baseline_moved_title)}.</b> ${esc(L.baseline_moved_sub)}</div>`:""}
-    ${titled(L.baseline_moved_title,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_bl_start,key:"baseline_start_moved_days",signed:true},{label:L.col_bl_finish,key:"baseline_finish_moved_days",signed:true}],t.reference)}</div>`);
-  out.push(`<div id="p-escopo">${sub(L.scope_changes,nScope?L.scope_sub:"")}${reading("scope")}
-    ${titled(L.inserted,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_pct_curr,key:"percent"},{label:L.col_bl_cost,key:"baseline_cost",decimals:2}],d.unmatched.inserted)}
-    ${titled(L.removed,[{label:L.col_row_prev||L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_pct_prev,key:"percent"},{label:L.col_bl_cost,key:"baseline_cost",decimals:2}],d.unmatched.removed)}</div>`);
-  out.push(`</section>`);
+    ${titled(L.dates_moved,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_start_moved,key:"start_moved_days",signed:true},{label:L.col_finish_moved,key:"finish_moved_days",signed:true},{label:L.col_reading,key:"reading"},{label:L.col_matched,key:"matched_by"}],moved)}</div>`));
+
+  // 4. Progress: the movement, split into what the works explain and what they do not.
+  out.push(group("g-avanco",L.cy_g_progress,"",
+    `<div class="contra" style="margin-bottom:12px"><p>${L.cycle_read_p1}</p><p>${L.cycle_read_p2}</p></div>`
+    +reading("movement")
+    +`<div class="tiles">
+    <div class="tile"><div class="c">${esc(L.card_previous)}</div><div class="v">${n(m.previous_percent_earned,2)}%</div><div class="t">${esc(L.weighted_progress)}</div></div>
+    <div class="tile"><div class="c">${esc(L.card_current)}</div><div class="v">${n(m.current_percent_earned,2)}%</div><div class="t">${esc(L.weighted_progress)}</div></div>
+    <div class="tile"><div class="c">${esc(L.card_movement)}</div><div class="v">${(m.movement_points>0?"+":"")+n(m.movement_points,2)}</div><div class="t">${esc(L.pp_headline)}</div></div>
+    <div class="tile pd"><div class="c">${esc(L.card_explained)}</div><div class="v">${n(m.explained_points,2)}</div><div class="t">${esc(L.by_progress)}</div></div>
+    <div class="tile ${Math.abs(m.unexplained_points||0)>=0.01?"cr":""}"><div class="c">${esc(L.card_residue)}</div><div class="v${Math.abs(m.unexplained_points||0)>=0.01?"":" zero"}">${n(m.unexplained_points,2)}</div><div class="t">${esc(L.not_work)}</div></div></div>`
+    +`<div id="p-mov">${sub(L.movement_from,fill(L.movement_from_sub,{denom:d.conventions.denominator}))}
+    ${d.decomposition.length?chart(d.decomposition.slice(0,25).map(x=>({label:`${x.id} ${x.name}`,value:x.contribution_points})),{fmt:v=>(v>0?"+":"")+n(v,3)+" pp"}):""}
+    ${titled(L.movement_from,[{label:L.col_row,key:"id"},{label:L.col_activity,key:"name"},{label:L.col_wbs,key:"wbs"},{label:L.col_pct_prev,key:"percent_previous"},{label:L.col_pct_curr,key:"percent_current"},{label:L.col_bl_cost,key:"baseline_cost"},{label:L.col_contribution,key:"contribution_points",signed:true,decimals:3}],d.decomposition)||`<p class="quieto-p">${esc(L.cy_nothing)}</p>`}</div>`));
+
+  // 5 and 6.
+  out.push(group("g-folga",L.cy_g_float,"",one("C2")));
+  out.push(group("g-qualidade",L.cy_g_quality,"",one("C6")));
 
   const lg=d.language||{};
   out.push(`<section><div class="sec-h"><h2>${esc(L.cy_conv_title)}</h2></div><dl class="conv">

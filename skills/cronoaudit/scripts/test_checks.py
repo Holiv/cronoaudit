@@ -449,6 +449,17 @@ def example_checks() -> dict:
         row_oae = next((r for r in dl["rows"] if r["id"] == oae), {})
         if not row_oae.get("origin_id") or row_oae["origin_id"] == oae:
             fail("deadlines: the viaduct milestone's row does not name where its delay starts")
+        # The cycle report opens C1 with the same table and sentences, in reading order.
+        pay = report_data.build_cycle(cyc, lang="pt", deadlines=dl)
+        if [s["code"] for s in pay["sections"]] != ["C1", "C5", "C3", "C4", "C2", "C6"]:
+            fail("cycle order: the sections are not deadlines, integrity, replanning, float, quality")
+        c1 = pay["sections"][0]
+        if not c1["lists"] or c1["lists"][0]["count"] != len(dl["rows"]) \
+                or not c1["reading"] or "data limite" not in c1["reading"][0] \
+                or pay["readings"]["c1"] != c1["reading"]:
+            fail("cycle order: C1 does not open with the milestones against their deadline")
+        if pay["meta"]["finish_delta_days"] != cyc["project_finish"]["delta_days"]:
+            fail("cycle order: the hero is not the project finish movement")
     return {"failures": failures, "skipped": False}
 
 
@@ -1457,7 +1468,7 @@ def run_all() -> int:
                 failures.append(f"language: {label} differ between en and {lang}: {sorted(gap)}")
     for lang in ("en", "pt"):
         pay = rd_mod.build_cycle(cyc, lang=lang)
-        if [s["code"] for s in pay["sections"]] != ["C1", "C2", "C3", "C4", "C5", "C6"]:
+        if [s["code"] for s in pay["sections"]] != ["C1", "C5", "C3", "C4", "C2", "C6"]:
             failures.append(f"cycle report ({lang}): the six sections are not all present, in order")
         for s in pay["sections"]:
             if not s["reading"] or not s["criterion"] or not s["reproduce"]:

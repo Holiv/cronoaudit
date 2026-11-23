@@ -990,7 +990,50 @@ def _cycle_sections(cmp_res, lang, C, readings) -> list:
     return out
 
 
-def build_cycle(cmp_res, theme=None, lang=None, detected=None) -> dict:
+CYCLE_ORDER = ("C1", "C5", "C3", "C4", "C2", "C6")
+
+
+def cycle_sections_ordered(cmp_res, lang, C, readings, deadlines=None) -> list:
+    """The six readings in the order a cycle is read: deadlines, integrity of the
+    measurement, replanning, then float and quality. Progress (P1) sits between
+    replanning and float in the report itself."""
+    secs = _cycle_sections(cmp_res, lang, C, readings)
+    _cycle_deadlines(secs, deadlines, lang, C)
+    # The readings sidecar says what the report says, deadline sentences included.
+    for s in secs:
+        if s["code"] == "C1":
+            readings["c1"] = s["reading"]
+    rank = {c: i for i, c in enumerate(CYCLE_ORDER)}
+    return sorted(secs, key=lambda s: rank.get(s["code"], 99))
+
+
+def _cycle_deadlines(sections: list, deadlines: dict | None, lang: str, C: dict) -> None:
+    """C1 opens with the current delivery's milestones against their deadline: the
+    question a cycle is read for. The rows and sentences are the review's own."""
+    c1 = next((s for s in sections if s["code"] == "C1"), None)
+    if not c1 or not deadlines or not deadlines.get("rows"):
+        return
+    said = narrative_mod.build({"deadlines": deadlines}, lang).get("deadlines") or []
+    c1["reading"] = said + c1["reading"]
+    rows = [{"id": r["id"], "name": r["name"], "finish": fmt_date(r.get("finish"), lang),
+             "deadline": fmt_date(r.get("deadline"), lang), "margin_days": r.get("margin_days"),
+             "p80_margin_days": r.get("p80_margin_days"),
+             "origin": (f"{r['origin_id']} · {r.get('origin_name') or ''} (+{r.get('origin_days')})"
+                        if r.get("origin_id") else None)} for r in deadlines["rows"]]
+    c1["lists"].insert(0, {"title": C["l_deadlines"], "count": len(rows), "rows": rows, "open": True,
+                           "columns": [{"label": C["col_row"], "key": "id"},
+                                       {"label": C["col_activity"], "key": "name"},
+                                       {"label": C["col_fin_trend"], "key": "finish"},
+                                       {"label": C["col_deadline"], "key": "deadline"},
+                                       {"label": C["col_margin"], "key": "margin_days", "signed": True},
+                                       {"label": C["col_margin_p80"], "key": "p80_margin_days", "signed": True},
+                                       {"label": C["col_delay_origin"], "key": "origin"}]})
+    if deadlines.get("past_now"):
+        c1["severity"] = "high"
+        c1["severity_word"] = i18n.severity_words(lang)["high"]
+
+
+def build_cycle(cmp_res, theme=None, lang=None, detected=None, deadlines=None) -> dict:
     lang = lang or (detected or {}).get("lang") or "en"
     C = {**i18n.ui(lang), **i18n.cycle_text(lang)}
     QT = i18n.quality_text(lang)
@@ -1025,6 +1068,7 @@ def build_cycle(cmp_res, theme=None, lang=None, detected=None) -> dict:
             "previous_percent_earned": prev.get("percent_earned"),
             "current_percent_earned": curr.get("percent_earned"),
             "movement_points": cmp_res.get("movement_points"),
+            "finish_delta_days": (cmp_res.get("project_finish") or {}).get("delta_days"),
             "explained_points": cmp_res.get("decomposition_sums_to_points"),
             "unexplained_points": cmp_res.get("movement_unexplained_points"),
         },
@@ -1032,7 +1076,7 @@ def build_cycle(cmp_res, theme=None, lang=None, detected=None) -> dict:
         "conventions_list": conventions,
         "warnings": _cycle_warnings(cmp_res, C, lang),
         "readings": readings,
-        "sections": _cycle_sections(cmp_res, lang, C, readings),
+        "sections": cycle_sections_ordered(cmp_res, lang, C, readings, deadlines),
         "trend": {
             "execution": [t for t in cmp_res["trend"] if t["reading"] == "execution"],
             "replan": [t for t in cmp_res["trend"] if t["reading"] == "replan"],

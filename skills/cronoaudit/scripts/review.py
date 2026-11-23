@@ -195,6 +195,8 @@ def do_review(model, path, outdir, threshold, tolerance, quiet,
         with open(base + "-productivity.json", "w", encoding="utf-8") as fh:
             json.dump(prod, fh, indent=2, ensure_ascii=False)
     report_html.write(payload, base + ".html", template)
+    # Handed to the cycle report, which opens C1 with the same table. Not written.
+    res["_deadlines"] = payload.get("deadlines")
     if not quiet:
         print(run_checks.report(res, effective_lang))
         print()
@@ -460,15 +462,16 @@ def analyse(args, outdir=None) -> list:
     res = compare_snapshots.compare(prev, curr)
     if not args.quiet:
         print("=== Review of the current delivery ===\n")
-    do_review(curr, curr_path, outdir, args.threshold_days, args.tolerance_days,
-              args.quiet, theme, grouping, template, lang, previous=prev, cycle=res,
-              profile=profile)
+    rev = do_review(curr, curr_path, outdir, args.threshold_days, args.tolerance_days,
+                    args.quiet, theme, grouping, template, lang, previous=prev, cycle=res,
+                    profile=profile)
     base = os.path.join(outdir, f"{stem(prev_path)}--to--{stem(curr_path)}-cycle")
     with open(base + ".json", "w", encoding="utf-8") as fh:
         json.dump(res, fh, indent=2, ensure_ascii=False)
     import i18n
     detected = i18n.detect(curr)
-    cycle_payload = report_data.build_cycle(res, theme=theme, lang=lang, detected=detected)
+    cycle_payload = report_data.build_cycle(res, theme=theme, lang=lang, detected=detected,
+                                            deadlines=(rev or {}).get("_deadlines"))
     with open(base + "-readings.json", "w", encoding="utf-8") as fh:
         # The rule-built sentences the cycle report shows, section by section, so
         # an assistant can quote them instead of composing its own.

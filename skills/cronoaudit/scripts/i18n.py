@@ -404,7 +404,7 @@ UI = {
                   "have not exceeded. Negative is past the deadline. The origin is where the "
                   "milestone's delay starts on its driving path.",
         "col_margin": "Margin (calendar d)", "col_margin_p80": "Margin after P80 (d)",
-        "col_origin": "Delay starts at", "mb_pointer": "The milestone table is in Deadlines and milestones, after the verdict.",
+        "col_delay_origin": "Delay starts at", "mb_pointer": "The milestone table is in Deadlines and milestones, after the verdict.",
         "rx_title": "Exposure to the rainy season",
         "rx_sub": "Remaining cost spread over each activity's current span, read against the "
                   "months its own calendar reserves for bad weather ({rule}).",
@@ -804,7 +804,7 @@ UI = {
                   "não ultrapassaram. Negativo é depois da data limite. A origem é onde nasce o "
                   "atraso do marco no seu caminho determinante.",
         "col_margin": "Margem (dias corridos)", "col_margin_p80": "Margem com P80 (dias)",
-        "col_origin": "Atraso nasce em", "mb_pointer": "A tabela dos marcos está em Prazo e marcos, logo depois do veredito.",
+        "col_delay_origin": "Atraso nasce em", "mb_pointer": "A tabela dos marcos está em Prazo e marcos, logo depois do veredito.",
         "rx_title": "Exposição ao período chuvoso",
         "rx_sub": "Custo remanescente distribuído pela janela atual de cada atividade, lido "
                   "contra os meses que o calendário dela reserva para o tempo ruim ({rule}).",
@@ -1297,6 +1297,23 @@ CYCLE = {
         "cy_progress_title": "Progress and dates",
         "cy_progress_sub": "The weighted movement, where it came from, and whether the dates "
                            "that moved were moved by the works or by the plan.",
+        "cy_g_deadline": "1. Deadlines and milestones",
+        "cy_g_integrity": "2. Integrity of the measurement",
+        "cy_g_replan": "3. Replanning",
+        "cy_g_progress": "4. Progress",
+        "cy_g_float": "5. Float and critical path",
+        "cy_g_quality": "6. Quality of the network",
+        "cy_g_integrity_sub": "What could make the progress figure untrue: the record of work "
+                              "already done, a baseline that moved, activities that came in or left.",
+        "cy_g_replan_sub": "What the plan changed: logic, durations, and dates moved by the plan "
+                           "rather than by the works.",
+        "cy_hero_label": "PROJECT FINISH",
+        "cy_hero_cap": "calendar days against the previous delivery",
+        "cy_hero_read": "Read in this order: the deadlines, then whether the measurement can be "
+                        "trusted, then what the plan changed, and only then the progress figure. "
+                        "The weighted movement is in section 4, split into what the works "
+                        "explain and what they do not.",
+        "l_deadlines": "Milestones against their deadline (current delivery)",
         "cy_nothing": "Nothing to list.",
         "cy_conv_title": "Conventions this comparison used",
         "yes": "yes", "no": "no", "withdrawn": "(withdrawn)", "none_word": "none",
@@ -1464,6 +1481,22 @@ CYCLE = {
         "cy_progress_title": "Avanço e datas",
         "cy_progress_sub": "O movimento ponderado, de onde ele veio, e se as datas que se "
                            "moveram foram movidas pela obra ou pelo plano.",
+        "cy_g_deadline": "1. Prazo e marcos",
+        "cy_g_integrity": "2. Integridade da medição",
+        "cy_g_replan": "3. Replanejamento",
+        "cy_g_progress": "4. Avanço",
+        "cy_g_float": "5. Folga e caminho crítico",
+        "cy_g_quality": "6. Qualidade da rede",
+        "cy_g_integrity_sub": "O que pode tornar o avanço falso: o registro do que já estava feito, "
+                              "uma linha de base que mudou, atividades que entraram ou saíram.",
+        "cy_g_replan_sub": "O que o plano mudou: lógica, durações e datas movidas pelo plano, "
+                           "e não pela obra.",
+        "cy_hero_label": "TÉRMINO DO CRONOGRAMA",
+        "cy_hero_cap": "dias corridos contra a entrega anterior",
+        "cy_hero_read": "Leia nesta ordem: o prazo, depois se a medição é confiável, depois o que "
+                        "o plano mudou, e só então o avanço. O movimento ponderado está na seção 4, "
+                        "partido entre o que a obra explica e o que não explica.",
+        "l_deadlines": "Marcos contra a data limite (entrega atual)",
         "cy_nothing": "Nada a listar.",
         "cy_conv_title": "Convenções que esta comparação usou",
         "yes": "sim", "no": "não", "withdrawn": "(retirado)", "none_word": "nenhuma",
