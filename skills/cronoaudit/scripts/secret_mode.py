@@ -110,7 +110,10 @@ def project_id(args) -> str:
     if getattr(args, "project", None):
         basis = "name:" + args.project.strip()
     else:
-        basis = "folder:" + os.path.normcase(os.path.realpath(os.path.dirname(os.path.abspath(args.files[-1]))))
+        # The folder the person named: an exported .mpp is read from a temporary folder,
+        # which must not change the project's codes from one run to the next.
+        where = (getattr(args, "origin_files", None) or args.files)[-1]
+        basis = "folder:" + os.path.normcase(os.path.realpath(os.path.dirname(os.path.abspath(where))))
     return hashlib.sha256(basis.encode("utf-8")).hexdigest()[:16]
 
 
@@ -415,7 +418,9 @@ def run(args) -> int:
         _write_json(os.path.join(vault_run, "back.json"), codec.back_table())
         _write_json(os.path.join(vault_run, "run.json"), {
             "run": run_id, "project": project_id(args), "workdir": workdir,
-            "files": files, "template": template, "lang": lang,
+            # Where the person's files are: `finish` writes the decoded report beside them.
+            "files": [os.path.abspath(f) for f in (getattr(args, "origin_files", None) or files)],
+            "template": template, "lang": lang,
             "created": datetime.now().isoformat(timespec="seconds"),
             "html": {rename(n, files): n for n in names if n.endswith(".html")},
         })

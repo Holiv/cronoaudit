@@ -20,6 +20,9 @@ Export the schedule once from the tool (`File > Save As > XML Format`), then:
 S=~/.claude/skills/cronoaudit/scripts          # or ~/.agents/skills/cronoaudit/scripts
 python3 $S/review.py delivery.xml                       # review one delivery
 python3 $S/review.py previous.xml current.xml           # the periodic cycle
+python3 $S/review.py Rev04.mpp                          # Windows: exported through MS Project itself
+python3 $S/review.py --from-project                     # Windows: the schedule open in MS Project
+python3 $S/review.py Rev03.mpp --from-project           # Rev03 against the one open in Project
 python3 $S/review.py delivery.xml --profile profile.json --group-by DISCIPLINA
 python3 $S/review.py delivery.xml --outdir reports --lang pt
 python3 $S/review.py --config                           # the stored mode preference
@@ -138,12 +141,18 @@ it, the one responsible for updating it, a regulator, or someone studying. Never
    it runs without an agent with the same report. This step is where the person chooses how to
    proceed; any other mode of running is offered here, from its own section.
 1. **Locate the file.** If the request names a path, use it. If it names a folder, or nothing,
-   look in that folder (or the working directory) only, not in subfolders, for `.xml` files:
-   exactly one, use it and name it in the reply; more than one, list them and ask which,
-   offering the cycle comparison when two look like versions of the same schedule; none, ask
-   for the path. Never pick silently among several. Never list the person's home folders
-   (Documents, Desktop, Downloads) or offer files that are not schedules; a `.mpp` is named
-   only to ask for its XML export.
+   look in that folder (or the working directory) only, not in subfolders, for schedules
+   (`.mpp` and `.xml`; when both exist for the same name, take the `.mpp`, which is the
+   original): exactly one, use it and name it in the reply; more than one, list them and ask
+   which, offering the cycle comparison when two look like versions of the same schedule;
+   none, ask for the path, or offer `--from-project` if the person has it open in MS Project.
+   Never pick silently among several. Never list the person's home folders (Documents,
+   Desktop, Downloads) or offer files that are not schedules.
+   **A `.mpp` needs nothing from the person on Windows**: pass it to `review.py` as it is, and
+   the engine exports it through the MS Project installed on the machine (read-only; the file
+   is not changed). Do not ask for an XML and do not explain XML unless the export fails; its
+   message says what to do. "The one I have open" is `--from-project`. Off Windows, a `.mpp`
+   still needs the XML export, done in Project by whoever has it.
 2. **Run the analysis once.** `review.py <file> --free` writes the report and the JSON sidecars beside
    the XML; `--outdir <folder>` when the person names a folder (it is created if missing,
    relative to the working directory). The analysis and the report are the same command, so

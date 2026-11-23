@@ -2452,6 +2452,28 @@ def run_all() -> int:
             failures.append(f"required rate: rate {_rate} vs required {_req:.3f} disagrees with "
                             f"the projection {_proj:%Y-%m-%d} against {_end:%Y-%m-%d}")
 
+    # ---- a .mpp goes through MS Project itself (Windows). Off Windows, nothing is
+    # exported: a .mpp keeps the old route, and "the schedule open in Project" says why not.
+    import mpp_export
+    if not mpp_export.needs_export("Rev04.MPP") or mpp_export.needs_export("Rev04.xml"):
+        failures.append("mpp export: a .mpp is not recognised as needing export, or an .xml is")
+    xs, origins, tmp = mpp_export.prepare([os.path.join(ROOT, "fixtures", "positive.xml")])
+    if tmp is not None or xs != [os.path.join(ROOT, "fixtures", "positive.xml")]:
+        failures.append("mpp export: an .xml input was touched")
+    if os.name != "nt":
+        xs, origins, tmp = mpp_export.prepare(["x.mpp"])
+        if tmp is not None or xs != ["x.mpp"]:
+            failures.append("mpp export: off Windows a .mpp must keep the old route")
+        try:
+            mpp_export.prepare([mpp_export.ACTIVE], "pt")
+            failures.append("mpp export: the open project was exported off Windows")
+        except mpp_export.ExportError as exc:
+            if "Windows" not in str(exc):
+                failures.append(f"mpp export: off Windows the message does not say why: {exc}")
+    for lang in ("en", "pt"):
+        if set(mpp_export.MESSAGES[lang]) != set(mpp_export.MESSAGES["en"]):
+            failures.append(f"mpp export: messages differ between en and {lang}")
+
     # ---- modes: free and secret. The preference file, and a run that must not read.
     failures.extend(mode_checks())
     secret = secret_checks()
