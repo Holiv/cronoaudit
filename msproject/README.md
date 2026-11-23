@@ -8,7 +8,26 @@ never invents one.
 This VBA module is only the **entry shortcut**. It exports the open schedule to XML and opens a
 terminal with the skill already started on it. Everything it does can be done by hand.
 
-Status: **v0.3, beta.** v0.2 was used end to end on two Windows machines, with GitHub Copilot
+## Install with one command (v0.4)
+
+With Project closed, in PowerShell:
+
+```
+irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/msproject/install-msproject.ps1 | iex
+```
+
+The installer backs up `Global.MPT` and the ribbon file, opens Project, copies the module from the
+`cronoaudit.mpt` template into `Global.MPT`, and adds the **Cronoaudit** tab without removing your
+other tabs. The person answers two things: **Computer**, if the Logon window asks for a profile,
+and **Disable macros**, at the template's warning. No security setting is changed. To remove:
+`$env:CRONOAUDIT_MSPROJECT_REMOVE="1"` and the same command.
+
+Tested on Windows on 22/11/2026: installation, the buttons on a freshly opened `.mpp` (no prompt to
+save; the export reads a copy of the file as saved on disk), installation over the previous
+version (the module is replaced) and removal. The manual installation below stays as an
+alternative. Secret mode is not yet available from the buttons.
+
+Previous status: **v0.3, beta.** v0.2 was used end to end on two Windows machines, with GitHub Copilot
 CLI on one and Claude Code on the other; both agents reported the same engine numbers. Not yet
 measured on a real machine: from v0.2.1, the VS Code route, the list of output files in
 `pedido.md` and the configuration screen; from v0.3, everything about the mode (reading and

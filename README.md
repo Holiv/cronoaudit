@@ -2,64 +2,152 @@
 
 [Português](LEIA-ME.md)
 
-**cronoaudit reviews construction and infrastructure schedules.** You give it the XML export of a
-schedule, and it tells you what deserves attention. It looks for the failures that produce a
-believable wrong number rather than an error message. Examples:
-- an activity that started before its predecessor finished;
+![version](https://img.shields.io/badge/version-0.9.0-1f6feb)
+![licence](https://img.shields.io/badge/licence-Apache%202.0-555)
+![Windows · macOS · Linux](https://img.shields.io/badge/Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-runs-2ea043)
+![data](https://img.shields.io/badge/engine-no%20network-2ea043)
+
+**cronoaudit reviews construction and infrastructure schedules and tells you what deserves
+attention.** It looks for the failures that produce a believable wrong number rather than an
+error message:
+- a milestone one day from its deadline;
 - an actual date rewritten after the fact;
-- a milestone that is one day from its deadline;
-- an activity whose two progress percentages disagree.
+- an activity with progress that vanished from one revision to the next;
+- an activity that started before its predecessor finished.
 
-It works in two ways:
+Use it the way you prefer: talking to an AI agent, clicking a button inside MS Project, or with
+no AI at all.
 
-- **With an AI agent**, in a conversation. You ask in plain words ("review this schedule",
-  "compare these two versions", "where did the delay come from?") and the agent answers using
-  cronoaudit. Use the agent you prefer, or the one your company allows on your computer. This
-  guide covers four: Claude Code, GitHub Copilot, Codex (OpenAI) and Grok Build (xAI). Any agent
-  that reads the open [Agent Skills](https://agentskills.io) format also works.
-- **Without any agent.** One command writes the same report, and nothing leaves your computer.
+![Deadlines and milestones: each milestone against its deadline](docs/img/prazo.png)
 
-The numbers never come from the agent. They come from cronoaudit's engine: Python scripts that
-run on your computer, read the XML and compute every figure the same way every time. The agent
-quotes those figures; it does not invent them.
+## Why use it
+
+| | |
+|---|---|
+| **29 seconds** | to analyse a real schedule of 6,484 tasks and 107 calendars, on an ordinary laptop (Apple M1, measured on 22/11/2026). |
+| **To the cent** | cronoaudit's earned value is checked, activity by activity, against what MS Project itself computed. When it does not match, the report says where. |
+| **14 of 14** | problems planted in the fictitious example appear in the report. The list of what was planted is in [`examples/`](examples/), and an automatic test checks it on every version. |
+| **12 ready questions** | when comparing the example's two revisions, one per piece of evidence, the integrity of the measurement first. |
+| **Nothing invented** | the numbers come from the engine, not from the agent. Every claim is marked measured, inferred or reported. |
 
 ## What you get
 
-One HTML report that opens in the browser, in the schedule's own language (Portuguese or
-English). Every section opens with a short reading written by rules, not by the agent.
+A report that opens in the browser, in the schedule's own language (the screenshots are of a
+Portuguese schedule). Every section opens with a short reading written by rules.
 
-**For one delivery:**
-- the deadlines first: each milestone against its deadline, with the margin and where its delay
-  starts;
-- nine integrity checks, network first;
-- the S-curve from the file's own data, reconciled to the cent with the tool's own figures;
-- productivity and trend by resource;
-- fourteen network-quality metrics;
-- Earned Schedule and the next weeks;
-- forensics that name where each milestone's delay entered.
+**One revision:** deadlines first (each milestone against its deadline, with the margin and where
+its delay starts); nine integrity checks; the S-curve from the file's own data; productivity by
+resource; fourteen network-quality metrics; Earned Schedule and the next weeks; forensics of where
+each milestone's delay entered.
 
-**For two versions of the same schedule, in the order you read them:**
-1. deadlines;
-2. whether the measurement can be trusted;
-3. what the plan changed;
-4. progress;
-5. float and critical path;
-6. network quality;
-7. a list of what to ask the contractor, one item per piece of evidence.
+![Report of one revision](docs/img/review-top.png)
 
-## Before you start
+**Two revisions compared, in the order you read them:** 1. deadlines; 2. whether the measurement
+can be trusted; 3. what the plan changed; 4. progress; 5. float and critical path; 6. network
+quality; and at the end, **what to ask the contractor**.
 
-You need three things:
+<p>
+<img src="docs/img/cycle-top.png" alt="Two revisions compared" width="49%">
+<img src="docs/img/cobrar.png" alt="What to ask the contractor" width="49%">
+</p>
 
-1. **A computer with Windows, macOS or Linux.** This guide shows Windows first, because that
-   is where most schedules live.
-2. **The schedule as XML.** In MS Project: **File → Save As → XML Format (\*.xml)**. That is
-   Project's own format; nothing cronoaudit needs is lost. Save it in a folder of its own.
-3. **Optional: an AI agent.** Only if you want the conversation. Each agent needs an account
-   with its provider; check which plan includes it, and check your company's policy before
-   using one with a company schedule (see [Where your data goes](#where-your-data-goes)).
+## Choose how to use it
 
-You do not need to know programming. You will copy and paste a few commands.
+| You prefer | Path | What you do |
+|---|---|---|
+| To talk to an AI and let it do everything | **A. Through the agent** | *"analyse Rev04.mpp"* |
+| A button, inside Project itself | **B. The Cronoaudit tab** | click **Relatório** or **Analisar** |
+| No AI, or a computer with no agent | **C. The engine** | one command, on the exported XML |
+
+```mermaid
+flowchart LR
+    C[Schedule in MS Project] -->|A. you ask the agent| AG(AI agent)
+    C -->|B. button on the Cronoaudit tab| PJ(MS Project)
+    C -->|C. Save As XML| M
+    AG --> M[cronoaudit engine<br/>on your computer]
+    PJ --> M
+    M --> R[Report in the browser]
+    M -->|measured figures| AG
+```
+
+In all three, the engine runs on your computer and sends nothing. What changes is who talks to you.
+
+### A. Through the agent
+
+For those who like to ask and let it run. On Windows with MS Project installed, you do not need to
+export anything: the agent hands the `.mpp` to cronoaudit, which asks Project itself to export it
+and goes on with the analysis. The file is opened read-only and does not change. If it is already
+open in Project, your window is not touched: cronoaudit reads the version saved on disk.
+
+What to say, for example:
+- *Analyse Rev04.mpp.*
+- *Compare Rev03.mpp with Rev04.mpp and tell me what changed.*
+- *Analyse the schedule open in Project.*
+- *Which milestones are at risk of missing their deadline?*
+- *Write the executive summary and generate the final report.*
+
+Use the agent you prefer, or the one your company allows on your computer. This guide covers four:
+Claude Code, GitHub Copilot, Codex (OpenAI) and Grok Build (xAI). See [Install](#install).
+
+**What a conversation looks like** (a test on the fictitious road project, 22/11/2026):
+
+> **You:** Compare rev03 and rev04 and tell me what changed, by topic.
+>
+> **Agent:** The project finish moved 21 days, from 04/10/2027 to 25/10/2027. Before the progress
+> figure, three things need an answer from the contractor: the actual finish of row 29 was
+> rewritten and now equals the baseline date; row 119, at 100%, was removed, taking its earned
+> value with it; and the baseline of row 132 moved. The delay of the viaduct milestone starts at
+> row 148 and grows at row 157, whose duration went from 12 to 20 days…
+
+### B. The Cronoaudit tab, inside Project (Windows)
+
+For those who prefer a button. The tab sits between **Project** and **View**; its labels are in
+Portuguese:
+
+| Group | Button | What it does |
+|---|---|---|
+| Com o agente de IA | **Analisar** | opens your agent with the schedule already loaded |
+| | **Comparar versões** | lists the other versions in the same folder and opens the agent with both |
+| Sem IA | **Relatório** | writes the report and opens it; nothing leaves the computer |
+| | **Comparar** | the same, for two versions |
+| | **Exportar XML** | only exports, to take elsewhere |
+| Ajustes | **Configurar** | agent, report folder, mode |
+
+The buttons never ask whether to save your file: they read the version saved on disk.
+
+To install the tab, with Project closed, in PowerShell:
+
+```
+irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/msproject/install-msproject.ps1 | iex
+```
+
+During the installation Project opens and asks two things, which are yours to answer:
+1. if a **Logon** window with profiles appears, choose **Computer**;
+2. at the warning about the template's macros, click **Disable macros**.
+
+The installer backs up what it changes before changing it, changes no security setting, and checks
+at the end that the buttons answer. To remove it, set `$env:CRONOAUDIT_MSPROJECT_REMOVE="1"` in the
+same window and run the same command. Secret mode is not yet available from the button. More in
+[`msproject/`](msproject/).
+
+### C. The engine, without an agent
+
+For when there is no agent on the computer, or the company's policy does not allow one. Same report,
+no conversation, and nothing leaves the computer.
+
+1. In MS Project: **File → Save As → XML Format (\*.xml)**. That is Project's own format; nothing
+   cronoaudit needs is lost.
+2. In PowerShell:
+
+```
+python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" "C:\path\to\schedule.xml"
+```
+
+Two files, previous first, give the comparison. On Windows with Project, the command also takes the
+`.mpp` directly. If the analysis with an agent is done on another computer, it should be one the
+company allows to receive the schedule.
+
+## Install
 
 ### How to open PowerShell (Windows)
 
@@ -67,14 +155,12 @@ You do not need to know programming. You will copy and paste a few commands.
 2. Type `PowerShell`.
 3. Click **Windows PowerShell**.
 
-A window with a blinking cursor opens. Paste a command there with a right click, and run it
-with Enter. Use this window, not "Command Prompt" (cmd): the commands below are for PowerShell.
+A window with a blinking cursor opens. Paste a command with a right click and press Enter. Use this
+window, not "Command Prompt" (cmd). On macOS, open **Terminal**.
 
-On macOS, open **Terminal** instead (Applications → Utilities).
+### 1. cronoaudit (always)
 
-## Step 1: install cronoaudit
-
-One command installs cronoaudit for all the agents at once, and for use without an agent.
+One command installs it for every agent at once, and for use without an agent.
 
 **Windows (PowerShell):**
 
@@ -88,170 +174,92 @@ irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex
 curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash
 ```
 
-What you should see at the end: **`cronoaudit 0.8.0 is installed`**.
+At the end you should see **`cronoaudit 0.9.0 is installed`**. cronoaudit needs Python 3.9 or
+later; on Windows, if there is no Python, the installer brings its own copy, with no administrator
+rights. To update, run the same command again.
 
-About Python: cronoaudit needs Python 3.9 or later and nothing else. On Windows, if your
-computer has no Python, the installer brings its own copy from python.org, used only by
-cronoaudit, with no administrator rights. On macOS and Linux, Python is usually already there.
+### 2. An agent (only for path A, or for the Analisar button)
 
-To update later, run the same command again.
+Pick one. Official commands from each provider, as of November 2026. After installing, close
+PowerShell and open a new one. Each agent needs an account with its provider; check which plan
+includes it and your company's policy.
 
-## Step 2: install an agent (skip this if you will not use one)
+| Agent | Windows (PowerShell) | Start | Official guide |
+|---|---|---|---|
+| Claude Code (Anthropic) | `irm https://claude.ai/install.ps1 \| iex` | `claude` | [code.claude.com](https://code.claude.com/docs/en/setup) |
+| GitHub Copilot CLI | `winget install GitHub.Copilot` | `copilot` | [docs.github.com](https://docs.github.com/en/copilot/how-tos/copilot-cli/set-up-copilot-cli/install-copilot-cli) |
+| Codex (OpenAI) | `powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 \| iex"` | `codex` | [github.com/openai/codex](https://github.com/openai/codex) |
+| Grok Build (xAI) | `irm https://x.ai/cli/install.ps1 \| iex` | `grok` | [docs.x.ai](https://docs.x.ai/build/overview) |
 
-Pick one. Each block is the provider's official command, as of November 2026. After
-installing, close PowerShell and open a new one, so the new command is found.
+On macOS and Linux, the official guides give each command. If your Copilot comes from your company,
+the company decides whether the CLI is enabled.
 
-### Claude Code (Anthropic)
+All four read the skill folder the cronoaudit installer created. To check, start the agent and ask
+*"what skills do you have?"*. So far cronoaudit has been tested end to end with Claude Code; for the
+other three, the installation follows what the providers document.
 
-```
-irm https://claude.ai/install.ps1 | iex
-```
+### 3. The tab in Project (only for path B)
 
-macOS / Linux: `curl -fsSL https://claude.ai/install.sh | bash`. Start it with `claude` and
-follow the sign-in. Official guide: [code.claude.com](https://code.claude.com/docs/en/setup).
-
-### GitHub Copilot CLI
-
-```
-winget install GitHub.Copilot
-```
-
-Start it with `copilot` and sign in with your GitHub account. It needs a Copilot plan. If your
-Copilot comes from your company, the company decides whether the CLI is enabled. Official
-guide, with the macOS and Linux options:
-[docs.github.com](https://docs.github.com/en/copilot/how-tos/copilot-cli/set-up-copilot-cli/install-copilot-cli).
-
-### Codex (OpenAI)
-
-```
-powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"
-```
-
-macOS / Linux: `curl -fsSL https://chatgpt.com/codex/install.sh | sh`. Start it with `codex`
-and sign in with your ChatGPT account. Official guide:
-[github.com/openai/codex](https://github.com/openai/codex).
-
-### Grok Build (xAI)
-
-```
-irm https://x.ai/cli/install.ps1 | iex
-```
-
-macOS / Linux: `curl -fsSL https://x.ai/cli/install.sh | bash`. Start it with `grok` and sign
-in. Official guide: [docs.x.ai](https://docs.x.ai/build/overview).
-
-### Does the agent see cronoaudit?
-
-All four read the skill folder the installer created (`.agents\skills` in your user folder;
-Claude Code reads `.claude\skills`, which the installer also fills). To check, start the agent
-and ask *"what skills do you have?"*. cronoaudit should be in the answer. In Copilot you can
-also type `/skills list`; in Grok, `/skills`.
-
-## Step 3: review a schedule
-
-1. In PowerShell, go to the folder where the XML is. The easiest way: type `cd ` with a space
-   after it, drag the folder from Explorer into the window, and press Enter.
-2. Start your agent: `claude`, `copilot`, `codex` or `grok`.
-3. Write what you want, in your own words. For example:
-   - *Review the schedule road-rev04.xml.*
-   - *Compare road-rev03.xml with road-rev04.xml and tell me what changed.*
-   - *Which milestones are at risk of missing their deadline?*
-   - *Write the executive summary and generate the final report.*
-
-The agent runs cronoaudit, reads the results and answers. The report is saved next to the XML,
-and you can open it in the browser. You can keep asking about any activity, milestone or figure.
-
-One thing that confuses people: commands that start with `/` (like `/skills`) are typed
-**inside** the agent, after you start it. Typed straight into PowerShell, they do nothing.
-
-### What a conversation looks like
-
-From a test on the fictitious road project that ships with cronoaudit ([`examples/`](examples/)):
-
-> **You:** Compare rev03 and rev04 and tell me what changed, by topic.
->
-> **Agent:** The project finish moved 21 days, from 04/10/2027 to 25/10/2027. Before the
-> progress figure, three things need an answer from the contractor: the actual finish of row 29
-> was rewritten and now equals the baseline date; row 119, at 100%, was removed, taking its
-> earned value with it; and the baseline of row 132 moved. The delay of the viaduct milestone
-> starts at row 148 and grows at row 157, whose duration went from 12 to 20 days…
-
-Every figure in that answer comes from the engine's files. The agent also points out when a
-rule-built reading does not fit the data, and shows the numbers.
-
-## Without any agent
-
-Run the engine yourself. Nothing leaves your computer:
-
-```
-python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" "C:\path\to\schedule.xml"
-```
-
-Two files, previous first, give the comparison report. On macOS and Linux, use `python3` and
-`~/.claude/skills/cronoaudit/scripts/review.py`.
-
-On Windows, use `python` (or `py`), not `python3`: there `python3` is often a shortcut to the
-Microsoft Store that runs nothing.
+See [path B](#b-the-cronoaudit-tab-inside-project-windows).
 
 ## Where your data goes
 
 - **The engine runs on your computer and sends nothing.** It never touches the network.
-- **The installer downloads** this repository from GitHub and, on Windows only if needed, Python
+- **The installers download** this repository from GitHub and, on Windows only if needed, Python
   from python.org. Nothing else.
-- **The agent is different.** What an agent reads (the XML, the report, your questions) goes to
-  its provider, under the terms of your account or your company's. Check the company's policy
-  before using an agent with a contract schedule.
-- **If the policy says no agent,** use cronoaudit without one: same report, no conversation.
+- **The agent is different.** What it reads (the schedule, the report, your questions) goes to its
+  provider, under the terms of your account or your company's. Check the company's policy before
+  using an agent with a contract schedule.
+- **If the policy does not allow an agent,** use path C, or the tab's "Sem IA" buttons.
 
 ### Secret mode (experimental)
 
-For when you want the conversation, but the names, values and dates should stay on your
-computer. You run one command yourself:
+To talk to the agent without the names, values and dates leaving your computer. You run one command
+yourself, with the `.xml` or, on Windows with Project, the `.mpp`:
 
 ```
-python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" "C:\path\to\schedule.xml" --secret
+python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" "C:\path\to\Rev04.mpp" --secret
 ```
 
 cronoaudit analyses the real file on your computer and writes a coded copy in a separate folder:
-- activity names become codes like `T·3fa91c`;
-- dates become day counts like `D+0412`;
-- money is multiplied by a secret factor.
-
-Durations, percentages, indices and row numbers stay real, so the analysis still makes sense.
-You open the agent in that folder, and it reads only the coded copy. When you ask for the final
-report, cronoaudit decodes it on your computer and opens it with the real names.
+names become codes like `T·3fa91c`, dates become day counts like `D+0412`, and money is multiplied
+by a secret factor. Durations, percentages and row numbers stay real. You open the agent in that
+folder, and it reads only the copy. When you ask for the final report, cronoaudit decodes it on your
+computer and opens it with the real names.
 
 What it does and does not do:
-- In Claude Code, the folder also carries rules that keep the agent inside it. Other agents
-  receive the same rules as written instructions.
-- The codes do not make the schedule anonymous: its structure, durations and row numbers stay
-  readable.
+- In Claude Code, the folder carries rules that keep the agent inside it; other agents receive the
+  same rules as written instructions.
+- The codes do not make the schedule anonymous: its structure and durations stay readable.
 - It does not replace your company's policy on AI services.
 
-Tested on Windows with Claude Code on 22/11/2026, and on a real 6,484-task schedule: no real
-name, date or value reached the coded copy.
+Tested on Windows with Claude Code on 22/11/2026, and on a real 6,484-task schedule: no real name,
+date or value reached the coded copy.
 
 ## If something goes wrong
 
 | What you see | What to do |
 |---|---|
-| *'irm' is not recognized* | You are in Command Prompt (cmd). Open PowerShell (see above). |
-| *python is not recognized* | Run the cronoaudit installer again; on Windows it brings its own Python. Or install Python from python.org and tick **Add python.exe to PATH**. |
-| The agent's command (`claude`, `copilot`…) is not found | Close PowerShell and open a new one. |
-| The agent does not know cronoaudit | Close the agent and start it again. In Copilot, `/skills reload`. Check with *"what skills do you have?"*. |
-| `/cronoaudit` does nothing | Commands with `/` work only inside the agent, not in PowerShell. You can also just ask in words. |
+| *'irm' is not recognized* | You are in Command Prompt (cmd). Open PowerShell. |
+| *python is not recognized* | Run the cronoaudit installer again; on Windows it brings its own Python. |
+| The agent's command is not found | Close PowerShell and open a new one. |
+| The agent does not know cronoaudit | Close the agent and start it again. In Copilot, `/skills reload`. Ask *"what skills do you have?"*. |
+| `/cronoaudit` does nothing | Commands with `/` work only inside the agent, not in PowerShell. You can just ask in words. |
+| *MS Project was not found* | A `.mpp` can only be read on a computer with Project. Use path C with the XML exported by someone who has Project. |
+| A note about *unsaved changes* | It is information only: Project marks a file so just by opening it. The analysis read the version saved on disk. |
+| The tab does not appear | Close and open Project. If it is still missing, run the tab installer again. |
 
 ## More
 
-- **The whole process, step by step:**
+- **How it works inside.** The engine reads the XML that Project itself exports (MSPDI), which
+  carries tasks, links, the eleven baselines, calendars and custom fields. When you pass a `.mpp`,
+  cronoaudit asks the installed Project to do that export. The whole process:
   [`skills/cronoaudit/references/usage.md`](skills/cronoaudit/references/usage.md).
-- **Manual**, fourteen chapters, from concepts to a glossary: Português
-  [`docs/manual/manual-pt.pdf`](docs/manual/manual-pt.pdf), English
-  [`docs/manual/manual-en.pdf`](docs/manual/manual-en.pdf).
-- **MS Project add-in (Windows, beta).** Buttons in Project that export the open schedule and
-  start the analysis. A shortcut, not a requirement: [`msproject/`](msproject/).
-- **A fictitious example** to try first, with the list of what was planted in it:
-  [`examples/`](examples/).
+- **Manual**, fourteen chapters: [English](docs/manual/manual-en.pdf),
+  [Português](docs/manual/manual-pt.pdf).
+- **The fictitious example**, to try first: [`examples/`](examples/). The figures in this guide come
+  from the example's `.xml` files; its `.mpp` files give slightly different ones (+22 days, 14
+  questions), because Project recalculated the schedule when they were created.
 
 ### Other ways to install
 
@@ -262,35 +270,25 @@ name, date or value reached the coded copy.
 | Codex | `$skill-installer https://github.com/Holiv/cronoaudit` |
 | A team, through the project | `git clone https://github.com/Holiv/cronoaudit .agents/skills/cronoaudit` inside the project |
 
-Where the installer puts it: `.claude/skills/cronoaudit` and `.agents/skills/cronoaudit` in
-your user folder. On macOS and Linux, `--only claude` or `--only agents` chooses one.
-
-Installer options on Windows are set in the same PowerShell window, before the command:
-
-| Option | Command |
-|---|---|
-| Never download Python; stop if none is found | `$env:CRONOAUDIT_NO_PYTHON="1"` |
-| Use the bundled Python even if the computer has one | `$env:CRONOAUDIT_EMBED_PYTHON="1"` |
-| Install from another branch | `$env:CRONOAUDIT_REF="branch-name"` |
+Installer options on Windows, set in the same window before the command:
+`$env:CRONOAUDIT_NO_PYTHON="1"` (never download Python), `$env:CRONOAUDIT_EMBED_PYTHON="1"` (use the
+bundled Python even if there is another), `$env:CRONOAUDIT_REF="branch-name"` (another branch).
 
 ### What it does not do
 
-It does not read Primavera P6. It does not produce a contractual delay claim: the forensics
-show the mechanism, and a claim needs contemporaneous records and a formal method. It does not
-certify against DCMA: the fourteen metrics are an implementation, labelled as such. It never
-invents a number the file did not carry, and it marks every claim as `measured`, `inferred` or
-`reported`.
+It does not read Primavera P6. It does not produce a contractual delay claim: the forensics show
+the mechanism, and a claim needs contemporaneous records and a formal method. It does not certify
+against DCMA: the fourteen metrics are an implementation, labelled as such.
 
 ### Check the tool
 
-`python skills/cronoaudit/scripts/test_checks.py`, from a copy of this repository. Every check
-must fire on the positive fixture and stay silent on the negative one.
+`python skills/cronoaudit/scripts/test_checks.py`, from a copy of this repository.
 
 ### Provenance
 
-Written from a documented, generic method, not ported from any application's source, and
-measured on a real 6,484-task programme with 107 calendars. Numbers of scale stay; identities
-go: no employer, contractor, contract, chainage, person or value appears in this repository.
+Written from a documented, generic method, not ported from any application's source, and measured
+on a real 6,484-task programme with 107 calendars. Numbers of scale stay; identities go: no
+employer, contractor, contract, chainage, person or value appears in this repository.
 
 ### Licence
 

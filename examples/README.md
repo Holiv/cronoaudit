@@ -60,7 +60,7 @@ Row numbers are those of rev04.
 | 3 | Row 36, *Imprimação — Seg. 1*, started on 29/10 while row 35, *Base de brita graduada — Seg. 1*, is still open | Finding A1, out of sequence, both ends marked |
 | 4 | Rows 77, 89, 136 and 170 have no successor | Network quality Q1 (4 of 96, under the threshold, so the network reads as linked) |
 | 5 | The same four, plus the inserted row 57, carry 79 to 205 days of float | Network quality Q6 |
-| 6 | Row 55, *Aterro compactado — Seg. 2*: 95% complete by duration, 57% physical | S-curve: the other earned-value method would read 0.44 points more; productivity: verdict critical |
+| 6 | Row 55, *Aterro compactado — Seg. 2*: 95% complete by duration, 57% physical | S-curve: the other earned-value method would read 0.44 points more, and the reading names row 55 as 100% of the gap; productivity: inconsistent measurement |
 | 7 | Row 29, *Bueiros tubulares — Seg. 1*: actual finish was 05/06/2026 in rev03 and reads 01/06/2026, its baseline date, in rev04 | Cycle: past rewritten, one actual finish |
 | 8 | A link added (row 106 after row 94) and one removed (row 127 no longer after row 123) | Cycle: logic |
 | 9 | Row 157, *Lançamento das vigas pré-moldadas*: 12 days became 20, not started | Cycle: duration changed on work not started |
