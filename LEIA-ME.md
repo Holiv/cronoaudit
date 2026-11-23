@@ -105,14 +105,19 @@ Para quem prefere um botão. A aba fica entre **Projeto** e **Exibir**:
 
 | Grupo | Botão | O que faz |
 |---|---|---|
-| Com o agente de IA | **Analisar** | abre o seu agente já com o cronograma aberto |
-| | **Comparar versões** | mostra as outras versões da mesma pasta e abre o agente com as duas |
+| Com o agente de IA | **Analisar** | pergunta o modo (secreto ou livre) e abre o seu agente com o cronograma aberto |
+| | **Comparar versões** | pergunta o modo, mostra as outras versões da mesma pasta e abre o agente com as duas |
 | Sem IA | **Relatório** | gera o relatório e abre no navegador; nada sai do computador |
 | | **Comparar** | o mesmo, para duas versões |
 | | **Exportar XML** | só exporta, para levar a outro lugar |
 | Ajustes | **Configurar** | agente, pasta dos relatórios, modo |
 
 Os botões nunca perguntam se é para salvar o seu arquivo: eles leem a versão salva em disco.
+
+Antes de abrir o agente, Analisar e Comparar versões perguntam o modo. **Sim** é o modo secreto,
+e já vem selecionado: o agente abre numa pasta só com a cópia codificada, e o relatório com os
+dados reais é montado no seu computador no fim. **Não** é o modo livre, desta vez. Para não
+perguntar mais, escolha o modo em **Configurar** (item 5). Veja o [modo secreto](#modo-secreto-experimental).
 
 Para instalar a aba, com o Project fechado, no PowerShell:
 
@@ -228,14 +233,21 @@ são multiplicados por um fator secreto. Durações, percentuais e números de l
 Você abre o agente nessa pasta, e ele lê só a cópia. Quando você pede o relatório final, a
 cronoaudit decodifica no seu computador e abre com os nomes reais.
 
+Para ler uma resposta do agente com os nomes reais, rode no seu PowerShell, fora do agente, o
+comando que o próprio agente indica (`secret_decode.py text` com o caminho da pasta), cole a
+resposta e termine com Ctrl+Z e Enter numa linha sozinha.
+
 O que ele faz e o que não faz:
-- No Claude Code, a pasta traz regras que mantêm o agente dentro dela; os outros agentes recebem as
-  mesmas regras como instruções escritas.
+- No Claude Code, a pasta traz regras e uma trava que mantêm o agente dentro dela. Só as
+  ferramentas de que a sessão precisa ficam abertas; PowerShell, conectores (OneDrive, SharePoint,
+  Microsoft 365), envio de arquivos e mensagens para outras sessões ficam fechados. Os outros
+  agentes recebem as mesmas regras como instruções escritas.
 - Os códigos não tornam o cronograma anônimo: a estrutura e as durações continuam legíveis.
 - Não substitui a política da sua empresa sobre serviços de IA.
 
-Testado no Windows com o Claude Code em 22/11/2026, e num cronograma real de 6.484 tarefas:
-nenhum nome, data ou valor real chegou à cópia codificada.
+Testado no Windows com o Claude Code em 22 e 23/11/2026, pelo comando, direto do `.mpp` e pelo
+botão do Project, e num cronograma real de 6.484 tarefas: nenhum nome, data ou valor real chegou à
+cópia codificada, e a trava foi conferida chamando-a direto, sem o agente.
 
 ## Se algo der errado
 
@@ -249,6 +261,8 @@ nenhum nome, data ou valor real chegou à cópia codificada.
 | *O MS Project não foi encontrado* | O `.mpp` só é lido por um computador com o Project. Use o caminho C com o XML exportado por quem tem o Project. |
 | Aviso de *alterações não salvas* | É informativo: o Project marca o arquivo assim só por abrir. A análise leu a versão salva em disco. |
 | A aba não aparece | Feche e abra o Project. Se continuar, rode o instalador da aba de novo. |
+| No modo secreto, o Claude Code pergunta se você confia na pasta | Responda que sim. Sem isso, a trava da pasta fica desligada. A pergunta volta a cada análise, porque cada uma tem a sua pasta. |
+| O modo secreto diz que foi iniciado por um agente | Rode o comando num PowerShell aberto pelo menu Iniciar, ou abra o Project pelo menu Iniciar, não de dentro do terminal de um agente. |
 
 ## Mais
 
@@ -257,7 +271,8 @@ nenhum nome, data ou valor real chegou à cópia codificada.
   um `.mpp`, a cronoaudit pede ao Project instalado para fazer essa exportação. O processo completo,
   em inglês: [`skills/cronoaudit/references/usage.md`](skills/cronoaudit/references/usage.md).
 - **Manual**, catorze capítulos: [português](docs/manual/manual-pt.pdf),
-  [inglês](docs/manual/manual-en.pdf).
+  [inglês](docs/manual/manual-en.pdf). É de setembro de 2026: o método e as verificações continuam
+  valendo, mas o `.mpp` direto, a aba do Project e o modo secreto estão só neste guia.
 - **O exemplo fictício**, para experimentar primeiro: [`examples/`](examples/LEIA-ME.md). Os
   números deste guia saem dos `.xml` do exemplo; os `.mpp` dão um pouco diferente (+22 dias, 14
   cobranças), porque o Project recalculou o cronograma ao criá-los.

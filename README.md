@@ -106,14 +106,19 @@ Portuguese:
 
 | Group | Button | What it does |
 |---|---|---|
-| Com o agente de IA | **Analisar** | opens your agent with the schedule already loaded |
-| | **Comparar versões** | lists the other versions in the same folder and opens the agent with both |
+| Com o agente de IA | **Analisar** | asks the mode (secret or free) and opens your agent with the schedule loaded |
+| | **Comparar versões** | asks the mode, lists the other versions in the same folder and opens the agent with both |
 | Sem IA | **Relatório** | writes the report and opens it; nothing leaves the computer |
 | | **Comparar** | the same, for two versions |
 | | **Exportar XML** | only exports, to take elsewhere |
 | Ajustes | **Configurar** | agent, report folder, mode |
 
 The buttons never ask whether to save your file: they read the version saved on disk.
+
+Before opening the agent, Analisar and Comparar versões ask for the mode. **Yes** is secret mode,
+and it is the default button: the agent opens in a folder holding only the coded copy, and the
+report with the real data is built on your computer at the end. **No** is free mode, this time.
+To stop the question, choose the mode in **Configurar** (item 5). See [secret mode](#secret-mode-experimental).
 
 To install the tab, with Project closed, in PowerShell:
 
@@ -228,14 +233,21 @@ by a secret factor. Durations, percentages and row numbers stay real. You open t
 folder, and it reads only the copy. When you ask for the final report, cronoaudit decodes it on your
 computer and opens it with the real names.
 
+To read one of the agent's answers with the real names, run in your own PowerShell, outside the
+agent, the command the agent gives you (`secret_decode.py text` with the folder's path), paste the
+answer, and end with Ctrl+Z and Enter on a line of its own.
+
 What it does and does not do:
-- In Claude Code, the folder carries rules that keep the agent inside it; other agents receive the
-  same rules as written instructions.
+- In Claude Code, the folder carries rules and a guard that keep the agent inside it. Only the
+  tools the session needs stay open; PowerShell, connectors (OneDrive, SharePoint, Microsoft 365),
+  sending files and messaging other sessions are closed. Other agents receive the same rules as
+  written instructions.
 - The codes do not make the schedule anonymous: its structure and durations stay readable.
 - It does not replace your company's policy on AI services.
 
-Tested on Windows with Claude Code on 22/11/2026, and on a real 6,484-task schedule: no real name,
-date or value reached the coded copy.
+Tested on Windows with Claude Code on 22 and 23/11/2026, from the command, straight from the `.mpp`
+and from the Project button, and on a real 6,484-task schedule: no real name, date or value reached
+the coded copy, and the guard was checked by calling it directly, without the agent.
 
 ## If something goes wrong
 
@@ -249,6 +261,8 @@ date or value reached the coded copy.
 | *MS Project was not found* | A `.mpp` can only be read on a computer with Project. Use path C with the XML exported by someone who has Project. |
 | A note about *unsaved changes* | It is information only: Project marks a file so just by opening it. The analysis read the version saved on disk. |
 | The tab does not appear | Close and open Project. If it is still missing, run the tab installer again. |
+| In secret mode, Claude Code asks whether you trust the folder | Say yes. Without it the folder's guard stays off. The question comes back on every analysis, because each has its own folder. |
+| Secret mode says an agent started it | Run the command in a PowerShell opened from the Start menu, or open Project from the Start menu, not from inside an agent's terminal. |
 
 ## More
 
@@ -257,7 +271,8 @@ date or value reached the coded copy.
   cronoaudit asks the installed Project to do that export. The whole process:
   [`skills/cronoaudit/references/usage.md`](skills/cronoaudit/references/usage.md).
 - **Manual**, fourteen chapters: [English](docs/manual/manual-en.pdf),
-  [Português](docs/manual/manual-pt.pdf).
+  [Português](docs/manual/manual-pt.pdf). It dates from September 2026: the method and the checks still
+  hold, but the direct `.mpp`, the Project tab and secret mode are only in this guide.
 - **The fictitious example**, to try first: [`examples/`](examples/). The figures in this guide come
   from the example's `.xml` files; its `.mpp` files give slightly different ones (+22 days, 14
   questions), because Project recalculated the schedule when they were created.
