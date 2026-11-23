@@ -416,6 +416,7 @@ function renderReview(d){
         <div class="tile vf"><div class="c">${esc(L.col_alt_pct)}</div><div class="v">${n(T.earned_alt_pct,2)}%</div><div class="t">${esc(altLabel)}</div></div>
       </div>
       ${noPlan?`<div class="note">${L.planned_na}</div>`:""}
+      ${(IN.planned_available===false && !noPlan && L.planned_file_only)?`<div class="note">${L.planned_file_only}</div>`:""}
       ${reading("scurve")}
       ${scurveSvg(s.periods||[],altLabel)}
       <p class="fonte" style="margin-top:8px">${(IN.file_bcws===false&&IN.file_bcwp===false)?esc(L.scurve_recon_none):esc(fill(L.scurve_recon,{a:n(R.phasing_sum_equals_cost),c:n(R.with_cost),b:n(R.phasing_to_status_equals_bcws),t:n(R.bcws_comparable),e:n(R.earned_equals_bcwp),f:n(R.bcwp_comparable)}))}

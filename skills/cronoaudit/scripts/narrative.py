@@ -36,6 +36,7 @@ R = {
         "progress": "Weighted progress is {e}% against {p}% planned: {d} {d?point|points} behind.",
         "progress_ahead": "Weighted progress is {e}% against {p}% planned: {d} {d?point|points} ahead.",
         "progress_even": "Weighted progress is {e}%, level with the {p}% planned.",
+        "planned_from_file": "That planned figure is the file's own, the BCWS its scheduling tool computed: the file has no baseline cost spread in time, so the S-curve, SV, SPI and Earned Schedule are not available.",
         "recon_ok": "The skill's earned value matched the file's own on {m} of {c} {c?leaf|leaves} to the cent, zero against zero left out; the difference is explained.",
         "recon_all": "The skill's earned value matched the file's own on {c} of {c} {c?leaf|leaves} to the cent, zero against zero left out: nothing differs.",
         "recon_gap": "The skill's earned value differs from the file's on {u} {u?leaf|leaves} without explanation; check which baseline is in use and the earned-value method before trusting either figure.",
@@ -112,6 +113,7 @@ R = {
         "progress": "O avanço ponderado é {e}% contra {p}% previsto: {d} {d?ponto|pontos} atrás.",
         "progress_ahead": "O avanço ponderado é {e}% contra {p}% previsto: {d} {d?ponto|pontos} à frente.",
         "progress_even": "O avanço ponderado é {e}%, igual aos {p}% previstos.",
+        "planned_from_file": "Esse previsto é o do próprio arquivo, o BCWS que a ferramenta de cronograma calculou: o arquivo não traz o custo de linha de base distribuído no tempo, então curva S, VP, IDP e Earned Schedule não estão disponíveis.",
         "recon_ok": "O valor agregado da skill bateu com o do arquivo em {m} de {c} {c?folha|folhas} ao centavo, zero contra zero fica fora; a diferença está explicada.",
         "recon_all": "O valor agregado da skill bateu com o do arquivo em {c} de {c} {c?folha|folhas} ao centavo, zero contra zero fica fora: nada difere.",
         "recon_gap": "O valor agregado da skill difere do arquivo em {u} {u?folha|folhas} sem explicação; confira qual linha de base está em uso e o método antes de confiar em qualquer dos dois.",
@@ -267,6 +269,11 @@ def build(payload: dict, lang: str) -> dict:
         # Level is its own reading: "0.00 points behind" is a direction the data lacks.
         key = "progress_even" if abs(e - p) < 0.005 else ("progress_ahead" if e > p else "progress")
         add("verdict", key, e=_n(e, 2), p=_n(p, 2), d=_n(abs(e - p), 2))
+        # The planned figure can come from the file's own BCWS while the S-curve has
+        # nothing to spread in time (a schedule saved by the tool, without a time-phased
+        # baseline): two readings, two sources. Say which one this is.
+        if ((payload.get("scurve") or {}).get("inputs") or {}).get("planned_available") is False:
+            add("verdict", "planned_from_file")
     rc = m.get("reconciliation") or {}
     if rc.get("file_computed_ev") is False:
         add("verdict", "recon_none")

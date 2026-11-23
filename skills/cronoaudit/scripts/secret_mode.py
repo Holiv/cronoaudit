@@ -56,11 +56,14 @@ GUARD_CONFIG = "cronoaudit_guard.json"
 SKILL_DIR = os.path.dirname(HERE)
 
 # The tools the Claude Code hook watches. Anything that can read or write a file.
-# PowerShell is on by default in Claude Code on Windows (with Git Bash installed),
-# Monitor runs a command, and an MCP server can read files: all are blocked outright.
-GUARD_MATCHER = ("Bash|Read|Write|Edit|MultiEdit|NotebookEdit|Grep|Glob|LS|"
-                 "PowerShell|Monitor|ReadMcpResourceTool|mcp__.*")
-DENIED_TOOLS = ["PowerShell", "Monitor", "ReadMcpResourceTool"]
+# Every tool goes through the hook, which lets through only the ones a secret session
+# needs (an allowlist: a tool the agent gains later starts closed). PowerShell is on by
+# default in Claude Code on Windows; Artifact, SendUserFile and connectors can read a
+# local file; SendMessage reaches a session that is not guarded.
+GUARD_MATCHER = "*"
+# Also denied by Claude Code itself, so they stay closed even if the hook cannot start.
+DENIED_TOOLS = ["PowerShell", "Monitor", "ReadMcpResourceTool", "Artifact", "ArtifactData",
+                "SendUserFile", "SendMessage", "Workflow"]
 
 
 def vault_dir() -> str:
@@ -269,8 +272,9 @@ Durations, percentages, counts, ratios, row IDs and WBS codes are real.
 - Quote tokens and codes exactly as written. Write coded money with the mark,
   in the report's notation: `¤1.234.567` (a figure without the mark is not decoded).
 - Never run `secret_decode.py text`: it prints real names, and only the person runs it.
-- To finish (write commands with full paths, no variables; for a cycle the report is
-  current-review.html):
+- To finish (write commands with full paths, no variables). The synthesis goes into
+  the cycle report for a cycle, and into the review report for one schedule:
+    {py} {s}/inject_narrative.py previous--to--current-cycle.html synthesis.txt --who "<agent>, via the skill"
     {py} {s}/inject_narrative.py schedule-review.html synthesis.txt --who "<agent>, via the skill"
     {py} {s}/secret_decode.py finish
   `finish` decodes on this machine and prints nothing from the schedule.
@@ -304,6 +308,9 @@ def write_guard(workdir: str) -> None:
             "deny": [f"Read({deny_dir})", f"Edit({deny_dir})"] + DENIED_TOOLS,
         },
         "env": {"CLAUDE_CODE_USE_POWERSHELL_TOOL": "0"},
+        # The claude.ai connectors (a OneDrive or SharePoint one can read the original)
+        # are not even loaded in this folder.
+        "disableClaudeAiConnectors": True,
         "hooks": {"PreToolUse": [{"matcher": GUARD_MATCHER, "hooks": [{
             "type": "command",
             "command": f'"{python}" "${{CLAUDE_PROJECT_DIR}}/.claude/hooks/{GUARD_NAME}"',

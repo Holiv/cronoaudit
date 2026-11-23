@@ -112,19 +112,25 @@ before opening an XML, a report or a JSON sidecar, and before quoting anything f
   contractual milestone?"). Refuse those plainly and point to the way out: the decoded
   report on the person's machine, the person's own `secret_decode.py text`, or free mode.
 - Synthesis: write it in codes, inject it with `inject_narrative.py` into
-  `schedule-review.html` (`current-review.html` for a cycle), then run
+  `schedule-review.html`, or `previous--to--current-cycle.html` for a cycle (where free mode
+  puts it too), then run
   `python3 <scripts>/secret_decode.py finish`. It decodes on this machine, beside the
   original, opens the report, and prints counts only.
 - **Never run `secret_decode.py text`.** It prints real names, so its output would go to
   your provider. It is the person's command, typed in their own terminal, to read one of
   your answers with real names (it refuses inside Claude Code, and the guard blocks it).
+  When you point the person to it, write it whole, with the absolute path of the scripts
+  and of this folder, no `~` and no variables (Windows PowerShell does not expand `~` for
+  Python), and `python` on Windows: `python C:/.../scripts/secret_decode.py text "C:/.../<this
+  folder>"`. Then: paste, and on a line of its own Ctrl-Z Enter (Windows) or Ctrl-D.
 
 **Be plain about what protects what.** The mode question is you following this skill, not
 an enforcement. What code enforces: the engine refuses secret mode when Claude Code started
 it; the work folder holds only coded files (a leak test proves it on every test run); and,
 **for Claude Code only**, the folder carries deny rules and a hook that let a session read
-only its own folder and run only the finishing scripts, and that close PowerShell, Monitor and
-MCP tools. The hook is a tripwire, not a
+only its own folder, run only the finishing scripts and use only the tools a secret session
+needs: PowerShell, connectors, Artifact, SendUserFile, SendMessage and any tool not on its
+list are closed. The hook is a tripwire, not a
 sandbox. **For Copilot CLI, Codex and Grok nothing is enforced yet**: the folder carries
 the same rules as instructions only. Coding lowers what leaves the machine; it does not
 make the structure, durations and row IDs anonymous, and it does not replace the company's

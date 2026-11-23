@@ -587,6 +587,10 @@ UI = {
                     "{u} of {o} open activities have no predecessor or no successor ({s}%, against "
                     "the {t}% the quality metric quotes). Their dates are not driven by logic, and "
                     "the reading above covers only the part that is linked.",
+        "planned_file_only": "<b>No planned curve.</b> The baseline cost is not distributed in time "
+                             "in this file, so the curve, SV, SPI and Earned Schedule cannot be "
+                             "computed. The planned percentage in the verdict is the file's own total "
+                             "(the BCWS its scheduling tool computed), not a curve.",
         "planned_na": "<b>Planned-to-date is unavailable.</b> The baseline cost is not distributed "
                       "in time in this file (no time-phased baseline cost, and the tool's own "
                       "planned value is zero on every activity). So there is no planned curve, and "
@@ -927,6 +931,10 @@ UI = {
                     "não têm sucessora ({s}%, contra os {t}% que a métrica de qualidade cita). As "
                     "datas delas não são conduzidas por lógica, e a leitura acima vale só para "
                     "a parte que está ligada.",
+        "planned_file_only": "<b>Sem curva prevista.</b> O custo de linha de base não está distribuído "
+                             "no tempo neste arquivo, então a curva, o VP, o IDP e o Earned Schedule não "
+                             "podem ser calculados. O previsto do veredito é o total do próprio arquivo "
+                             "(o BCWS que a ferramenta de cronograma calculou), não uma curva.",
         "planned_na": "<b>O previsto até a data está indisponível.</b> O custo de linha de base "
                       "não está distribuído no tempo neste arquivo (não há custo de linha de base "
                       "faseado, e o valor previsto da própria ferramenta é zero em todas as "
