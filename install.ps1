@@ -9,7 +9,7 @@
 # Installs the skill into the two directories that, between them, every
 # Agent Skills client reads:
 #   $HOME\.claude\skills\cronoaudit   Claude Code, OpenCode, Cursor
-#   $HOME\.agents\skills\cronoaudit   Codex, Gemini CLI, Cursor, GitHub Copilot, VS Code, OpenCode
+#   $HOME\.agents\skills\cronoaudit   Codex, GitHub Copilot, Grok Build, Gemini CLI, Cursor, VS Code, OpenCode
 #
 # Needs: PowerShell 5+ and Python 3.9+. When the machine has no working Python,
 # the installer brings its own: the official CPython "embeddable package" from

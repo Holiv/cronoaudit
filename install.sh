@@ -7,7 +7,7 @@
 # Installs the skill into the two directories that, between them, every
 # Agent Skills client reads:
 #   ~/.claude/skills/cronoaudit   Claude Code, OpenCode, Cursor
-#   ~/.agents/skills/cronoaudit   Codex, Gemini CLI, Cursor, GitHub Copilot, VS Code, OpenCode
+#   ~/.agents/skills/cronoaudit   Codex, GitHub Copilot, Grok Build, Gemini CLI, Cursor, VS Code, OpenCode
 #
 # Needs: bash, curl or git, Python 3.9+, tar. Nothing is installed globally and
 # the installer sends nothing; its only network access is the download itself.
