@@ -87,13 +87,17 @@ Wait-Key "Quando o Project estiver aberto (com um projeto em branco), aperte Ent
 
 try {
     try { $app.DisplayAlerts = $false } catch { }
-    # A versao anterior, se houver, sai antes: OrganizerMoveItem nao sobrescreve.
-    try { [void]$app.OrganizerDeleteItem(3, "Global.MPT", $Module) } catch { }
+    # O Organizador so funciona com um projeto aberto: sem nenhum (a tela inicial do
+    # Project), OrganizerDeleteItem responde "O metodo nao esta disponivel nesta
+    # situacao" (medido em 22/11/2026).
+    if ($app.Projects.Count -eq 0) { [void]$app.FileNew() }
 
     if (-not $Remove) {
         Step "Copiando o modulo para o Global.MPT"
         Say "O Project vai avisar sobre macros no modelo: clique 'Desabilitar macros'."
         [void]$app.FileOpenEx($mpt, $false)
+        # A versao anterior sai antes: o modulo novo entra no lugar, nao ao lado.
+        try { [void]$app.OrganizerDeleteItem(3, "Global.MPT", $Module) } catch { }
         $ok = $app.OrganizerMoveItem(3, $app.ActiveProject.Name, "Global.MPT", $Module)
         try { [void]$app.FileCloseEx(0) } catch { }
         if (-not $ok) {
@@ -102,6 +106,8 @@ try {
         }
     } else {
         Step "Removendo o modulo do Global.MPT"
+        try { $del = $app.OrganizerDeleteItem(3, "Global.MPT", $Module) } catch { $del = $false; Say "Project: $($_.Exception.Message)" }
+        if (-not $del) { Say "O Project nao confirmou a remocao; confiro depois de fechar." }
     }
     while ($app.Projects.Count -gt 0) { try { [void]$app.FileCloseEx(0) } catch { break } }
     # 1 = pjSave: grava o Global ao sair. Com 0 a copia se perde (medido).
@@ -154,7 +160,16 @@ if (-not $Remove) {
     Write-Host "Pronto. Abra o Project: a aba 'Cronoaudit' fica entre 'Projeto' e 'Exibir'." -ForegroundColor Green
     Write-Host "Ela usa a skill cronoaudit; se ainda nao instalou, rode o instalador da cronoaudit." -ForegroundColor Green
 } else {
+    Step "Conferindo"
+    $ping = Join-Path $env:TEMP "cronoaudit-ping.txt"
+    Remove-Item -LiteralPath $ping -ErrorAction SilentlyContinue
+    $app = New-Object -ComObject MSProject.Application
+    $still = $true
+    try { [void]$app.Macro("CronoauditPing") } catch { $still = $false }
+    if (Test-Path $ping) { $still = $true } elseif ($still) { $still = $false }
+    try { $app.Quit(0) } catch { }
+    if ($still) { Fail "a aba saiu, mas o modulo continua no Global.MPT. Copias de seguranca em $Backup." }
     Write-Host ""
-    Write-Host "Removido. Copias de seguranca em $Backup." -ForegroundColor Green
+    Write-Host "Removido: aba e modulo. Copias de seguranca em $Backup." -ForegroundColor Green
 }
 Remove-Item -LiteralPath $Work -Recurse -Force -ErrorAction SilentlyContinue
