@@ -1,5 +1,5 @@
 Attribute VB_Name = "Cronoaudit"
-' cronoaudit para MS Project - v0.4 (22/11/2026)
+' cronoaudit para MS Project - v0.4.1 (22/11/2026)
 '
 ' A cronoaudit e uma SKILL: o agente le o cronograma por ela, conversa com o planejador,
 ' interpreta e personaliza o relatorio. O motor em Python e o instrumento da skill: e dele
@@ -1045,6 +1045,11 @@ End Function
 ' O Project nao expoe FileDialog de forma confiavel. Se a janela falhar, cai para InputBox.
 Private Function EscolherArquivo() As String
     Dim shApp As Object, item As Object, p As String, falhou As Boolean
+    ' Primeiro, as outras versoes na mesma pasta do arquivo ativo: e onde elas costumam estar.
+    ' O seletor do Windows (em arvore, a partir da Area de Trabalho) fica para o resto.
+    p = EscolherNaPasta()
+    If p = "-" Then Exit Function
+    If p <> "" Then GoTo validar
     On Error Resume Next
     Set shApp = CreateObject("Shell.Application")
     Set item = shApp.BrowseForFolder(0, "Escolha a outra versao do cronograma (.mpp ou .xml)", &H4000 + &H10 + &H40, 0)
@@ -1058,6 +1063,7 @@ Private Function EscolherArquivo() As String
         p = InputBox("Caminho completo da outra versao (.mpp ou .xml):", TITULO, GetSetting(APP, SEC, "outro", ""))
     End If
     If p = "" Then Exit Function
+validar:
     If InStrRev(p, ".") <= InStrRev(p, "\") Then
         MsgBox "Escolha um .mpp ou um .xml.", vbExclamation, TITULO
         Exit Function
@@ -1074,6 +1080,38 @@ Private Function EscolherArquivo() As String
     End Select
     SaveSetting APP, SEC, "outro", p
     EscolherArquivo = p
+End Function
+
+' Lista os .mpp e .xml da pasta do arquivo ativo (menos ele) e pede o numero.
+' Devolve o caminho, "" para procurar em outra pasta, ou "-" se a pessoa cancelou.
+Private Function EscolherNaPasta() As String
+    Dim pasta As String, padrao As Variant, nome As String
+    Dim lista() As String, n As Long, i As Long, txt As String, r As String
+    pasta = ActiveProject.Path
+    If pasta = "" Then Exit Function
+    ReDim lista(1 To 30)
+    For Each padrao In Array("*.mpp", "*.xml")
+        nome = Dir(pasta & "\" & padrao)
+        Do While nome <> "" And n < 30
+            If LCase$(pasta & "\" & nome) <> LCase$(ActiveProject.FullName) Then
+                n = n + 1
+                lista(n) = nome
+            End If
+            nome = Dir()
+        Loop
+    Next padrao
+    If n = 0 Then Exit Function
+    For i = 1 To n
+        txt = txt & i & "   " & lista(i) & vbCrLf
+    Next i
+    r = InputBox("Outras versoes nesta pasta:" & vbCrLf & vbCrLf & txt & vbCrLf & _
+        "Digite o numero. 0 para procurar em outra pasta.", TITULO, "1")
+    If r = "" Then EscolherNaPasta = "-": Exit Function
+    If Not IsNumeric(r) Then EscolherNaPasta = "-": Exit Function
+    i = CLng(r)
+    If i = 0 Then Exit Function
+    If i < 1 Or i > n Then EscolherNaPasta = "-": Exit Function
+    EscolherNaPasta = pasta & "\" & lista(i)
 End Function
 
 ' ===================== utilitarios =====================
