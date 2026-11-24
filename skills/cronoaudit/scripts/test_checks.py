@@ -1177,6 +1177,26 @@ def secret_unit_checks() -> list:
                     or _T.get("earned_after_status_tasks") != 1 or not _said:
                 failures.append(f"phasing: earned value after the status date was not explained: "
                                 f"verdict {_w}, curve {_T['earned_pct']}, after {_a:.4f}: {_rd}")
+    # The console of a cycle speaks the report's language: a Portuguese run printed its
+    # comparison summary in English (seen on Windows on 23/11/2026).
+    _cyc = tempfile.mkdtemp()
+    _ex3, _ex4 = (os.path.join(_exdir, f"rodovia-ficticia-rev0{n}.xml") for n in (3, 4))
+    for _lang, _want, _never in (
+            ("pt", ("Análise da entrega atual", "Comparação de ciclo", "ALERTAS:", "datas que mudaram",
+                    "1 inserida, 1 removida", "30/10/2026"),
+             ("Review of the current delivery", "Cycle comparison", "WARNINGS", "dates moved",
+              "decomposition", "percentage points", "PAST REWRITTEN", "pp  id")),
+            ("en", ("Review of the current delivery", "Cycle comparison", "WARNINGS:", "dates moved"),
+             ("Comparação de ciclo", "ALERTAS", "datas que mudaram"))):
+        _r = subprocess.run([sys.executable, os.path.join(HERE, "review.py"), _ex3, _ex4, "--free",
+                             "--lang", _lang, "--outdir", os.path.join(_cyc, _lang)],
+                            capture_output=True, text=True, encoding="utf-8")
+        _out = _r.stdout[_r.stdout.find("=== "):]
+        _miss = [w for w in _want if w not in _out]
+        _leak = [w for w in _never if w in _out]
+        if _r.returncode != 0 or _miss or _leak:
+            failures.append(f"console: the {_lang} cycle summary is not in its language: "
+                            f"missing {_miss}, foreign {_leak}")
     # Money written into a sentence by the engine: the earned-before-plan reading.
     payload = {"lang": "pt", "meta": {}, "findings": [],
                "scurve": {"bac": 1000000.0, "totals": {},

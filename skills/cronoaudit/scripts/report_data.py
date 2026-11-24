@@ -727,11 +727,12 @@ def page_title(kind: str, title: str, lang: str) -> str:
     return C["page_title_cycle" if kind == "cycle" else "page_title_review"].format(title=title)
 
 
-def _cycle_warnings(cmp_res, C, lang) -> list:
+def _cycle_warnings(cmp_res, C, lang, money=True) -> list:
     """The comparison's warnings in the report's language, from their codes.
 
     A comparison produced by an older engine carries only the English sentences;
-    those are shown as they are rather than dropped.
+    those are shown as they are rather than dropped. With `money=False` (the
+    console) the residue's terms are named in points only.
     """
     codes = cmp_res.get("warning_codes")
     if codes is None:
@@ -745,7 +746,11 @@ def _cycle_warnings(cmp_res, C, lang) -> list:
             g = narrative_mod.fnum(args["gap"], 2, lang)
             args["gap"] = g.replace("-", "\u2212") if g.startswith("-") else "+" + g
         if w["code"] == "residue_named":
-            args["terms"] = "; ".join(narrative_mod.residual_parts(cmp_res, lang))
+            if money:
+                args["terms"] = "; ".join(narrative_mod.residual_parts(cmp_res, lang))
+            else:
+                import compare_snapshots
+                args["terms"] = compare_snapshots.term_points(cmp_res, lang)
         text = C.get("w_" + w["code"])
         if text:
             out.append({"text": i18n.fmt(text, **args),
