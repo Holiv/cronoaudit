@@ -486,6 +486,18 @@ def example_checks() -> dict:
     return {"failures": failures, "skipped": False}
 
 
+def _example_folder():
+    """Where the fictitious example is: CRONOAUDIT_EXAMPLE_DIR, the repository's
+    examples/, or ~/cronoaudit-exemplo. None when it is nowhere."""
+    places = (os.environ.get("CRONOAUDIT_EXAMPLE_DIR"),
+              os.path.join(os.path.dirname(os.path.dirname(ROOT)), "examples"),
+              os.path.join(os.path.expanduser("~"), "cronoaudit-exemplo"))
+    for d in places:
+        if d and all(os.path.isfile(os.path.join(d, f"rodovia-ficticia-rev0{i}.xml")) for i in (3, 4)):
+            return d
+    return None
+
+
 def main() -> int:
     # No test may read or write the real ~/.cronoaudit, and no child run may stop to
     # ask the mode question when the tests are started from a terminal (the child
@@ -1122,61 +1134,68 @@ def secret_unit_checks() -> list:
         if ("BCWS" in v) != want or "31,03" not in v:
             failures.append(f"narrative: the planned figure's source was {'not ' if want else ''}"
                             f"named with an S-curve {sc_inputs}: {v}")
-    # No time-phased baseline: the planned curve is absent, not a line of zeros, and so
-    # is the schedule variance and the look-ahead's planned earning computed against it.
-    import phasing as _ph
-    import forecast as _fc
-    _nofase = os.path.join(tempfile.mkdtemp(), "nofase.xml")
-    with open(os.path.join(os.path.dirname(os.path.dirname(ROOT)), "examples", "rodovia-ficticia-rev04.xml"),
-              encoding="utf-8") as fh:
-        _x = re.sub(r"<TimephasedData>.*?</TimephasedData>", "", fh.read(), flags=re.S)
-    with open(_nofase, "w", encoding="utf-8") as fh:
-        fh.write(_x)
-    _r = subprocess.run([sys.executable, os.path.join(HERE, "review.py"), _nofase, "--free", "--quiet",
-                         "--outdir", os.path.dirname(_nofase)], capture_output=True, text=True)
-    _sc = json.load(open(_nofase[:-4] + "-review-scurve.json", encoding="utf-8"))
-    _fo = json.load(open(_nofase[:-4] + "-review-forecast.json", encoding="utf-8"))
-    _bad = [p["period"] for p in _sc["periods"] if any(p.get(k) is not None for k in
-            ("planned", "planned_cum", "planned_cum_pct", "sv_cum"))]
-    _bad += [f"lookahead {w['weeks']}w" for w in _fo.get("lookahead") or []
-             if w.get("planned_earning") is not None or w.get("reachable") is not None]
-    if _r.returncode != 0 or _sc["inputs"]["planned_available"] is not False or _bad:
-        failures.append(f"phasing: with no time-phased baseline, planned values are not absent: {_bad[:4]}")
-    # Earned value the file spreads past the status date (a .mpp saved by Project: the
-    # verdict read 28,01% and the S-curve 27,93%). The curve counts to the date and the
-    # verdict counts it all; the reading says so, and the gap is exactly that amount.
-    _exdir = os.path.join(os.path.dirname(os.path.dirname(ROOT)), "examples")
-    _block = ("<TimephasedData><Type>11</Type><UID>35</UID><Start>2026-10-30T08:00:00</Start>"
-              "<Finish>2026-10-30T17:00:00</Finish>")
-    with open(os.path.join(_exdir, "rodovia-ficticia-rev04.xml"), encoding="utf-8") as fh:
-        _x = fh.read()
-    _tmp_after = tempfile.mkdtemp()
-    _cases = {"original": _x, "after": _x.replace(_block, _block.replace("2026-10-30T", "2026-11-03T"))}
-    if _x.count(_block) != 1:
-        failures.append("phasing: the after-status probe lost its block in the example")
-    for _name, _src in _cases.items():
-        _p = os.path.join(_tmp_after, _name + ".xml")
-        with open(_p, "w", encoding="utf-8") as fh:
-            fh.write(_src)
-        _r = subprocess.run([sys.executable, os.path.join(HERE, "review.py"), _p, "--free", "--quiet",
-                             "--outdir", _tmp_after], capture_output=True, text=True)
-        _sc = json.load(open(_p[:-4] + "-review-scurve.json", encoding="utf-8"))
-        _w = float(re.search(r'"percent_earned": ([0-9.]+)',
-                             open(_p[:-4] + "-review.html", encoding="utf-8").read()).group(1))
-        _rd = " ".join(json.load(open(_p[:-4] + "-review-readings.json", encoding="utf-8"))
-                       ["readings"]["scurve"])
-        _T = _sc["totals"]
-        _a = _T["earned_phased_after_status"] / _sc["bac"] * 100
-        if _name == "original":
-            if _r.returncode != 0 or _a != 0 or "depois da data de status" in _rd or abs(_w - _T["earned_pct"]) > 0.005:
-                failures.append(f"phasing: the example read an after-status gap it does not have: {_a} {_rd}")
-        else:
-            _said = ("depois da data de status" in _rd and f"{_T['earned_pct']:.2f}".replace(".", ",") in _rd
-                     and f"{_w:.2f}".replace(".", ",") in _rd)
-            if _r.returncode != 0 or _a < 0.05 or abs((_w - _T["earned_pct"]) - _a) > 0.011 \
-                    or _T.get("earned_after_status_tasks") != 1 or not _said:
-                failures.append(f"phasing: earned value after the status date was not explained: "
-                                f"verdict {_w}, curve {_T['earned_pct']}, after {_a:.4f}: {_rd}")
+    # The checks below run on the fictitious example. A repository checkout has it in
+    # examples/; an installed copy does not. Without it they are skipped, and the run
+    # says so, instead of failing on a missing file.
+    _exdir = _example_folder()
+    if not _exdir:
+        print("  (the fictitious example is not on this machine: its checks are skipped)")
+    if _exdir:
+        # No time-phased baseline: the planned curve is absent, not a line of zeros, and so
+        # is the schedule variance and the look-ahead's planned earning computed against it.
+        import phasing as _ph
+        import forecast as _fc
+        _nofase = os.path.join(tempfile.mkdtemp(), "nofase.xml")
+        with open(os.path.join(_exdir, "rodovia-ficticia-rev04.xml"),
+                  encoding="utf-8") as fh:
+            _x = re.sub(r"<TimephasedData>.*?</TimephasedData>", "", fh.read(), flags=re.S)
+        with open(_nofase, "w", encoding="utf-8") as fh:
+            fh.write(_x)
+        _r = subprocess.run([sys.executable, os.path.join(HERE, "review.py"), _nofase, "--free", "--quiet",
+                             "--outdir", os.path.dirname(_nofase)], capture_output=True, text=True)
+        _sc = json.load(open(_nofase[:-4] + "-review-scurve.json", encoding="utf-8"))
+        _fo = json.load(open(_nofase[:-4] + "-review-forecast.json", encoding="utf-8"))
+        _bad = [p["period"] for p in _sc["periods"] if any(p.get(k) is not None for k in
+                ("planned", "planned_cum", "planned_cum_pct", "sv_cum"))]
+        _bad += [f"lookahead {w['weeks']}w" for w in _fo.get("lookahead") or []
+                 if w.get("planned_earning") is not None or w.get("reachable") is not None]
+        if _r.returncode != 0 or _sc["inputs"]["planned_available"] is not False or _bad:
+            failures.append(f"phasing: with no time-phased baseline, planned values are not absent: {_bad[:4]}")
+    if _exdir:
+        # Earned value the file spreads past the status date (a .mpp saved by Project: the
+        # verdict read 28,01% and the S-curve 27,93%). The curve counts to the date and the
+        # verdict counts it all; the reading says so, and the gap is exactly that amount.
+        _block = ("<TimephasedData><Type>11</Type><UID>35</UID><Start>2026-10-30T08:00:00</Start>"
+                  "<Finish>2026-10-30T17:00:00</Finish>")
+        with open(os.path.join(_exdir, "rodovia-ficticia-rev04.xml"), encoding="utf-8") as fh:
+            _x = fh.read()
+        _tmp_after = tempfile.mkdtemp()
+        _cases = {"original": _x, "after": _x.replace(_block, _block.replace("2026-10-30T", "2026-11-03T"))}
+        if _x.count(_block) != 1:
+            failures.append("phasing: the after-status probe lost its block in the example")
+        for _name, _src in _cases.items():
+            _p = os.path.join(_tmp_after, _name + ".xml")
+            with open(_p, "w", encoding="utf-8") as fh:
+                fh.write(_src)
+            _r = subprocess.run([sys.executable, os.path.join(HERE, "review.py"), _p, "--free", "--quiet",
+                                 "--outdir", _tmp_after], capture_output=True, text=True)
+            _sc = json.load(open(_p[:-4] + "-review-scurve.json", encoding="utf-8"))
+            _w = float(re.search(r'"percent_earned": ([0-9.]+)',
+                                 open(_p[:-4] + "-review.html", encoding="utf-8").read()).group(1))
+            _rd = " ".join(json.load(open(_p[:-4] + "-review-readings.json", encoding="utf-8"))
+                           ["readings"]["scurve"])
+            _T = _sc["totals"]
+            _a = _T["earned_phased_after_status"] / _sc["bac"] * 100
+            if _name == "original":
+                if _r.returncode != 0 or _a != 0 or "depois da data de status" in _rd or abs(_w - _T["earned_pct"]) > 0.005:
+                    failures.append(f"phasing: the example read an after-status gap it does not have: {_a} {_rd}")
+            else:
+                _said = ("depois da data de status" in _rd and f"{_T['earned_pct']:.2f}".replace(".", ",") in _rd
+                         and f"{_w:.2f}".replace(".", ",") in _rd)
+                if _r.returncode != 0 or _a < 0.05 or abs((_w - _T["earned_pct"]) - _a) > 0.011 \
+                        or _T.get("earned_after_status_tasks") != 1 or not _said:
+                    failures.append(f"phasing: earned value after the status date was not explained: "
+                                    f"verdict {_w}, curve {_T['earned_pct']}, after {_a:.4f}: {_rd}")
     # One version everywhere: the plugin manifests stayed at 0.7.0 through four releases,
     # and the plugin route reads its version from them.
     _repo = os.path.dirname(os.path.dirname(ROOT))
@@ -1203,26 +1222,27 @@ def secret_unit_checks() -> list:
         _notes = fh.read()
     if "**The synthesis only when asked**" not in _skill or "only when the person asks" not in _notes:
         failures.append("secret session: the synthesis is no longer written only when asked")
-    # The console of a cycle speaks the report's language: a Portuguese run printed its
-    # comparison summary in English (seen on Windows on 23/11/2026).
-    _cyc = tempfile.mkdtemp()
-    _ex3, _ex4 = (os.path.join(_exdir, f"rodovia-ficticia-rev0{n}.xml") for n in (3, 4))
-    for _lang, _want, _never in (
-            ("pt", ("Análise da entrega atual", "Comparação de ciclo", "ALERTAS:", "datas que mudaram",
-                    "1 inserida, 1 removida", "30/10/2026"),
-             ("Review of the current delivery", "Cycle comparison", "WARNINGS", "dates moved",
-              "decomposition", "percentage points", "PAST REWRITTEN", "pp  id")),
-            ("en", ("Review of the current delivery", "Cycle comparison", "WARNINGS:", "dates moved"),
-             ("Comparação de ciclo", "ALERTAS", "datas que mudaram"))):
-        _r = subprocess.run([sys.executable, os.path.join(HERE, "review.py"), _ex3, _ex4, "--free",
-                             "--lang", _lang, "--outdir", os.path.join(_cyc, _lang)],
-                            capture_output=True, text=True, encoding="utf-8")
-        _out = _r.stdout[_r.stdout.find("=== "):]
-        _miss = [w for w in _want if w not in _out]
-        _leak = [w for w in _never if w in _out]
-        if _r.returncode != 0 or _miss or _leak:
-            failures.append(f"console: the {_lang} cycle summary is not in its language: "
-                            f"missing {_miss}, foreign {_leak}")
+    if _exdir:
+        # The console of a cycle speaks the report's language: a Portuguese run printed its
+        # comparison summary in English (seen on Windows on 23/11/2026).
+        _cyc = tempfile.mkdtemp()
+        _ex3, _ex4 = (os.path.join(_exdir, f"rodovia-ficticia-rev0{n}.xml") for n in (3, 4))
+        for _lang, _want, _never in (
+                ("pt", ("Análise da entrega atual", "Comparação de ciclo", "ALERTAS:", "datas que mudaram",
+                        "1 inserida, 1 removida", "30/10/2026"),
+                 ("Review of the current delivery", "Cycle comparison", "WARNINGS", "dates moved",
+                  "decomposition", "percentage points", "PAST REWRITTEN", "pp  id")),
+                ("en", ("Review of the current delivery", "Cycle comparison", "WARNINGS:", "dates moved"),
+                 ("Comparação de ciclo", "ALERTAS", "datas que mudaram"))):
+            _r = subprocess.run([sys.executable, os.path.join(HERE, "review.py"), _ex3, _ex4, "--free",
+                                 "--lang", _lang, "--outdir", os.path.join(_cyc, _lang)],
+                                capture_output=True, text=True, encoding="utf-8")
+            _out = _r.stdout[_r.stdout.find("=== "):]
+            _miss = [w for w in _want if w not in _out]
+            _leak = [w for w in _never if w in _out]
+            if _r.returncode != 0 or _miss or _leak:
+                failures.append(f"console: the {_lang} cycle summary is not in its language: "
+                                f"missing {_miss}, foreign {_leak}")
     # Money written into a sentence by the engine: the earned-before-plan reading.
     payload = {"lang": "pt", "meta": {}, "findings": [],
                "scurve": {"bac": 1000000.0, "totals": {},
