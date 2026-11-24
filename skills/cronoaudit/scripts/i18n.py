@@ -1184,9 +1184,11 @@ MODES = {
                         "  claude\n"
                         "Refer to activities by code or by ID: anything you type with a real name goes to "
                         "the AI service.\n"
-                        "Enforced only for Claude Code (deny rules and a hook in the folder). For any other "
-                        "agent the folder carries instructions, not enforcement.\n"
-                        "At the end the agent runs `secret_decode.py finish`, which decodes the report on "
+                        "Enforced only for Claude Code (deny rules and a hook in the folder). When it asks "
+                        "whether you trust the folder, say yes: that is what turns them on, and it asks for "
+                        "every new folder. For any other agent the folder carries instructions, not "
+                        "enforcement.\n"
+                        "When you ask, the agent runs `secret_decode.py finish`, which decodes the report on "
                         "this machine and opens it.",
         "secret_failed": "cronoaudit: secret mode failed ({error}). No work folder was left behind; the "
                          "details stay on this machine, in the vault.",
@@ -1243,10 +1245,11 @@ MODES = {
                         "  claude\n"
                         "Refira-se às atividades pelo código ou pelo ID: o que você digitar com um nome real "
                         "vai para o serviço de IA.\n"
-                        "Imposto só no Claude Code (regras de bloqueio e um hook na pasta). Para qualquer outro "
-                        "agente a pasta traz instruções, não imposição.\n"
-                        "No fim o agente roda `secret_decode.py finish`, que decodifica o relatório nesta "
-                        "máquina e o abre.",
+                        "Imposto só no Claude Code (regras e um hook na pasta). Quando ele perguntar se você "
+                        "confia na pasta, responda que sim: é isso que liga a trava, e a pergunta vem a cada "
+                        "pasta nova. Para qualquer outro agente a pasta traz instruções, não imposição.\n"
+                        "Quando você pedir, o agente roda `secret_decode.py finish`, que decodifica o "
+                        "relatório nesta máquina e o abre.",
         "secret_failed": "cronoaudit: o modo secreto falhou ({error}). Nenhuma pasta de trabalho ficou para "
                          "trás; os detalhes ficam nesta máquina, no cofre.",
         "secret_refused_codes": "cronoaudit: a saída do motor já traz {n} texto(s) com forma de código do "
