@@ -1177,6 +1177,14 @@ def secret_unit_checks() -> list:
                     or _T.get("earned_after_status_tasks") != 1 or not _said:
                 failures.append(f"phasing: earned value after the status date was not explained: "
                                 f"verdict {_w}, curve {_T['earned_pct']}, after {_a:.4f}: {_rd}")
+    # The synthesis is written only when asked, in a secret session as in free mode: an
+    # agent wrote one unasked in the Windows test of 23/11/2026.
+    with open(os.path.join(ROOT, "SKILL.md"), encoding="utf-8") as fh:
+        _skill = fh.read()
+    with open(os.path.join(HERE, "secret_mode.py"), encoding="utf-8") as fh:
+        _notes = fh.read()
+    if "**The synthesis only when asked**" not in _skill or "only when the person asks" not in _notes:
+        failures.append("secret session: the synthesis is no longer written only when asked")
     # The console of a cycle speaks the report's language: a Portuguese run printed its
     # comparison summary in English (seen on Windows on 23/11/2026).
     _cyc = tempfile.mkdtemp()

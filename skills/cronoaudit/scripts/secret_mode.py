@@ -272,8 +272,10 @@ Durations, percentages, counts, ratios, row IDs and WBS codes are real.
 - Quote tokens and codes exactly as written. Write coded money with the mark,
   in the report's notation: `¤1.234.567` (a figure without the mark is not decoded).
 - Never run `secret_decode.py text`: it prints real names, and only the person runs it.
-- To finish (write commands with full paths, no variables). The synthesis goes into
-  the cycle report for a cycle, and into the review report for one schedule:
+- Write the synthesis, and run `finish`, only when the person asks: after your first
+  reading, offer both in one line. Commands with full paths, no variables. The synthesis
+  goes into the cycle report for a cycle, and into the review report for one schedule;
+  asked only for the report with real names, run `finish` alone:
     {py} {s}/inject_narrative.py previous--to--current-cycle.html synthesis.txt --who "<agent>, via the skill"
     {py} {s}/inject_narrative.py schedule-review.html synthesis.txt --who "<agent>, via the skill"
     {py} {s}/secret_decode.py finish
