@@ -63,7 +63,8 @@ Como o botão faz o modo secreto, na ordem:
    `%USERPROFILE%\cronoaudit-work\<data e hora>\<código>`, sem o nome do cronograma;
 3. abre o agente nessa pasta, sem `pedido.md` (o pedido levaria nomes). No Claude Code, responda
    que **confia na pasta**: sem isso a trava fica desligada;
-4. no fim, o agente monta o relatório real, que aparece na pasta da rodada e abre no navegador.
+4. quando você pedir, o agente monta o relatório real, que aparece na pasta da rodada e abre no
+   navegador.
 
 A trava que impede o agente de sair da pasta (regras e um hook) só existe no Claude Code. Com
 Codex, Copilot, Gemini ou VS Code, a pasta traz as mesmas regras como instrução.

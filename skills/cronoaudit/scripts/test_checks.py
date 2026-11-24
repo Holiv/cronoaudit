@@ -1177,6 +1177,24 @@ def secret_unit_checks() -> list:
                     or _T.get("earned_after_status_tasks") != 1 or not _said:
                 failures.append(f"phasing: earned value after the status date was not explained: "
                                 f"verdict {_w}, curve {_T['earned_pct']}, after {_a:.4f}: {_rd}")
+    # One version everywhere: the plugin manifests stayed at 0.7.0 through four releases,
+    # and the plugin route reads its version from them.
+    _repo = os.path.dirname(os.path.dirname(ROOT))
+    with open(os.path.join(ROOT, "VERSION"), encoding="utf-8") as fh:
+        _ver = fh.read().strip()
+    _where = {}
+    for _f in (".claude-plugin/plugin.json", ".claude-plugin/marketplace.json", "README.md", "LEIA-ME.md"):
+        _fp = os.path.join(_repo, _f)
+        if os.path.exists(_fp):
+            with open(_fp, encoding="utf-8") as fh:
+                _txt = fh.read()
+            _found = set(re.findall(r'"version": "([0-9.]+)"', _txt)) | \
+                set(re.findall(r"badge/vers(?:ion|%C3%A3o)-([0-9.]+)-", _txt)) | \
+                set(re.findall(r"cronoaudit ([0-9.]+) is installed", _txt))
+            if _found != {_ver}:
+                _where[_f] = sorted(_found)
+    if _where:
+        failures.append(f"version: {_ver} in VERSION, other versions in {_where}")
     # The synthesis is written only when asked, in a secret session as in free mode: an
     # agent wrote one unasked in the Windows test of 23/11/2026.
     with open(os.path.join(ROOT, "SKILL.md"), encoding="utf-8") as fh:

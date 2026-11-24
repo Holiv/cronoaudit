@@ -62,8 +62,8 @@ Secret mode (experimental), in order: the macro exports the XML to the run folde
 mode, and the agent never sees that folder; it runs the engine with `--secret`, which writes the
 coded copy to a neutral folder, `%USERPROFILE%\cronoaudit-work\<date-time>\<code>`, with no
 schedule name in its path; it opens the agent there with no `pedido.md`, since the request would
-carry names (in Claude Code, answer that you trust the folder, or the guard stays off); at the
-end the agent's `finish` builds the real report in the run folder and opens it. The engine is
+carry names (in Claude Code, answer that you trust the folder, or the guard stays off); when you
+ask for it, the agent's `finish` builds the real report in the run folder and opens it. The engine is
 given the exported XML, never the `.mpp`: exporting through Project from a process the macro is
 waiting on would hang both. The guard that keeps the agent inside the folder exists only in
 Claude Code; for the other agents the folder carries the same rules as instructions.

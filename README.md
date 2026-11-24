@@ -2,7 +2,7 @@
 
 [Português](LEIA-ME.md)
 
-![version](https://img.shields.io/badge/version-0.9.3-1f6feb)
+![version](https://img.shields.io/badge/version-0.9.4-1f6feb)
 ![licence](https://img.shields.io/badge/licence-Apache%202.0-555)
 ![Windows · macOS · Linux](https://img.shields.io/badge/Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-runs-2ea043)
 ![data](https://img.shields.io/badge/engine-no%20network-2ea043)
@@ -115,6 +115,9 @@ Portuguese:
 
 The buttons never ask whether to save your file: they read the version saved on disk.
 
+The tab opens Claude Code, Codex, GitHub Copilot, Gemini CLI or VS Code, the first it finds.
+Grok Build is not on that list yet: with it, use path A.
+
 Before opening the agent, Analisar and Comparar versões ask for the mode. **Yes** is secret mode,
 and it is the default button: the agent opens in a folder holding only the coded copy, and the
 report with the real data is built on your computer at the end. **No** is free mode, this time.
@@ -179,7 +182,7 @@ irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex
 curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash
 ```
 
-At the end you should see **`cronoaudit 0.9.3 is installed`**. cronoaudit needs Python 3.9 or
+At the end you should see **`cronoaudit 0.9.4 is installed`**. cronoaudit needs Python 3.9 or
 later; on Windows, if there is no Python, the installer brings its own copy, with no administrator
 rights. To update, run the same command again.
 
