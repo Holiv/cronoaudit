@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Secret mode, the Claude Code guard: a PreToolUse hook. EXPERIMENTAL.
+"""Secret mode, the Claude Code guard: a PreToolUse hook.
 
 Copied by secret_mode.py into <work folder>/.claude/hooks/ and registered in
 <work folder>/.claude/settings.json. Claude Code sends each tool call as JSON on

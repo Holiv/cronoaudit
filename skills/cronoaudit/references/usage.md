@@ -50,7 +50,7 @@ thermometer, `--quiet` to write the files without the console summary.
 ### Modes: free and secret
 
 The engine sends nothing. The mode is about what an **agent** reads: in free mode, whatever it
-reads goes to its provider; in secret mode (experimental) the agent reads only a coded copy,
+reads goes to its provider; in secret mode the agent reads only a coded copy,
 in a work folder, and the report is decoded on this machine.
 
 | Command | Does |

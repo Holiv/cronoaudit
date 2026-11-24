@@ -17,7 +17,7 @@ on a machine with no network and looks the same there.
 Modes. The engine sends nothing either way; the mode is about what an AGENT reads.
 
     python3 review.py delivery.xml --free       # free mode, said explicitly
-    python3 review.py delivery.xml --secret     # secret mode (experimental): a coded work folder
+    python3 review.py delivery.xml --secret     # secret mode: a coded work folder
     python3 review.py --secret on|off|ask       # store the preference and exit
     python3 review.py --config                  # print the stored preference
 
@@ -358,6 +358,40 @@ def settle_mode(args, lang_forced) -> str:
     return mode
 
 
+# The fictitious motorway the installer brings: two revisions, a month apart.
+EXAMPLE_FILES = ("rodovia-ficticia-rev03.xml", "rodovia-ficticia-rev04.xml")
+
+
+def example_home() -> str:
+    return os.path.join(os.path.expanduser("~"), "cronoaudit-exemplo")
+
+
+def example_dir():
+    """Where the example is: CRONOAUDIT_EXAMPLE_DIR when set (and only there), else the
+    folder the installer fills, else the repository's own `examples/` (a checkout)."""
+    chosen = os.environ.get("CRONOAUDIT_EXAMPLE_DIR")
+    here = os.path.dirname(os.path.abspath(__file__))
+    places = [chosen] if chosen else [example_home(),
+                                      os.path.normpath(os.path.join(here, "..", "..", "..", "examples"))]
+    for d in places:
+        if d and all(os.path.isfile(os.path.join(d, f)) for f in EXAMPLE_FILES):
+            return d
+    return None
+
+
+def open_example(args, mode_txt) -> None:
+    prev, curr = args.files
+    path = os.path.join(args.outdir, f"{stem(prev)}--to--{stem(curr)}-cycle.html")
+    if os.environ.get("CRONOAUDIT_OPEN", "1") != "0":
+        import pathlib
+        import webbrowser
+        try:
+            webbrowser.open(pathlib.Path(path).resolve().as_uri())
+        except Exception:  # noqa: BLE001 - no browser is not a failure of the run
+            pass
+    print(mode_txt["example_done"].format(path=path))
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(
         description=__doc__.split("\n")[0],
@@ -367,10 +401,13 @@ def main() -> None:
                     help="one export to review, or two to compare (previous first)")
     ap.add_argument("--secret", "--secreto", dest="secret", nargs="?", const="run",
                     choices=["run", "on", "off", "ask"], metavar="on|off|ask",
-                    help="alone: run in secret mode (experimental): the agent reads only a coded "
+                    help="alone: run in secret mode: the agent reads only a coded "
                          "copy, in a work folder. With on, off or ask: store the preference and exit")
     ap.add_argument("--free", "--livre", dest="free", action="store_true",
                     help="run in free mode explicitly: whatever an agent reads goes to its provider")
+    ap.add_argument("--example", "--exemplo", dest="example", action="store_true",
+                    help="run the fictitious motorway example (two revisions, compared) in free mode "
+                         "and open the report in the browser")
     ap.add_argument("--config", action="store_true",
                     help="print the stored mode preference and exit")
     ap.add_argument("--from-project", action="store_true",
@@ -412,6 +449,15 @@ def main() -> None:
     if args.config:
         print(describe_config(cfg_mod.load(), mode_txt))
         return
+    if args.example:
+        # Fictitious data, so free mode with no question; nothing of the person's is read.
+        ex = example_dir()
+        if not ex or args.files or args.secret:
+            raise SystemExit(mode_txt["example_missing"].format(path=example_home()))
+        args.files = [os.path.join(ex, f) for f in EXAMPLE_FILES]
+        args.free = True
+        args.quiet = True
+        args.outdir = args.outdir or example_home()
     if getattr(args, "from_project", False):
         import mpp_export
         args.files = list(args.files) + [mpp_export.ACTIVE]
@@ -441,6 +487,8 @@ def main() -> None:
             import secret_mode
             raise SystemExit(secret_mode.run(args))
         analyse(args)
+        if args.example:
+            open_example(args, mode_txt)
     finally:
         mpp_export.cleanup(tmpdir)
 

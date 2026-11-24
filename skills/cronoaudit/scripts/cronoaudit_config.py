@@ -10,7 +10,7 @@ One key today, `secret`, with three values:
     "off"   free mode by default, never ask
 
 Free mode is what exists: whatever an agent reads goes to that agent's provider.
-Secret mode is experimental (see secret_mode.py). This module only stores the preference and decides
+Secret mode is in secret_mode.py. This module only stores the preference and decides
 which mode a run is in; it never reads a schedule.
 
 The rule the callers rely on: a missing, unreadable or malformed file is "ask", and

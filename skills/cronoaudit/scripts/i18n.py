@@ -1156,9 +1156,10 @@ def ui(lang: str) -> dict:
 # ---------------------------------------------------------------------------
 MODES = {
     "en": {
-        "question": "FREE mode: whatever the agent reads goes to its provider. Continue? "
-                    "[y] free / [secret] / [never] do not ask again",
-        "question_retry": "Answer y (free), secret, never (do not ask again) or n (cancel).",
+        "question": "The results will carry the real data (free mode). If an AI agent reads them later, "
+                    "what it reads goes to its provider. Go on? "
+                    "[y] yes / [secret] a coded copy for the agent / [never] yes, and do not ask again",
+        "question_retry": "Answer y (yes), secret, never (yes, and do not ask again) or n (cancel).",
         "cancelled": "cronoaudit: cancelled. Nothing was read and nothing was run.",
         "no_answer": "cronoaudit: no answer. Nothing was read and nothing was run. "
                      "To run without the question: --free, or --secret off to stop asking.",
@@ -1166,30 +1167,27 @@ MODES = {
                        "To bring it back: --secret ask.",
         "never_failed": "cronoaudit: could not store the preference in {path} ({error}). "
                         "This run goes on in free mode; the question will come back.",
-        "notice": "cronoaudit: running in FREE mode (whatever an agent reads goes to its provider). "
-                  "To change: --secret for secret mode (experimental), or --secret on|off|ask "
-                  "to store a preference; --free silences this line.",
+        "notice": "cronoaudit: free mode, the results carry the real data. For secret mode: --secret. "
+                  "To stop seeing this line: --free.",
         "secret_agent_stop": "cronoaudit: SECRET mode was requested ({origin}), but this process was "
                              "started by an agent ({variable} is set), so the run stopped here.\n"
                              "  Nothing was read and nothing was run.\n"
                              "  Secret mode protects only if the agent never holds the original. Run this\n"
                              "  same command in your own terminal: it prints a work folder, and the agent\n"
                              "  is started inside it. cronoaudit does not fall back to free mode on its own.",
-        "secret_running": "cronoaudit: SECRET mode (experimental). The engine runs here, on the real file; "
+        "secret_running": "cronoaudit: SECRET mode. The engine runs here, on the real file; "
                           "an agent will read only the coded copy.",
-        "secret_ready": "Work folder, coded: the only thing an agent should read.\n"
+        "secret_ready": "Done. The coded copy, the only thing the agent should read, is in:\n"
                         "  {workdir}\n"
-                        "Next: start the agent inside that folder, for example\n"
+                        "Now open your AI agent inside that folder:\n"
                         "  cd \"{workdir}\"\n"
-                        "  claude\n"
-                        "Refer to activities by code or by ID: anything you type with a real name goes to "
-                        "the AI service.\n"
-                        "Enforced only for Claude Code (deny rules and a hook in the folder). When it asks "
-                        "whether you trust the folder, say yes: that is what turns them on, and it asks for "
-                        "every new folder. For any other agent the folder carries instructions, not "
-                        "enforcement.\n"
-                        "When you ask, the agent runs `secret_decode.py finish`, which decodes the report on "
-                        "this machine and opens it.",
+                        "  then claude, copilot or codex\n"
+                        "Talk about activities by their code or row number: whatever you type with a real "
+                        "name goes to the AI service.\n"
+                        "In Claude Code the folder has a lock that keeps the agent inside it. When it asks "
+                        "whether you trust the folder, say yes: that is what turns the lock on, and it asks "
+                        "again for every new folder. In other agents the folder carries the rules in writing.\n"
+                        "When you ask, the agent builds the report with the real data on this computer.",
         "secret_failed": "cronoaudit: secret mode failed ({error}). No work folder was left behind; the "
                          "details stay on this machine, in the vault.",
         "secret_refused_codes": "cronoaudit: the engine's output already holds {n} text(s) shaped like a "
@@ -1197,11 +1195,14 @@ MODES = {
                                 "mode refused; no work folder was written.",
         "secret_workdir_bad": "cronoaudit: the work folder may not be inside the cronoaudit folder (where the "
                               "vault is), nor hold the schedule's own folder. Choose another --workdir.",
+        "example_missing": "cronoaudit: the fictitious example was not found ({path}). Run the "
+                           "cronoaudit installer again: it brings the example.",
+        "example_done": "The example's report opened in the browser. It is also in:\n  {path}",
         "origin_flag": "by --secret",
         "origin_pref": "the stored preference is \"on\", in {path}",
         "origin_answer": "answered at the question",
         "state_ask": "ask before a run in free mode (factory default)",
-        "state_on": "secret mode by default (experimental): a run writes a coded work folder; --free runs free",
+        "state_on": "secret mode by default: a run writes a coded work folder; --free runs free",
         "state_off": "free mode by default, never ask",
         "config_file": "file: {path}",
         "config_missing": "no preference stored yet: factory default",
@@ -1217,9 +1218,10 @@ MODES = {
         "no_files": "Pass one schedule to review, or two to compare (previous first).",
     },
     "pt": {
-        "question": "Modo LIVRE: o que o agente ler vai para o provedor dele. Continuar? "
-                    "[s] livre / [secreto] / [nunca] não perguntar mais",
-        "question_retry": "Responda s (livre), secreto, nunca (não perguntar mais) ou n (cancelar).",
+        "question": "Os resultados vão sair com os dados reais (modo livre). Se um agente de IA ler esses "
+                    "arquivos depois, o que ele ler vai para o fornecedor dele. Seguir? "
+                    "[s] sim / [secreto] cópia codificada para o agente / [nunca] sim, e não perguntar mais",
+        "question_retry": "Responda s (sim), secreto, nunca (sim, e não perguntar mais) ou n (cancelar).",
         "cancelled": "cronoaudit: cancelado. Nada foi lido e nada foi executado.",
         "no_answer": "cronoaudit: sem resposta. Nada foi lido e nada foi executado. "
                      "Para rodar sem a pergunta: --free, ou --secret off para não perguntar mais.",
@@ -1227,29 +1229,28 @@ MODES = {
                        "Para ela voltar: --secret ask.",
         "never_failed": "cronoaudit: não foi possível gravar a preferência em {path} ({error}). "
                         "Esta rodada segue no modo livre; a pergunta vai voltar.",
-        "notice": "cronoaudit: rodando no modo LIVRE (o que um agente ler vai para o provedor dele). "
-                  "Para mudar: --secret para o modo secreto (experimental), ou --secret on|off|ask "
-                  "para gravar uma preferência; --free silencia esta linha.",
+        "notice": "cronoaudit: modo livre, os resultados saem com os dados reais. Para o modo secreto: "
+                  "--secret. Para não ver mais esta linha: --free.",
         "secret_agent_stop": "cronoaudit: o modo SECRETO foi pedido ({origin}), mas este processo foi "
                              "iniciado por um agente ({variable} está definida), então a rodada parou aqui.\n"
                              "  Nada foi lido e nada foi executado.\n"
                              "  O modo secreto só protege se o agente nunca tiver o original. Rode este\n"
                              "  mesmo comando no seu próprio terminal: ele mostra uma pasta de trabalho, e o\n"
                              "  agente é aberto dentro dela. A cronoaudit não cai para o modo livre sozinha.",
-        "secret_running": "cronoaudit: modo SECRETO (experimental). O motor roda aqui, sobre o arquivo real; "
+        "secret_running": "cronoaudit: modo SECRETO. O motor roda aqui, sobre o arquivo real; "
                           "um agente vai ler só a cópia codificada.",
-        "secret_ready": "Pasta de trabalho, codificada: a única coisa que um agente deve ler.\n"
+        "secret_ready": "Pronto. A cópia codificada, a única coisa que o agente deve ler, está em:\n"
                         "  {workdir}\n"
-                        "Próximo passo: abra o agente dentro dessa pasta, por exemplo\n"
+                        "Agora abra o seu agente de IA dentro dessa pasta:\n"
                         "  cd \"{workdir}\"\n"
-                        "  claude\n"
-                        "Refira-se às atividades pelo código ou pelo ID: o que você digitar com um nome real "
-                        "vai para o serviço de IA.\n"
-                        "Imposto só no Claude Code (regras e um hook na pasta). Quando ele perguntar se você "
-                        "confia na pasta, responda que sim: é isso que liga a trava, e a pergunta vem a cada "
-                        "pasta nova. Para qualquer outro agente a pasta traz instruções, não imposição.\n"
-                        "Quando você pedir, o agente roda `secret_decode.py finish`, que decodifica o "
-                        "relatório nesta máquina e o abre.",
+                        "  depois claude, copilot ou codex\n"
+                        "Fale das atividades pelo código ou pelo número da linha: o que você digitar com um "
+                        "nome real vai para o serviço de IA.\n"
+                        "No Claude Code, a pasta tem uma trava que impede o agente de sair dela. Quando ele "
+                        "perguntar se você confia na pasta, responda que sim: é isso que liga a trava, e a "
+                        "pergunta volta a cada pasta nova. Nos outros agentes, a pasta traz as regras por "
+                        "escrito.\n"
+                        "Quando você pedir, o agente monta o relatório com os dados reais neste computador.",
         "secret_failed": "cronoaudit: o modo secreto falhou ({error}). Nenhuma pasta de trabalho ficou para "
                          "trás; os detalhes ficam nesta máquina, no cofre.",
         "secret_refused_codes": "cronoaudit: a saída do motor já traz {n} texto(s) com forma de código do "
@@ -1257,11 +1258,14 @@ MODES = {
                                 "exatamente. Modo secreto recusado; nenhuma pasta de trabalho foi gravada.",
         "secret_workdir_bad": "cronoaudit: a pasta de trabalho não pode ficar dentro da pasta da cronoaudit "
                               "(onde está o cofre), nem conter a pasta do cronograma. Escolha outro --workdir.",
+        "example_missing": "cronoaudit: não achei o exemplo fictício ({path}). Rode de novo o "
+                           "instalador da cronoaudit: ele traz o exemplo.",
+        "example_done": "O relatório do exemplo abriu no navegador. Ele também está em:\n  {path}",
         "origin_flag": "por --secret",
         "origin_pref": "a preferência gravada é \"on\", em {path}",
         "origin_answer": "respondido na pergunta",
         "state_ask": "perguntar antes de uma rodada no modo livre (padrão de fábrica)",
-        "state_on": "modo secreto por padrão (experimental): a rodada grava uma pasta de trabalho codificada; --free roda livre",
+        "state_on": "modo secreto por padrão: a rodada grava uma pasta de trabalho codificada; --free roda livre",
         "state_off": "modo livre por padrão, sem perguntar",
         "config_file": "arquivo: {path}",
         "config_missing": "nenhuma preferência gravada ainda: padrão de fábrica",
