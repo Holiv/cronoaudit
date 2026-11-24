@@ -9,7 +9,11 @@
 # Installs the skill into the two directories that, between them, every
 # Agent Skills client reads:
 #   $HOME\.claude\skills\cronoaudit   Claude Code, OpenCode, Cursor
-#   $HOME\.agents\skills\cronoaudit   Codex, GitHub Copilot, Grok Build, Gemini CLI, Cursor, VS Code, OpenCode
+#   $HOME\.agents\skills\cronoaudit   Codex, GitHub Copilot, and other Agent Skills clients
+#
+# Then, when MS Project is on the machine, it offers the Cronoaudit tab (the add-in
+# installer, from the same branch), copies the fictitious example to
+# $HOME\cronoaudit-exemplo and offers to run it, and says how to use the skill.
 #
 # Needs: PowerShell 5+ and Python 3.9+. When the machine has no working Python,
 # the installer brings its own: the official CPython "embeddable package" from
@@ -28,6 +32,8 @@
 #   $env:CRONOAUDIT_NO_PYTHON = "1"     never download Python; fail if none is found
 #   $env:CRONOAUDIT_EMBED_PYTHON = "1"  use the bundled Python even if the machine has one
 #   $env:CRONOAUDIT_REF = "branch"      install from another branch (default: main)
+#   $env:CRONOAUDIT_PLUGIN = "0" or "1"  the Project tab: do not ask, and skip or install it
+#   $env:CRONOAUDIT_EXAMPLE = "0" or "1" the example: do not ask, and skip or run it
 #
 # This file is ASCII on purpose: Windows PowerShell 5 reads a script file without
 # a byte-order mark in the machine's legacy code page.
@@ -40,6 +46,18 @@
 $CronoauditPyVersion = "3.13.17"
 $CronoauditPyUrl     = "https://www.python.org/ftp/python/3.13.17/python-3.13.17-embed-amd64.zip"
 $CronoauditPySha256  = "9e35319bffedab8b36ad44d8f377cb4f1733bcec257a0b6d04d94f01486ddb38"
+
+# Messages in Portuguese on a Portuguese Windows. The file stays ASCII, so an accent
+# is written as a short code, {a~} for a-tilde and so on, and turned into the letter here.
+$CronoauditPt = ([System.Globalization.CultureInfo]::CurrentUICulture.TwoLetterISOLanguageName -eq "pt")
+function CronoauditText([string]$PtText, [string]$EnText) {
+    if (-not $CronoauditPt) { return $EnText }
+    $codes = @(@("a'", 0xE1), @("e'", 0xE9), @("i'", 0xED), @("o'", 0xF3), @("u'", 0xFA),
+               @("a~", 0xE3), @("o~", 0xF5), @("a^", 0xE2), @("e^", 0xEA), @("o^", 0xF4),
+               @("c,", 0xE7), @("E'", 0xC9))
+    foreach ($c in $codes) { $PtText = $PtText.Replace("{" + $c[0] + "}", [string][char]$c[1]) }
+    return $PtText
+}
 
 function Invoke-CronoauditInstall {
     # Function scope, so nothing here changes the preferences of the session
@@ -167,7 +185,7 @@ function Invoke-CronoauditInstall {
         Write-Host "Python $($py.Version)  [$($py.Kind)]"
         Write-Host "  at $($py.Where)"
 
-        Write-Host "downloading $Repo@$Ref ..."
+        Write-Host (CronoauditText "Baixando a cronoaudit ($Ref)..." "downloading $Repo@$Ref ...")
         $zip = Join-Path $work "src.zip"
         Invoke-WebRequest -Uri "https://codeload.github.com/$Repo/zip/refs/heads/$Ref" -OutFile $zip -UseBasicParsing
         $src = Join-Path $work "src"
@@ -181,10 +199,25 @@ function Invoke-CronoauditInstall {
             New-Item -ItemType Directory -Path $dest -Force | Out-Null
             Copy-Item -Path (Join-Path $skill.FullName "*") -Destination $dest -Recurse -Force
             Get-ChildItem -Path $dest -Recurse -Directory -Filter "__pycache__" | Remove-Item -Recurse -Force
-            Write-Host "installed -> $dest"
+            Write-Host (CronoauditText "instalada em $dest" "installed -> $dest")
         }
 
-        Write-Host "verifying ..."
+        # The fictitious example, where a person can find it and open it in Project.
+        # Copied before the self-test, which runs part of its checks on it.
+        $exDest = Join-Path $HOME "cronoaudit-exemplo"
+        $root = Get-ChildItem -Path $src -Directory | Select-Object -First 1
+        $exSrc = if ($root) { Join-Path $root.FullName "examples" } else { "" }
+        $exFiles = @()
+        if ($exSrc -and (Test-Path $exSrc)) {
+            $exFiles = @(Get-ChildItem -Path $exSrc -File | Where-Object { $_.Name -like "rodovia-ficticia-rev0*" -and $_.Extension -in ".xml", ".mpp" })
+        }
+        if ($exFiles.Count -gt 0) {
+            New-Item -ItemType Directory -Path $exDest -Force | Out-Null
+            foreach ($f in $exFiles) { Copy-Item -LiteralPath $f.FullName -Destination $exDest -Force }
+            Write-Host (CronoauditText "exemplo fict{i'}cio em $exDest" "fictitious example -> $exDest")
+        }
+
+        Write-Host (CronoauditText "Conferindo..." "verifying ...")
         $review = "$HOME\.claude\skills\cronoaudit\scripts\review.py"
         $test   = "$HOME\.claude\skills\cronoaudit\scripts\test_checks.py"
         $pre = $py.Pre
@@ -193,20 +226,73 @@ function Invoke-CronoauditInstall {
         $passed = $LASTEXITCODE -eq 0
         $ErrorActionPreference = "Stop"
         $call = if ($py.Exe -eq $EmbedExe) { "& `"$EmbedExe`"" } else { (@($py.Exe) + $pre) -join " " }
-        if ($passed) { Write-Host "self-test passed" }
-        else { Write-Host "self-test did NOT pass on this machine. To see why:  $call `"$test`"" -ForegroundColor Yellow }
+        if ($passed) { Write-Host (CronoauditText "Autoteste: tudo certo." "self-test passed") }
+        else { Write-Host (CronoauditText "O autoteste n{a~}o passou neste computador. Para ver por qu{e^}:  $call `"$test`"" "self-test did NOT pass on this machine. To see why:  $call `"$test`"") -ForegroundColor Yellow }
+
+        # The Project tab, offered only where Project is installed. It is the add-in's own
+        # installer, from the same branch, in a scope of its own; if it fails, the skill
+        # stays installed and the message says so.
+        $tabDone = $false
+        $tabUrl = "https://raw.githubusercontent.com/$Repo/$Ref/msproject/install-msproject.ps1"
+        $winproj = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\WINPROJ.EXE" -ErrorAction SilentlyContinue).'(default)'
+        $wantTab = $env:CRONOAUDIT_PLUGIN
+        if ($winproj -and (Test-Path $winproj) -and $wantTab -ne "0") {
+            if ($wantTab -ne "1") {
+                Write-Host ""
+                $ans = Read-Host (CronoauditText "O MS Project est{a'} instalado. Instalar tamb{e'}m a aba Cronoaudit no Project? [S/n]" "MS Project is installed. Also install the Cronoaudit tab in Project? [Y/n]")
+                $wantTab = if ($ans -match '^\s*(n|nao|no)') { "0" } else { "1" }
+            }
+            if ($wantTab -eq "1") {
+                $oldRef = $env:CRONOAUDIT_REF
+                try {
+                    $tabScript = (Invoke-WebRequest -UseBasicParsing -Uri $tabUrl).Content
+                    $env:CRONOAUDIT_REF = $Ref
+                    & ([scriptblock]::Create($tabScript))
+                    $tabDone = $true
+                } catch {
+                    Write-Host ""
+                    Write-Host (CronoauditText "A aba n{a~}o foi instalada: $($_.Exception.Message)" "The tab was not installed: $($_.Exception.Message)") -ForegroundColor Yellow
+                    Write-Host (CronoauditText "A cronoaudit est{a'} instalada. Para tentar a aba de novo:  irm $tabUrl | iex" "cronoaudit is installed. To try the tab again:  irm $tabUrl | iex")
+                } finally {
+                    $env:CRONOAUDIT_REF = $oldRef
+                }
+            }
+        }
+
+        # The example, offered once: fictitious data, free mode, the report in the browser.
+        $wantEx = $env:CRONOAUDIT_EXAMPLE
+        if ($exFiles.Count -gt 0 -and $wantEx -ne "0") {
+            if ($wantEx -ne "1") {
+                Write-Host ""
+                $ans = Read-Host (CronoauditText "Quer ver um exemplo agora? Ele analisa uma obra fict{i'}cia e abre o relat{o'}rio no navegador. [S/n]" "Would you like to see an example now? It analyses a fictitious works and opens the report in your browser. [Y/n]")
+                $wantEx = if ($ans -match '^\s*(n|nao|no)') { "0" } else { "1" }
+            }
+            if ($wantEx -eq "1") {
+                $ErrorActionPreference = "Continue"
+                & $py.Exe @pre $review --example
+                $ErrorActionPreference = "Stop"
+            }
+        }
 
         $version = Get-Content (Join-Path $skill.FullName "VERSION") -ErrorAction SilentlyContinue
         Write-Host ""
-        Write-Host "cronoaudit $version is installed."
+        Write-Host (CronoauditText "Pronto: cronoaudit $version instalada." "cronoaudit $version is installed.") -ForegroundColor Green
         Write-Host ""
-        Write-Host "  Restart your agent, then ask it to review a schedule, or run directly:"
-        Write-Host "    $call `"$review`" delivery.xml"
+        Write-Host (CronoauditText "Com um agente de IA (Claude Code, Copilot ou Codex): abra o agente na pasta do cronograma e pe{c,}a, por exemplo, ""analise o Rev04.mpp"". Se ele j{a'} estava aberto, feche e abra de novo." "With an AI agent (Claude Code, Copilot or Codex): open the agent in the schedule's folder and ask, for example, ""review Rev04.mpp"". If it was already open, close it and open it again.")
+        if ($tabDone) {
+            Write-Host (CronoauditText "No Project, a aba Cronoaudit fica entre Projeto e Exibir." "In Project, the Cronoaudit tab sits between Project and View.")
+        }
         Write-Host ""
-        Write-Host "  Export the schedule first:  MS Project > File > Save As > XML Format."
-        Write-Host "  Manual and method:          https://github.com/$Repo"
+        Write-Host (CronoauditText "Sem agente, neste PowerShell:" "With no agent, in this PowerShell:")
+        Write-Host "    $call `"$review`" `"$(CronoauditText 'C:\caminho\do\cronograma.mpp' 'C:\path\to\schedule.mpp')`""
+        if ($exFiles.Count -gt 0) {
+            Write-Host (CronoauditText "Para ver o exemplo de novo:" "To see the example again:")
+            Write-Host "    $call `"$review`" --example"
+        }
+        Write-Host ""
+        Write-Host (CronoauditText "Manual e ajuda: https://github.com/$Repo" "Manual and help: https://github.com/$Repo")
         if ($py.Exe -eq $EmbedExe) {
-            Write-Host "  To remove the bundled Python: delete $(Split-Path $EmbedDir -Parent)"
+            Write-Host (CronoauditText "Para remover o Python que veio com a cronoaudit, apague $(Split-Path $EmbedDir -Parent)" "To remove the bundled Python: delete $(Split-Path $EmbedDir -Parent)")
         }
     }
     finally {
@@ -227,7 +313,7 @@ try {
     $CronoauditFailed = $true
     Write-Host ""
     Write-Host "cronoaudit: $($_.Exception.Message)" -ForegroundColor Red
-    Write-Host "cronoaudit: the installation did not finish. The manual route works everywhere: https://github.com/Holiv/cronoaudit#install" -ForegroundColor Red
+    Write-Host (CronoauditText "cronoaudit: a instala{c,}{a~}o n{a~}o terminou. O passo a passo manual est{a'} em https://github.com/Holiv/cronoaudit#instalar" "cronoaudit: the installation did not finish. The manual route works everywhere: https://github.com/Holiv/cronoaudit#install") -ForegroundColor Red
 }
 if ($CronoauditFailed) {
     $CronoauditArgs = [Environment]::GetCommandLineArgs()

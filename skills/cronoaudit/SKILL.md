@@ -136,7 +136,7 @@ it; the work folder holds only coded files (a leak test proves it on every test 
 only its own folder, run only the finishing scripts and use only the tools a secret session
 needs: PowerShell, connectors, Artifact, SendUserFile, SendMessage and any tool not on its
 list are closed. The hook is a tripwire, not a
-sandbox. **For Copilot CLI, Codex and Grok nothing is enforced yet**: the folder carries
+sandbox. **For Copilot CLI and Codex nothing is enforced**: the folder carries
 the same rules as instructions only. Coding lowers what leaves the machine; it does not
 make the structure, durations and row IDs anonymous, and it does not replace the company's
 own policy on AI services. If the person asks whether their data is protected, say exactly

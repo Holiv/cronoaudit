@@ -1,6 +1,6 @@
 # cronoaudit dentro do MS Project
 
-A cronoaudit é uma **skill**: o agente (Claude Code, Codex, GitHub Copilot, Gemini CLI) lê o
+A cronoaudit é uma **skill**: o agente (Claude Code, Codex ou GitHub Copilot) lê o
 cronograma por ela, conversa com você, interpreta e personaliza o relatório quando você pede. O
 motor em Python é o instrumento da skill: é dele que saem os números, para o agente nunca
 inventar um.
@@ -8,9 +8,10 @@ inventar um.
 O suplemento é só o **atalho de entrada**. Ele exporta o XML do arquivo aberto e abre um terminal
 com a skill já iniciada sobre ele. Tudo o que ele faz você pode fazer à mão (seção 7).
 
-## Instalar com um comando (v0.5)
+## Instalar com um comando (v0.6)
 
-Com o Project fechado, no PowerShell:
+O instalador da cronoaudit oferece a aba quando encontra o MS Project. Para instalar só a aba,
+ou de novo, com o Project fechado, no PowerShell:
 
 ```
 irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/msproject/install-msproject.ps1 | iex
@@ -28,7 +29,8 @@ anterior (o módulo é substituído) e remoção. As seções 3 a 5 abaixo, de i
 como alternativa. Em 23/11/2026, a v0.5: o modo secreto pelos botões Analisar e Comparar
 versões, testado de ponta a ponta (pergunta do modo, cópia codificada numa pasta neutra, agente
 aberto nela, relatório real montado no fim, mesmos códigos entre versões), e o modo livre e os
-botões Sem IA sem mudança.
+botões Sem IA sem mudança. Em 24/11/2026, a v0.6: as janelas em português com acento e em
+linguagem direta, e três agentes (Claude Code, Codex e Copilot).
 
 Histórico: a v0.2 foi usada de ponta a ponta em duas máquinas Windows, com o GitHub Copilot CLI
 numa e o Claude Code na outra, e os dois agentes relataram os mesmos números do motor.
@@ -52,7 +54,7 @@ relatório é o mesmo, só não há conversa.
 ### O modo: livre ou secreto
 
 - **Livre**: o agente lê o cronograma e os resultados, e o que ele lê vai para o provedor dele.
-- **Secreto** (experimental): o motor roda na sua máquina e o agente lê só uma cópia codificada.
+- **Secreto**: o motor roda na sua máquina e o agente lê só uma cópia codificada.
   Nomes viram códigos, valores são multiplicados por um fator secreto e datas viram contagens de
   dias. No fim, o relatório com os dados reais é montado na sua máquina.
 
@@ -67,7 +69,7 @@ Como o botão faz o modo secreto, na ordem:
    navegador.
 
 A trava que impede o agente de sair da pasta (regras e um hook) só existe no Claude Code. Com
-Codex, Copilot, Gemini ou VS Code, a pasta traz as mesmas regras como instrução.
+Codex ou Copilot, a pasta traz as mesmas regras por escrito.
 
 A preferência fica num arquivo só, que o motor e a skill também leem:
 `%USERPROFILE%\.cronoaudit\config.json`, chave `secret`. O que Analisar e Comparar fazem com ela,
@@ -116,17 +118,10 @@ personalizar o relatório.
 | Claude Code | `claude "…"` |
 | Codex CLI | `codex "…"` |
 | GitHub Copilot CLI | `copilot -i "…"` |
-| Gemini CLI | `gemini -i "…"` |
-| VS Code (Copilot Chat) | `code "<pasta da rodada>"`, com o pedido na área de transferência |
 
 Por padrão o suplemento abre o primeiro que encontrar no PATH, nessa ordem. Para fixar um, use
 `CronoauditConfigurar`, item 1.
 
-O VS Code é o último da lista porque não recebe o pedido pela linha de comando. O suplemento abre
-a pasta da rodada nele e copia a frase curta: abra o Copilot Chat (`Ctrl+Alt+I`), escolha o modo
-**Agente** e cole com `Ctrl+V`. Se o Copilot Chat do VS Code lê a skill instalada em
-`~/.agents/skills` ainda não foi medido; se ele disser que não conhece a skill, peça que leia o
-`SKILL.md` em `%USERPROFILE%\.agents\skills\cronoaudit`.
 
 ## 2. Pré-requisitos
 
@@ -207,11 +202,10 @@ o nome é cortado em 60 caracteres.
 O suplemento não é necessário. À mão:
 
 1. No Project: `Arquivo > Salvar como > Formato XML`.
-2. Abra um terminal na pasta do XML e inicie o seu agente (`claude`, `codex`, `copilot`,
-   `gemini`).
+2. Abra um terminal na pasta do XML e inicie o seu agente (`claude`, `codex` ou `copilot`).
 3. Peça: *use a skill cronoaudit e analise este cronograma*.
 
-Sem agente: a linha que o instalador da cronoaudit mostrou no fim, depois de *run directly*,
+Sem agente: a linha que o instalador da cronoaudit mostrou no fim, depois de *Sem agente*,
 trocando `delivery.xml` pelo seu arquivo. Ela já começa pelo Python certo desta máquina.
 Para comparar, passe os dois XML, o anterior primeiro.
 
@@ -226,9 +220,8 @@ GUID, não o UID. A outra versão não pode estar aberta no Project.
 
 | Sintoma | Causa provável | Saída |
 |---|---|---|
-| no VS Code, nada acontece depois de abrir | o pedido não é enviado sozinho | abra o Copilot Chat em modo Agente e cole (`Ctrl+V`) |
 | "Não encontrei nenhum agente no PATH" | agente não instalado, ou instalado com o Project aberto (o Project herda o PATH ao abrir) | feche e abra o Project; ou aceite rodar sem IA |
-| o terminal abre e o agente reclama da opção `-i` | versão antiga do Copilot CLI ou do Gemini CLI | atualize o agente; ou digite o nome dele no terminal e cole a frase que o terminal mostra |
+| o terminal abre e o agente reclama da opção `-i` | versão antiga do Copilot CLI | atualize o agente; ou digite o nome dele no terminal e cole a frase que o terminal mostra |
 | o agente abre mas diz que não conhece a skill | skill não instalada para esse agente | rode o `install.ps1`; no agente, peça para listar as skills |
 | o agente pede para confiar na pasta ou para rodar um comando | comportamento normal do agente | confirme: a pasta é a da rodada e o comando é o do `pedido.md` |
 | "Não consegui gravar o XML" | política da máquina bloqueia gravação por macro | `Salvar como > XML` e terminal (seção 7) |

@@ -2,7 +2,7 @@
 
 [Português](LEIA-ME.md)
 
-![version](https://img.shields.io/badge/version-0.9.4-1f6feb)
+![version](https://img.shields.io/badge/version-1.0.0-1f6feb)
 ![licence](https://img.shields.io/badge/licence-Apache%202.0-555)
 ![Windows · macOS · Linux](https://img.shields.io/badge/Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-runs-2ea043)
 ![data](https://img.shields.io/badge/engine-no%20network-2ea043)
@@ -86,8 +86,8 @@ What to say, for example:
 - *Which milestones are at risk of missing their deadline?*
 - *Write the executive summary and generate the final report.*
 
-Use the agent you prefer, or the one your company allows on your computer. This guide covers four:
-Claude Code, GitHub Copilot, Codex (OpenAI) and Grok Build (xAI). See [Install](#install).
+Use the agent you prefer, or the one your company allows on your computer. This guide covers
+three: Claude Code, GitHub Copilot and Codex (OpenAI). See [Install](#install).
 
 **What a conversation looks like** (a test on the fictitious road project, 22/11/2026):
 
@@ -115,15 +115,17 @@ Portuguese:
 
 The buttons never ask whether to save your file: they read the version saved on disk.
 
-The tab opens Claude Code, Codex, GitHub Copilot, Gemini CLI or VS Code, the first it finds.
-Grok Build is not on that list yet: with it, use path A.
+The tab opens Claude Code, Codex or GitHub Copilot, the first it finds on the computer. To try
+it without a schedule of your own, open `rodovia-ficticia-rev04.mpp` from the
+`cronoaudit-exemplo` folder the installer creates in your user folder.
 
 Before opening the agent, Analisar and Comparar versões ask for the mode. **Yes** is secret mode,
 and it is the default button: the agent opens in a folder holding only the coded copy, and the
 report with the real data is built on your computer at the end. **No** is free mode, this time.
-To stop the question, choose the mode in **Configurar** (item 5). See [secret mode](#secret-mode-experimental).
+To stop the question, choose the mode in **Configurar** (item 5). See [secret mode](#secret-mode).
 
-To install the tab, with Project closed, in PowerShell:
+The cronoaudit installer offers the tab when it finds MS Project on the computer (see
+[Install](#install)). To install only the tab, or install it again, with Project closed:
 
 ```
 irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/msproject/install-msproject.ps1 | iex
@@ -170,7 +172,7 @@ window, not "Command Prompt" (cmd). On macOS, open **Terminal**.
 
 ### 1. cronoaudit (always)
 
-One command installs it for every agent at once, and for use without an agent.
+One command installs cronoaudit for every agent, and for use without an agent.
 
 **Windows (PowerShell):**
 
@@ -184,43 +186,22 @@ irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex
 curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash
 ```
 
-At the end you should see **`cronoaudit 0.9.4 is installed`**. cronoaudit needs Python 3.9 or
-later; on Windows, if there is no Python, the installer brings its own copy, with no administrator
-rights. To update, run the same command again.
+The installer does the rest and asks only what is your choice:
+- on Windows, it brings Python if the computer has none, with no administrator rights;
+- if it finds MS Project, it asks whether you also want the Cronoaudit tab;
+- it copies the fictitious example to a `cronoaudit-exemplo` folder and asks whether you want to
+  see it now: it compares two revisions of an invented works and opens the report in your browser;
+- at the end, it shows how to use it, with the right command for your computer.
 
-At the end the installer also prints the line that runs the engine on this machine, after *run
-directly*. It starts with the Python it found: `py -3`, `python` or, when it brought its own,
-`& "...\AppData\Local\cronoaudit\python\python.exe"`. That last one is not on the PATH, so
-`python` alone does not find it. That is why the Windows commands in this guide start with two
-lines that find the right Python, in the same order.
+At the end you should see **`cronoaudit 1.0.0 is installed.`** To update, run the same command
+again.
 
-**To try it before using a schedule of your own,** download the two revisions of the
-[fictitious motorway](examples/README.md) and run the engine. Everything in them is invented.
+To see the example again, use the last line the installer printed, the one ending in `--example`.
+What was planted in it, and where the report shows it, is in [`examples/`](examples/README.md).
 
-Windows (PowerShell):
-
-```
-cd "$env:USERPROFILE\Downloads"
-$py = "$env:LOCALAPPDATA\cronoaudit\python\python.exe"
-if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContinue) { "py" } else { "python" } }
-Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev03.xml -OutFile rodovia-ficticia-rev03.xml
-Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev04.xml -OutFile rodovia-ficticia-rev04.xml
-& $py "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml
-```
-
-macOS / Linux (Terminal):
-
-```
-cd ~/Downloads
-curl -fsSLO https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev03.xml
-curl -fsSLO https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev04.xml
-python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml
-```
-
-If it asks for the mode, answer `y`: with no agent, nothing leaves the computer. At the end it
-prints the path of two reports in the same folder: the rev04 review and the comparison of the
-two. Open the `.html` in a browser. With an agent, ask: *analyse rodovia-ficticia-rev04.xml in
-Downloads*.
+On Windows, the Python the installer brings is not on the PATH, so `python` alone does not find it.
+That is why the Windows commands in this guide start with two lines that find the right Python. The
+line the installer prints at the end works too.
 
 ### 2. An agent (only for path A, or for the Analisar button)
 
@@ -233,19 +214,19 @@ includes it and your company's policy.
 | Claude Code (Anthropic) | `irm https://claude.ai/install.ps1 \| iex` | `claude` | [code.claude.com](https://code.claude.com/docs/en/setup) |
 | GitHub Copilot CLI | `winget install GitHub.Copilot` | `copilot` | [docs.github.com](https://docs.github.com/en/copilot/how-tos/copilot-cli/set-up-copilot-cli/install-copilot-cli) |
 | Codex (OpenAI) | `powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 \| iex"` | `codex` | [github.com/openai/codex](https://github.com/openai/codex) |
-| Grok Build (xAI) | `irm https://x.ai/cli/install.ps1 \| iex` | `grok` | [docs.x.ai](https://docs.x.ai/build/overview) |
 
 On macOS and Linux, the official guides give each command. If your Copilot comes from your company,
 the company decides whether the CLI is enabled.
 
-All four read the skill folder the cronoaudit installer created. To check, start the agent and ask
-*"what skills do you have?"*. So far cronoaudit has been tested end to end with Claude Code and, in free
-mode, with GitHub Copilot CLI (21/11/2026, from the Project tab). For Codex and Grok Build, the
-installation follows what the providers document. Secret mode has been tested with Claude Code only.
+All three read the skill folder the cronoaudit installer created. To check, start the agent and ask
+*"what skills do you have?"*. cronoaudit has been tested end to end with Claude Code and, in free
+mode, with GitHub Copilot CLI (21/11/2026, from the Project tab). For Codex, the installation
+follows what the provider documents. Secret mode has been tested with Claude Code.
 
 ### 3. The tab in Project (only for path B)
 
-See [path B](#b-the-cronoaudit-tab-inside-project-windows).
+The installer in step 1 offers the tab when it finds MS Project. The details are in
+[path B](#b-the-cronoaudit-tab-inside-project-windows).
 
 ## Where your data goes
 
@@ -257,7 +238,7 @@ See [path B](#b-the-cronoaudit-tab-inside-project-windows).
   using an agent with a contract schedule.
 - **If the policy does not allow an agent,** use path C, or the tab's "Sem IA" buttons.
 
-### Secret mode (experimental)
+### Secret mode
 
 To talk to the agent without the names, values and dates leaving your computer. From the Project
 tab, answer **Yes** when Analisar or Comparar ask for the mode. Without the tab, you run one command

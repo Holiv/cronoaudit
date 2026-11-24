@@ -1,6 +1,6 @@
 # cronoaudit inside MS Project
 
-cronoaudit is a **skill**: the agent (Claude Code, Codex, GitHub Copilot, Gemini CLI) reads
+cronoaudit is a **skill**: the agent (Claude Code, Codex or GitHub Copilot) reads
 the schedule through it, talks with the planner, interprets, and customises the report on
 request. The Python engine is the skill's instrument: the numbers come from it, so the agent
 never invents one.
@@ -8,9 +8,10 @@ never invents one.
 This VBA module is only the **entry shortcut**. It exports the open schedule to XML and opens a
 terminal with the skill already started on it. Everything it does can be done by hand.
 
-## Install with one command (v0.5)
+## Install with one command (v0.6)
 
-With Project closed, in PowerShell:
+The cronoaudit installer offers the tab when it finds MS Project. To install only the tab, or
+again, with Project closed, in PowerShell:
 
 ```
 irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/msproject/install-msproject.ps1 | iex
@@ -28,7 +29,8 @@ version (the module is replaced) and removal. The manual installation below stay
 alternative. On 23/11/2026, v0.5: secret mode from the Analisar and Comparar versões buttons,
 tested end to end (the mode question, the coded copy in a neutral folder, the agent opened there,
 the real report built at the end, the same codes across versions), with free mode and the SemIA
-buttons unchanged.
+buttons unchanged. On 24/11/2026, v0.6: the windows in plain Portuguese with accents, and three
+agents (Claude Code, Codex and Copilot).
 
 History: v0.2 was used end to end on two Windows machines, with GitHub Copilot CLI on one and
 Claude Code on the other, and both agents reported the same engine numbers.
@@ -58,7 +60,7 @@ the preference the engine and the skill also read: `%USERPROFILE%\.cronoaudit\co
 | `off` | goes on in free mode without asking |
 | `on` | goes on in secret mode without asking (with a note when the agent is not Claude Code) |
 
-Secret mode (experimental), in order: the macro exports the XML to the run folder as in free
+Secret mode, in order: the macro exports the XML to the run folder as in free
 mode, and the agent never sees that folder; it runs the engine with `--secret`, which writes the
 coded copy to a neutral folder, `%USERPROFILE%\cronoaudit-work\<date-time>\<code>`, with no
 schedule name in its path; it opens the agent there with no `pedido.md`, since the request would
@@ -91,11 +93,8 @@ cronoaudit skill. Read pedido.md in this folder and follow it."* The real reques
 | Claude Code | `claude "PROMPT"` | CLI reference: "Start interactive session with initial prompt" |
 | Codex CLI | `codex "PROMPT"` | CLI reference and source: optional `PROMPT` argument of the interactive command |
 | GitHub Copilot CLI | `copilot -i "PROMPT"` | CLI command reference: `-i PROMPT`, `--interactive=PROMPT` |
-| Gemini CLI | `gemini -i "PROMPT"` | CLI reference: `--prompt-interactive`, `-i` |
-| VS Code (Copilot Chat) | `code "<run folder>"`, prompt on the clipboard | no prompt argument exists; the user opens Copilot Chat in agent mode and pastes |
 
 By default the first one found on PATH is used, in that order; `CronoauditConfigurar` fixes one.
-VS Code comes last because it cannot take the prompt on the command line.
 
 `pedido.md` also lists the exact name of every file the engine will write for that run (the
 review HTML and JSON, each sidecar, and the cycle files when comparing), so the agent does not

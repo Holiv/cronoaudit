@@ -488,7 +488,7 @@ def example_checks() -> dict:
 
 def _example_folder():
     """Where the fictitious example is: CRONOAUDIT_EXAMPLE_DIR, the repository's
-    examples/, or ~/cronoaudit-exemplo. None when it is nowhere."""
+    examples/, or the folder the installer fills. None when it is nowhere."""
     places = (os.environ.get("CRONOAUDIT_EXAMPLE_DIR"),
               os.path.join(os.path.dirname(os.path.dirname(ROOT)), "examples"),
               os.path.join(os.path.expanduser("~"), "cronoaudit-exemplo"))
@@ -1135,8 +1135,8 @@ def secret_unit_checks() -> list:
             failures.append(f"narrative: the planned figure's source was {'not ' if want else ''}"
                             f"named with an S-curve {sc_inputs}: {v}")
     # The checks below run on the fictitious example. A repository checkout has it in
-    # examples/; an installed copy does not. Without it they are skipped, and the run
-    # says so, instead of failing on a missing file.
+    # examples/; an installed copy has it where the installer puts it. Without it they
+    # are skipped, and the run says so, instead of failing on a missing file.
     _exdir = _example_folder()
     if not _exdir:
         print("  (the fictitious example is not on this machine: its checks are skipped)")
@@ -1209,7 +1209,7 @@ def secret_unit_checks() -> list:
                 _txt = fh.read()
             _found = set(re.findall(r'"version": "([0-9.]+)"', _txt)) | \
                 set(re.findall(r"badge/vers(?:ion|%C3%A3o)-([0-9.]+)-", _txt)) | \
-                set(re.findall(r"cronoaudit ([0-9.]+) is installed", _txt))
+                set(re.findall(r"cronoaudit ([0-9.]+) (?:is installed|instalada)", _txt))
             if _found != {_ver}:
                 _where[_f] = sorted(_found)
     if _where:
@@ -1238,20 +1238,21 @@ def secret_unit_checks() -> list:
                 or any(ord(c) > 127 for l in _cmd_lines for c in l):
             failures.append(f"add-in: Cronoaudit.bas is not cp1252 with CRLF, a cmd or prompt line is "
                             f"not ASCII, or agents have no way to be opened: {_closed}")
-    # The example in one command: --example runs the fictitious motorway in free mode, with
-    # no question, and writes the comparison; with no example on the machine it says so.
-    _exo = tempfile.mkdtemp()
-    _env = dict(os.environ, CRONOAUDIT_EXAMPLE_DIR=_exdir, CRONOAUDIT_OPEN="0")
-    _r = subprocess.run([sys.executable, os.path.join(HERE, "review.py"), "--example", "--outdir", _exo],
-                        capture_output=True, text=True, env=_env, stdin=subprocess.DEVNULL)
-    _cyc_html = os.path.join(_exo, "rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html")
-    _r2 = subprocess.run([sys.executable, os.path.join(HERE, "review.py"), "--example", "--outdir", _exo],
-                         capture_output=True, text=True, stdin=subprocess.DEVNULL,
-                         env=dict(_env, CRONOAUDIT_EXAMPLE_DIR=tempfile.mkdtemp()))
-    if _r.returncode != 0 or not os.path.exists(_cyc_html) or _cyc_html not in _r.stdout \
-            or _r2.returncode == 0 or "cronoaudit" not in _r2.stderr + _r2.stdout:
-        failures.append(f"example: --example did not run the example, or ran without one: "
-                        f"{_r.returncode} {_r.stderr[-200:]} / {_r2.returncode}")
+    if _exdir:
+        # The example in one command: --example runs the fictitious motorway in free mode, with
+        # no question, and writes the comparison; with no example on the machine it says so.
+        _exo = tempfile.mkdtemp()
+        _env = dict(os.environ, CRONOAUDIT_EXAMPLE_DIR=_exdir, CRONOAUDIT_OPEN="0")
+        _r = subprocess.run([sys.executable, os.path.join(HERE, "review.py"), "--example", "--outdir", _exo],
+                            capture_output=True, text=True, env=_env, stdin=subprocess.DEVNULL)
+        _cyc_html = os.path.join(_exo, "rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html")
+        _r2 = subprocess.run([sys.executable, os.path.join(HERE, "review.py"), "--example", "--outdir", _exo],
+                             capture_output=True, text=True, stdin=subprocess.DEVNULL,
+                             env=dict(_env, CRONOAUDIT_EXAMPLE_DIR=tempfile.mkdtemp()))
+        if _r.returncode != 0 or not os.path.exists(_cyc_html) or _cyc_html not in _r.stdout \
+                or _r2.returncode == 0 or "cronoaudit" not in _r2.stderr + _r2.stdout:
+            failures.append(f"example: --example did not run the example, or ran without one: "
+                            f"{_r.returncode} {_r.stderr[-200:]} / {_r2.returncode}")
     # The synthesis is written only when asked, in a secret session as in free mode: an
     # agent wrote one unasked in the Windows test of 23/11/2026.
     with open(os.path.join(ROOT, "SKILL.md"), encoding="utf-8") as fh:
