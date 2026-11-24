@@ -186,6 +186,32 @@ At the end you should see **`cronoaudit 0.9.4 is installed`**. cronoaudit needs 
 later; on Windows, if there is no Python, the installer brings its own copy, with no administrator
 rights. To update, run the same command again.
 
+**To try it before using a schedule of your own,** download the two revisions of the
+[fictitious motorway](examples/README.md) and run the engine. Everything in them is invented.
+
+Windows (PowerShell):
+
+```
+cd "$env:USERPROFILE\Downloads"
+Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev03.xml -OutFile rodovia-ficticia-rev03.xml
+Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev04.xml -OutFile rodovia-ficticia-rev04.xml
+python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml
+```
+
+macOS / Linux (Terminal):
+
+```
+cd ~/Downloads
+curl -fsSLO https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev03.xml
+curl -fsSLO https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev04.xml
+python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml
+```
+
+If it asks for the mode, answer `y`: with no agent, nothing leaves the computer. At the end it
+prints the path of two reports in the same folder: the rev04 review and the comparison of the
+two. Open the `.html` in a browser. With an agent, ask: *analyse rodovia-ficticia-rev04.xml in
+Downloads*.
+
 ### 2. An agent (only for path A, or for the Analisar button)
 
 Pick one. Official commands from each provider, as of November 2026. After installing, close

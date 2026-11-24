@@ -186,6 +186,32 @@ No fim deve aparecer **`cronoaudit 0.9.4 is installed`**. A cronoaudit precisa d
 mais novo; no Windows, se não houver Python, o instalador traz uma cópia própria, sem precisar de
 administrador. Para atualizar, rode o mesmo comando de novo.
 
+**Para experimentar antes de usar com um cronograma seu,** baixe as duas revisões da
+[rodovia fictícia](examples/LEIA-ME.md) e rode o motor. Tudo nelas é inventado.
+
+Windows (PowerShell):
+
+```
+cd "$env:USERPROFILE\Downloads"
+Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev03.xml -OutFile rodovia-ficticia-rev03.xml
+Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev04.xml -OutFile rodovia-ficticia-rev04.xml
+python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml
+```
+
+macOS / Linux (Terminal):
+
+```
+cd ~/Downloads
+curl -fsSLO https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev03.xml
+curl -fsSLO https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev04.xml
+python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml
+```
+
+Se ele perguntar o modo, responda `s`: sem agente, nada sai do computador. No fim, ele mostra o
+caminho de dois relatórios na mesma pasta: o da rev04 e o da comparação entre as duas. Abra o
+`.html` no navegador. Com um agente, peça: *analise a rodovia-ficticia-rev04.xml que está em
+Downloads*.
+
 ### 2. Um agente (só para o caminho A, ou para o botão Analisar)
 
 Escolha um. Comandos oficiais de cada fornecedor, em novembro de 2026. Depois de instalar, feche o
