@@ -306,7 +306,8 @@ the file does not have is reported, never silently ignored.
 severity colours, the display and body font stacks, a short label for the header, the language
 if it should not follow the schedule, and which sections to hide. Write them under `theme.*`,
 `lang` and `sections_hidden`. For deeper changes, copy `templates/report.html` to
-`templates/report.custom.html`; it takes precedence and survives updates.
+`templates/report.custom.html`; it takes precedence. An update replaces the whole skill folder,
+so keep the copy outside it too and point to it with `--template` or the profile's `template` key.
 
 `python3 scripts/profile_tool.py example` prints a filled example. The full key list and what
 each does: `references/profile.md`.

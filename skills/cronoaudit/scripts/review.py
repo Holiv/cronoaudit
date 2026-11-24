@@ -378,7 +378,7 @@ def main() -> None:
                          "itself); with one file given, that file is the previous version")
     ap.add_argument("--outdir", help="where to write the report (default: next to the input)")
     ap.add_argument("--threshold-days", type=int, default=run_checks.DEFAULT_THRESHOLD_DAYS,
-                    help="the E and C threshold, in calendar days (default 30)")
+                    help="the E and C threshold, in working days of each activity's calendar (default 30)")
     ap.add_argument("--tolerance-days", type=float, default=run_checks.DEFAULT_TOLERANCE_DAYS,
                     help="the G tolerance, in days (default 1)")
     ap.add_argument("--quiet", action="store_true", help="write files without the console summary")

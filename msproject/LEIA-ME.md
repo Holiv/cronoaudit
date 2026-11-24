@@ -211,7 +211,8 @@ O suplemento não é necessário. À mão:
    `gemini`).
 3. Peça: *use a skill cronoaudit e analise este cronograma*.
 
-Sem agente: `python "%USERPROFILE%\.claude\skills\cronoaudit\scripts\review.py" arquivo.xml`.
+Sem agente: a linha que o instalador da cronoaudit mostrou no fim, depois de *run directly*,
+trocando `delivery.xml` pelo seu arquivo. Ela já começa pelo Python certo desta máquina.
 Para comparar, passe os dois XML, o anterior primeiro.
 
 ## 8. Como a comparação se comporta

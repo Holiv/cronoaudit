@@ -79,7 +79,8 @@ environment variable `CRONOAUDIT_CONFIG_DIR` moves the folder.
 Optional, and worth doing once per organisation:
 
 ```
-python3 scripts/discover_fields.py <name>-review.json   # or the parsed model
+python3 scripts/parse_mspdi.py <file>.xml -o model.json
+python3 scripts/discover_fields.py model.json
 ```
 
 It lists every custom field that actually carries values, with the type inferred **from the

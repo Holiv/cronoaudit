@@ -145,10 +145,12 @@ Mesmo relatório, sem conversa, e nada sai do computador.
 
 1. No MS Project: **Arquivo → Salvar como → Formato XML (\*.xml)**. É o formato do próprio
    Project; nada do que a cronoaudit precisa se perde.
-2. No PowerShell:
+2. No PowerShell (as duas primeiras linhas acham o Python; veja [Instalar](#instalar)):
 
 ```
-python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" "C:\caminho\do\cronograma.xml"
+$py = "$env:LOCALAPPDATA\cronoaudit\python\python.exe"
+if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContinue) { "py" } else { "python" } }
+& $py "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" "C:\caminho\do\cronograma.xml"
 ```
 
 Dois arquivos, o anterior primeiro, geram a comparação. No Windows com o Project, o comando
@@ -186,6 +188,12 @@ No fim deve aparecer **`cronoaudit 0.9.4 is installed`**. A cronoaudit precisa d
 mais novo; no Windows, se não houver Python, o instalador traz uma cópia própria, sem precisar de
 administrador. Para atualizar, rode o mesmo comando de novo.
 
+No fim, o instalador também mostra a linha para rodar o motor nesta máquina, depois de
+*run directly*. Ela começa pelo Python que ele achou: `py -3`, `python` ou, quando ele trouxe o
+próprio, `& "...\AppData\Local\cronoaudit\python\python.exe"`. Esse último não entra no PATH,
+então `python` sozinho não o encontra. Por isso os comandos do Windows neste guia começam por
+duas linhas que acham o Python certo, nessa mesma ordem.
+
 **Para experimentar antes de usar com um cronograma seu,** baixe as duas revisões da
 [rodovia fictícia](examples/LEIA-ME.md) e rode o motor. Tudo nelas é inventado.
 
@@ -193,9 +201,11 @@ Windows (PowerShell):
 
 ```
 cd "$env:USERPROFILE\Downloads"
+$py = "$env:LOCALAPPDATA\cronoaudit\python\python.exe"
+if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContinue) { "py" } else { "python" } }
 Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev03.xml -OutFile rodovia-ficticia-rev03.xml
 Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev04.xml -OutFile rodovia-ficticia-rev04.xml
-python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml
+& $py "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml
 ```
 
 macOS / Linux (Terminal):
@@ -230,7 +240,9 @@ empresa, é a empresa que decide se a CLI está habilitada.
 
 Os quatro leem a pasta de skills que o instalador da cronoaudit criou. Para conferir, abra o
 agente e pergunte *"quais skills você tem?"*. Até agora a cronoaudit foi testada de ponta a ponta
-com o Claude Code; nos outros três, a instalação segue o que os fornecedores documentam.
+com o Claude Code e, no modo livre, com o GitHub Copilot CLI (21/11/2026, pela aba do Project). No
+Codex e no Grok Build, a instalação segue o que os fornecedores documentam. O modo secreto só foi
+testado com o Claude Code.
 
 ### 3. A aba no Project (só para o caminho B)
 
@@ -253,7 +265,9 @@ aba do Project, responda **Sim** quando Analisar ou Comparar perguntarem o modo.
 mesmo roda um comando, com o `.xml` ou, no Windows com o Project, com o `.mpp`:
 
 ```
-python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" "C:\caminho\do\Rev04.mpp" --secret
+$py = "$env:LOCALAPPDATA\cronoaudit\python\python.exe"
+if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContinue) { "py" } else { "python" } }
+& $py "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" "C:\caminho\do\Rev04.mpp" --secret
 ```
 
 A cronoaudit analisa o arquivo real no seu computador e grava uma cópia codificada numa pasta
@@ -283,7 +297,7 @@ cópia codificada, e a trava foi conferida chamando-a direto, sem o agente.
 | O que aparece | O que fazer |
 |---|---|
 | *'irm' não é reconhecido* | Você está no Prompt de Comando (cmd). Abra o PowerShell. |
-| *python não é reconhecido* | Rode o instalador da cronoaudit de novo; no Windows ele traz o próprio Python. |
+| *python não é reconhecido* | O Python que o instalador traz não entra no PATH. Use a linha que o instalador mostrou no fim, ou comece pelas duas linhas que acham o Python, como nos comandos deste guia. |
 | O comando do agente não é encontrado | Feche o PowerShell e abra outro. |
 | O agente não conhece a cronoaudit | Feche o agente e abra de novo. No Copilot, `/skills reload`. Pergunte *"quais skills você tem?"*. |
 | `/cronoaudit` não faz nada | Comandos com `/` só funcionam dentro do agente, não no PowerShell. Pode só pedir com palavras. |
@@ -299,9 +313,9 @@ cópia codificada, e a trava foi conferida chamando-a direto, sem o agente.
   tarefas, vínculos, as onze linhas de base, calendários e campos personalizados. Quando você passa
   um `.mpp`, a cronoaudit pede ao Project instalado para fazer essa exportação. O processo completo,
   em inglês: [`skills/cronoaudit/references/usage.md`](skills/cronoaudit/references/usage.md).
-- **Manual**, catorze capítulos: [português](docs/manual/manual-pt.pdf),
-  [inglês](docs/manual/manual-en.pdf). É de setembro de 2026: o método e as verificações continuam
-  valendo, mas o `.mpp` direto, a aba do Project e o modo secreto estão só neste guia.
+- **Manual**, dezessete capítulos, da versão 0.9.4: [português](docs/manual/manual-pt.pdf),
+  [inglês](docs/manual/manual-en.pdf). Conceitos, instalação, os três caminhos, a aba do Project,
+  os modos livre e secreto, o relatório seção por seção e como reproduzir cada número.
 - **O exemplo fictício**, para experimentar primeiro: [`examples/`](examples/LEIA-ME.md). Os
   números deste guia saem dos `.xml` do exemplo; os `.mpp` dão um pouco diferente (+22 dias, 14
   cobranças), porque o Project recalculou o cronograma ao criá-los.

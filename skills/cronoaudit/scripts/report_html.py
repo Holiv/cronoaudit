@@ -9,7 +9,8 @@ never Python -- and the same payload can feed a spreadsheet or a dashboard inste
 Template lookup order, so a customised copy always wins over the shipped one:
     1. --template, when given
     2. CRONOAUDIT_TEMPLATE in the environment
-    3. templates/report.custom.html   (yours; never overwritten by an update)
+    3. templates/report.custom.html   (yours; an update replaces the skill folder, so keep a copy
+                                       outside it and pass --template or the profile's template)
     4. templates/report.html          (shipped default)
 """
 from __future__ import annotations

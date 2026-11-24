@@ -199,12 +199,13 @@ Conventions and limits, all declared in the output:
 
 ## Persistence without infrastructure
 
-There is no database. **Report N is the input to report N+1** — the historical series travels
-inside the generated file itself. Consequences worth copying:
+There is no database. **The series is the deliveries themselves**: each cycle reads the previous
+delivery's file and the current one, and every report is rebuilt from the files. Consequences
+worth copying:
 
-- the series is auditable by anyone holding the file, with no access to grant;
+- the series is auditable by anyone holding the files, with no access to grant;
 - there is nothing to deploy, migrate or back up;
-- and the cost: the chain breaks if a cycle's file is lost, so the file is the asset.
+- and the cost: the chain breaks if a delivery's file is lost, so the delivered files are the asset.
 
 The generated report is also **self-contained**: the template lends its own code to the output,
 so a recipient needs nothing installed to use the report's buttons.
