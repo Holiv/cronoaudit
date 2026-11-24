@@ -378,7 +378,7 @@ def main() -> None:
                          "itself); with one file given, that file is the previous version")
     ap.add_argument("--outdir", help="where to write the report (default: next to the input)")
     ap.add_argument("--threshold-days", type=int, default=run_checks.DEFAULT_THRESHOLD_DAYS,
-                    help="the E and C threshold, in calendar days (default 30)")
+                    help="the E and C threshold, in working days of each activity's calendar (default 30)")
     ap.add_argument("--tolerance-days", type=float, default=run_checks.DEFAULT_TOLERANCE_DAYS,
                     help="the G tolerance, in days (default 1)")
     ap.add_argument("--quiet", action="store_true", help="write files without the console summary")
@@ -486,16 +486,18 @@ def analyse(args, outdir=None) -> list:
     # a comparison between two files that do not each hold together is a
     # comparison of two wrong answers.
     res = compare_snapshots.compare(prev, curr)
+    import i18n
+    detected = i18n.detect(curr)
+    # The console speaks the report's language, headers included.
+    console_pt = (lang or detected["lang"]) == "pt"
     if not args.quiet:
-        print("=== Review of the current delivery ===\n")
+        print("=== Análise da entrega atual ===\n" if console_pt else "=== Review of the current delivery ===\n")
     rev = do_review(curr, curr_path, outdir, args.threshold_days, args.tolerance_days,
                     args.quiet, theme, grouping, template, lang, previous=prev, cycle=res,
                     profile=profile)
     base = os.path.join(outdir, f"{stem(prev_path)}--to--{stem(curr_path)}-cycle")
     with open(base + ".json", "w", encoding="utf-8") as fh:
         json.dump(res, fh, indent=2, ensure_ascii=False)
-    import i18n
-    detected = i18n.detect(curr)
     cycle_payload = report_data.build_cycle(res, theme=theme, lang=lang, detected=detected,
                                             deadlines=(rev or {}).get("_deadlines"), model=curr)
     with open(base + "-readings.json", "w", encoding="utf-8") as fh:
@@ -505,8 +507,12 @@ def analyse(args, outdir=None) -> list:
                    "demands": cycle_payload["demands"]}, fh, indent=2, ensure_ascii=False)
     report_html.write(cycle_payload, base + ".html", template)
     if not args.quiet:
-        print("\n=== Cycle comparison ===\n")
-        print(compare_snapshots.report(res))
+        clang = cycle_payload["lang"]
+        print("\n=== Comparação de ciclo ===\n" if clang == "pt" else "\n=== Cycle comparison ===\n")
+        # Points, not money: a secret run shows this console coded, and a figure
+        # inside a sentence is not recognised as money.
+        warned = report_data._cycle_warnings(res, i18n.cycle_text(clang), clang, money=False)
+        print(compare_snapshots.report(res, clang, [w["text"] for w in warned]))
         print()
     print(f"  report   {base}.html")
     print(f"  data     {base}.json")

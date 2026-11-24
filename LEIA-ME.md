@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-![versão](https://img.shields.io/badge/vers%C3%A3o-0.9.3-1f6feb)
+![versão](https://img.shields.io/badge/vers%C3%A3o-0.9.4-1f6feb)
 ![licença](https://img.shields.io/badge/licen%C3%A7a-Apache%202.0-555)
 ![Windows · macOS · Linux](https://img.shields.io/badge/Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-roda-2ea043)
 ![dados](https://img.shields.io/badge/motor-n%C3%A3o%20usa%20a%20rede-2ea043)
@@ -105,14 +105,22 @@ Para quem prefere um botão. A aba fica entre **Projeto** e **Exibir**:
 
 | Grupo | Botão | O que faz |
 |---|---|---|
-| Com o agente de IA | **Analisar** | abre o seu agente já com o cronograma aberto |
-| | **Comparar versões** | mostra as outras versões da mesma pasta e abre o agente com as duas |
+| Com o agente de IA | **Analisar** | pergunta o modo (secreto ou livre) e abre o seu agente com o cronograma aberto |
+| | **Comparar versões** | pergunta o modo, mostra as outras versões da mesma pasta e abre o agente com as duas |
 | Sem IA | **Relatório** | gera o relatório e abre no navegador; nada sai do computador |
 | | **Comparar** | o mesmo, para duas versões |
 | | **Exportar XML** | só exporta, para levar a outro lugar |
 | Ajustes | **Configurar** | agente, pasta dos relatórios, modo |
 
 Os botões nunca perguntam se é para salvar o seu arquivo: eles leem a versão salva em disco.
+
+A aba abre Claude Code, Codex, GitHub Copilot, Gemini CLI ou VS Code, o primeiro que encontrar.
+O Grok Build ainda não está nessa lista: com ele, use o caminho A.
+
+Antes de abrir o agente, Analisar e Comparar versões perguntam o modo. **Sim** é o modo secreto,
+e já vem selecionado: o agente abre numa pasta só com a cópia codificada, e o relatório com os
+dados reais é montado no seu computador no fim. **Não** é o modo livre, desta vez. Para não
+perguntar mais, escolha o modo em **Configurar** (item 5). Veja o [modo secreto](#modo-secreto-experimental).
 
 Para instalar a aba, com o Project fechado, no PowerShell:
 
@@ -137,10 +145,12 @@ Mesmo relatório, sem conversa, e nada sai do computador.
 
 1. No MS Project: **Arquivo → Salvar como → Formato XML (\*.xml)**. É o formato do próprio
    Project; nada do que a cronoaudit precisa se perde.
-2. No PowerShell:
+2. No PowerShell (as duas primeiras linhas acham o Python; veja [Instalar](#instalar)):
 
 ```
-python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" "C:\caminho\do\cronograma.xml"
+$py = "$env:LOCALAPPDATA\cronoaudit\python\python.exe"
+if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContinue) { "py" } else { "python" } }
+& $py "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" "C:\caminho\do\cronograma.xml"
 ```
 
 Dois arquivos, o anterior primeiro, geram a comparação. No Windows com o Project, o comando
@@ -174,9 +184,43 @@ irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex
 curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash
 ```
 
-No fim deve aparecer **`cronoaudit 0.9.3 is installed`**. A cronoaudit precisa do Python 3.9 ou
+No fim deve aparecer **`cronoaudit 0.9.4 is installed`**. A cronoaudit precisa do Python 3.9 ou
 mais novo; no Windows, se não houver Python, o instalador traz uma cópia própria, sem precisar de
 administrador. Para atualizar, rode o mesmo comando de novo.
+
+No fim, o instalador também mostra a linha para rodar o motor nesta máquina, depois de
+*run directly*. Ela começa pelo Python que ele achou: `py -3`, `python` ou, quando ele trouxe o
+próprio, `& "...\AppData\Local\cronoaudit\python\python.exe"`. Esse último não entra no PATH,
+então `python` sozinho não o encontra. Por isso os comandos do Windows neste guia começam por
+duas linhas que acham o Python certo, nessa mesma ordem.
+
+**Para experimentar antes de usar com um cronograma seu,** baixe as duas revisões da
+[rodovia fictícia](examples/LEIA-ME.md) e rode o motor. Tudo nelas é inventado.
+
+Windows (PowerShell):
+
+```
+cd "$env:USERPROFILE\Downloads"
+$py = "$env:LOCALAPPDATA\cronoaudit\python\python.exe"
+if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContinue) { "py" } else { "python" } }
+Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev03.xml -OutFile rodovia-ficticia-rev03.xml
+Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev04.xml -OutFile rodovia-ficticia-rev04.xml
+& $py "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml
+```
+
+macOS / Linux (Terminal):
+
+```
+cd ~/Downloads
+curl -fsSLO https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev03.xml
+curl -fsSLO https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev04.xml
+python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml
+```
+
+Se ele perguntar o modo, responda `s`: sem agente, nada sai do computador. No fim, ele mostra o
+caminho de dois relatórios na mesma pasta: o da rev04 e o da comparação entre as duas. Abra o
+`.html` no navegador. Com um agente, peça: *analise a rodovia-ficticia-rev04.xml que está em
+Downloads*.
 
 ### 2. Um agente (só para o caminho A, ou para o botão Analisar)
 
@@ -196,7 +240,9 @@ empresa, é a empresa que decide se a CLI está habilitada.
 
 Os quatro leem a pasta de skills que o instalador da cronoaudit criou. Para conferir, abra o
 agente e pergunte *"quais skills você tem?"*. Até agora a cronoaudit foi testada de ponta a ponta
-com o Claude Code; nos outros três, a instalação segue o que os fornecedores documentam.
+com o Claude Code e, no modo livre, com o GitHub Copilot CLI (21/11/2026, pela aba do Project). No
+Codex e no Grok Build, a instalação segue o que os fornecedores documentam. O modo secreto só foi
+testado com o Claude Code.
 
 ### 3. A aba no Project (só para o caminho B)
 
@@ -219,7 +265,9 @@ aba do Project, responda **Sim** quando Analisar ou Comparar perguntarem o modo.
 mesmo roda um comando, com o `.xml` ou, no Windows com o Project, com o `.mpp`:
 
 ```
-python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" "C:\caminho\do\Rev04.mpp" --secret
+$py = "$env:LOCALAPPDATA\cronoaudit\python\python.exe"
+if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContinue) { "py" } else { "python" } }
+& $py "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" "C:\caminho\do\Rev04.mpp" --secret
 ```
 
 A cronoaudit analisa o arquivo real no seu computador e grava uma cópia codificada numa pasta
@@ -228,27 +276,36 @@ são multiplicados por um fator secreto. Durações, percentuais e números de l
 Você abre o agente nessa pasta, e ele lê só a cópia. Quando você pede o relatório final, a
 cronoaudit decodifica no seu computador e abre com os nomes reais.
 
+Para ler uma resposta do agente com os nomes reais, rode no seu PowerShell, fora do agente, o
+comando que o próprio agente indica (`secret_decode.py text` com o caminho da pasta), cole a
+resposta e termine com Ctrl+Z e Enter numa linha sozinha.
+
 O que ele faz e o que não faz:
-- No Claude Code, a pasta traz regras que mantêm o agente dentro dela; os outros agentes recebem as
-  mesmas regras como instruções escritas.
+- No Claude Code, a pasta traz regras e uma trava que mantêm o agente dentro dela. Só as
+  ferramentas de que a sessão precisa ficam abertas; PowerShell, conectores (OneDrive, SharePoint,
+  Microsoft 365), envio de arquivos e mensagens para outras sessões ficam fechados. Os outros
+  agentes recebem as mesmas regras como instruções escritas.
 - Os códigos não tornam o cronograma anônimo: a estrutura e as durações continuam legíveis.
 - Não substitui a política da sua empresa sobre serviços de IA.
 
-Testado no Windows com o Claude Code em 22/11/2026, e num cronograma real de 6.484 tarefas:
-nenhum nome, data ou valor real chegou à cópia codificada.
+Testado no Windows com o Claude Code em 22 e 23/11/2026, pelo comando, direto do `.mpp` e pelo
+botão do Project, e num cronograma real de 6.484 tarefas: nenhum nome, data ou valor real chegou à
+cópia codificada, e a trava foi conferida chamando-a direto, sem o agente.
 
 ## Se algo der errado
 
 | O que aparece | O que fazer |
 |---|---|
 | *'irm' não é reconhecido* | Você está no Prompt de Comando (cmd). Abra o PowerShell. |
-| *python não é reconhecido* | Rode o instalador da cronoaudit de novo; no Windows ele traz o próprio Python. |
+| *python não é reconhecido* | O Python que o instalador traz não entra no PATH. Use a linha que o instalador mostrou no fim, ou comece pelas duas linhas que acham o Python, como nos comandos deste guia. |
 | O comando do agente não é encontrado | Feche o PowerShell e abra outro. |
 | O agente não conhece a cronoaudit | Feche o agente e abra de novo. No Copilot, `/skills reload`. Pergunte *"quais skills você tem?"*. |
 | `/cronoaudit` não faz nada | Comandos com `/` só funcionam dentro do agente, não no PowerShell. Pode só pedir com palavras. |
 | *O MS Project não foi encontrado* | O `.mpp` só é lido por um computador com o Project. Use o caminho C com o XML exportado por quem tem o Project. |
 | Aviso de *alterações não salvas* | É informativo: o Project marca o arquivo assim só por abrir. A análise leu a versão salva em disco. |
 | A aba não aparece | Feche e abra o Project. Se continuar, rode o instalador da aba de novo. |
+| No modo secreto, o Claude Code pergunta se você confia na pasta | Responda que sim. Sem isso, a trava da pasta fica desligada. A pergunta volta a cada análise, porque cada uma tem a sua pasta. |
+| O modo secreto diz que foi iniciado por um agente | Rode o comando num PowerShell aberto pelo menu Iniciar, ou abra o Project pelo menu Iniciar, não de dentro do terminal de um agente. |
 
 ## Mais
 
@@ -256,8 +313,9 @@ nenhum nome, data ou valor real chegou à cópia codificada.
   tarefas, vínculos, as onze linhas de base, calendários e campos personalizados. Quando você passa
   um `.mpp`, a cronoaudit pede ao Project instalado para fazer essa exportação. O processo completo,
   em inglês: [`skills/cronoaudit/references/usage.md`](skills/cronoaudit/references/usage.md).
-- **Manual**, catorze capítulos: [português](docs/manual/manual-pt.pdf),
-  [inglês](docs/manual/manual-en.pdf).
+- **Manual**, dezessete capítulos, da versão 0.9.4: [português](docs/manual/manual-pt.pdf),
+  [inglês](docs/manual/manual-en.pdf). Conceitos, instalação, os três caminhos, a aba do Project,
+  os modos livre e secreto, o relatório seção por seção e como reproduzir cada número.
 - **O exemplo fictício**, para experimentar primeiro: [`examples/`](examples/LEIA-ME.md). Os
   números deste guia saem dos `.xml` do exemplo; os `.mpp` dão um pouco diferente (+22 dias, 14
   cobranças), porque o Project recalculou o cronograma ao criá-los.

@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
-<title>cronoaudit — technical manual 0.6.1</title>
+<title>cronoaudit — technical manual 0.9.4</title>
 <meta name="author" content="Helton da Silva de Oliveira">
 <link rel="stylesheet" href="style.css">
 </head><body>
 <div class="cover">
-  <p class="kicker">Technical manual · version 0.6.1</p>
+  <p class="kicker">Technical manual · version 0.9.4</p>
   <h1>crono<em>audit</em></h1>
   <p class="sub">Schedule critical analysis, from the file to the verdict. How to install, how to use, how to read the report, and how to reproduce every figure.</p>
   <svg viewBox="0 0 520 150" aria-hidden="true">
@@ -28,7 +28,7 @@
 </div>
 <div class="front">
   <h2>About this manual</h2>
-  <p>This manual accompanies version 0.6.1 of cronoaudit. It was written for whoever receives a schedule and has to say whether it is true, and it does not assume the reader knows the concepts: every chapter starts from the concept, then shows what the tool does with it.</p>
+  <p>This manual accompanies version 0.9.4 of cronoaudit. It was written for whoever receives a schedule and has to say whether it is true, and it does not assume the reader knows the concepts: every chapter starts from the concept, then shows what the tool does with it.</p>
 <p>Every example uses the synthetic schedules shipped with the tool. No real contract, contractor or person appears here.</p>
 <p>The tool follows the open Agent Skills format and works with any agent that reads it, and with no agent at all. Source, licence and the latest version are at github.com/Holiv/cronoaudit.</p>
   <h2 style="margin-top:12mm">Contents</h2>
@@ -36,87 +36,110 @@
   <li class=""><span class="n">1</span><a href="#ch1">What cronoaudit does, and for whom</a></li>
 <li class="sub"><span class="n">1.1</span><a href="#ch1-1">For whom</a></li>
 <li class="sub"><span class="n">1.2</span><a href="#ch1-2">What goes in and what comes out</a></li>
-<li class="sub"><span class="n">1.3</span><a href="#ch1-3">The eight answers in the report</a></li>
+<li class="sub"><span class="n">1.3</span><a href="#ch1-3">What the report answers</a></li>
 <li class="sub"><span class="n">1.4</span><a href="#ch1-4">What it does not do</a></li>
 <li class=""><span class="n">2</span><a href="#ch2">Concepts this manual assumes</a></li>
 <li class=""><span class="n">3</span><a href="#ch3">Installation and first run</a></li>
 <li class="sub"><span class="n">3.1</span><a href="#ch3-1">Install with one command</a></li>
-<li class="sub"><span class="n">3.2</span><a href="#ch3-2">With no assistant at all</a></li>
-<li class="sub"><span class="n">3.3</span><a href="#ch3-3">Exporting the schedule</a></li>
-<li class="sub"><span class="n">3.4</span><a href="#ch3-4">First run</a></li>
-<li class="sub"><span class="n">3.5</span><a href="#ch3-5">Inside an assistant: how to start the conversation</a></li>
-<li class="sub"><span class="n">3.6</span><a href="#ch3-6">Verify the tool before trusting it</a></li>
-<li class="sub"><span class="n">3.7</span><a href="#ch3-7">An equivalent implementation inside Project</a></li>
-<li class=""><span class="n">4</span><a href="#ch4">The report, section by section</a></li>
-<li class="sub"><span class="n">4.1</span><a href="#ch4-1">Cover and verdict</a></li>
-<li class="sub"><span class="n">4.2</span><a href="#ch4-2">Cards and index</a></li>
-<li class="sub"><span class="n">4.3</span><a href="#ch4-3">The views, V0 to V9</a></li>
-<li class="sub"><span class="n">4.4</span><a href="#ch4-4">The findings</a></li>
-<li class="sub"><span class="n">4.5</span><a href="#ch4-5">Conventions</a></li>
-<li class="sub"><span class="n">4.6</span><a href="#ch4-6">The reading layer</a></li>
-<li class=""><span class="n">5</span><a href="#ch5">The nine checks</a></li>
-<li class="sub"><span class="n">5.1</span><a href="#ch5-1">Population and cross-cutting rules</a></li>
-<li class="sub"><span class="n">5.2</span><a href="#ch5-2">A1 · Out-of-sequence execution</a></li>
-<li class="sub"><span class="n">5.3</span><a href="#ch5-3">A2 · Total inversion</a></li>
-<li class="sub"><span class="n">5.4</span><a href="#ch5-4">H · Forecast elapsed with no actual</a></li>
-<li class="sub"><span class="n">5.5</span><a href="#ch5-5">E · Pulled forward and never started</a></li>
-<li class="sub"><span class="n">5.6</span><a href="#ch5-6">C · Delayed beyond the threshold</a></li>
-<li class="sub"><span class="n">5.7</span><a href="#ch5-7">G · Duration inconsistent with the window</a></li>
-<li class="sub"><span class="n">5.8</span><a href="#ch5-8">B · Milestone with no deadline</a></li>
-<li class="sub"><span class="n">5.9</span><a href="#ch5-9">F · In progress at zero percent</a></li>
-<li class="sub"><span class="n">5.10</span><a href="#ch5-10">P · Pending reporting</a></li>
-<li class=""><span class="n">6</span><a href="#ch6">Network quality</a></li>
-<li class="sub"><span class="n">6.1</span><a href="#ch6-1">How to read it</a></li>
-<li class=""><span class="n">7</span><a href="#ch7">Productivity and trend by resource</a></li>
-<li class="sub"><span class="n">7.1</span><a href="#ch7-1">Where the quantities live</a></li>
-<li class="sub"><span class="n">7.2</span><a href="#ch7-2">Three rates, not one</a></li>
-<li class="sub"><span class="n">7.3</span><a href="#ch7-3">Four dates, three verdicts</a></li>
-<li class="sub"><span class="n">7.4</span><a href="#ch7-4">Thin evidence</a></li>
-<li class="sub"><span class="n">7.5</span><a href="#ch7-5">Contracted productivity</a></li>
-<li class=""><span class="n">8</span><a href="#ch8">Looking forward and looking back</a></li>
-<li class="sub"><span class="n">8.1</span><a href="#ch8-1">Earned Schedule</a></li>
-<li class="sub"><span class="n">8.2</span><a href="#ch8-2">Look-ahead</a></li>
-<li class="sub"><span class="n">8.3</span><a href="#ch8-3">Rates by group</a></li>
-<li class="sub"><span class="n">8.4</span><a href="#ch8-4">Milestone bands</a></li>
-<li class="sub"><span class="n">8.5</span><a href="#ch8-5">Rain exposure</a></li>
-<li class="sub"><span class="n">8.6</span><a href="#ch8-6">Forensics: driving path per milestone</a></li>
-<li class="sub"><span class="n">8.7</span><a href="#ch8-7">Calendar forensics</a></li>
-<li class="sub"><span class="n">8.8</span><a href="#ch8-8">Execution pattern</a></li>
-<li class="sub"><span class="n">8.9</span><a href="#ch8-9">With a previous snapshot</a></li>
-<li class=""><span class="n">9</span><a href="#ch9">Cycle comparison</a></li>
-<li class="sub"><span class="n">9.1</span><a href="#ch9-1">Input</a></li>
-<li class="sub"><span class="n">9.2</span><a href="#ch9-2">Matching an activity across versions</a></li>
-<li class="sub"><span class="n">9.3</span><a href="#ch9-3">The three signals</a></li>
-<li class="sub"><span class="n">9.4</span><a href="#ch9-4">The deviation decomposition</a></li>
-<li class="sub"><span class="n">9.5</span><a href="#ch9-5">One function, called twice</a></li>
-<li class="sub"><span class="n">9.6</span><a href="#ch9-6">What comes out</a></li>
-<li class=""><span class="n">10</span><a href="#ch10">Profile and customisation</a></li>
-<li class="sub"><span class="n">10.1</span><a href="#ch10-1">Discover before asking</a></li>
-<li class="sub"><span class="n">10.2</span><a href="#ch10-2">The profile keys</a></li>
-<li class="sub"><span class="n">10.3</span><a href="#ch10-3">Create and edit</a></li>
-<li class="sub"><span class="n">10.4</span><a href="#ch10-4">The two interviews in the assistant</a></li>
-<li class="sub"><span class="n">10.5</span><a href="#ch10-5">The executive synthesis</a></li>
-<li class=""><span class="n">11</span><a href="#ch11">The JSON files</a></li>
-<li class="sub"><span class="n">11.1</span><a href="#ch11-1">Single-file review</a></li>
-<li class="sub"><span class="n">11.2</span><a href="#ch11-2">Cycle comparison</a></li>
-<li class="sub"><span class="n">11.3</span><a href="#ch11-3">Two identifiers, always together</a></li>
-<li class="sub"><span class="n">11.4</span><a href="#ch11-4">Re-reading the report as data</a></li>
-<li class=""><span class="n">12</span><a href="#ch12">Limits, labels and what the tool does not decide</a></li>
-<li class="sub"><span class="n">12.1</span><a href="#ch12-1">The three labels</a></li>
-<li class="sub"><span class="n">12.2</span><a href="#ch12-2">What the tool refuses to do</a></li>
-<li class="sub"><span class="n">12.3</span><a href="#ch12-3">Judgements that stay with the person</a></li>
-<li class="sub"><span class="n">12.4</span><a href="#ch12-4">Formats and scope</a></li>
-<li class=""><span class="n">13</span><a href="#ch13">Frequently asked questions</a></li>
-<li class="sub"><span class="n">13.1</span><a href="#ch13-1">The report flags zero on everything in a file I know has problems</a></li>
-<li class="sub"><span class="n">13.2</span><a href="#ch13-2">cronoaudit's count does not match my macro's</a></li>
-<li class="sub"><span class="n">13.3</span><a href="#ch13-3">Earned value does not match Project</a></li>
-<li class="sub"><span class="n">13.4</span><a href="#ch13-4">Why is the report in English when the schedule is mine</a></li>
-<li class="sub"><span class="n">13.5</span><a href="#ch13-5">Can I change the 30-day threshold</a></li>
-<li class="sub"><span class="n">13.6</span><a href="#ch13-6">E flagged activities that were only reprogrammed</a></li>
-<li class="sub"><span class="n">13.7</span><a href="#ch13-7">Does sensitive data leave the machine</a></li>
-<li class="sub"><span class="n">13.8</span><a href="#ch13-8">How do I update</a></li>
-<li class="sub"><span class="n">13.9</span><a href="#ch13-9">Does it work with Primavera P6</a></li>
-<li class=""><span class="n">14</span><a href="#ch14">Glossary</a></li>
+<li class="sub"><span class="n">3.2</span><a href="#ch3-2">Update</a></li>
+<li class="sub"><span class="n">3.3</span><a href="#ch3-3">An agent, to talk to</a></li>
+<li class="sub"><span class="n">3.4</span><a href="#ch3-4">Other ways to install</a></li>
+<li class="sub"><span class="n">3.5</span><a href="#ch3-5">First run: the fictitious example</a></li>
+<li class="sub"><span class="n">3.6</span><a href="#ch3-6">Reading a .mpp directly, on Windows</a></li>
+<li class="sub"><span class="n">3.7</span><a href="#ch3-7">Verify the tool before trusting it</a></li>
+<li class=""><span class="n">4</span><a href="#ch4">Three paths: the agent, the tab, the engine</a></li>
+<li class="sub"><span class="n">4.1</span><a href="#ch4-1">A. Through the agent</a></li>
+<li class="sub"><span class="n">4.2</span><a href="#ch4-2">B. Through the Cronoaudit tab, inside Project</a></li>
+<li class="sub"><span class="n">4.3</span><a href="#ch4-3">C. Through the engine, without an agent</a></li>
+<li class=""><span class="n">5</span><a href="#ch5">The Cronoaudit tab in Project</a></li>
+<li class="sub"><span class="n">5.1</span><a href="#ch5-1">Install, update and remove</a></li>
+<li class="sub"><span class="n">5.2</span><a href="#ch5-2">The buttons</a></li>
+<li class="sub"><span class="n">5.3</span><a href="#ch5-3">The mode question</a></li>
+<li class="sub"><span class="n">5.4</span><a href="#ch5-4">Configurar</a></li>
+<li class="sub"><span class="n">5.5</span><a href="#ch5-5">The agents the tab opens</a></li>
+<li class="sub"><span class="n">5.6</span><a href="#ch5-6">Where the files go</a></li>
+<li class=""><span class="n">6</span><a href="#ch6">Free mode and secret mode</a></li>
+<li class="sub"><span class="n">6.1</span><a href="#ch6-1">Where your data goes</a></li>
+<li class="sub"><span class="n">6.2</span><a href="#ch6-2">How the mode is chosen</a></li>
+<li class="sub"><span class="n">6.3</span><a href="#ch6-3">What gets coded</a></li>
+<li class="sub"><span class="n">6.4</span><a href="#ch6-4">The vault and the work folder</a></li>
+<li class="sub"><span class="n">6.5</span><a href="#ch6-5">Running in secret mode</a></li>
+<li class="sub"><span class="n">6.6</span><a href="#ch6-6">The real report, at the end</a></li>
+<li class="sub"><span class="n">6.7</span><a href="#ch6-7">Reading an answer with real names</a></li>
+<li class="sub"><span class="n">6.8</span><a href="#ch6-8">The guard, in Claude Code only</a></li>
+<li class="sub"><span class="n">6.9</span><a href="#ch6-9">What secret mode answers, and what it does not</a></li>
+<li class="sub"><span class="n">6.10</span><a href="#ch6-10">The limits</a></li>
+<li class=""><span class="n">7</span><a href="#ch7">The report, section by section</a></li>
+<li class="sub"><span class="n">7.1</span><a href="#ch7-1">Cover and verdict</a></li>
+<li class="sub"><span class="n">7.2</span><a href="#ch7-2">Deadlines and milestones</a></li>
+<li class="sub"><span class="n">7.3</span><a href="#ch7-3">Cards and index</a></li>
+<li class="sub"><span class="n">7.4</span><a href="#ch7-4">The views, V0 to V9</a></li>
+<li class="sub"><span class="n">7.5</span><a href="#ch7-5">The findings</a></li>
+<li class="sub"><span class="n">7.6</span><a href="#ch7-6">Conventions</a></li>
+<li class="sub"><span class="n">7.7</span><a href="#ch7-7">The reading layer</a></li>
+<li class=""><span class="n">8</span><a href="#ch8">The nine checks</a></li>
+<li class="sub"><span class="n">8.1</span><a href="#ch8-1">Population and cross-cutting rules</a></li>
+<li class="sub"><span class="n">8.2</span><a href="#ch8-2">A1 · Out-of-sequence execution</a></li>
+<li class="sub"><span class="n">8.3</span><a href="#ch8-3">A2 · Total inversion</a></li>
+<li class="sub"><span class="n">8.4</span><a href="#ch8-4">H · Forecast elapsed with no actual</a></li>
+<li class="sub"><span class="n">8.5</span><a href="#ch8-5">E · Pulled forward and never started</a></li>
+<li class="sub"><span class="n">8.6</span><a href="#ch8-6">C · Delayed beyond the threshold</a></li>
+<li class="sub"><span class="n">8.7</span><a href="#ch8-7">G · Duration inconsistent with the window</a></li>
+<li class="sub"><span class="n">8.8</span><a href="#ch8-8">B · Milestone with no deadline</a></li>
+<li class="sub"><span class="n">8.9</span><a href="#ch8-9">F · In progress at zero percent</a></li>
+<li class="sub"><span class="n">8.10</span><a href="#ch8-10">P · Pending reporting</a></li>
+<li class=""><span class="n">9</span><a href="#ch9">Network quality</a></li>
+<li class="sub"><span class="n">9.1</span><a href="#ch9-1">How to read it</a></li>
+<li class=""><span class="n">10</span><a href="#ch10">Productivity and trend by resource</a></li>
+<li class="sub"><span class="n">10.1</span><a href="#ch10-1">Where the quantities live</a></li>
+<li class="sub"><span class="n">10.2</span><a href="#ch10-2">Three rates, not one</a></li>
+<li class="sub"><span class="n">10.3</span><a href="#ch10-3">Four dates, three verdicts</a></li>
+<li class="sub"><span class="n">10.4</span><a href="#ch10-4">Thin evidence</a></li>
+<li class="sub"><span class="n">10.5</span><a href="#ch10-5">Contracted productivity</a></li>
+<li class=""><span class="n">11</span><a href="#ch11">Looking forward and looking back</a></li>
+<li class="sub"><span class="n">11.1</span><a href="#ch11-1">Earned Schedule</a></li>
+<li class="sub"><span class="n">11.2</span><a href="#ch11-2">Look-ahead</a></li>
+<li class="sub"><span class="n">11.3</span><a href="#ch11-3">Rates by group</a></li>
+<li class="sub"><span class="n">11.4</span><a href="#ch11-4">Milestone bands</a></li>
+<li class="sub"><span class="n">11.5</span><a href="#ch11-5">Rain exposure</a></li>
+<li class="sub"><span class="n">11.6</span><a href="#ch11-6">Forensics: driving path per milestone</a></li>
+<li class="sub"><span class="n">11.7</span><a href="#ch11-7">Calendar forensics</a></li>
+<li class="sub"><span class="n">11.8</span><a href="#ch11-8">Execution pattern</a></li>
+<li class="sub"><span class="n">11.9</span><a href="#ch11-9">With a previous snapshot</a></li>
+<li class=""><span class="n">12</span><a href="#ch12">Cycle comparison</a></li>
+<li class="sub"><span class="n">12.1</span><a href="#ch12-1">Input</a></li>
+<li class="sub"><span class="n">12.2</span><a href="#ch12-2">Matching an activity across versions</a></li>
+<li class="sub"><span class="n">12.3</span><a href="#ch12-3">The three signals</a></li>
+<li class="sub"><span class="n">12.4</span><a href="#ch12-4">The deviation decomposition</a></li>
+<li class="sub"><span class="n">12.5</span><a href="#ch12-5">One function, called twice</a></li>
+<li class="sub"><span class="n">12.6</span><a href="#ch12-6">What comes out</a></li>
+<li class=""><span class="n">13</span><a href="#ch13">Profile and customisation</a></li>
+<li class="sub"><span class="n">13.1</span><a href="#ch13-1">Discover before asking</a></li>
+<li class="sub"><span class="n">13.2</span><a href="#ch13-2">The profile keys</a></li>
+<li class="sub"><span class="n">13.3</span><a href="#ch13-3">Create and edit</a></li>
+<li class="sub"><span class="n">13.4</span><a href="#ch13-4">The two interviews in the agent</a></li>
+<li class="sub"><span class="n">13.5</span><a href="#ch13-5">The executive synthesis</a></li>
+<li class=""><span class="n">14</span><a href="#ch14">The JSON files</a></li>
+<li class="sub"><span class="n">14.1</span><a href="#ch14-1">Single-file review</a></li>
+<li class="sub"><span class="n">14.2</span><a href="#ch14-2">Cycle comparison</a></li>
+<li class="sub"><span class="n">14.3</span><a href="#ch14-3">Two identifiers, always together</a></li>
+<li class="sub"><span class="n">14.4</span><a href="#ch14-4">Re-reading the report as data</a></li>
+<li class=""><span class="n">15</span><a href="#ch15">Limits, labels and what the tool does not decide</a></li>
+<li class="sub"><span class="n">15.1</span><a href="#ch15-1">The three labels</a></li>
+<li class="sub"><span class="n">15.2</span><a href="#ch15-2">What the tool refuses to do</a></li>
+<li class="sub"><span class="n">15.3</span><a href="#ch15-3">Judgements that stay with the person</a></li>
+<li class="sub"><span class="n">15.4</span><a href="#ch15-4">Formats and scope</a></li>
+<li class=""><span class="n">16</span><a href="#ch16">Frequently asked questions</a></li>
+<li class="sub"><span class="n">16.1</span><a href="#ch16-1">The report flags zero on everything in a file I know has problems</a></li>
+<li class="sub"><span class="n">16.2</span><a href="#ch16-2">cronoaudit's count does not match my macro's</a></li>
+<li class="sub"><span class="n">16.3</span><a href="#ch16-3">Earned value does not match Project</a></li>
+<li class="sub"><span class="n">16.4</span><a href="#ch16-4">Why is the report in English when the schedule is mine</a></li>
+<li class="sub"><span class="n">16.5</span><a href="#ch16-5">Can I change the 30-day threshold</a></li>
+<li class="sub"><span class="n">16.6</span><a href="#ch16-6">E flagged activities that were only reprogrammed</a></li>
+<li class="sub"><span class="n">16.7</span><a href="#ch16-7">Does sensitive data leave the machine</a></li>
+<li class="sub"><span class="n">16.8</span><a href="#ch16-8">How do I update</a></li>
+<li class="sub"><span class="n">16.9</span><a href="#ch16-9">Does it work with Primavera P6</a></li>
+<li class=""><span class="n">17</span><a href="#ch17">Glossary</a></li>
   </ol>
 </div>
 <section class="ch">
@@ -128,26 +151,28 @@
 <p>The manual assumes no prior knowledge of the concepts. Chapter 2 explains each one from scratch. Readers who already have them can go straight to chapter 3.</p>
 
 <h2 id="ch1-2">What goes in and what comes out</h2>
-<div class="def"><div class="k">Input</div><div class="v">The schedule exported from MS Project as XML, which is Project's own documented format. One file for the critical review; two files, previous and current, for the cycle comparison.</div></div>
-<div class="def"><div class="k">Output</div><div class="v">A self-contained HTML report with no external reference, which opens in any browser and prints to PDF. Beside it, one JSON file per analysis, for whoever wants the data outside the report.</div></div>
+<div class="def"><div class="k">Input</div><div class="v">The MS Project schedule. On any system, the XML that Project itself exports, which is its documented format. On Windows with Project installed, also the .mpp itself, or the schedule open in Project. One file for the critical review; two files, previous and current, for the cycle comparison.</div></div>
+<div class="def"><div class="k">Output</div><div class="v">A self-contained HTML report with no external reference, which opens in any browser and prints to PDF. Beside it, JSON files with the same data, for whoever wants it outside the report.</div></div>
 <div class="def"><div class="k">Language</div><div class="v">The schedule's. The tool detects it from the content and writes the report in Portuguese or English. It can be forced.</div></div>
-<div class="def"><div class="k">Requirements</div><div class="v">Python 3.9 or later. Nothing else. No data leaves the machine.</div></div>
+<div class="def"><div class="k">Paths</div><div class="v">Three: talking to an AI agent, clicking the Cronoaudit tab inside Project, or running the engine alone, with no AI. Chapter 4 shows all three.</div></div>
+<div class="def"><div class="k">Requirements</div><div class="v">Python 3.9 or later; on Windows, the installer brings one if it is missing. To read the .mpp directly, MS Project on Windows. The engine does not use the network. What an agent reads goes to its provider, and chapter 6 deals with that.</div></div>
 
-<h2 id="ch1-3">The eight answers in the report</h2>
+<h2 id="ch1-3">What the report answers</h2>
 <table>
 <tr><th>Section</th><th>Question it answers</th></tr>
 <tr><td>Verdict and findings</td><td>Does the logic hold? Which dates have elapsed, moved, or are misreported?</td></tr>
+<tr><td>Deadlines and milestones</td><td>Does each milestone finish within its deadline? With what margin, and where does its delay start?</td></tr>
 <tr><td>S-curve</td><td>Where should the contract be, where is it, and does the tool's figure match Project's?</td></tr>
 <tr><td>Progress by group</td><td>Did progress happen where the money is?</td></tr>
 <tr><td>Productivity</td><td>At three rates, when does each activity in progress finish, and does it enter the critical path?</td></tr>
 <tr><td>Network quality</td><td>Does the schedule work as a model, before any discussion of dates?</td></tr>
 <tr><td>Looking forward</td><td>When does it really finish, what do the next weeks demand, and where does the pace fall short?</td></tr>
 <tr><td>Forensics</td><td>Where did each milestone's delay come from, by which path, and when did it start?</td></tr>
-<tr><td>Cycle comparison</td><td>What changed since the last delivery: execution, replanning, or the reference itself?</td></tr>
+<tr><td>Cycle comparison</td><td>What changed since the last delivery: the deadlines, the integrity of the measurement, the plan, the progress? Was it execution, replanning or the reference itself? And what to ask the contractor?</td></tr>
 </table>
 
 <h2 id="ch1-4">What it does not do</h2>
-<p>It does not read Primavera P6: the method transfers, but nothing was measured in that format. It does not produce a contractual delay claim: the forensics reconstruct the mechanism, and a claim needs contemporaneous records and a formal method. It does not certify against the DCMA standard: the fourteen metrics are implemented and labelled as an implementation. And it never invents a distribution, a default value or a figure the file does not carry. Chapter 12 covers this in detail.</p>
+<p>It does not read Primavera P6: the method transfers, but nothing was measured in that format. It does not produce a contractual delay claim: the forensics reconstruct the mechanism, and a claim needs contemporaneous records and a formal method. It does not certify against the DCMA standard: the fourteen metrics are implemented and labelled as an implementation. And it never invents a distribution, a default value or a figure the file does not carry. Chapter 15 covers this in detail.</p>
 </section>
 
 <section class="ch">
@@ -159,7 +184,7 @@
 <p>When the scheduling tool recalculates dates, it walks this network. If the network says one thing and the works do another, every calculated date rests on logic that is not being followed. That is why the report checks the network before any date.</p></div>
 
 <div class="concept"><div class="k">Baseline</div>
-<p>The baseline is a copy of the plan saved at a certain moment: dates, durations and costs as they were when the plan was approved. Everything the report calls variance, delay or pull-forward is measured against it. MS Project keeps up to eleven baselines, numbered 0 to 10, and a schedule that has grown may hold the current one in a slot that is not the default. Which slot counts is a choice, and cronoaudit makes it from the data, not from a field that declares and is not confirmed.</p></div>
+<p>The baseline is a copy of the plan saved at a certain moment: dates, durations and costs as they were when the plan was approved. Everything the report calls variance, delay or pull-forward is measured against it. MS Project keeps up to eleven baselines: Baseline and Baseline 1 to 10. A schedule that has grown may hold the one in force in one that is not the default. Which one counts is a choice, and cronoaudit makes it from the data, not from a field that declares and is not confirmed.</p></div>
 
 <div class="concept"><div class="k">Status date</div>
 <p>The date up to which progress is valid: the schedule's "today". Every comparison of planned against actual is made at it. A file without a status date cannot be analysed honestly, and cronoaudit refuses to assume today's date instead, because that would change the answer every day the analysis was repeated.</p></div>
@@ -177,108 +202,315 @@
 <p>An activity's total float is how much it can slip without moving the project finish. Zero float means any delay there pushes the end: the activity is critical. The critical path is the chain of critical activities from start to finish. An activity with float can slip until it consumes it; after that, it enters the critical path. Project computes float, early and late dates and the critical flag; cronoaudit reads those fields rather than recomputing them.</p></div>
 
 <div class="concept"><div class="k">Earned Schedule</div>
-<p>Classic earned value measures schedule in money, and that has a defect: at the end of the project earned always reaches the budget, so the schedule indicator goes to 1.0 even on a project a year late. Earned Schedule measures schedule in time: it asks on what date the planned curve reached the value earned today. That date, compared with the time elapsed, gives a schedule efficiency and an independent finish, which is set against the finish the schedule projects. Chapter 8 details the formulas.</p></div>
+<p>Classic earned value measures schedule in money, and that has a defect: at the end of the project earned always reaches the budget, so the schedule indicator goes to 1.0 even on a project a year late. Earned Schedule measures schedule in time: it asks on what date the planned curve reached the value earned today. That date, compared with the time elapsed, gives a schedule efficiency and an independent finish, which is set against the finish the schedule projects. Chapter 11 details the formulas.</p></div>
 
 <div class="concept"><div class="k">Productivity by resource</div>
 <p>A material resource, such as cubic metres of cut, has planned, executed and remaining quantities per activity. Productivity is quantity per working day. Comparing the practised rate with the required one says whether the activity finishes when the schedule says. cronoaudit reads the quantities from the file's own assignments, with no custom field.</p></div>
 
 <div class="concept"><div class="k">The reference question</div>
-<p>An indicator that compares planned with actual has two halves. If they are measured against different references, another baseline slot, another instant, another population, another unit, the difference between them means nothing, and the number comes out plausible. It is the failure cronoaudit looks for everywhere. The question that finds it: are all the terms of this calculation measured against the same reference?</p></div>
+<p>An indicator that compares planned with actual has two halves. If they are measured against different references, another baseline, another instant, another population, another unit, the difference between them means nothing, and the number comes out plausible. It is the failure cronoaudit looks for everywhere. The question that finds it: are all the terms of this calculation measured against the same reference?</p></div>
 </section>
 
 <section class="ch">
 <p class="chno">3</p><h1 class="ch" id="ch3">Installation and first run</h1>
-<p class="lede">cronoaudit is an Agent Skill: a folder with instructions for an assistant and the programs that do the work. It installs by copying that folder to where the assistant looks for skills. The installer does that for every assistant at once.</p>
+<p class="lede">cronoaudit is an Agent Skill: a folder with instructions for an AI agent and the programs that do the work. It installs by copying that folder to where agents look for skills. One command does that for every agent at once, and leaves the engine ready to run without an agent too.</p>
 
 <h2 id="ch3-1">Install with one command</h2>
-<p>On macOS or Linux, in a terminal:</p>
-<pre>curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash</pre>
-<p>On Windows, in PowerShell:</p>
+<p>On Windows, in PowerShell: press the Windows key, type PowerShell and click Windows PowerShell. Use that window, not Command Prompt.</p>
 <pre>irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex</pre>
-<p>The installer downloads the package, copies the skill to the two directories that, together, every assistant reads, and runs the tool's internal test as proof of installation. At the end it shows where the skill went and how to invoke it. Restart the assistant after installing, because skills are read at the start of each session.</p>
+<p>On macOS or Linux, in Terminal:</p>
+<pre>curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash</pre>
+<p>The installer downloads the repository from GitHub, copies the skill to the two folders below and runs the tool's internal test as proof of installation. At the end you see the line <code>cronoaudit ... is installed</code>, with the version number, and the exact command to run the engine on this machine. Restart the agent after installing, because skills are read at the start of each session.</p>
+<div class="note"><b>Python on Windows</b>cronoaudit needs Python 3.9 or later. On Windows, if there is no working Python, the installer brings its own copy: the official package from python.org, checked against its SHA-256 before it is unpacked, in <code>%LOCALAPPDATA%\cronoaudit\python</code>. It needs no administrator rights and changes neither the registry nor the PATH. Deleting that folder removes this Python completely. On macOS and Linux, Python must already be installed; if it is missing, the installer stops and says so.</div>
 <table>
-<tr><th>Directory</th><th>Who reads it</th></tr>
+<tr><th>Folder</th><th>Who reads it</th></tr>
 <tr><td class="m">~/.claude/skills/cronoaudit</td><td>Claude Code, OpenCode, Cursor</td></tr>
-<tr><td class="m">~/.agents/skills/cronoaudit</td><td>Codex, Gemini CLI, Cursor, GitHub Copilot, VS Code, OpenCode</td></tr>
+<tr><td class="m">~/.agents/skills/cronoaudit</td><td>Codex, GitHub Copilot, Grok Build, Gemini CLI, Cursor, VS Code, OpenCode</td></tr>
 </table>
-<p>Each assistant also has a native install path: <code>npx skills add Holiv/cronoaudit -g</code> in any client of the format, <code>gemini skills install</code> with the repository URL in Gemini CLI, Codex's skill installer, Cursor's Remote Rule, and the Claude Code plugin. The repository README keeps the table current.</p>
+<p>On Windows, <code>~</code> is <code>%USERPROFILE%</code>: the folders are <code>%USERPROFILE%\.claude\skills\cronoaudit</code> and <code>%USERPROFILE%\.agents\skills\cronoaudit</code>. So far cronoaudit has been tested end to end with Claude Code and, in free mode, with GitHub Copilot CLI (21/11/2026, from the Project tab). For the other agents, the folder and the installation follow what the providers document. Secret mode has been tested with Claude Code only. To check, start the agent and ask which skills it has.</p>
 
-<h2 id="ch3-2">With no assistant at all</h2>
-<p>The tool works without artificial intelligence. Clone or download the repository and run the program directly. Everything is produced except the written executive synthesis and the customisation interview, which are the two parts that depend on an assistant.</p>
+<h2 id="ch3-2">Update</h2>
+<p>Run the same command again. The installer deletes both skill folders and copies the new version in full. What lives elsewhere is not touched: the mode preference and the secret-mode vault, in <code>~/.cronoaudit</code>; the reports; the organisation profile, which stays where it was saved. So keep nothing of your own inside the skill folder, because the next update deletes it. A customised report template lives outside it, pointed to by the <code>--template</code> option or the profile's <code>template</code> key.</p>
+
+<h2 id="ch3-3">An agent, to talk to</h2>
+<p>Path A and the tab's Analisar button need an agent installed and signed in. Use the agent you prefer, or the one your company allows on your computer. The repository README gives the official install commands for Claude Code, GitHub Copilot CLI, Codex and Grok Build, with each provider's guide. Each agent needs an account with its provider; check which plan includes it and your company's policy. Without an agent, the engine and the tab's Sem IA buttons work the same way.</p>
+
+<h2 id="ch3-4">Other ways to install</h2>
+<table>
+<tr><th>Route</th><th>Command</th></tr>
+<tr><td>Any Agent Skills client</td><td class="m">npx skills add Holiv/cronoaudit -g</td></tr>
+<tr><td>Claude Code, as a plugin</td><td class="m">/plugin marketplace add Holiv/cronoaudit<br>/plugin install cronoaudit@cronoaudit</td></tr>
+<tr><td>Codex</td><td class="m">$skill-installer https://github.com/Holiv/cronoaudit</td></tr>
+<tr><td>A team, through the project</td><td class="m">git clone https://github.com/Holiv/cronoaudit .agents/skills/cronoaudit</td></tr>
+</table>
+<p>On Windows, three variables change the installer. Set them in the same window, before the command: <code>$env:CRONOAUDIT_NO_PYTHON="1"</code> never downloads Python; <code>$env:CRONOAUDIT_EMBED_PYTHON="1"</code> uses the bundled Python even if there is another; <code>$env:CRONOAUDIT_REF="branch-name"</code> installs from another branch.</p>
+
+<h2 id="ch3-5">First run: the fictitious example</h2>
+<p>The repository carries two deliveries of an invented road project, one month apart: <code>rodovia-ficticia-rev03.xml</code>, with status date 30/09/2026, and <code>rodovia-ficticia-rev04.xml</code>, at 30/10/2026. Road, section, companies, quantities, prices and dates were made up for the example. There are 142 activities, nine milestones with a deadline, two calendars with a rain reserve, and fourteen problems planted on purpose. The files are in the repository's <code>examples/</code> folder and do not come with the installed skill: clone the repository or download the two files.</p>
 <pre>git clone https://github.com/Holiv/cronoaudit
-python3 cronoaudit/skills/cronoaudit/scripts/review.py delivery.xml</pre>
-
-<h2 id="ch3-3">Exporting the schedule</h2>
-<p>The .mpp file is a closed proprietary format. cronoaudit reads the XML that Project itself exports, which is a documented format and carries everything the analysis needs: tasks, links with lag, the eleven baselines, calendars, custom fields, assignments and the time-phased data.</p>
-<div class="note"><b>In MS Project</b>File, Save As, and under file type choose XML Format. Keep the XML beside the .mpp. When the XML is sent with the .mpp by whoever produces the schedule, this step disappears from the routine.</div>
-<p>There is an optional path to read .mpp directly, through a Java library, for whoever has it installed. It is never required.</p>
-
-<h2 id="ch3-4">First run</h2>
-<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py delivery.xml</pre>
-<p>On a schedule of six thousand activities the run takes under a minute. The terminal shows the summary: baseline slot used, threshold, population, counting convention, and the list of nine findings with each one's activity count. Next to the input file sit the results.</p>
+cd cronoaudit
+python3 ~/.claude/skills/cronoaudit/scripts/review.py examples/rodovia-ficticia-rev04.xml</pre>
+<p>On Windows, in PowerShell, the interpreter is <code>python</code>, and the skill's path is written like this:</p>
+<pre>python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" examples\rodovia-ficticia-rev04.xml</pre>
+<p>If the installer brought its own Python, it is not on the PATH, and <code>python</code> is not recognised. Use the command the installer showed at the end. It calls the bundled Python by its path, <code>&amp; "$env:LOCALAPPDATA\cronoaudit\python\python.exe"</code>, followed by the path of <code>review.py</code>.</p>
+<p>While the mode preference is <code>ask</code>, the factory default, the engine asks for the mode before opening the file: <code>s</code> goes on in free mode, <code>secreto</code> switches to secret mode, <code>nunca</code> goes on in free mode and stops asking, <code>n</code> cancels. With no agent, nothing leaves the computer in either mode. Answer <code>s</code>, or add <code>--free</code> to the command. Chapter 6 explains the modes.</p>
+<p>The terminal shows the summary: the baseline used and why, the threshold, the population, the counting convention, and the nine findings with each one's count. On rev04, A1 flags two activities: row 36, priming on segment 1, started while row 35, graded crushed-stone base, was still open. The other eight stay at zero. On a real schedule of 6,484 tasks and 107 calendars, the analysis took 29 seconds on an ordinary laptop, measured on 22/11/2026. The results sit beside the input file, where <code>&lt;name&gt;</code> is the file's name, here <code>rodovia-ficticia-rev04</code>.</p>
 <table>
 <tr><th>File</th><th>What it is for</th></tr>
-<tr><td class="m">delivery-review.html</td><td>the report, to open, present and print to PDF</td></tr>
-<tr><td class="m">delivery-review.json</td><td>the findings as data</td></tr>
-<tr><td class="m">delivery-review-scurve.json</td><td>the monthly and per-group S-curve</td></tr>
-<tr><td class="m">delivery-review-productivity.json</td><td>rates by resource and by activity</td></tr>
-<tr><td class="m">delivery-review-quality.json</td><td>the fourteen metrics with their items</td></tr>
-<tr><td class="m">delivery-review-forecast.json</td><td>Earned Schedule, look-ahead, bands, rain</td></tr>
-<tr><td class="m">delivery-review-forensics.json</td><td>driving chains and execution pattern</td></tr>
-<tr><td class="m">delivery-review-readings.json</td><td>each section's rule-built readings, to quote without composing</td></tr>
+<tr><td class="m">&lt;name&gt;-review.html</td><td>the report, to open, present and print to PDF</td></tr>
+<tr><td class="m">&lt;name&gt;-review.json</td><td>the findings as data</td></tr>
+<tr><td class="m">&lt;name&gt;-review-scurve.json</td><td>the monthly and per-group S-curve</td></tr>
+<tr><td class="m">&lt;name&gt;-review-productivity.json</td><td>rates by resource and by activity</td></tr>
+<tr><td class="m">&lt;name&gt;-review-quality.json</td><td>the fourteen metrics with their items</td></tr>
+<tr><td class="m">&lt;name&gt;-review-forecast.json</td><td>Earned Schedule, look-ahead, bands, rain</td></tr>
+<tr><td class="m">&lt;name&gt;-review-forensics.json</td><td>driving chains and execution pattern</td></tr>
+<tr><td class="m">&lt;name&gt;-review-readings.json</td><td>each section's rule-built readings, to quote without composing</td></tr>
 </table>
-<p>Useful options: <code>--outdir</code> to choose where to write, <code>--group-by</code> to group weight by a custom field, <code>--profile</code> to apply the organisation profile, <code>--lang</code> to force the language, <code>--threshold-days</code> and <code>--tolerance-days</code> to move the thresholds.</p>
+<p>Now the comparison of the two deliveries, previous first:</p>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py examples/rodovia-ficticia-rev03.xml examples/rodovia-ficticia-rev04.xml</pre>
+<p>Out come the review of rev04, as above, and the cycle report, <code>rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html</code>, with its JSON and readings beside it. The project finish moved from 04/10/2027 to 25/10/2027, 21 days later. Before progress, the report points to the rewritten past: the actual finish of row 29 changed and now equals the baseline date, and row 119, which was at 100%, was removed. At the end come twelve ready questions for the contractor. Chapter 12 describes this report.</p>
+<p>The figures in this manual come from the two XML files as they are, run with this version. Opened and saved in Project, the example is recalculated: forecast dates, float and earned value change, and some of the figures change with them.</p>
 
-<h2 id="ch3-5">Inside an assistant: how to start the conversation</h2>
-<p>With the skill installed, no command needs to be remembered. The assistant reads the skill's instructions, runs the programs, reads the results and talks about them. The figures always come from the programs; the assistant orchestrates, interprets and writes. What follows is the most direct way to begin.</p>
-<h3>Where to open</h3>
-<p>The assistant reads the local disk, so it has to know where the file is. Two equivalent ways: open the terminal in the folder that holds the XML and start the assistant there, or start anywhere and give the full path in the first message. When the folder holds more than one XML, the message should name the file; the assistant is instructed to list the files and ask which one to use, never to choose silently.</p>
-<h3>The first message</h3>
-<pre>cronoaudit, review the schedule delivery-september.xml
-cronoaudit, analyse the schedule at ~/Schedules/2026-09/delivery.xml
-cronoaudit, compare previous.xml with current.xml
-cronoaudit, analyse delivery.xml and save the results in ~/Reports/september</pre>
-<p>The skill's name at the start of the message makes sure the assistant loads it. From there the language is free.</p>
-<h3>What happens next</h3>
-<p>The analysis runs once. It and the report are the same command: whenever the analysis runs, the HTML report and the JSON files are written beside the XML, or in the folder named in the message. The assistant states the report's full path in its first reply. After that the conversation continues over the data already written, point by point, without running again. Nothing is sent anywhere; the files stay where they were written.</p>
-<p>The report does not have to be opened for the conversation to happen. A finding, a rate or a milestone can be discussed for an hour before the HTML is opened, or it may never be opened. The executive synthesis is written only when asked for.</p>
-<h3>Useful questions and requests</h3>
-<table>
-<tr><th>Request</th><th>What it produces</th></tr>
-<tr><td>save the results in ~/Reports/september</td><td>writes the report and the JSON files in the named folder, creating it if needed</td></tr>
-<tr><td>group by DISCIPLINE</td><td>the progress-by-group view uses the custom field instead of the WBS</td></tr>
-<tr><td>use the profile profile.json</td><td>applies the organisation's declared conventions</td></tr>
-<tr><td>report in Portuguese</td><td>forces the language, ignoring detection</td></tr>
-<tr><td>explain finding A1 before anything else</td><td>the assistant reads the pairs and explains each, writing no synthesis</td></tr>
-<tr><td>which C activities carry the most baseline cost?</td><td>orders the finding by weight, which the report table does not</td></tr>
-<tr><td>when does it finish by Earned Schedule, and what does that reading not see?</td><td>the independent finish beside the schedule's own, with the limit stated</td></tr>
-<tr><td>where did the delay on the milestone in row 412 come from?</td><td>the driving chain and the origin, with row numbers</td></tr>
-<tr><td>which rates are thin evidence?</td><td>separates the supported verdicts from the ones that are questions</td></tr>
-<tr><td>write the executive synthesis and inject it into the report</td><td>four to six paragraphs, with author and time, from the JSON files</td></tr>
-<tr><td>customise the organisation profile</td><td>the profile interview, starting with field discovery</td></tr>
-<tr><td>run it again, the file changed</td><td>a new analysis over the updated XML, overwriting the results</td></tr>
-</table>
-<h3>Free plans</h3>
-<p>Without an assistant the tool is entirely free: Python and the command produce the full report with the rule-built readings. With an assistant it depends on the assistant's plan. As of this edition, Claude Code is not part of Anthropic's free plan and requires a subscription or API credit; Gemini CLI and GitHub Copilot offer free tiers that read the Agent Skills format. Plans change; check at the time.</p>
+<h2 id="ch3-6">Reading a .mpp directly, on Windows</h2>
+<p>On Windows with MS Project installed, there is nothing to export. Pass the .mpp as it is:</p>
+<pre>python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev04.mpp</pre>
+<p>The engine asks Project itself to export a copy as XML, as a person would through File, Save As. The file is opened read-only, exported and closed without saving. It does not change. If it is already open in Project, your window is not touched: the file as saved on disk is copied to a temporary folder, and Project exports the copy. Changes not yet saved stay out of the analysis, and the engine says so. Project marks a file as changed just by opening it, so that note can appear with nothing changed.</p>
+<p>If Project was closed, it opens visibly, so any question it asks shows on screen, and closes at the end. If it does not answer within ten minutes, the engine stops and says how to export by hand. The temporary XML is deleted when the run ends, and the reports land beside the .mpp. No setting of Project, Office or Windows is changed.</p>
+<p>For the schedule open in Project, use <code>--from-project</code>. With a file given as well, that file is the previous version:</p>
+<pre>python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" --from-project
+python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev03.mpp --from-project</pre>
+<p>Off Windows, or without Project, the .mpp cannot be exported there. The engine says so and asks for the XML, which whoever has Project exports through File, Save As, XML Format. It is Project's own documented format, and it carries everything the analysis needs: tasks, links with lag, the eleven baselines, calendars, custom fields, assignments and the time-phased data. Off Windows there is also an optional .mpp reader through the mpxj library, with Java installed. It is never required and it has not been verified.</p>
 
-<h2 id="ch3-6">Verify the tool before trusting it</h2>
+<h2 id="ch3-7">Verify the tool before trusting it</h2>
 <pre>python3 ~/.claude/skills/cronoaudit/scripts/test_checks.py</pre>
-<p>The test runs the tool over two synthetic schedules. On the positive one every check must fire. On the negative one every check must stay silent. Without the second half a clean result is worth nothing: a probe that cannot fire reports zero findings on a broken file as readily as on a sound one.</p>
-
-<h2 id="ch3-7">An equivalent implementation inside Project</h2>
-<p>The same method exists as macros that run inside MS Project, marking activities in the schedule itself and generating the same report. It is a separate product by the same author, and cronoaudit does not depend on it. The two implementations follow the same rule specification, and one's count has to match the other's on the same file.</p>
+<p>The test runs the tool over synthetic schedules. On the positive one, every check must fire. On the negative one, every check must stay silent. Without the second half a clean result is worth nothing: a probe that cannot fire reports zero findings on a broken file as readily as on a sound one. The installer runs this test at the end. From a copy of the repository, the test also checks the fictitious example's fourteen problems. From the installed folder, which has no example, that part is skipped, and the test says so.</p>
 </section>
 
 <section class="ch">
-<p class="chno">4</p><h1 class="ch" id="ch4">The report, section by section</h1>
+<p class="chno">4</p><h1 class="ch" id="ch4">Three paths: the agent, the tab, the engine</h1>
+<p class="lede">There are three ways to use cronoaudit. In all three, the engine runs on your computer, does not use the network and produces the same report. What changes is who talks to you.</p>
+<table>
+<tr><th>You prefer</th><th>Path</th><th>What you do</th></tr>
+<tr><td>to talk to an AI and let it do everything</td><td class="c">A. the agent</td><td>ask, for example: analyse rodovia-ficticia-rev04.xml</td></tr>
+<tr><td>a button, inside Project itself</td><td class="c">B. the tab</td><td>click Relatório or Analisar</td></tr>
+<tr><td>no AI, or a computer with no agent</td><td class="c">C. the engine</td><td>run one command on the file</td></tr>
+</table>
+
+<h2 id="ch4-1">A. Through the agent</h2>
+<p>With the skill installed, no command needs to be remembered. The agent reads the skill's instructions, runs the engine, reads the results and talks about them. The figures always come from the engine; the agent orchestrates, interprets and writes. Use the agent you prefer, or the one your company allows on your computer.</p>
+<h3>Where to open</h3>
+<p>The agent reads the local disk, so it has to know where the file is. Open the terminal in the schedule's folder and start the agent there, or start anywhere and give the full path in the first message. The agent looks for .mpp and .xml files in that folder only, not in its subfolders. When both exist with the same name, it takes the .mpp, which is the original. If there is more than one schedule, it lists them and asks which, and offers the comparison when two look like versions of the same one. It never picks silently.</p>
+<h3>The first message</h3>
+<pre>Analyse rodovia-ficticia-rev04.xml.
+Compare rev03 with rev04 and tell me what changed, by topic.
+Analyse the schedule open in Project.
+Which milestones are at risk of missing their deadline?
+Analyse rodovia-ficticia-rev04.xml and save the results in ~/Reports/october.</pre>
+<p>The language is free. If the agent does not recognise the skill, close and start the agent again and ask which skills it has. In Copilot, <code>/skills reload</code> reloads the skills.</p>
+<h3>What happens next</h3>
+<p>In a first conversation, before reading any file, the agent says where the data goes: what it reads goes to its provider, and the engine runs locally, sending nothing. Then it settles the mode, free or secret, as chapter 6 describes. Only then does it run the analysis, once. The analysis and the report are the same command: the HTML report and the JSON files are written beside the schedule, or in the folder named in the message. The agent states the report's full path in its first reply. After that the conversation continues over the data already written, without running again, unless you ask or the file changes.</p>
+<p>The report does not have to be opened for the conversation to happen. A finding, a rate or a milestone can be discussed for an hour before the HTML is opened, or it may never be opened. The executive synthesis is written only when asked for. After a comparison, the agent offers in one line the synthesis and the list of what to ask the other party.</p>
+<h3>Useful questions and requests</h3>
+<table>
+<tr><th>Request</th><th>What it produces</th></tr>
+<tr><td>save the results in ~/Reports/october</td><td>writes the report and the JSON files in the named folder, creating it if needed</td></tr>
+<tr><td>group by DISCIPLINA</td><td>the progress-by-group view uses the custom field instead of the WBS</td></tr>
+<tr><td>use the profile profile.json</td><td>applies the organisation's declared conventions</td></tr>
+<tr><td>report in Portuguese</td><td>forces the language, ignoring detection</td></tr>
+<tr><td>explain finding A1 before anything else</td><td>the agent reads the pairs and explains each, writing no synthesis</td></tr>
+<tr><td>which C activities carry the most baseline cost?</td><td>orders the finding by weight, which the report table does not</td></tr>
+<tr><td>when does it finish by Earned Schedule, and what does that reading not see?</td><td>the independent finish beside the schedule's own, with the limit stated</td></tr>
+<tr><td>where did the delay on the milestone in row 9 come from?</td><td>the driving chain and the origin, with row numbers</td></tr>
+<tr><td>which rates are thin evidence?</td><td>separates the supported verdicts from the ones that are questions</td></tr>
+<tr><td>what should we ask the contractor?</td><td>after a comparison, the list the engine builds, one question per piece of evidence</td></tr>
+<tr><td>write the executive summary and generate the final report</td><td>four to six paragraphs, with author and time, from the JSON files, injected into the report</td></tr>
+<tr><td>customise the organisation profile</td><td>the profile interview, starting with field discovery</td></tr>
+<tr><td>run it again, the file changed</td><td>a new analysis over the updated file, overwriting the results</td></tr>
+</table>
+
+<h2 id="ch4-2">B. Through the Cronoaudit tab, inside Project</h2>
+<p>For those who prefer a button, on Windows. The tab sits between Project and View, and its labels are in Portuguese. The Sem IA buttons produce the report with no conversation; Analisar and Comparar versões open your agent on the schedule that is open. The buttons read the version saved on disk and never ask whether to save your file. Chapter 5 describes the whole tab.</p>
+
+<h2 id="ch4-3">C. Through the engine, without an agent</h2>
+<p>For when there is no agent on the computer, or the company's policy does not allow one. Same report, no conversation, and nothing leaves the computer. Only the written executive synthesis and the customisation interviews are left out, the two parts that depend on an agent.</p>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev04.xml
+python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml</pre>
+<p>On Windows, in PowerShell, start with two lines that find Python. The installer may have brought its own, which is not on the PATH, and then <code>python</code> alone does not find it. The line the installer prints at the end, after <em>run directly</em>, works too.</p>
+<pre>$py = "$env:LOCALAPPDATA\cronoaudit\python\python.exe"
+if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContinue) { "py" } else { "python" } }
+&amp; $py "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev04.xml</pre>
+<p>With two files, the previous one comes first. On Windows with Project, the command also takes the .mpp directly and <code>--from-project</code>. Always call the programs by their full path, because the working folder is the schedule's, not the skill's.</p>
+<table>
+<tr><th>Option</th><th>What it does</th></tr>
+<tr><td class="m">--outdir FOLDER</td><td>where to write; by default, beside the file</td></tr>
+<tr><td class="m">--group-by FIELD</td><td>groups weight by a custom field, instead of the WBS branch</td></tr>
+<tr><td class="m">--profile profile.json</td><td>applies the organisation profile</td></tr>
+<tr><td class="m">--lang pt, --lang en</td><td>forces the report language</td></tr>
+<tr><td class="m">--threshold-days N</td><td>the E and C threshold, in working days of the activity's calendar; default 30</td></tr>
+<tr><td class="m">--tolerance-days N</td><td>the G tolerance; default 1</td></tr>
+<tr><td class="m">--template FILE</td><td>a customised report template</td></tr>
+<tr><td class="m">--quiet</td><td>writes the files without the console summary</td></tr>
+<tr><td class="m">--from-project</td><td>Windows: the schedule open in Project</td></tr>
+<tr><td class="m">--free</td><td>free mode, said explicitly</td></tr>
+<tr><td class="m">--secret</td><td>secret mode, experimental; chapter 6</td></tr>
+<tr><td class="m">--secret on, off, ask</td><td>stores the mode preference and exits</td></tr>
+<tr><td class="m">--config</td><td>shows the stored mode preference</td></tr>
+</table>
+<p>If the analysis with an agent is done on another computer, it should be one the company allows to receive the schedule.</p>
+</section>
+
+<section class="ch">
+<p class="chno">5</p><h1 class="ch" id="ch5">The Cronoaudit tab in Project</h1>
+<p class="lede">The tab is an entry shortcut, on Windows. It exports the open schedule to XML and hands it to the engine, or opens your agent on it. It computes nothing itself: the figures come from the engine, the same as on the other paths. Everything it does can be done by hand.</p>
+
+<h2 id="ch5-1">Install, update and remove</h2>
+<p>First, install cronoaudit with <code>install.ps1</code>, as in chapter 3. The tab looks for the skill in the two installed folders, and for Python in this order: <code>py -3</code>, <code>python</code>, <code>python3</code> and cronoaudit's bundled Python. Then, with Project closed, in PowerShell:</p>
+<pre>irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/msproject/install-msproject.ps1 | iex</pre>
+<p>The installer backs up what it changes before changing it: <code>Global.MPT</code>, where personal macros live, and the ribbon file. It opens Project, copies cronoaudit's module into <code>Global.MPT</code> and adds the tab without removing your other tabs. It changes no security setting and checks at the end that the buttons answer.</p>
+<p>During the installation Project opens and asks two things, which are yours to answer:</p>
+<ol>
+<li>if a Logon window with profiles appears, choose Computer;</li>
+<li>at the warning about the template's macros, click Disable macros.</li>
+</ol>
+<p>To update, run the same command: the previous module is replaced. To remove, set <code>$env:CRONOAUDIT_MSPROJECT_REMOVE="1"</code> in the same window and run the same command. Installation, update, removal and the buttons were tested on Windows on 22 and 23/11/2026. If the tab does not appear, close and open Project; if it is still missing, run the tab installer again.</p>
+
+<h2 id="ch5-2">The buttons</h2>
+<table>
+<tr><th>Group</th><th>Button</th><th>What it does</th></tr>
+<tr><td>Com o agente de IA</td><td>Analisar</td><td>asks for the mode and opens your agent on the schedule that is open</td></tr>
+<tr><td></td><td>Comparar versões</td><td>asks for the mode, lists the other versions in the same folder and opens the agent with both</td></tr>
+<tr><td>Sem IA (nada sai do computador)</td><td>Relatório</td><td>runs the engine and opens the report in the browser</td></tr>
+<tr><td></td><td>Comparar</td><td>the same, for two versions</td></tr>
+<tr><td></td><td>Exportar XML</td><td>only exports the XML and opens the folder, to take elsewhere</td></tr>
+<tr><td>Ajustes</td><td>Configurar</td><td>agent, run folder, Python, review.py and mode</td></tr>
+</table>
+<p>The buttons read the version saved on disk and never ask whether to save your file. In a comparison, the other version may be .mpp or .xml. A .mpp is opened read-only, exported and closed without saving, and the other version cannot be open in Project. The Sem IA buttons do not ask for the mode: no agent is involved there. If Analisar or Comparar versões find no agent installed, they offer to run without AI instead of failing.</p>
+
+<h2 id="ch5-3">The mode question</h2>
+<p>Before opening the agent, and before exporting anything, Analisar and Comparar versões ask for the mode in a dialog:</p>
+<table>
+<tr><th>Answer</th><th>What happens</th></tr>
+<tr><td>Yes</td><td>secret mode, experimental. It is the button already selected: a stray Enter never sends the schedule to the agent's provider.</td></tr>
+<tr><td>No</td><td>free mode, this time</td></tr>
+<tr><td>Cancel</td><td>the agent is not opened</td></tr>
+</table>
+<p>In free mode, the button exports the XML to the run folder, writes a <code>pedido.md</code> there and opens the agent in a visible terminal in that folder. The request states the task, the XML's name, the engine command that works on this machine, the rule that every figure comes from the engine and the exact name of every file the engine will write. It also says the mode was already settled, so the agent does not ask again.</p>
+<p>In secret mode, the button exports the XML to the run folder, which the agent never sees, and runs the engine with <code>--secret</code>. Then it opens the agent in the coded folder, <code>%USERPROFILE%\cronoaudit-work\&lt;date-time&gt;\&lt;code&gt;</code>, with no <code>pedido.md</code>, because the request would carry names. In Claude Code, answer that you trust the folder: that is what turns the guard on. When you ask, the agent builds the report with the real data, which appears in the run folder and opens in the browser. If the agent is not Claude Code, the dialog says the guard exists only there.</p>
+<p>To stop the question, choose the mode in Configurar, item 5.</p>
+
+<h2 id="ch5-4">Configurar</h2>
+<table>
+<tr><th>Item</th><th>What it changes</th></tr>
+<tr><td class="c">1</td><td>the agent: auto, claude, codex, copilot, gemini or code; auto is the first one installed, in that order</td></tr>
+<tr><td class="c">2</td><td>the run folder; empty goes back to the default, local and outside any synced folder</td></tr>
+<tr><td class="c">3</td><td>the Python command; empty detects it again</td></tr>
+<tr><td class="c">4</td><td>the path of review.py; empty detects it again</td></tr>
+<tr><td class="c">5</td><td>the mode: ask asks before opening the agent, off goes on in free mode without asking, on goes on in secret mode without asking</td></tr>
+<tr><td class="c">9</td><td>resets the tab's settings; does not change the mode</td></tr>
+</table>
+<p>The item 5 mode lives in the file <code>%USERPROFILE%\.cronoaudit\config.json</code>, which the engine and the skill also read. Changing it in one place changes it for all three.</p>
+
+<h2 id="ch5-5">The agents the tab opens</h2>
+<table>
+<tr><th>Agent</th><th>How the tab opens it</th></tr>
+<tr><td>Claude Code</td><td class="m">claude "..."</td></tr>
+<tr><td>Codex</td><td class="m">codex "..."</td></tr>
+<tr><td>GitHub Copilot CLI</td><td class="m">copilot -i "..."</td></tr>
+<tr><td>Gemini CLI</td><td class="m">gemini -i "..."</td></tr>
+<tr><td>VS Code</td><td class="m">code "&lt;run folder&gt;"</td></tr>
+</table>
+<p>On auto, the tab opens the first one it finds on the PATH, in that order. In free mode, the sentence it passes to the agent is short and unaccented, and the real request is in <code>pedido.md</code>. VS Code comes last because it cannot take the sentence on the command line: the tab opens the folder in it and copies the sentence. Open Copilot Chat (Ctrl+Alt+I), choose Agent mode and paste with Ctrl+V. Whether VS Code's Copilot Chat reads the skill installed in <code>~/.agents/skills</code> has not been measured yet.</p>
+<p>Grok Build is not on that list yet. With it, use path A: open the terminal in the schedule's folder and start the agent there. If you installed an agent while Project was open, close and open Project, because it inherits the PATH when it starts.</p>
+
+<h2 id="ch5-6">Where the files go</h2>
+<p>Each run gets a folder in <code>%LOCALAPPDATA%\cronoaudit\relatorios\&lt;date&gt;_&lt;file&gt;</code>, with the XML, <code>pedido.md</code> and, once the engine has run, the report and the JSON files. The folder is local on purpose: it stays outside OneDrive, because the XML and the report carry the project's data. Change it in Configurar, item 2.</p>
+</section>
+
+<section class="ch">
+<p class="chno">6</p><h1 class="ch" id="ch6">Free mode and secret mode</h1>
+<p class="lede">The engine sends nothing, in either mode. The mode is about what an agent reads. In free mode, the agent reads the schedule and the results, and what it reads goes to its provider. In secret mode, which is experimental, the agent reads only a coded copy, and the report with the real data is built on your computer.</p>
+
+<h2 id="ch6-1">Where your data goes</h2>
+<ul>
+<li>The engine runs on your computer and does not use the network.</li>
+<li>The installers download the repository from GitHub and, on Windows and only if needed, Python from python.org. Nothing else.</li>
+<li>The agent is different. What it reads (the schedule, the report, your questions) goes to its provider, under the terms of your account or your company's. Check the company's policy before using an agent with a contract schedule.</li>
+<li>If the policy does not allow an agent, use path C, or the tab's Sem IA buttons.</li>
+</ul>
+
+<h2 id="ch6-2">How the mode is chosen</h2>
+<p>The preference lives in a single file, which the engine, the skill and the tab read: <code>~/.cronoaudit/config.json</code>, key <code>secret</code>. On Windows, <code>%USERPROFILE%\.cronoaudit\config.json</code>.</p>
+<table>
+<tr><th>Value</th><th>What happens</th></tr>
+<tr><td class="m">ask</td><td>asks every time; it is the factory default, and it also applies when the file is missing or unreadable</td></tr>
+<tr><td class="m">off</td><td>free mode, without asking</td></tr>
+<tr><td class="m">on</td><td>secret mode, without asking</td></tr>
+</table>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py --config
+python3 ~/.claude/skills/cronoaudit/scripts/review.py --secret ask</pre>
+<p>The first shows the preference. The second stores it, and also takes <code>on</code> and <code>off</code>. Who asks depends on the path. The tab asks in a dialog, in code, before any agent exists. The engine, run in a terminal, asks before opening the file; when nobody can answer, as when an agent runs it, it says in one line that it goes on in free mode. The agent, when it starts, reads the preference and asks the question itself. That last one is the agent following the skill's instruction: it makes the choice visible, but it is not a guard.</p>
+
+<h2 id="ch6-3">What gets coded</h2>
+<p>cronoaudit analyses the real file on your computer, exactly as in free mode, and then rewrites what it wrote into a coded copy.</p>
+<table>
+<tr><th>In the original</th><th>In the copy</th></tr>
+<tr><td>names of activities, resources, calendars and holidays, custom fields and their values, notes, the project header</td><td>codes like <code>T·3fa91c</code>; the letter gives the kind</td></tr>
+<tr><td>money</td><td>multiplied by a secret factor, written with the ¤ mark</td></tr>
+<tr><td>dates</td><td>day counts from a secret origin, like <code>D+0412</code>; <code>M+0013</code> is a month and <code>Y+0001</code> a year</td></tr>
+<tr><td>durations, percentages, counts, indices like SPI and CPI, row numbers, WBS codes, quantities and units</td><td>stay real</td></tr>
+</table>
+<p>The monthly rain-reserve series is left out of the copy, because it would tell the season. The file name goes too: the copy is called <code>schedule-review.html</code>, or <code>previous--to--current-cycle.html</code> in a comparison.</p>
+
+<h2 id="ch6-4">The vault and the work folder</h2>
+<p>What decoding needs lives in a local vault, in the same folder as the preference: <code>~/.cronoaudit/vault</code>. It holds each project's key, with the code table, the date origin and the money factor, and each run's real outputs. The vault never goes into the work folder. A project is the folder of the current schedule, or the name given with <code>--project</code>. rev03 and rev04 in the same folder share codes, so codes compare across versions.</p>
+<p>The work folder is new on every run, with a name that says nothing about the schedule. From the command, it is created in <code>~/cronoaudit-work</code>, or wherever <code>--workdir</code> says; from the tab, in <code>%USERPROFILE%\cronoaudit-work\&lt;date-time&gt;\&lt;code&gt;</code>. It holds only the coded copy; a <code>cronoaudit-secret.json</code>, which lists the files and explains the codes; the instructions for the agent, in <code>CLAUDE.md</code> and <code>AGENTS.md</code>; and, for Claude Code, the guard, in <code>.claude/</code>. A leak test, run with the internal test, checks that the folder holds only coded files.</p>
+
+<h2 id="ch6-5">Running in secret mode</h2>
+<p>From the tab, answer Yes to the mode question. Without the tab, you run one command yourself, in your own terminal, with the .xml or, on Windows with Project, with the .mpp:</p>
+<pre>python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev04.mpp --secret
+python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml --secret</pre>
+<p>The command shows the work folder. Start the agent inside it: <code>cd</code> to the folder, then the agent's command. The first thing the agent says is that the mode is experimental, and that you should refer to activities by code or by row number, because whatever you type with a real name goes to the AI service.</p>
+<p>It has to be you who runs it. An agent that holds the original file protects nothing. So when you ask an agent for secret mode, it does not run the engine: it shows you the command to run in your own terminal. And the engine, when it sees that Claude Code started it, refuses secret mode and stops having read nothing. If that happens, run the command in a PowerShell opened from the Start menu, or open Project from the Start menu, and not from inside an agent's terminal. Another version, or a comparison, is a new coded run, started by you.</p>
+
+<h2 id="ch6-6">The real report, at the end</h2>
+<p>When you ask, the agent runs <code>secret_decode.py finish</code>. The command decodes the work folder's report on your computer, with the synthesis the agent wrote, if any. It checks that the result equals, value for value, what the engine wrote in the vault. Then it writes the real report beside the original schedule and in the vault, and opens it in the browser. From the tab, the real report appears in the run folder. On screen, the command shows counts only, never a name, a value, a date or a path. If the check fails, it writes the engine's real output instead and says how many values differed. After its first reading, the agent offers in one line the synthesis and the report with real names, and does neither unless you ask.</p>
+
+<h2 id="ch6-7">Reading an answer with real names</h2>
+<p>The agent's answers come in codes. To read one of them with the real names, dates and values, run in your own terminal, outside the agent, the command the agent itself gives you:</p>
+<pre>python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\secret_decode.py" text "&lt;work folder&gt;"</pre>
+<p>Paste the answer and end with Ctrl+Z and Enter on a line of its own, on Windows, or with Ctrl+D, on macOS and Linux. The translation appears on your screen only. That command is yours: it prints real names, so the agent never runs it. It refuses to run inside Claude Code, and the guard stops it too.</p>
+
+<h2 id="ch6-8">The guard, in Claude Code only</h2>
+<p>In Claude Code, the work folder carries deny rules and a hook. They let the session read only its own folder, run only the skill's finishing commands and use only the tools a secret session needs. PowerShell, connectors such as OneDrive, SharePoint and Microsoft 365, sending files and messaging other sessions are closed, and a tool not on the list starts closed. The hook is a tripwire against the agent leaving the folder by habit or by a misread instruction. It is not a sandbox against an agent set on getting out.</p>
+<p>Claude Code asks whether you trust each new folder. Say yes: that is what turns the guard on, and without it the guard stays off. The question comes back on every analysis, because each has its own folder.</p>
+<p>In the other agents (Codex, GitHub Copilot, Gemini CLI, Grok Build), the folder carries the same rules as written instructions. Nothing technical stops the agent from opening other files.</p>
+
+<h2 id="ch6-9">What secret mode answers, and what it does not</h2>
+<p>It answers about logic, float, critical path, durations, progress, cost proportions and weights, differences between versions, network quality, deviations and inconsistencies, and the forensic chain by row number. It does not answer about real values, company, supplier or person names, locations, and absolute dates, such as "does this fall before the March contractual milestone?". For those questions, the agent refuses plainly and points to the way out: the decoded report on your computer, your own <code>secret_decode.py text</code>, or free mode.</p>
+
+<h2 id="ch6-10">The limits</h2>
+<ul>
+<li>It is experimental, and the agent says so when it starts.</li>
+<li>The codes do not make the schedule anonymous: its structure, durations and row numbers stay readable.</li>
+<li>Coding lowers what leaves the computer. It does not replace your company's policy on AI services.</li>
+</ul>
+<p>Tested on Windows with Claude Code on 22 and 23/11/2026, from the command, straight from the .mpp and from the Project button, and on a real 6,484-task schedule: no real name, date or value reached the coded copy, and the guard was checked by calling it directly, without the agent.</p>
+</section>
+
+<section class="ch">
+<p class="chno">7</p><h1 class="ch" id="ch7">The report, section by section</h1>
 <p class="lede">The report is a single HTML file. It opens in any browser, works offline, prints to PDF with one button, and switches between light and dark themes. Activity tables are collapsed, so the report does not open as a wall of rows; printing expands them.</p>
 
-<h2 id="ch4-1">Cover and verdict</h2>
-<p>The cover carries the file, the number of leaf activities, the status date and the baseline cost. The verdict shows cumulative physical progress weighted by cost, beside a fixed text on how to read those numbers, and the first <strong>Reading</strong> block: sentences generated by rule from this analysis's figures. A red notice appears when activities sit in violated logic, and says to settle that before discussing any date.</p>
+<h2 id="ch7-1">Cover and verdict</h2>
+<p>The cover carries the file, the number of leaf activities, the status date and the baseline cost. The verdict shows cumulative physical progress weighted by cost, beside a fixed text on how to read those numbers, and the first <strong>Reading</strong> block: sentences generated by rule from this analysis's figures. When activities sit in violated logic, a red notice says to settle that before discussing any date. The notice is as wide as the breach: with up to three pairs, none on an unfinished critical activity or on the chain that holds the finish, it names the pairs and the milestones they reach, instead of condemning the whole network. With no links at all, the report says there is no network to hold.</p>
 <p>When an executive synthesis has been injected, it appears right below the cover, with the name of whoever wrote it and the time, so prose is never mistaken for measurement.</p>
 
-<h2 id="ch4-2">Cards and index</h2>
-<p>One card per finding, with the count and the severity colour. The index lists the views and the findings with code, title, subtitle, count and severity, and each row leads to its section.</p>
+<h2 id="ch7-2">Deadlines and milestones</h2>
+<p>Right after the verdict and the cards comes section PZ, which answers the question a delivery is read for. Each future milestone appears against its deadline, in calendar days: the margin in the current schedule, the margin after the slippage that 80% of activities did not exceed, whether the milestone is critical, and the row where its delay starts on the driving path. A negative margin is past the deadline.</p>
+<div class="example"><b>On the fictitious example</b><p>On rev04, the seven future milestones finish within their deadline. The smallest margin is row 9's, Conclusão do Viaduto V-01: one day. With the 80% slippage, seven days, three more milestones pass their date, rows 7, 8 and 9. Row 9's delay starts at row 148, bored piles, with eleven days against the baseline.</p></div>
+
+<h2 id="ch7-3">Cards and index</h2>
+<p>One card per finding, with the count and the severity colour. The index lists the deadlines, the views and the findings with code, title, subtitle, count and severity, and each row leads to its section.</p>
 <table>
 <tr><th>Severity</th><th>Findings</th><th>Reads as</th></tr>
 <tr><td class="c">critical</td><td>A1, A2</td><td>invalidates every date below until settled</td></tr>
@@ -287,35 +519,35 @@ cronoaudit, analyse delivery.xml and save the results in ~/Reports/september</pr
 <tr><td class="c">pending</td><td>P</td><td>a reporting defect, not an execution one</td></tr>
 </table>
 
-<h2 id="ch4-3">The views, V0 to V9</h2>
+<h2 id="ch7-4">The views, V0 to V9</h2>
 <div class="def"><div class="k">V0</div><div class="v">S-curve from the file's own phasing: planned, earned, and the other earned-value method as sensitivity. Monthly table with cumulatives, variance and SPI. The task-by-task reconciliation against the file at the foot.</div></div>
 <div class="def"><div class="k">V1</div><div class="v">Progress by group: planned against earned in each group, weighted by the group's own cost, and one column per finding. The group is the WBS branch by default or a custom field.</div></div>
 <div class="def"><div class="k">V2 to V4</div><div class="v">Starts per month, finish variance in eight bands, total float in five bands.</div></div>
 <div class="def"><div class="k">V5</div><div class="v">Calendars that carry the work: activities per calendar, shift, days per week and non-working exceptions.</div></div>
-<div class="def"><div class="k">V6</div><div class="v">Productivity and trend by resource. Chapter 7.</div></div>
-<div class="def"><div class="k">V7</div><div class="v">Network quality, the fourteen metrics. Chapter 6.</div></div>
-<div class="def"><div class="k">V8</div><div class="v">Looking forward: Earned Schedule, look-ahead, rates by group, milestones with bands, rain exposure. Chapter 8.</div></div>
-<div class="def"><div class="k">V9</div><div class="v">Forensics: driving path per milestone, calendar forensics, execution pattern. Chapter 8.</div></div>
+<div class="def"><div class="k">V6</div><div class="v">Productivity and trend by resource. Chapter 10.</div></div>
+<div class="def"><div class="k">V7</div><div class="v">Network quality, the fourteen metrics. Chapter 9.</div></div>
+<div class="def"><div class="k">V8</div><div class="v">Looking forward: Earned Schedule, look-ahead, rates by group, milestones with bands, rain exposure. Chapter 11.</div></div>
+<div class="def"><div class="k">V9</div><div class="v">Forensics: driving path per milestone, where the delay enters and where it grows most, calendar forensics, execution pattern. Chapter 11.</div></div>
 
-<h2 id="ch4-4">The findings</h2>
-<p>Each finding is a block with code, severity, title and plain-language subtitle. Inside, three fixed blocks: problem, impact and solution. Then the criterion with the counting convention, where it came from, with the Project columns, and how to reproduce it in the tool. Finally the activity table, collapsed. Only the visible row number identifies an activity, because it is the only identifier a person can find on screen. In the network findings the table shows the explicit pair, successor and predecessor, with the link type and the reason.</p>
+<h2 id="ch7-5">The findings</h2>
+<p>Each finding is a block with code, severity, title and plain-language subtitle. Inside, three fixed blocks: problem, impact and solution. Then the criterion with the counting convention, where it came from, with the Project columns, and how to reproduce it in the tool. Finally the activity table, collapsed. Only the visible row number identifies an activity, because it is the only identifier a person can find on screen. In the network findings the table shows the explicit pair, successor and predecessor, with the link type and the reason. Findings that came out at zero are gathered in a single line, checked with nothing found, so the report does not open with empty blocks.</p>
 
-<h2 id="ch4-5">Conventions</h2>
-<p>The last section lists what the report assumed: the baseline slot and why it was chosen, the threshold and its unit, the tolerance, the population, the counting convention, how working days were counted, where the percentage comes from, the detected language and how confident the detection was. Nobody has to guess anything.</p>
+<h2 id="ch7-6">Conventions</h2>
+<p>The last section lists what the report assumed: the baseline used and why it was chosen, the threshold and its unit, the tolerance, the population, the counting convention, how working days were counted, where the percentage comes from, the detected language and how confident the detection was. Nobody has to guess anything.</p>
 
-<h2 id="ch4-6">The reading layer</h2>
-<p>Every section opens with sentences generated by rule from its own figures. They say what the data supports and nothing more; if a figure is missing, the sentence does not appear. It is what lets the report be handed to someone who was not in the room. The executive synthesis is something else: a written text, injected with author and time, which chapter 10 explains.</p>
+<h2 id="ch7-7">The reading layer</h2>
+<p>Every section opens with sentences generated by rule from its own figures. They say what the data supports and nothing more; if a figure is missing, the sentence does not appear. It is what lets the report be handed to someone who was not in the room. The executive synthesis is something else: a written text, injected with author and time, which chapter 13 explains.</p>
 </section>
 
 <section class="ch">
-<p class="chno">5</p><h1 class="ch" id="ch5">The nine checks</h1>
+<p class="chno">8</p><h1 class="ch" id="ch8">The nine checks</h1>
 <p class="lede">Each check has a stable code, which stays the same when the implementation changes. Without that a problem cannot be discussed across weeks. The order matters: network first, then dates, then reporting.</p>
 
-<h2 id="ch5-1">Population and cross-cutting rules</h2>
+<h2 id="ch8-1">Population and cross-cutting rules</h2>
 <p>Every check looks only at leaf activities, active and not external. Summaries stay out, because they would count their children twice. Milestones are in everything except G.</p>
 <div class="note"><b>Pending reporting migrates first</b>A predecessor at 100% physical with no actual finish is a reporting defect, finding P. Its links are not evaluated for A1 or A2. Without this rule, a reporting problem would be reported as an execution problem, and the conversation with whoever executes would start by accusing the wrong thing.</div>
 
-<h2 id="ch5-2">A1 · Out-of-sequence execution</h2>
+<h2 id="ch8-2">A1 · Out-of-sequence execution</h2>
 <p>A successor started while the predecessor had not finished, or finished after the successor's start beyond what the link allows.</p>
 <div class="def"><div class="k">Problem</div><div class="v">The network describes an order that execution does not practise.</div></div>
 <div class="def"><div class="k">Impact</div><div class="v">Every forecast date is computed on a false premise. And the delay of stalled predecessors stops propagating to milestones, because the successors have already been delivered: the plan looks healthy at the end because it is broken in the middle.</div></div>
@@ -333,37 +565,37 @@ cronoaudit, analyse delivery.xml and save the results in ~/Reports/september</pr
 <p>Both ends of the violated link are marked, and the report counts three ways: distinct activities, as successors, as predecessors. How many activities have the problem depends on how they are counted, and diverging from the convention of the other party's tool hands them the argument.</p>
 <div class="example"><b>To reproduce in Project</b><p>Group by predecessor and filter by Actual Start populated. Mark the pair and inspect the link in the Gantt.</p></div>
 
-<h2 id="ch5-3">A2 · Total inversion</h2>
+<h2 id="ch8-3">A2 · Total inversion</h2>
 <p>A successor is complete and the predecessor never started. It is the extreme form of a broken sequence, and it is unanswerable in a meeting. Either the sequence was invented for the plan, or the progress landed on the wrong activity. Check pair by pair and record which, because the answer varies between pairs.</p>
 <div class="example"><b>To reproduce</b><p>Filter by Actual Finish populated and check the Actual Start of each predecessor.</p></div>
 
-<h2 id="ch5-4">H · Forecast elapsed with no actual</h2>
+<h2 id="ch8-4">H · Forecast elapsed with no actual</h2>
 <p>A forecast start is in the past with no actual start, or a forecast finish is in the past with no actual finish. The plan says it happened; nothing in the file says it happened. Every successor is projected from a date that already failed to hold. Two possibilities with different answers: the work happened and was not recorded, or it did not happen and the forecast must move. Leaving it is the only wrong option.</p>
 
-<h2 id="ch5-5">E · Pulled forward and never started</h2>
+<h2 id="ch8-5">E · Pulled forward and never started</h2>
 <p>The forecast finish moved earlier than the baseline by 30 working days or more, on the activity's calendar, and the activity never started. Progress pulled earlier with no execution behind it is a plan change dressed as performance, and in aggregate it can offset real delay elsewhere. Ask what changed to justify the date. If nothing did, the forecast is optimistic and should go back.</p>
 
-<h2 id="ch5-6">C · Delayed beyond the threshold</h2>
+<h2 id="ch8-6">C · Delayed beyond the threshold</h2>
 <p>The forecast finish moved later than the baseline by 30 working days or more, on the activity's calendar. Completed activities stay in the list on purpose: consummated delay is information. It is the finding the other party expects and the easiest to contest, which is why it needs the reproduction attached. Read it with the weight distribution: the same number of delayed activities means different things depending on the budget share they carry. The float column says how much margin is left.</p>
 <div class="note"><b>Threshold in working days</b>The 30 days are counted on the activity's own calendar, not in calendar days nor on the project shift. On a six-day week, 30 working days are about 35 calendar days. The unit is declared in the conventions section and adjustable through the profile.</div>
 
-<h2 id="ch5-7">G · Duration inconsistent with the window</h2>
+<h2 id="ch8-7">G · Duration inconsistent with the window</h2>
 <p>The duration does not match the working time between start and finish, measured on the activity's own calendar, with partial first and last days. G is a thermometer, not a finding: it says something was edited inconsistently, not what. Start anchored on the actual date with the remainder pushed, a typed date over a computed one, a constraint fighting the logic. Use it to choose what to inspect, looking at the largest differences first. Never report it alone.</p>
 
-<h2 id="ch5-8">B · Milestone with no deadline</h2>
+<h2 id="ch8-8">B · Milestone with no deadline</h2>
 <p>The milestone has no Deadline set, so nothing in the file makes its date binding. Without it the milestone shows comfortable float even with the contractual date passed, because the schedule was never told the date mattered. A deadline is not a constraint: it moves nothing, it only reveals slippage. Register contractual dates on the milestones that have them; it changes no calculation and makes every following report tell the truth about float. B is optional by default, because not every organisation practises it; the profile promotes it to a finding.</p>
 
-<h2 id="ch5-9">F · In progress at zero percent</h2>
+<h2 id="ch8-9">F · In progress at zero percent</h2>
 <p>Actual start, no actual finish, and duration percent complete at zero. On a schedule reported by physical percent this fires a lot, because the duration percent is not maintained; that is why it is treated as a check. On a schedule reported by duration, it is the real signal of a stalled activity.</p>
 
-<h2 id="ch5-10">P · Pending reporting</h2>
+<h2 id="ch8-10">P · Pending reporting</h2>
 <p>One hundred percent physical with no actual finish date. It is a reporting defect, and the distinction decides who the conversation is with. Kept among the network findings, it would accuse the team of executing out of sequence when the work was done and only the date is missing. Enter the actual finish. Until then the activity stays deliberately out of the network findings.</p>
 </section>
 
 <section class="ch">
-<p class="chno">6</p><h1 class="ch" id="ch6">Network quality</h1>
+<p class="chno">9</p><h1 class="ch" id="ch9">Network quality</h1>
 <p class="lede">Does this schedule hold as a model, before any discussion of dates? Section V7 answers with the mechanical metrics of the DCMA 14-point model, each with its formula in words, declared population and quoted threshold so it can be contested, plus what a planner asks of any schedule.</p>
-<div class="note"><b>Implementation, not certification</b>The thresholds come from a published model and are quoted so they can be discussed. Two of the fourteen metrics cannot be computed from a file and the report says so instead of approximating: the critical path test requires perturbing the schedule, and the critical path length index is 1.0 by construction without a deadline on the final milestone.</div>
+<div class="note"><b>Implementation, not certification</b>The thresholds come from a published model and are quoted so they can be discussed. Two of the fourteen metrics need more than the file carries, and the report says so instead of approximating. The critical path test requires perturbing the schedule and is never computable from a file. The critical path length index is computed only when the final milestone has a deadline; without one, it is 1.0 by construction and says nothing.</div>
 
 <table>
 <tr><th>Code</th><th>Metric</th><th>Population</th><th>Threshold</th><th>Reads as</th></tr>
@@ -378,24 +610,24 @@ cronoaudit, analyse delivery.xml and save the results in ~/Reports/september</pr
 <tr><td class="c">Q9</td><td>Invalid dates</td><td>all leaves</td><td>0%</td><td>actual date after the status date</td></tr>
 <tr><td class="c">Q10</td><td>Unassigned</td><td>incomplete with duration</td><td>count</td><td>nothing to trend</td></tr>
 <tr><td class="c">Q11</td><td>Missed activities</td><td>due by the status date</td><td>≤ 5%</td><td>did not finish on time</td></tr>
-<tr><td class="c">Q12</td><td>Critical path test</td><td>—</td><td>—</td><td>not computable from a file</td></tr>
-<tr><td class="c">Q13</td><td>Critical path length index</td><td>—</td><td>—</td><td>only with a deadline on the final milestone</td></tr>
+<tr><td class="c">Q12</td><td>Critical path test</td><td>not applicable</td><td>not applicable</td><td>not computable from a file</td></tr>
+<tr><td class="c">Q13</td><td>Critical path length index</td><td>final milestone with a deadline</td><td>≥ 0.95</td><td>remaining path plus the margin to the deadline, divided by the remaining path; without a deadline, not computed</td></tr>
 <tr><td class="c">Q14</td><td>Baseline execution index</td><td>due by the status date</td><td>≥ 0.95</td><td>finished on time divided by due</td></tr>
 </table>
 
-<h2 id="ch6-1">How to read it</h2>
+<h2 id="ch9-1">How to read it</h2>
 <p>Read Q1, Q2, Q5 and Q7 before any date. A schedule that fails them is not a model of the works, and every date it produces is a number with no basis. Q6 and Q8 say whether it can be controlled. Q11 and Q14 say whether it was met. Beyond the fourteen, the report shows summaries with links, which should not exist, milestones with no deadline, the number of incomplete critical activities, and whether the critical chain reaches the final milestone, which is the test of the network being whole.</p>
-<div class="example"><b>On the example schedule</b><p>An activity pinned by a must-finish-on constraint appears in Q5. A link with a three-day lag appears in Q3. A summary carrying a link is flagged. The baseline execution index falls below the floor because a due activity did not finish.</p></div>
+<div class="example"><b>On the fictitious example</b><p>On rev04, rows 77, 89, 136 and 170 have no successor and appear in Q1: 4 of 96, below the threshold, so the network is read as linked. The same four, plus row 57, carry float above 44 working days and appear in Q6. Of 43 activities due by the status date, 28 finished on time: the baseline execution index is 0.65, below the 0.95 floor, and Q11 fails too. The final milestone has a deadline, so Q13 is computed: 1.025.</p></div>
 </section>
 
 <section class="ch">
-<p class="chno">7</p><h1 class="ch" id="ch7">Productivity and trend by resource</h1>
+<p class="chno">10</p><h1 class="ch" id="ch10">Productivity and trend by resource</h1>
 <p class="lede">Section V6 answers, for every activity in progress with a quantity, when it finishes at the actual rate, and what that does to the baseline and the critical path. Everything comes from the file's own assignments; no custom field is required.</p>
 
-<h2 id="ch7-1">Where the quantities live</h2>
+<h2 id="ch10-1">Where the quantities live</h2>
 <p>For a material resource, Project stores the quantity in the work fields, as hours of a duration. An assignment with 10,567 hours of work on a resource labelled m³ is 10,567 m³. The same rule gives executed, remaining, baseline planned and executed per day. An assignment with no resource cannot be trended, and the report counts how many there are.</p>
 
-<h2 id="ch7-2">Three rates, not one</h2>
+<h2 id="ch10-2">Three rates, not one</h2>
 <p>One rate alone is not a fair reading: a cut activity hit by a fortnight of rain shows a rate that says nothing about the crew.</p>
 <table>
 <tr><th>Rate</th><th>How</th><th>What it answers</th></tr>
@@ -405,7 +637,7 @@ cronoaudit, analyse delivery.xml and save the results in ~/Reports/september</pr
 </table>
 <p>The own rate divides by elapsed days, including days when nothing came out. A crew that produced on eight of ten days practised the ten-day rate. The planned rate also comes out, baseline quantity over baseline duration, and two required rates: remaining over working days to the forecast finish, and to the late finish.</p>
 
-<h2 id="ch7-3">Four dates, three verdicts</h2>
+<h2 id="ch10-3">Four dates, three verdicts</h2>
 <p>The remainder runs over each rate, in working days of the activity's calendar from the status date, and lands against four dates: forecast finish, baseline finish, late finish, which the file already carries with the float built in, and the projected finish.</p>
 <table>
 <tr><th>Projected lands</th><th>Verdict</th><th>Meaning</th></tr>
@@ -416,18 +648,18 @@ cronoaudit, analyse delivery.xml and save the results in ~/Reports/september</pr
 </table>
 <div class="example"><b>One case read end to end</b><p>Baseline on 30 September, forecast on the 26th, twenty days of float. If the rate projects 28 September, it is reprogram: the forecast slips, the baseline does not. If it projects 2 October, the baseline slips two days and eighteen days of float remain: no impact on the end date. If it projects more than twenty days beyond the forecast, it enters the critical path, and the date that happens appears in the table.</p></div>
 
-<h2 id="ch7-4">Thin evidence</h2>
+<h2 id="ch10-4">Thin evidence</h2>
 <p>A rate built on a few days, or on a tiny share of the planned quantity, projects absurdity with complete ease: a resource at two percent executed "finishes" in 2031. The rate is reported, because it is what the data says, but it is flagged as thin evidence when it has under ten days of data or under two percent of the planned quantity, and the verdict carries the flag. Executed derived from physical percent, rather than posted quantity, is also flagged as inferred. Read those as a question, not a verdict. The thresholds are adjustable through the profile.</p>
 
-<h2 id="ch7-5">Contracted productivity</h2>
+<h2 id="ch10-5">Contracted productivity</h2>
 <p>If the organisation keeps a contracted productivity per crew in a custom field, the profile can point to it and it appears as a comparison column beside the rates. It is an optional layer, never a requirement.</p>
 </section>
 
 <section class="ch">
-<p class="chno">8</p><h1 class="ch" id="ch8">Looking forward and looking back</h1>
+<p class="chno">11</p><h1 class="ch" id="ch11">Looking forward and looking back</h1>
 <p class="lede">Section V8 answers when the contract really finishes and what the next weeks demand. Section V9 answers where each milestone's delay came from and by which path. Both use only what the file already carries, and every reading says what it was built on.</p>
 
-<h2 id="ch8-1">Earned Schedule</h2>
+<h2 id="ch11-1">Earned Schedule</h2>
 <p>Classic earned value measures schedule in money, and at the end of the project the indicator goes to 1.0 on a project a year late. Earned Schedule measures schedule in time. Take today's earned value, go up to the planned curve and read the date the curve got there. That date is ES: where the plan said we would be.</p>
 <table>
 <tr><th>Quantity</th><th>Formula</th><th>Reads as</th></tr>
@@ -440,51 +672,52 @@ cronoaudit, analyse delivery.xml and save the results in ~/Reports/september</pr
 <tr><td class="c">TSPI</td><td>(PD minus ES) divided by (PD minus AT)</td><td>efficiency the remainder needs to finish on the date</td></tr>
 </table>
 <p>TSPI is the meeting number. Above 1.0 the remainder must run faster than the plan. Above 1.10 the literature treats it as unrecoverable, because no works sustains ten percent above plan for long. It turns "we are late" into "we need this much more per week, and that is or is not possible".</p>
-<div class="note"><b>The limit, stated in the report</b>It is an aggregate, cost-weighted measure, and it does not see the critical path: a mass of non-critical activities late shows behind while the end date holds, and the reverse too. So the independent finish never replaces the schedule's own finish. It sits beside it, and the gap between the two is the conversation. It inherits everything the planned curve inherits: the slot, the earned-value method, execution ahead of the baseline window.</div>
-<div class="example"><b>On the example schedule</b><p>Earned is far behind planned, and ES falls more than a hundred days before the status date. Schedule efficiency is below 0.2 and TSPI above 1.7: the remainder would need to run seventy percent faster than the plan. The report writes that as a question about the schedule, not as a sentence.</p></div>
+<div class="note"><b>The limit, stated in the report</b>It is an aggregate, cost-weighted measure, and it does not see the critical path: a mass of non-critical activities late shows behind while the end date holds, and the reverse too. So the independent finish never replaces the schedule's own finish. It sits beside it, and the gap between the two is the conversation. It inherits everything the planned curve inherits: the baseline used, the earned-value method, execution ahead of the baseline window.</div>
+<div class="example"><b>On the fictitious example</b><p>On rev04, ES falls on 17/10/2026, thirteen days before the status date: schedule efficiency SPI(t) of 0.947. The independent finish, 22/10/2027, is three days from the schedule's own finish, 25/10/2027, and the report reads the two as agreeing. TSPI is 1.040: the remainder needs to run 4% above the plan. The report notes that it is modest because most of the duration still lies ahead, not because the delay is small.</p></div>
 
-<h2 id="ch8-2">Look-ahead</h2>
+<h2 id="ch11-2">Look-ahead</h2>
 <p>Four and eight weeks from the status date: what must start and what must finish, by group, weighted by baseline cost; the earning the file plans for the window, pro-rata from the phased curve; and the earning the last two months' practised rate would deliver. One word says whether the planned measurement of the window is reachable.</p>
 
-<h2 id="ch8-3">Rates by group</h2>
+<h2 id="ch11-3">Rates by group</h2>
 <p>Percent earned per week to date, from the group's first earning, against the percent per week the remainder needs to land on the group's last baseline finish. The ratio required over practised gives one word per group: on pace, stretch, out of reach.</p>
 
-<h2 id="ch8-4">Milestone bands</h2>
+<h2 id="ch11-4">Milestone bands</h2>
 <p>The distribution of finish slippage, current finish minus baseline finish in calendar days, across started or due activities in this snapshot, applied to each future milestone's current finish as P50 and P80. Empirical, not a simulation with an invented premise. A series of snapshots replaces it with observed cycle-to-cycle movement.</p>
 
-<h2 id="ch8-5">Rain exposure</h2>
+<h2 id="ch11-5">Rain exposure</h2>
 <p>Remaining cost spread evenly over each activity's current span from the status date, read against the months its own calendar reserves for bad weather, a month with four or more non-working exceptions. Reported now and again with everything slipped thirty days, because slipping into the reserve is how a small delay becomes a large one. The spread is inferred; the reserve months are measured.</p>
 
-<h2 id="ch8-6">Forensics: driving path per milestone</h2>
+<h2 id="ch11-6">Forensics: driving path per milestone</h2>
 <p>Where did the delay come from, by which path, and when did it start? From each future milestone the tool walks back through the predecessor that actually drives each start, the one whose link instant plus lag lands latest on the successor's calendar, until it reaches a finished activity, because the past drives nothing, or an open end.</p>
 <p>Each node on the chain carries its finish variance against the baseline in working days. The <strong>origin</strong> is the deepest node on the chain still carrying at least five working days of variance: walking back from the milestone, variance is inherited from the driver, so the last node that still has it is where it entered. The delay gets a name and a row number, not an aggregate. The report also says which activities originate delay on the most milestones, because one name can be the root of a dozen slipped dates, whether each chain reaches started work, and whether it dies on an open end, which is finding Q1 seen from the milestone's side.</p>
+<p>Where the variance enters and where it grows most are different points, and the second is often the one worth a conversation: an origin of six days that a later activity turned into a hundred. So the report also shows, per milestone, the activity where the variance grew most against its driver's, with the working days it added, in the column Grew most at.</p>
 <div class="note"><b>Not a delay claim</b>A contractual claim needs contemporaneous records and a formal method, such as the AACE recommended practices on forensic schedule analysis. This reconstructs the mechanism from the file's dates, links and calendars, with reproducible evidence, to sustain the meeting and the notification. The contractual conversation happens in real time, with each organisation's reality.</div>
-<div class="example"><b>On the example schedule</b><p>There is a future contractual milestone with twelve working days of variance. The driving chain has three nodes, and the origin is the milestone itself: the variance did not come from any predecessor with delay of its own, which points to a typed date or to a chain broken before it.</p></div>
+<div class="example"><b>On the fictitious example</b><p>On rev04, the milestone in row 9, Conclusão do Viaduto V-01, has 25 working days of variance. The driving chain has 14 nodes. The origin is row 148, bored piles, with 11 days; the variance grows most at row 157, placing the precast beams, which adds 8. All seven future milestones have a named origin, and row 148 originates delay on two of them.</p></div>
 
-<h2 id="ch8-7">Calendar forensics</h2>
+<h2 id="ch11-7">Calendar forensics</h2>
 <p>A weather reserve registered for one year while the activities on that calendar execute in another embeds optimism nothing in the file announces: the month gets its full working days instead of its real ones. Per calendar in use, non-working exceptions per year against activity-days per year, with two flags: years with activities and no reserve while the calendar has reserve in another year, and years with reserve and no activities.</p>
 
-<h2 id="ch8-8">Execution pattern</h2>
+<h2 id="ch11-8">Execution pattern</h2>
 <p>Out-of-sequence execution by the month the successor started, counting the A1 pairs and the both-complete pairs recorded outside it. And the distribution of start slippage against the baseline across started activities: P20, P50, P80, how many started early, how many late.</p>
 
-<h2 id="ch8-9">With a previous snapshot</h2>
-<p>Float consumed per activity and per group, total float before minus total float now, in working days: float that disappears while dates hold is delay still invisible. Activities that became critical this cycle. And each milestone's movement between the snapshots, attributed to what moved on its driving chain through the comparator's three signals: execution, replan or moved reference, with the majority reading as the attribution.</p>
+<h2 id="ch11-9">With a previous snapshot</h2>
+<p>Float consumed per activity and per group, total float before minus total float now, in working days: float that disappears while dates hold is delay still invisible. Activities that became critical this cycle. And each milestone's movement between the snapshots, attributed to what moved on its driving chain through the comparator's three signals: execution, replan or moved reference, with the majority reading as the attribution. When an activity on the driving chain had its baseline moved this cycle, the reading shows the movement beside its variance, because that variance is measured against a reference that moved.</p>
 </section>
 
 <section class="ch">
-<p class="chno">9</p><h1 class="ch" id="ch9">Cycle comparison</h1>
+<p class="chno">12</p><h1 class="ch" id="ch12">Cycle comparison</h1>
 <p class="lede">The single-file review asks whether the schedule holds together inside. Comparing two asks something else: what moved since the last delivery, and was it the works that moved or the plan?</p>
 
-<h2 id="ch9-1">Input</h2>
-<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py previous.xml current.xml</pre>
+<h2 id="ch12-1">Input</h2>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml</pre>
 <p>Two snapshots of the same schedule: the previous version and the current one. Not two different schedules, and not a schedule against an application's database. Each schedule compared against itself, which is what makes the reading defensible. With two files come the comparison and the review of the current file, deliberately: comparing two files that do not hold together is comparing two wrong answers.</p>
 <p>Each snapshot needs a status date and a saved baseline. Without a baseline there is no planned half and the deviation decomposition has no denominator.</p>
 
-<h2 id="ch9-2">Matching an activity across versions</h2>
+<h2 id="ch12-2">Matching an activity across versions</h2>
 <p>First by the stable unique identifier, not the row number, which renumbers freely. Failing that, by name plus WBS path. What does not match falls into two classes, and only two: <strong>inserted</strong>, present in the current with no pair in the previous, and <strong>removed</strong>, present in the previous and never matched. A renamed activity that also moved branch is indistinguishable from a removal plus an insertion, and pretending otherwise manufactures a third category that cannot be verified. The report shows the count for the reader to judge.</p>
 <div class="note"><b>A false pair is worse than a missed pair</b>A pair that does not match lands in the unmatched list, where somebody looks. A pair matched wrongly produces a date movement, a deviation and a trend entry for two activities that have nothing to do with each other, all plausible. Summaries and milestones stay out of deviation and trend: summaries would double-count their children, and milestones have no duration.</div>
 
-<h2 id="ch9-3">The three signals</h2>
+<h2 id="ch12-3">The three signals</h2>
 <table>
 <tr><th>Signal</th><th>Reading</th></tr>
 <tr><td>dates moved <strong>and</strong> actual dates are present</td><td class="c">execution</td></tr>
@@ -493,27 +726,40 @@ cronoaudit, analyse delivery.xml and save the results in ~/Reports/september</pr
 </table>
 <p>The third is the one to look at first. When the baseline changes between two cycles, the basis of the comparison moved underneath it, and every deviation that straddles the change is measured against two references. Report it as a finding about the report, not as performance. The second is where the conversation between the parties is decided: a forecast rewritten with no execution behind it is a plan change, legitimate, but it has to be visible as one, otherwise the next cycle starts from a reference nobody agreed to.</p>
 
-<h2 id="ch9-4">The deviation decomposition</h2>
-<p>For each leaf activity with baseline cost above zero, the contribution is its earned minus planned divided by total baseline cost, in percentage points. The contributions sum to the aggregate, and those that round to zero are dropped, because a list of zeros hides the ones that matter. When the sum does not match the movement, the residue appears as <strong>unexplained</strong>, with the number, instead of vanishing. The denominator is declared: summary total or sum of the leaves.</p>
+<h2 id="ch12-4">The deviation decomposition</h2>
+<p>For each leaf activity with baseline cost above zero, the contribution is its earned minus planned divided by total baseline cost, in percentage points. The contributions sum to the aggregate, and those that round to zero are dropped, because a list of zeros hides the ones that matter. The denominator is declared: summary total or sum of the leaves.</p>
+<p>When the sum does not match the movement, the difference is the residue: everything that moved the aggregate without being progress. It does not vanish, and it is not left unnamed. The report splits it into measured terms: the earned value of inserted activities, the earned value erased with removed ones, baseline cost changed on matched activities, and the change in the total budget, which is the denominator. What remains after those terms is rounding noise; a hundredth of a point or more appears as <strong>unexplained</strong>, with the number.</p>
 <p>It is the operational answer to the aggregate problem. A positive aggregate progress can be out-of-sequence work covering activities that should be complete and sit at zero; the decomposition is what lets that be read on the spot.</p>
 
-<h2 id="ch9-5">One function, called twice</h2>
+<h2 id="ch12-5">One function, called twice</h2>
 <p>Both snapshots' indicators are computed by the same function, called twice, and not by two paths that happen to agree. If the previous cycle's figure were computed differently from the current one, the difference between them would be a reference artefact, and it would read as performance. The two halves are not verified to agree; they are built so they cannot disagree.</p>
 
-<h2 id="ch9-6">What comes out</h2>
-<p>A cycle report and a JSON, named after both files. Inside: both snapshots' general indicators by the identical rule, the movement in points, the per-activity decomposition that sums to it, the unexplained residue, the trend with the three-signal reading per activity, the moved baselines, the inserted and removed, and the warnings: a baseline that changed slot between cycles, for instance, comes out as a warning.</p>
-<div class="example"><b>On the example pair</b><p>Two activities moved dates: one with actual dates, read as execution; another without, read as replan. One had its baseline changed, and the report issues a moved-reference warning before any performance figure. The decomposition has one row, which sums to the movement.</p></div>
+<h2 id="ch12-6">What comes out</h2>
+<p>A cycle report, named after both files, <code>&lt;previous&gt;--to--&lt;current&gt;-cycle.html</code>, with its JSON and readings beside it. The warnings come first, right below the cover: rewritten past, moved baseline, changed scope, the residue with its terms. The headline figure is the schedule's finish, in calendar days against the previous delivery, and not the progress movement, which the report itself says not to quote before the measurement is checked. Then six groups, in the order they are read:</p>
+<table>
+<tr><th>Group</th><th>What it holds</th></tr>
+<tr><td>1. Deadlines and milestones</td><td>C1, the project finish before and after and the chain that holds the date now, with the current delivery's milestones against their deadline</td></tr>
+<tr><td>2. Integrity of the measurement</td><td>C5, the rewritten past; the moved baselines; the inserted and removed activities</td></tr>
+<tr><td>3. Replanning</td><td>C3, logic changed, links and constraints; C4, durations edited before any start; the dates moved, with the three-signal reading</td></tr>
+<tr><td>4. Progress</td><td>both snapshots' weighted progress by the same rule, the movement, the part the works explain, the residue, and the per-activity decomposition</td></tr>
+<tr><td>5. Float and critical path</td><td>C2, the activities that entered and left the critical path and where float fell most</td></tr>
+<tr><td>6. Network quality</td><td>C6, the fourteen metrics of both files side by side</td></tr>
+</table>
+<p>C5 is the one that outranks the rest. An actual date is a record, and a percent is a measurement already reported. When either reads differently in the next delivery, every figure the previous cycle reported on that activity rested on a past that no longer exists. It covers an actual start or finish changed or withdrawn, a percent that went down, and an activity with recorded progress that was removed, with the earned value that left with it. An actual date rewritten to land exactly on the baseline date is flagged apart, because the record was made to agree with the plan.</p>
+<p>At the end comes What to ask the contractor: a list built by the engine, one question per piece of evidence, grouped like the report, with the integrity of the measurement first. The agent quotes that list and adds only what you bring, saying that it added it.</p>
+<div class="example"><b>On the fictitious example</b><p>From rev03 to rev04, the finish moved from 04/10/2027 to 25/10/2027, 21 calendar days. Twelve activities moved dates with actual dates behind them, read as execution; 89 without, read as replan; row 132 had its baseline moved by 28 days, and the report warns about the reference before any performance figure. Progress went from 23.44% to 28.01%, a movement of 4.57 points. The decomposition sums to 4.90, and the residue of -0.33 point has two terms: -0.27 from the earned value erased with the removed row, which was at 100%, and -0.06 from the change in the total budget. The list of questions has twelve items.</p></div>
 </section>
 
 <section class="ch">
-<p class="chno">10</p><h1 class="ch" id="ch10">Profile and customisation</h1>
+<p class="chno">13</p><h1 class="ch" id="ch13">Profile and customisation</h1>
 <p class="lede">Everything an organisation may declare instead of having it coded. Every key has a default that works with no profile at all; a profile only narrows. An organisation's mapping is its own asset and does not belong in the generic method. What is generic is that it can be declared.</p>
 
-<h2 id="ch10-1">Discover before asking</h2>
-<pre>python3 ~/.claude/skills/cronoaudit/scripts/discover_fields.py delivery-review.json</pre>
-<p>It lists every custom field that actually carries values, with the type inferred from the values, the fill rate, how many distinct values there are, whether it is a closed set, and a sample. Then it groups them by likely role: discipline, work front, chainage, contractor, phase, justification, quantity, unit. It exists so nobody answers from memory. Asking which field holds the discipline makes a person recall; showing three populated fields with their values makes them recognise. A field that exists and is almost empty comes out separately, as a finding: a justification blank on 96% of activities is a compliance issue, not a field to ignore.</p>
+<h2 id="ch13-1">Discover before asking</h2>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/parse_mspdi.py rodovia-ficticia-rev04.xml -o model.json
+python3 ~/.claude/skills/cronoaudit/scripts/discover_fields.py model.json</pre>
+<p>Discovery reads the model that <code>parse_mspdi.py</code> writes from the XML. The review JSON does not carry the custom fields and does not work here. Discovery lists every custom field that actually carries values, with the type inferred from the values, the fill rate, how many distinct values there are, whether it is a closed set, and a sample. Then it groups them by likely role: discipline, work front, chainage, contractor, phase, justification, quantity, unit. It exists so nobody answers from memory. Asking which field holds the discipline makes a person recall; showing three populated fields with their values makes them recognise. A field that exists and is almost empty comes out separately, as a finding: a justification blank on 96% of activities is a compliance issue, not a field to ignore.</p>
 
-<h2 id="ch10-2">The profile keys</h2>
+<h2 id="ch13-2">The profile keys</h2>
 <table>
 <tr><th>Key</th><th>Default</th><th>Effect</th></tr>
 <tr><td class="m">organisation</td><td>empty</td><td>name shown on the report cover</td></tr>
@@ -534,51 +780,53 @@ cronoaudit, analyse delivery.xml and save the results in ~/Reports/september</pr
 </table>
 <p>A declared field the file does not have is reported at the top of the report, never silently ignored.</p>
 
-<h2 id="ch10-3">Create and edit</h2>
-<pre>python3 scripts/profile_tool.py init --out profile.json --organisation "..."
-python3 scripts/profile_tool.py discover delivery-review.json
-python3 scripts/profile_tool.py set profile.json grouping=DISCIPLINE fields.discipline=DISCIPLINE
-python3 scripts/profile_tool.py show profile.json delivery-review.json
-python3 scripts/review.py delivery.xml --profile profile.json</pre>
-<p>The profile is written by the tool, never by hand, and validated on every write. The show command resolves every declared field against the file and says which were found. A filled example ships with the skill, to copy.</p>
+<h2 id="ch13-3">Create and edit</h2>
+<pre>S=~/.claude/skills/cronoaudit/scripts
+python3 $S/profile_tool.py init --out profile.json --organisation "..."
+python3 $S/profile_tool.py discover model.json
+python3 $S/profile_tool.py set profile.json grouping=DISCIPLINA fields.discipline=DISCIPLINA
+python3 $S/profile_tool.py show profile.json model.json
+python3 $S/review.py rodovia-ficticia-rev04.xml --profile profile.json</pre>
+<p>The profile is written by the tool, never by hand, and validated on every write. The show command resolves every declared field against the file's model and says which were found. <code>profile_tool.py example</code> prints a filled profile, to copy.</p>
 
-<h2 id="ch10-4">The two interviews in the assistant</h2>
-<p>With the skill in an assistant, say <strong>customise the organisation profile</strong>. It runs discovery first, shows what the file has, and asks one question at a time only about what the file could not settle: which field is the discipline, the section, the justification, the contracted productivity; whether the declared earned-value method is the practised one; whether B and F count as findings; the threshold; the slot, only if the elected one is wrong. Say <strong>customise the report</strong> for colours, fonts, header, language and sections to hide. Deeper changes go in a copy of the template, which takes precedence and survives updates.</p>
+<h2 id="ch13-4">The two interviews in the agent</h2>
+<p>With the skill in an agent, say <strong>customise the organisation profile</strong>. It runs discovery first, shows what the file has, and asks one question at a time only about what the file could not settle: which field is the discipline, the section, the justification, the contracted productivity; whether the declared earned-value method is the practised one; whether B and F count as findings; the threshold; the baseline, only if the elected one is wrong. Say <strong>customise the report</strong> for colours, fonts, header, language and sections to hide. Deeper changes go in a copy of the template <code>templates/report.html</code>. Keep the copy outside the skill folder, because an update deletes that folder, and point to it with <code>--template</code> or the profile's <code>template</code> key.</p>
 
-<h2 id="ch10-5">The executive synthesis</h2>
-<pre>python3 scripts/inject_narrative.py delivery-review.html synthesis.txt --who "your name"</pre>
-<p>Each section's reading is generated by rule. The synthesis is different: a text written by whoever runs the analysis, or by the assistant on request, injected into the report under its own label, with author and time. The report is rebuilt from its own embedded data, so the figures cannot drift from what the text was written against. Inside an assistant, ask for the synthesis and it writes it from the JSON files and injects it; what it writes is interpretation, and is labelled as such.</p>
+<h2 id="ch13-5">The executive synthesis</h2>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/inject_narrative.py rodovia-ficticia-rev04-review.html synthesis.txt --who "your name"</pre>
+<p>Each section's reading is generated by rule. The synthesis is different: a text written by whoever runs the analysis, or by the agent on request, injected into the report under its own label, with author and time. The report is rebuilt from its own embedded data, so the figures cannot drift from what the text was written against. Inside an agent, ask for the synthesis and it writes it from the JSON files and injects it; what it writes is interpretation, and is labelled as such. In a comparison, the synthesis goes into the cycle report. In secret mode, it is written in codes and decoded by <code>finish</code>, as chapter 6 describes.</p>
 </section>
 
 <section class="ch">
-<p class="chno">11</p><h1 class="ch" id="ch11">The JSON files</h1>
-<p class="lede">Every analysis writes its data beside the report. They serve a spreadsheet, a dashboard, a historical series, or an assistant reading and writing. Key names are in English and stable across versions.</p>
+<p class="chno">14</p><h1 class="ch" id="ch14">The JSON files</h1>
+<p class="lede">Every analysis writes its data beside the report. They serve a spreadsheet, a dashboard, a historical series, or an agent reading and writing. Key names are in English and stable across versions.</p>
 
-<h2 id="ch11-1">Single-file review</h2>
-<div class="def"><div class="k">-review</div><div class="v"><span class="m">blocking</span>, what prevented the analysis; <span class="m">conventions</span>, threshold, slot and election basis, calendars in use, link types evaluated, lag honoured, ignored pairs; <span class="m">counts</span>, the three counts per finding; <span class="m">findings</span>, the activities per finding with row, name, dates, variance, float; <span class="m">pairs</span>, the explicit A1 and A2 pairs; <span class="m">ignored</span>, the both-complete pairs.</div></div>
-<div class="def"><div class="k">-scurve</div><div class="v"><span class="m">totals</span>, planned and earned to date, the alternative method, SV and SPI; <span class="m">reconciliation</span>, how many tasks the phasing closes against cost, against the file's planned and against the file's earned, and epoch blocks dropped; <span class="m">periods</span>, the monthly series with cumulatives; <span class="m">by_group</span>, one curve per group; <span class="m">provenance</span>, where each series comes from.</div></div>
+<h2 id="ch14-1">Single-file review</h2>
+<div class="def"><div class="k">-review</div><div class="v"><span class="m">blocking</span>, what prevented the analysis; <span class="m">conventions</span>, threshold, baseline and election basis, calendars in use, link types evaluated, lag honoured, ignored pairs; <span class="m">counts</span>, the three counts per finding; <span class="m">findings</span>, the activities per finding with row, name, dates, variance, float; <span class="m">pairs</span>, the explicit A1 and A2 pairs; <span class="m">ignored</span>, the both-complete pairs.</div></div>
+<div class="def"><div class="k">-scurve</div><div class="v"><span class="m">inputs</span>, what the file carries and what each reading lacks; <span class="m">totals</span>, planned and earned to date, the alternative method, SV and SPI; <span class="m">percent_vs_physical</span>, the activities that explain the gap between the two methods; <span class="m">reconciliation</span>, how many tasks the phasing closes against cost, against the file's planned and against the file's earned, and epoch blocks dropped; <span class="m">periods</span>, the monthly series with cumulatives; <span class="m">by_group</span>, one curve per group; <span class="m">provenance</span>, where each series comes from.</div></div>
 <div class="def"><div class="k">-productivity</div><div class="v"><span class="m">resources</span>, global and recent rates per resource; <span class="m">activities</span>, per activity in progress the three rates, the four dates, the verdict and the thin-evidence and inferred-executed flags; <span class="m">summary</span>, counts per verdict and unassigned assignments.</div></div>
 <div class="def"><div class="k">-quality</div><div class="v"><span class="m">metrics</span>, the fourteen with count, population, share, threshold, status and items; <span class="m">indices</span>, baseline execution index, critical activities, whether the critical chain reaches the final milestone; <span class="m">qualitative</span>, summaries with links and milestones with no deadline; <span class="m">soft_constraints</span>, the soft constraints counted.</div></div>
-<div class="def"><div class="k">-forecast</div><div class="v"><span class="m">earned_schedule</span>, every quantity from chapter 8; <span class="m">lookahead</span>, one entry per window; <span class="m">rates_by_group</span>; <span class="m">milestone_bands</span>, sample, P50, P80 and one record per milestone; <span class="m">rain_exposure</span>, remaining in reserve now and with thirty days of slip.</div></div>
-<div class="def"><div class="k">-forensics</div><div class="v"><span class="m">milestones</span>, each future milestone's driving chain with its origin; <span class="m">summary</span>, recurring origins and open chains; <span class="m">calendars</span>, reserve per year against activity-days, with flags; <span class="m">execution</span>, out-of-sequence by month and start slippage; <span class="m">cycle</span>, with two files, float consumed, became critical, attributed milestone movement.</div></div>
+<div class="def"><div class="k">-forecast</div><div class="v"><span class="m">earned_schedule</span>, every quantity from chapter 11; <span class="m">lookahead</span>, one entry per window; <span class="m">rates_by_group</span>; <span class="m">milestone_bands</span>, sample, P50, P80 and one record per milestone; <span class="m">rain_exposure</span>, remaining in reserve now and with thirty days of slip.</div></div>
+<div class="def"><div class="k">-forensics</div><div class="v"><span class="m">milestones</span>, each future milestone's driving chain with its origin and the point where the variance grew most; <span class="m">summary</span>, recurring origins and open chains; <span class="m">calendars</span>, reserve per year against activity-days, with flags; <span class="m">execution</span>, out-of-sequence by month and start slippage; <span class="m">cycle</span>, with two files, float consumed, became critical, attributed milestone movement.</div></div>
 
-<div class="def"><div class="k">-readings</div><div class="v"><span class="m">readings</span>, each section's rule-built sentences, in the report's language, exactly as the HTML shows them; <span class="m">language</span>, the detected language, its score and confidence. It is the file an assistant quotes instead of composing readings of its own.</div></div>
+<div class="def"><div class="k">-readings</div><div class="v"><span class="m">readings</span>, each section's rule-built sentences, in the report's language, exactly as the HTML shows them; <span class="m">language</span>, the detected language, its score and confidence; <span class="m">inputs</span>, what each reading needed and whether the file had it; <span class="m">baseline</span>, the name of the baseline used. It is the file an agent quotes instead of composing readings of its own.</div></div>
 
-<h2 id="ch11-2">Cycle comparison</h2>
-<div class="def"><div class="k">-cycle</div><div class="v"><span class="m">previous</span> and <span class="m">current</span>, each snapshot's general indicators by the same rule; <span class="m">movement_points</span>, <span class="m">decomposition_sums_to_points</span> and <span class="m">movement_unexplained_points</span>; <span class="m">trend</span>, per activity, days moved and the three-signal reading; <span class="m">baseline_moved</span>; <span class="m">unmatched</span>, inserted and removed; <span class="m">decomposition</span>; <span class="m">warnings</span>; <span class="m">conventions</span>, matching, population, denominator.</div></div>
+<h2 id="ch14-2">Cycle comparison</h2>
+<div class="def"><div class="k">-cycle</div><div class="v"><span class="m">previous</span> and <span class="m">current</span>, each snapshot's general indicators by the same rule; <span class="m">movement_points</span>, <span class="m">decomposition_sums_to_points</span> and <span class="m">movement_unexplained_points</span>; <span class="m">residual_terms</span> and <span class="m">residual_remainder_points</span>, the residue in named terms and what is left; <span class="m">project_finish</span>, <span class="m">critical_path</span>, <span class="m">logic</span>, <span class="m">duration_changed</span>, <span class="m">past_rewritten</span> and <span class="m">quality</span>, the C1 to C6 readings; <span class="m">trend</span>, per activity, days moved and the three-signal reading; <span class="m">baseline_moved</span>; <span class="m">unmatched</span>, inserted and removed; <span class="m">decomposition</span>; <span class="m">warnings</span> and <span class="m">warning_codes</span>; <span class="m">conventions</span>, matching, population, denominator.</div></div>
+<div class="def"><div class="k">-cycle-readings</div><div class="v"><span class="m">readings</span>, the cycle report's rule-built sentences, section by section; <span class="m">demands</span>, the list of what to ask the contractor, each item with its group, row number and text.</div></div>
 
-<h2 id="ch11-3">Two identifiers, always together</h2>
+<h2 id="ch14-3">Two identifiers, always together</h2>
 <p>In the JSON files each activity carries the stable unique identifier, which is what joins data across versions, and the visible row number, which is the only one a person finds on screen. In the report only the second appears. A finding list in unique identifiers is unusable in a meeting; a list in row numbers is unusable for joining versions. So both travel together in the data.</p>
 
-<h2 id="ch11-4">Re-reading the report as data</h2>
-<p>The HTML carries its own data embedded in a block at the end of the file. That is what allows rebuilding it to inject the synthesis, and what lets one cycle's report serve as input to the next with no database: the historical series travels inside the generated file. The cost is that the chain breaks if a cycle's file is lost, so the file is the asset. Keep it.</p>
+<h2 id="ch14-4">Re-reading the report as data</h2>
+<p>The HTML carries its own data embedded in a block at the end of the file. That is what allows rebuilding it to inject the synthesis, and decoding it at the end of secret mode. An old cycle's figures stay there, with no database: the file is the asset. Keep it. The engine compares two schedules, not two reports; to compare cycles later, keep each delivery's XML or .mpp as well.</p>
 </section>
 
 <section class="ch">
-<p class="chno">12</p><h1 class="ch" id="ch12">Limits, labels and what the tool does not decide</h1>
+<p class="chno">15</p><h1 class="ch" id="ch15">Limits, labels and what the tool does not decide</h1>
 <p class="lede">A defensible report says what it does not know. This chapter gathers the tool's limits, the labels it uses to separate measurement from inference, and the judgements that stay with the person.</p>
 
-<h2 id="ch12-1">The three labels</h2>
+<h2 id="ch15-1">The three labels</h2>
 <table>
 <tr><th>Label</th><th>Means</th><th>Example</th></tr>
 <tr><td class="c">measured</td><td>read directly from the file, reproducible by anyone with the same file</td><td>the A1 count, the planned curve, the number of calendars in use</td></tr>
@@ -587,60 +835,61 @@ python3 scripts/review.py delivery.xml --profile profile.json</pre>
 </table>
 <p>The label travels with the figure in the report and the JSON files, and an inferred figure is never presented as measured.</p>
 
-<h2 id="ch12-2">What the tool refuses to do</h2>
+<h2 id="ch15-2">What the tool refuses to do</h2>
 <ul>
 <li><strong>Assume today's date</strong> when the file has no status date. The analysis stops and says why.</li>
-<li><strong>Invent the planned half</strong> when no baseline slot carries cost. Without a baseline there is no adherence.</li>
-<li><strong>Approximate the two quality metrics</strong> a file cannot answer. Q12 and Q13 come out as not computable.</li>
+<li><strong>Invent the planned half</strong> when no baseline carries cost. Without a baseline there is no adherence.</li>
+<li><strong>Approximate the quality metrics</strong> a file cannot answer. Q12 comes out as not computable, and Q13 is computed only when the final milestone has a deadline.</li>
 <li><strong>Guess a distribution.</strong> The milestone band is empirical, from observed slippage; the rain exposure uses an even spread and says so.</li>
 <li><strong>Match activities by similarity.</strong> Only stable identifier or name plus path. The rest is inserted or removed.</li>
 <li><strong>Replace the schedule's finish</strong> with Earned Schedule's independent finish. The two sit side by side.</li>
 </ul>
 
-<h2 id="ch12-3">Judgements that stay with the person</h2>
-<p>G is a thermometer: use it to choose what to inspect, never report it alone. The physical percent may have been typed, and everything computed from it inherits that; the report says which field it used. The baseline slot is elected from the data, because the field that should declare it is not dependable; check it with whoever owns the schedule. If the calendar table shows a shift or week different from what the works practise, every date inherits the error. A thin-evidence rate is a question. A forensic origin that lands on the milestone itself points to a typed date or a broken chain, and someone has to open the file.</p>
+<h2 id="ch15-3">Judgements that stay with the person</h2>
+<p>G is a thermometer: use it to choose what to inspect, never report it alone. The physical percent may have been typed, and everything computed from it inherits that; the report says which field it used. The baseline used is elected from the data, because the field that should declare it is not dependable; check it with whoever owns the schedule. If the calendar table shows a shift or week different from what the works practise, every date inherits the error. A thin-evidence rate is a question. A forensic origin that lands on the milestone itself points to a typed date or a broken chain, and someone has to open the file.</p>
 
-<h2 id="ch12-4">Formats and scope</h2>
-<p>MS Project XML is the measured format. Reading .mpp and Primavera P6 through a Java library is optional and unverified. The tool does not produce a contractual claim, does not certify against a standard, and does not replace the meeting: it delivers what the meeting needs so it does not turn into an argument about the arithmetic.</p>
+<h2 id="ch15-4">Formats and scope</h2>
+<p>MS Project XML is the measured format. A .mpp read on Windows goes through Project itself, which exports that same XML, so it follows the same measured path. Off Windows, reading .mpp and Primavera P6 through the mpxj library, with Java, is optional and unverified. Secret mode is experimental. The tool does not produce a contractual claim, does not certify against a standard, and does not replace the meeting: it delivers what the meeting needs so it does not turn into an argument about the arithmetic.</p>
 </section>
 
 <section class="ch">
-<p class="chno">13</p><h1 class="ch" id="ch13">Frequently asked questions</h1>
+<p class="chno">16</p><h1 class="ch" id="ch16">Frequently asked questions</h1>
 
-<h2 id="ch13-1">The report flags zero on everything in a file I know has problems</h2>
+<h2 id="ch16-1">The report flags zero on everything in a file I know has problems</h2>
 <p>Look at the population line in the conventions. Summary-only files, or files with everything marked external, have no leaves to test. And run the internal test: if the positive fixture does not fire, the installation is broken.</p>
 
-<h2 id="ch13-2">cronoaudit's count does not match my macro's</h2>
-<p>First check the convention: distinct activities, as successors or as predecessors give three numbers for the same problem, and the report shows all three. Then check the baseline slot and the threshold. Finally, the both-complete pairs: cronoaudit leaves them out of A1 and records them separately. The macro implementation follows the same specification, and on the same file the counts have to match, convention by convention.</p>
+<h2 id="ch16-2">cronoaudit's count does not match my macro's</h2>
+<p>First check the convention: distinct activities, as successors or as predecessors give three numbers for the same problem, and the report shows all three. Then check the baseline used and the threshold. Finally, the both-complete pairs: cronoaudit leaves them out of A1 and records them separately. The Cronoaudit tab in Project is not another implementation: it only exports the file and calls the same engine, so it gives the same counts as the other paths.</p>
 
-<h2 id="ch13-3">Earned value does not match Project</h2>
-<p>The reconciliation at the foot of the S-curve says on how many tasks it matches and classifies those that do not. The common cause is execution ahead of the baseline window: Project only credits the phased cost when the status date reaches the window, and the method credits cost times physical at once. Both are right against their own instant. If the difference is something else, the slot may be wrong.</p>
+<h2 id="ch16-3">Earned value does not match Project</h2>
+<p>The reconciliation at the foot of the S-curve says on how many tasks it matches and classifies those that do not. The common cause is execution ahead of the baseline window: Project only credits the phased cost when the status date reaches the window, and the method credits cost times physical at once. Both are right against their own instant.</p>
+<p>Another cause: a schedule saved by Project can spread physical percent past the status date. The S-curve counts only up to the date, while the weighted progress in the verdict counts all the physical percent reported. The two figures then differ, and the report carries a reading that says so, with the points that fall after the date and how many activities carry them. If the difference is something else, the elected baseline may be wrong.</p>
 
-<h2 id="ch13-4">Why is the report in English when the schedule is mine</h2>
+<h2 id="ch16-4">Why is the report in English when the schedule is mine</h2>
 <p>The language is detected from the file's content: activity names, calendars, title. A schedule with English names produces an English report. Force it with the language option or through the profile.</p>
 
-<h2 id="ch13-5">Can I change the 30-day threshold</h2>
+<h2 id="ch16-5">Can I change the 30-day threshold</h2>
 <p>Yes, through the command-line option or the profile. The report then declares the new value in the conventions. It counts in working days of the activity's calendar, so thirty working days on a six-day week are about 35 calendar days.</p>
 
-<h2 id="ch13-6">E flagged activities that were only reprogrammed</h2>
+<h2 id="ch16-6">E flagged activities that were only reprogrammed</h2>
 <p>That is what E looks for: finish pulled earlier with no execution. Reprogramming earlier can be legitimate, but it needs a reason, and E is the list of questions. If the reason exists, it gets recorded; if not, the forecast is optimistic.</p>
 
-<h2 id="ch13-7">Does sensitive data leave the machine</h2>
-<p>No. The tool does not access the network. The report is a local file with no external reference. An assistant only sees what it is shown, and the synthesis is the only part it writes.</p>
+<h2 id="ch16-7">Does sensitive data leave the machine</h2>
+<p>Not from the engine: it runs on your computer and does not use the network, and the report is a local file with no external reference. The installers download only the repository from GitHub and, on Windows and if needed, Python from python.org. The agent is different. In free mode, what it reads (the schedule, the report, your questions) goes to its provider, under the terms of your account or your company's. In secret mode, experimental, it reads only a coded copy, plus what you type. If the company's policy does not allow an agent, use the engine alone or the tab's Sem IA buttons. Chapter 6 deals with both modes.</p>
 
-<h2 id="ch13-8">How do I update</h2>
-<p>Run the installer again. It replaces the skill and keeps a customised template, if there is one. The organisation profile stays where it was saved and is not touched.</p>
+<h2 id="ch16-8">How do I update</h2>
+<p>Run the same install command again. It deletes the skill folder and copies the whole new version. The mode preference and the vault, in <code>~/.cronoaudit</code>, the organisation profile and the reports stay where they are. A customised template kept inside the skill folder would be deleted: keep it outside and point to it with <code>--template</code> or the profile's <code>template</code> key. For the Project tab, run the tab installer again.</p>
 
-<h2 id="ch13-9">Does it work with Primavera P6</h2>
+<h2 id="ch16-9">Does it work with Primavera P6</h2>
 <p>The method transfers, but nothing was measured in that format. Reading through a Java library exists as an optional path and the result should be treated as unverified.</p>
 </section>
 
 <section class="ch">
-<p class="chno">14</p><h1 class="ch" id="ch14">Glossary</h1>
+<p class="chno">17</p><h1 class="ch" id="ch17">Glossary</h1>
 <p class="lede">The terms as the report uses them, in English, with the Portuguese equivalent.</p>
 <dl class="gloss">
 <dt>Baseline <i>linha de base</i></dt><dd>Copy of the plan saved at an instant, against which variance is measured.</dd>
-<dt>Baseline slot <i>gaveta de linha de base</i></dt><dd>One of the eleven copies of the plan Project keeps, 0 to 10. Elected by cost coverage.</dd>
+<dt>Baseline used <i>linha de base usada</i></dt><dd>Of the eleven baselines Project keeps (Baseline and Baseline 1 to 10), the one the analysis uses. Elected by cost coverage.</dd>
 <dt>Counting convention <i>convenção de contagem</i></dt><dd>How activities are counted in a network finding: distinct, as successors or as predecessors.</dd>
 <dt>Critical path <i>caminho crítico</i></dt><dd>Chain of activities with zero total float, from start to finish. Any delay on it moves the end.</dd>
 <dt>Deadline <i>data limite</i></dt><dd>Milestone field that reveals slippage without moving any date. Not a constraint.</dd>
@@ -648,6 +897,7 @@ python3 scripts/review.py delivery.xml --profile profile.json</pre>
 <dt>Driving path <i>caminho condutor</i></dt><dd>Chain of predecessors that actually sets a milestone's date, chosen link by link by the one that lands latest.</dd>
 <dt>Earned Schedule <i>ES</i></dt><dd>Date at which the planned curve reached today's earned value. Schedule measured in time.</dd>
 <dt>Finish variance <i>variação de término</i></dt><dd>Current finish minus baseline finish, in working days of the activity's calendar.</dd>
+<dt>Free mode, secret mode <i>modo livre, modo secreto</i></dt><dd>In free mode the agent reads the schedule, and what it reads goes to its provider. In secret mode, experimental, it reads only a coded copy.</dd>
 <dt>FS, SS, FF, SF <i>TI, II, TT, IT</i></dt><dd>Finish-to-start, start-to-start, finish-to-finish, start-to-finish: the four link types.</dd>
 <dt>Lag and lead <i>lag, lead</i></dt><dd>Mandatory wait and permitted overlap on a link. A lead is negative lag.</dd>
 <dt>Leaf activity <i>atividade folha</i></dt><dd>Activity with no children in the WBS. The only one the analysis counts; summaries are aggregations of it.</dd>
@@ -656,7 +906,8 @@ python3 scripts/review.py delivery.xml --profile profile.json</pre>
 <dt>Physical percent complete <i>percentual físico</i></dt><dd>How much of the work is out, declared. Distinct from duration percent.</dd>
 <dt>Planned and earned value <i>previsto e realizado</i></dt><dd>What should have been earned by the status date, and what was earned.</dd>
 <dt>Profile <i>perfil</i></dt><dd>File that declares an organisation's conventions and fields instead of coding them.</dd>
-<dt>Reference <i>referência, datum</i></dt><dd>Slot, instant, population and unit against which a figure is measured. Two halves against different references do not compare.</dd>
+<dt>Reference <i>referência, datum</i></dt><dd>Baseline, instant, population and unit against which a figure is measured. Two halves against different references do not compare.</dd>
+<dt>Rewritten past <i>passado reescrito</i></dt><dd>An actual date changed or withdrawn, a percent that went down, or an activity with progress removed, from one delivery to the next. A finding about the record, not about the works.</dd>
 <dt>S-curve <i>curva S</i></dt><dd>Cumulative planned and earned over time. The gap between the curves is the delay in money.</dd>
 <dt>SPI <i>IDP</i></dt><dd>Schedule performance index: earned divided by planned, in money.</dd>
 <dt>Status date <i>data de status</i></dt><dd>Date up to which progress is valid. Every planned against actual is measured at it.</dd>

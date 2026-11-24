@@ -42,6 +42,8 @@ R = {
         "recon_gap": "The skill's earned value differs from the file's on {u} {u?leaf|leaves} without explanation; check which baseline is in use and the earned-value method before trusting either figure.",
         "spi": "Cumulative SPI is {s}: the works has earned {pct}% of what the plan expected by now.",
         "method_gap": "The other earned-value method would read {alt}% instead of {e}%, a gap of {g} {g?point|points}. Switching method changes the curve, not the works.",
+        "after_status": "{a} {a?point|points} of earned value {a?falls|fall} after the status date: the file spreads the physical percent of {n} {n?activity|activities} beyond it. So the S-curve reads {e}% to date, while the weighted progress in the verdict, which counts all the physical percent reported, reads {w}%.",
+        "after_status_part": "{a} {a?point|points} of earned value {a?falls|fall} after the status date: the file spreads the physical percent of {n} {n?activity|activities} beyond it, and the S-curve counts only up to the date.",
         "earned_before_plan": "{v} ({pct}% of the baseline cost) was earned before the first planned day, {d}: execution ahead of its baseline window, which the tool credits only when the status date reaches the window.",
         "weight_top": "{g} carries {w}% of the budget and stands at {e}% earned against {p}% planned.",
         "weight_behind": "{n} {n?group is|groups are} more than {d} {d?point|points} behind their own plan; the largest is {g}.",
@@ -119,6 +121,8 @@ R = {
         "recon_gap": "O valor agregado da skill difere do arquivo em {u} {u?folha|folhas} sem explicação; confira qual linha de base está em uso e o método antes de confiar em qualquer dos dois.",
         "spi": "O IDP acumulado é {s}: a obra agregou {pct}% do que o plano esperava até agora.",
         "method_gap": "O outro método de valor agregado leria {alt}% em vez de {e}%, diferença de {g} {g?ponto|pontos}. Trocar o método muda a curva, não a obra.",
+        "after_status": "{a} {a?ponto|pontos} do valor agregado {a?cai|caem} depois da data de status: o arquivo espalha o físico de {n} {n?atividade|atividades} além dela. Por isso a curva S lê {e}% até a data, e o avanço ponderado do veredito, que conta todo o físico informado, lê {w}%.",
+        "after_status_part": "{a} {a?ponto|pontos} do valor agregado {a?cai|caem} depois da data de status: o arquivo espalha o físico de {n} {n?atividade|atividades} além dela, e a curva S conta só até a data.",
         "earned_before_plan": "{v} ({pct}% do custo de linha de base) foi agregado antes do primeiro dia previsto, {d}: execução antes da janela de linha de base, que a ferramenta só credita quando a data de status alcança a janela.",
         "weight_top": "{g} carrega {w}% do orçamento e está em {e}% realizado contra {p}% previsto.",
         "weight_behind": "{n} {n?grupo está|grupos estão} mais de {d} {d?ponto|pontos} atrás do próprio previsto; o maior é {g}.",
@@ -293,6 +297,19 @@ def build(payload: dict, lang: str) -> dict:
         # The percentage is read from the index as displayed, so "0,902" and "90,2%"
         # cannot disagree in the same sentence.
         add("scurve", "spi", s=_n(T_["spi"], 3), pct=_n(half_up(T_["spi"], 3) * 100, 1))
+    # Earned value the file credits after the status date (a tool saving progress
+    # spread past it): the curve counts to the date, the verdict counts it all. The
+    # sentence says the two differ for this reason only when the two figures differ
+    # by exactly this amount; otherwise it names the amount and claims nothing more.
+    bac_, after_ = s.get("bac") or 0, T_.get("earned_phased_after_status") or 0
+    after_pts = after_ / bac_ * 100 if bac_ else 0
+    if after_pts >= 0.005:
+        w_, e_ = m.get("percent_earned"), T_.get("earned_pct")
+        n_ = T_.get("earned_after_status_tasks") or 0
+        if w_ is not None and e_ is not None and abs((w_ - e_) - after_pts) <= 0.011:
+            add("scurve", "after_status", a=_n(after_pts, 2), n=_n(n_, 0), e=_n(e_, 2), w=_n(w_, 2))
+        else:
+            add("scurve", "after_status_part", a=_n(after_pts, 2), n=_n(n_, 0))
     if T_.get("earned_alt_pct") is not None and abs(T_.get("method_gap_points") or 0) >= 0.01:
         add("scurve", "method_gap", alt=_n(T_["earned_alt_pct"], 2), e=_n(T_.get("earned_pct"), 2),
             g=_n(abs(T_["method_gap_points"]), 2))

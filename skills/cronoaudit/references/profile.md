@@ -42,6 +42,7 @@ baseline slot only if the elected one is wrong.
 
 **Report.** Accent and severity colours, font stacks, a header label, the language if it should
 not follow the schedule, and sections to hide. Deeper changes go in a copy of the template:
-`templates/report.custom.html` takes precedence and survives updates.
+`templates/report.custom.html` takes precedence. An update replaces the whole skill folder, so
+keep the copy outside it too and point to it with `--template` or the profile's `template` key.
 
 `profile.example.json` at the skill root is a filled example to copy.

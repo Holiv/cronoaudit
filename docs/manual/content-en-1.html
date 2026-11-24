@@ -7,26 +7,28 @@
 <p>The manual assumes no prior knowledge of the concepts. Chapter 2 explains each one from scratch. Readers who already have them can go straight to chapter 3.</p>
 
 <h2>What goes in and what comes out</h2>
-<div class="def"><div class="k">Input</div><div class="v">The schedule exported from MS Project as XML, which is Project's own documented format. One file for the critical review; two files, previous and current, for the cycle comparison.</div></div>
-<div class="def"><div class="k">Output</div><div class="v">A self-contained HTML report with no external reference, which opens in any browser and prints to PDF. Beside it, one JSON file per analysis, for whoever wants the data outside the report.</div></div>
+<div class="def"><div class="k">Input</div><div class="v">The MS Project schedule. On any system, the XML that Project itself exports, which is its documented format. On Windows with Project installed, also the .mpp itself, or the schedule open in Project. One file for the critical review; two files, previous and current, for the cycle comparison.</div></div>
+<div class="def"><div class="k">Output</div><div class="v">A self-contained HTML report with no external reference, which opens in any browser and prints to PDF. Beside it, JSON files with the same data, for whoever wants it outside the report.</div></div>
 <div class="def"><div class="k">Language</div><div class="v">The schedule's. The tool detects it from the content and writes the report in Portuguese or English. It can be forced.</div></div>
-<div class="def"><div class="k">Requirements</div><div class="v">Python 3.9 or later. Nothing else. No data leaves the machine.</div></div>
+<div class="def"><div class="k">Paths</div><div class="v">Three: talking to an AI agent, clicking the Cronoaudit tab inside Project, or running the engine alone, with no AI. Chapter 4 shows all three.</div></div>
+<div class="def"><div class="k">Requirements</div><div class="v">Python 3.9 or later; on Windows, the installer brings one if it is missing. To read the .mpp directly, MS Project on Windows. The engine does not use the network. What an agent reads goes to its provider, and chapter 6 deals with that.</div></div>
 
-<h2>The eight answers in the report</h2>
+<h2>What the report answers</h2>
 <table>
 <tr><th>Section</th><th>Question it answers</th></tr>
 <tr><td>Verdict and findings</td><td>Does the logic hold? Which dates have elapsed, moved, or are misreported?</td></tr>
+<tr><td>Deadlines and milestones</td><td>Does each milestone finish within its deadline? With what margin, and where does its delay start?</td></tr>
 <tr><td>S-curve</td><td>Where should the contract be, where is it, and does the tool's figure match Project's?</td></tr>
 <tr><td>Progress by group</td><td>Did progress happen where the money is?</td></tr>
 <tr><td>Productivity</td><td>At three rates, when does each activity in progress finish, and does it enter the critical path?</td></tr>
 <tr><td>Network quality</td><td>Does the schedule work as a model, before any discussion of dates?</td></tr>
 <tr><td>Looking forward</td><td>When does it really finish, what do the next weeks demand, and where does the pace fall short?</td></tr>
 <tr><td>Forensics</td><td>Where did each milestone's delay come from, by which path, and when did it start?</td></tr>
-<tr><td>Cycle comparison</td><td>What changed since the last delivery: execution, replanning, or the reference itself?</td></tr>
+<tr><td>Cycle comparison</td><td>What changed since the last delivery: the deadlines, the integrity of the measurement, the plan, the progress? Was it execution, replanning or the reference itself? And what to ask the contractor?</td></tr>
 </table>
 
 <h2>What it does not do</h2>
-<p>It does not read Primavera P6: the method transfers, but nothing was measured in that format. It does not produce a contractual delay claim: the forensics reconstruct the mechanism, and a claim needs contemporaneous records and a formal method. It does not certify against the DCMA standard: the fourteen metrics are implemented and labelled as an implementation. And it never invents a distribution, a default value or a figure the file does not carry. Chapter 12 covers this in detail.</p>
+<p>It does not read Primavera P6: the method transfers, but nothing was measured in that format. It does not produce a contractual delay claim: the forensics reconstruct the mechanism, and a claim needs contemporaneous records and a formal method. It does not certify against the DCMA standard: the fourteen metrics are implemented and labelled as an implementation. And it never invents a distribution, a default value or a figure the file does not carry. Chapter 15 covers this in detail.</p>
 </section>
 
 <section class="ch">
@@ -38,7 +40,7 @@
 <p>When the scheduling tool recalculates dates, it walks this network. If the network says one thing and the works do another, every calculated date rests on logic that is not being followed. That is why the report checks the network before any date.</p></div>
 
 <div class="concept"><div class="k">Baseline</div>
-<p>The baseline is a copy of the plan saved at a certain moment: dates, durations and costs as they were when the plan was approved. Everything the report calls variance, delay or pull-forward is measured against it. MS Project keeps up to eleven baselines, numbered 0 to 10, and a schedule that has grown may hold the current one in a slot that is not the default. Which slot counts is a choice, and cronoaudit makes it from the data, not from a field that declares and is not confirmed.</p></div>
+<p>The baseline is a copy of the plan saved at a certain moment: dates, durations and costs as they were when the plan was approved. Everything the report calls variance, delay or pull-forward is measured against it. MS Project keeps up to eleven baselines: Baseline and Baseline 1 to 10. A schedule that has grown may hold the one in force in one that is not the default. Which one counts is a choice, and cronoaudit makes it from the data, not from a field that declares and is not confirmed.</p></div>
 
 <div class="concept"><div class="k">Status date</div>
 <p>The date up to which progress is valid: the schedule's "today". Every comparison of planned against actual is made at it. A file without a status date cannot be analysed honestly, and cronoaudit refuses to assume today's date instead, because that would change the answer every day the analysis was repeated.</p></div>
@@ -56,96 +58,299 @@
 <p>An activity's total float is how much it can slip without moving the project finish. Zero float means any delay there pushes the end: the activity is critical. The critical path is the chain of critical activities from start to finish. An activity with float can slip until it consumes it; after that, it enters the critical path. Project computes float, early and late dates and the critical flag; cronoaudit reads those fields rather than recomputing them.</p></div>
 
 <div class="concept"><div class="k">Earned Schedule</div>
-<p>Classic earned value measures schedule in money, and that has a defect: at the end of the project earned always reaches the budget, so the schedule indicator goes to 1.0 even on a project a year late. Earned Schedule measures schedule in time: it asks on what date the planned curve reached the value earned today. That date, compared with the time elapsed, gives a schedule efficiency and an independent finish, which is set against the finish the schedule projects. Chapter 8 details the formulas.</p></div>
+<p>Classic earned value measures schedule in money, and that has a defect: at the end of the project earned always reaches the budget, so the schedule indicator goes to 1.0 even on a project a year late. Earned Schedule measures schedule in time: it asks on what date the planned curve reached the value earned today. That date, compared with the time elapsed, gives a schedule efficiency and an independent finish, which is set against the finish the schedule projects. Chapter 11 details the formulas.</p></div>
 
 <div class="concept"><div class="k">Productivity by resource</div>
 <p>A material resource, such as cubic metres of cut, has planned, executed and remaining quantities per activity. Productivity is quantity per working day. Comparing the practised rate with the required one says whether the activity finishes when the schedule says. cronoaudit reads the quantities from the file's own assignments, with no custom field.</p></div>
 
 <div class="concept"><div class="k">The reference question</div>
-<p>An indicator that compares planned with actual has two halves. If they are measured against different references, another baseline slot, another instant, another population, another unit, the difference between them means nothing, and the number comes out plausible. It is the failure cronoaudit looks for everywhere. The question that finds it: are all the terms of this calculation measured against the same reference?</p></div>
+<p>An indicator that compares planned with actual has two halves. If they are measured against different references, another baseline, another instant, another population, another unit, the difference between them means nothing, and the number comes out plausible. It is the failure cronoaudit looks for everywhere. The question that finds it: are all the terms of this calculation measured against the same reference?</p></div>
 </section>
 
 <section class="ch">
 <h1>Installation and first run</h1>
-<p class="lede">cronoaudit is an Agent Skill: a folder with instructions for an assistant and the programs that do the work. It installs by copying that folder to where the assistant looks for skills. The installer does that for every assistant at once.</p>
+<p class="lede">cronoaudit is an Agent Skill: a folder with instructions for an AI agent and the programs that do the work. It installs by copying that folder to where agents look for skills. One command does that for every agent at once, and leaves the engine ready to run without an agent too.</p>
 
 <h2>Install with one command</h2>
-<p>On macOS or Linux, in a terminal:</p>
-<pre>curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash</pre>
-<p>On Windows, in PowerShell:</p>
+<p>On Windows, in PowerShell: press the Windows key, type PowerShell and click Windows PowerShell. Use that window, not Command Prompt.</p>
 <pre>irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex</pre>
-<p>The installer downloads the package, copies the skill to the two directories that, together, every assistant reads, and runs the tool's internal test as proof of installation. At the end it shows where the skill went and how to invoke it. Restart the assistant after installing, because skills are read at the start of each session.</p>
+<p>On macOS or Linux, in Terminal:</p>
+<pre>curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash</pre>
+<p>The installer downloads the repository from GitHub, copies the skill to the two folders below and runs the tool's internal test as proof of installation. At the end you see the line <code>cronoaudit ... is installed</code>, with the version number, and the exact command to run the engine on this machine. Restart the agent after installing, because skills are read at the start of each session.</p>
+<div class="note"><b>Python on Windows</b>cronoaudit needs Python 3.9 or later. On Windows, if there is no working Python, the installer brings its own copy: the official package from python.org, checked against its SHA-256 before it is unpacked, in <code>%LOCALAPPDATA%\cronoaudit\python</code>. It needs no administrator rights and changes neither the registry nor the PATH. Deleting that folder removes this Python completely. On macOS and Linux, Python must already be installed; if it is missing, the installer stops and says so.</div>
 <table>
-<tr><th>Directory</th><th>Who reads it</th></tr>
+<tr><th>Folder</th><th>Who reads it</th></tr>
 <tr><td class="m">~/.claude/skills/cronoaudit</td><td>Claude Code, OpenCode, Cursor</td></tr>
-<tr><td class="m">~/.agents/skills/cronoaudit</td><td>Codex, Gemini CLI, Cursor, GitHub Copilot, VS Code, OpenCode</td></tr>
+<tr><td class="m">~/.agents/skills/cronoaudit</td><td>Codex, GitHub Copilot, Grok Build, Gemini CLI, Cursor, VS Code, OpenCode</td></tr>
 </table>
-<p>Each assistant also has a native install path: <code>npx skills add Holiv/cronoaudit -g</code> in any client of the format, <code>gemini skills install</code> with the repository URL in Gemini CLI, Codex's skill installer, Cursor's Remote Rule, and the Claude Code plugin. The repository README keeps the table current.</p>
+<p>On Windows, <code>~</code> is <code>%USERPROFILE%</code>: the folders are <code>%USERPROFILE%\.claude\skills\cronoaudit</code> and <code>%USERPROFILE%\.agents\skills\cronoaudit</code>. So far cronoaudit has been tested end to end with Claude Code and, in free mode, with GitHub Copilot CLI (21/11/2026, from the Project tab). For the other agents, the folder and the installation follow what the providers document. Secret mode has been tested with Claude Code only. To check, start the agent and ask which skills it has.</p>
 
-<h2>With no assistant at all</h2>
-<p>The tool works without artificial intelligence. Clone or download the repository and run the program directly. Everything is produced except the written executive synthesis and the customisation interview, which are the two parts that depend on an assistant.</p>
+<h2>Update</h2>
+<p>Run the same command again. The installer deletes both skill folders and copies the new version in full. What lives elsewhere is not touched: the mode preference and the secret-mode vault, in <code>~/.cronoaudit</code>; the reports; the organisation profile, which stays where it was saved. So keep nothing of your own inside the skill folder, because the next update deletes it. A customised report template lives outside it, pointed to by the <code>--template</code> option or the profile's <code>template</code> key.</p>
+
+<h2>An agent, to talk to</h2>
+<p>Path A and the tab's Analisar button need an agent installed and signed in. Use the agent you prefer, or the one your company allows on your computer. The repository README gives the official install commands for Claude Code, GitHub Copilot CLI, Codex and Grok Build, with each provider's guide. Each agent needs an account with its provider; check which plan includes it and your company's policy. Without an agent, the engine and the tab's Sem IA buttons work the same way.</p>
+
+<h2>Other ways to install</h2>
+<table>
+<tr><th>Route</th><th>Command</th></tr>
+<tr><td>Any Agent Skills client</td><td class="m">npx skills add Holiv/cronoaudit -g</td></tr>
+<tr><td>Claude Code, as a plugin</td><td class="m">/plugin marketplace add Holiv/cronoaudit<br>/plugin install cronoaudit@cronoaudit</td></tr>
+<tr><td>Codex</td><td class="m">$skill-installer https://github.com/Holiv/cronoaudit</td></tr>
+<tr><td>A team, through the project</td><td class="m">git clone https://github.com/Holiv/cronoaudit .agents/skills/cronoaudit</td></tr>
+</table>
+<p>On Windows, three variables change the installer. Set them in the same window, before the command: <code>$env:CRONOAUDIT_NO_PYTHON="1"</code> never downloads Python; <code>$env:CRONOAUDIT_EMBED_PYTHON="1"</code> uses the bundled Python even if there is another; <code>$env:CRONOAUDIT_REF="branch-name"</code> installs from another branch.</p>
+
+<h2>First run: the fictitious example</h2>
+<p>The repository carries two deliveries of an invented road project, one month apart: <code>rodovia-ficticia-rev03.xml</code>, with status date 30/09/2026, and <code>rodovia-ficticia-rev04.xml</code>, at 30/10/2026. Road, section, companies, quantities, prices and dates were made up for the example. There are 142 activities, nine milestones with a deadline, two calendars with a rain reserve, and fourteen problems planted on purpose. The files are in the repository's <code>examples/</code> folder and do not come with the installed skill: clone the repository or download the two files.</p>
 <pre>git clone https://github.com/Holiv/cronoaudit
-python3 cronoaudit/skills/cronoaudit/scripts/review.py delivery.xml</pre>
-
-<h2>Exporting the schedule</h2>
-<p>The .mpp file is a closed proprietary format. cronoaudit reads the XML that Project itself exports, which is a documented format and carries everything the analysis needs: tasks, links with lag, the eleven baselines, calendars, custom fields, assignments and the time-phased data.</p>
-<div class="note"><b>In MS Project</b>File, Save As, and under file type choose XML Format. Keep the XML beside the .mpp. When the XML is sent with the .mpp by whoever produces the schedule, this step disappears from the routine.</div>
-<p>There is an optional path to read .mpp directly, through a Java library, for whoever has it installed. It is never required.</p>
-
-<h2>First run</h2>
-<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py delivery.xml</pre>
-<p>On a schedule of six thousand activities the run takes under a minute. The terminal shows the summary: baseline slot used, threshold, population, counting convention, and the list of nine findings with each one's activity count. Next to the input file sit the results.</p>
+cd cronoaudit
+python3 ~/.claude/skills/cronoaudit/scripts/review.py examples/rodovia-ficticia-rev04.xml</pre>
+<p>On Windows, in PowerShell, the interpreter is <code>python</code>, and the skill's path is written like this:</p>
+<pre>python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" examples\rodovia-ficticia-rev04.xml</pre>
+<p>If the installer brought its own Python, it is not on the PATH, and <code>python</code> is not recognised. Use the command the installer showed at the end. It calls the bundled Python by its path, <code>&amp; "$env:LOCALAPPDATA\cronoaudit\python\python.exe"</code>, followed by the path of <code>review.py</code>.</p>
+<p>While the mode preference is <code>ask</code>, the factory default, the engine asks for the mode before opening the file: <code>s</code> goes on in free mode, <code>secreto</code> switches to secret mode, <code>nunca</code> goes on in free mode and stops asking, <code>n</code> cancels. With no agent, nothing leaves the computer in either mode. Answer <code>s</code>, or add <code>--free</code> to the command. Chapter 6 explains the modes.</p>
+<p>The terminal shows the summary: the baseline used and why, the threshold, the population, the counting convention, and the nine findings with each one's count. On rev04, A1 flags two activities: row 36, priming on segment 1, started while row 35, graded crushed-stone base, was still open. The other eight stay at zero. On a real schedule of 6,484 tasks and 107 calendars, the analysis took 29 seconds on an ordinary laptop, measured on 22/11/2026. The results sit beside the input file, where <code>&lt;name&gt;</code> is the file's name, here <code>rodovia-ficticia-rev04</code>.</p>
 <table>
 <tr><th>File</th><th>What it is for</th></tr>
-<tr><td class="m">delivery-review.html</td><td>the report, to open, present and print to PDF</td></tr>
-<tr><td class="m">delivery-review.json</td><td>the findings as data</td></tr>
-<tr><td class="m">delivery-review-scurve.json</td><td>the monthly and per-group S-curve</td></tr>
-<tr><td class="m">delivery-review-productivity.json</td><td>rates by resource and by activity</td></tr>
-<tr><td class="m">delivery-review-quality.json</td><td>the fourteen metrics with their items</td></tr>
-<tr><td class="m">delivery-review-forecast.json</td><td>Earned Schedule, look-ahead, bands, rain</td></tr>
-<tr><td class="m">delivery-review-forensics.json</td><td>driving chains and execution pattern</td></tr>
-<tr><td class="m">delivery-review-readings.json</td><td>each section's rule-built readings, to quote without composing</td></tr>
+<tr><td class="m">&lt;name&gt;-review.html</td><td>the report, to open, present and print to PDF</td></tr>
+<tr><td class="m">&lt;name&gt;-review.json</td><td>the findings as data</td></tr>
+<tr><td class="m">&lt;name&gt;-review-scurve.json</td><td>the monthly and per-group S-curve</td></tr>
+<tr><td class="m">&lt;name&gt;-review-productivity.json</td><td>rates by resource and by activity</td></tr>
+<tr><td class="m">&lt;name&gt;-review-quality.json</td><td>the fourteen metrics with their items</td></tr>
+<tr><td class="m">&lt;name&gt;-review-forecast.json</td><td>Earned Schedule, look-ahead, bands, rain</td></tr>
+<tr><td class="m">&lt;name&gt;-review-forensics.json</td><td>driving chains and execution pattern</td></tr>
+<tr><td class="m">&lt;name&gt;-review-readings.json</td><td>each section's rule-built readings, to quote without composing</td></tr>
 </table>
-<p>Useful options: <code>--outdir</code> to choose where to write, <code>--group-by</code> to group weight by a custom field, <code>--profile</code> to apply the organisation profile, <code>--lang</code> to force the language, <code>--threshold-days</code> and <code>--tolerance-days</code> to move the thresholds.</p>
+<p>Now the comparison of the two deliveries, previous first:</p>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py examples/rodovia-ficticia-rev03.xml examples/rodovia-ficticia-rev04.xml</pre>
+<p>Out come the review of rev04, as above, and the cycle report, <code>rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html</code>, with its JSON and readings beside it. The project finish moved from 04/10/2027 to 25/10/2027, 21 days later. Before progress, the report points to the rewritten past: the actual finish of row 29 changed and now equals the baseline date, and row 119, which was at 100%, was removed. At the end come twelve ready questions for the contractor. Chapter 12 describes this report.</p>
+<p>The figures in this manual come from the two XML files as they are, run with this version. Opened and saved in Project, the example is recalculated: forecast dates, float and earned value change, and some of the figures change with them.</p>
 
-<h2>Inside an assistant: how to start the conversation</h2>
-<p>With the skill installed, no command needs to be remembered. The assistant reads the skill's instructions, runs the programs, reads the results and talks about them. The figures always come from the programs; the assistant orchestrates, interprets and writes. What follows is the most direct way to begin.</p>
-<h3>Where to open</h3>
-<p>The assistant reads the local disk, so it has to know where the file is. Two equivalent ways: open the terminal in the folder that holds the XML and start the assistant there, or start anywhere and give the full path in the first message. When the folder holds more than one XML, the message should name the file; the assistant is instructed to list the files and ask which one to use, never to choose silently.</p>
-<h3>The first message</h3>
-<pre>cronoaudit, review the schedule delivery-september.xml
-cronoaudit, analyse the schedule at ~/Schedules/2026-09/delivery.xml
-cronoaudit, compare previous.xml with current.xml
-cronoaudit, analyse delivery.xml and save the results in ~/Reports/september</pre>
-<p>The skill's name at the start of the message makes sure the assistant loads it. From there the language is free.</p>
-<h3>What happens next</h3>
-<p>The analysis runs once. It and the report are the same command: whenever the analysis runs, the HTML report and the JSON files are written beside the XML, or in the folder named in the message. The assistant states the report's full path in its first reply. After that the conversation continues over the data already written, point by point, without running again. Nothing is sent anywhere; the files stay where they were written.</p>
-<p>The report does not have to be opened for the conversation to happen. A finding, a rate or a milestone can be discussed for an hour before the HTML is opened, or it may never be opened. The executive synthesis is written only when asked for.</p>
-<h3>Useful questions and requests</h3>
-<table>
-<tr><th>Request</th><th>What it produces</th></tr>
-<tr><td>save the results in ~/Reports/september</td><td>writes the report and the JSON files in the named folder, creating it if needed</td></tr>
-<tr><td>group by DISCIPLINE</td><td>the progress-by-group view uses the custom field instead of the WBS</td></tr>
-<tr><td>use the profile profile.json</td><td>applies the organisation's declared conventions</td></tr>
-<tr><td>report in Portuguese</td><td>forces the language, ignoring detection</td></tr>
-<tr><td>explain finding A1 before anything else</td><td>the assistant reads the pairs and explains each, writing no synthesis</td></tr>
-<tr><td>which C activities carry the most baseline cost?</td><td>orders the finding by weight, which the report table does not</td></tr>
-<tr><td>when does it finish by Earned Schedule, and what does that reading not see?</td><td>the independent finish beside the schedule's own, with the limit stated</td></tr>
-<tr><td>where did the delay on the milestone in row 412 come from?</td><td>the driving chain and the origin, with row numbers</td></tr>
-<tr><td>which rates are thin evidence?</td><td>separates the supported verdicts from the ones that are questions</td></tr>
-<tr><td>write the executive synthesis and inject it into the report</td><td>four to six paragraphs, with author and time, from the JSON files</td></tr>
-<tr><td>customise the organisation profile</td><td>the profile interview, starting with field discovery</td></tr>
-<tr><td>run it again, the file changed</td><td>a new analysis over the updated XML, overwriting the results</td></tr>
-</table>
-<h3>Free plans</h3>
-<p>Without an assistant the tool is entirely free: Python and the command produce the full report with the rule-built readings. With an assistant it depends on the assistant's plan. As of this edition, Claude Code is not part of Anthropic's free plan and requires a subscription or API credit; Gemini CLI and GitHub Copilot offer free tiers that read the Agent Skills format. Plans change; check at the time.</p>
+<h2>Reading a .mpp directly, on Windows</h2>
+<p>On Windows with MS Project installed, there is nothing to export. Pass the .mpp as it is:</p>
+<pre>python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev04.mpp</pre>
+<p>The engine asks Project itself to export a copy as XML, as a person would through File, Save As. The file is opened read-only, exported and closed without saving. It does not change. If it is already open in Project, your window is not touched: the file as saved on disk is copied to a temporary folder, and Project exports the copy. Changes not yet saved stay out of the analysis, and the engine says so. Project marks a file as changed just by opening it, so that note can appear with nothing changed.</p>
+<p>If Project was closed, it opens visibly, so any question it asks shows on screen, and closes at the end. If it does not answer within ten minutes, the engine stops and says how to export by hand. The temporary XML is deleted when the run ends, and the reports land beside the .mpp. No setting of Project, Office or Windows is changed.</p>
+<p>For the schedule open in Project, use <code>--from-project</code>. With a file given as well, that file is the previous version:</p>
+<pre>python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" --from-project
+python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev03.mpp --from-project</pre>
+<p>Off Windows, or without Project, the .mpp cannot be exported there. The engine says so and asks for the XML, which whoever has Project exports through File, Save As, XML Format. It is Project's own documented format, and it carries everything the analysis needs: tasks, links with lag, the eleven baselines, calendars, custom fields, assignments and the time-phased data. Off Windows there is also an optional .mpp reader through the mpxj library, with Java installed. It is never required and it has not been verified.</p>
 
 <h2>Verify the tool before trusting it</h2>
 <pre>python3 ~/.claude/skills/cronoaudit/scripts/test_checks.py</pre>
-<p>The test runs the tool over two synthetic schedules. On the positive one every check must fire. On the negative one every check must stay silent. Without the second half a clean result is worth nothing: a probe that cannot fire reports zero findings on a broken file as readily as on a sound one.</p>
+<p>The test runs the tool over synthetic schedules. On the positive one, every check must fire. On the negative one, every check must stay silent. Without the second half a clean result is worth nothing: a probe that cannot fire reports zero findings on a broken file as readily as on a sound one. The installer runs this test at the end. From a copy of the repository, the test also checks the fictitious example's fourteen problems. From the installed folder, which has no example, that part is skipped, and the test says so.</p>
+</section>
 
-<h2>An equivalent implementation inside Project</h2>
-<p>The same method exists as macros that run inside MS Project, marking activities in the schedule itself and generating the same report. It is a separate product by the same author, and cronoaudit does not depend on it. The two implementations follow the same rule specification, and one's count has to match the other's on the same file.</p>
+<section class="ch">
+<h1>Three paths: the agent, the tab, the engine</h1>
+<p class="lede">There are three ways to use cronoaudit. In all three, the engine runs on your computer, does not use the network and produces the same report. What changes is who talks to you.</p>
+<table>
+<tr><th>You prefer</th><th>Path</th><th>What you do</th></tr>
+<tr><td>to talk to an AI and let it do everything</td><td class="c">A. the agent</td><td>ask, for example: analyse rodovia-ficticia-rev04.xml</td></tr>
+<tr><td>a button, inside Project itself</td><td class="c">B. the tab</td><td>click Relatório or Analisar</td></tr>
+<tr><td>no AI, or a computer with no agent</td><td class="c">C. the engine</td><td>run one command on the file</td></tr>
+</table>
+
+<h2>A. Through the agent</h2>
+<p>With the skill installed, no command needs to be remembered. The agent reads the skill's instructions, runs the engine, reads the results and talks about them. The figures always come from the engine; the agent orchestrates, interprets and writes. Use the agent you prefer, or the one your company allows on your computer.</p>
+<h3>Where to open</h3>
+<p>The agent reads the local disk, so it has to know where the file is. Open the terminal in the schedule's folder and start the agent there, or start anywhere and give the full path in the first message. The agent looks for .mpp and .xml files in that folder only, not in its subfolders. When both exist with the same name, it takes the .mpp, which is the original. If there is more than one schedule, it lists them and asks which, and offers the comparison when two look like versions of the same one. It never picks silently.</p>
+<h3>The first message</h3>
+<pre>Analyse rodovia-ficticia-rev04.xml.
+Compare rev03 with rev04 and tell me what changed, by topic.
+Analyse the schedule open in Project.
+Which milestones are at risk of missing their deadline?
+Analyse rodovia-ficticia-rev04.xml and save the results in ~/Reports/october.</pre>
+<p>The language is free. If the agent does not recognise the skill, close and start the agent again and ask which skills it has. In Copilot, <code>/skills reload</code> reloads the skills.</p>
+<h3>What happens next</h3>
+<p>In a first conversation, before reading any file, the agent says where the data goes: what it reads goes to its provider, and the engine runs locally, sending nothing. Then it settles the mode, free or secret, as chapter 6 describes. Only then does it run the analysis, once. The analysis and the report are the same command: the HTML report and the JSON files are written beside the schedule, or in the folder named in the message. The agent states the report's full path in its first reply. After that the conversation continues over the data already written, without running again, unless you ask or the file changes.</p>
+<p>The report does not have to be opened for the conversation to happen. A finding, a rate or a milestone can be discussed for an hour before the HTML is opened, or it may never be opened. The executive synthesis is written only when asked for. After a comparison, the agent offers in one line the synthesis and the list of what to ask the other party.</p>
+<h3>Useful questions and requests</h3>
+<table>
+<tr><th>Request</th><th>What it produces</th></tr>
+<tr><td>save the results in ~/Reports/october</td><td>writes the report and the JSON files in the named folder, creating it if needed</td></tr>
+<tr><td>group by DISCIPLINA</td><td>the progress-by-group view uses the custom field instead of the WBS</td></tr>
+<tr><td>use the profile profile.json</td><td>applies the organisation's declared conventions</td></tr>
+<tr><td>report in Portuguese</td><td>forces the language, ignoring detection</td></tr>
+<tr><td>explain finding A1 before anything else</td><td>the agent reads the pairs and explains each, writing no synthesis</td></tr>
+<tr><td>which C activities carry the most baseline cost?</td><td>orders the finding by weight, which the report table does not</td></tr>
+<tr><td>when does it finish by Earned Schedule, and what does that reading not see?</td><td>the independent finish beside the schedule's own, with the limit stated</td></tr>
+<tr><td>where did the delay on the milestone in row 9 come from?</td><td>the driving chain and the origin, with row numbers</td></tr>
+<tr><td>which rates are thin evidence?</td><td>separates the supported verdicts from the ones that are questions</td></tr>
+<tr><td>what should we ask the contractor?</td><td>after a comparison, the list the engine builds, one question per piece of evidence</td></tr>
+<tr><td>write the executive summary and generate the final report</td><td>four to six paragraphs, with author and time, from the JSON files, injected into the report</td></tr>
+<tr><td>customise the organisation profile</td><td>the profile interview, starting with field discovery</td></tr>
+<tr><td>run it again, the file changed</td><td>a new analysis over the updated file, overwriting the results</td></tr>
+</table>
+
+<h2>B. Through the Cronoaudit tab, inside Project</h2>
+<p>For those who prefer a button, on Windows. The tab sits between Project and View, and its labels are in Portuguese. The Sem IA buttons produce the report with no conversation; Analisar and Comparar versões open your agent on the schedule that is open. The buttons read the version saved on disk and never ask whether to save your file. Chapter 5 describes the whole tab.</p>
+
+<h2>C. Through the engine, without an agent</h2>
+<p>For when there is no agent on the computer, or the company's policy does not allow one. Same report, no conversation, and nothing leaves the computer. Only the written executive synthesis and the customisation interviews are left out, the two parts that depend on an agent.</p>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev04.xml
+python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml</pre>
+<p>On Windows, in PowerShell, start with two lines that find Python. The installer may have brought its own, which is not on the PATH, and then <code>python</code> alone does not find it. The line the installer prints at the end, after <em>run directly</em>, works too.</p>
+<pre>$py = "$env:LOCALAPPDATA\cronoaudit\python\python.exe"
+if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContinue) { "py" } else { "python" } }
+&amp; $py "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev04.xml</pre>
+<p>With two files, the previous one comes first. On Windows with Project, the command also takes the .mpp directly and <code>--from-project</code>. Always call the programs by their full path, because the working folder is the schedule's, not the skill's.</p>
+<table>
+<tr><th>Option</th><th>What it does</th></tr>
+<tr><td class="m">--outdir FOLDER</td><td>where to write; by default, beside the file</td></tr>
+<tr><td class="m">--group-by FIELD</td><td>groups weight by a custom field, instead of the WBS branch</td></tr>
+<tr><td class="m">--profile profile.json</td><td>applies the organisation profile</td></tr>
+<tr><td class="m">--lang pt, --lang en</td><td>forces the report language</td></tr>
+<tr><td class="m">--threshold-days N</td><td>the E and C threshold, in working days of the activity's calendar; default 30</td></tr>
+<tr><td class="m">--tolerance-days N</td><td>the G tolerance; default 1</td></tr>
+<tr><td class="m">--template FILE</td><td>a customised report template</td></tr>
+<tr><td class="m">--quiet</td><td>writes the files without the console summary</td></tr>
+<tr><td class="m">--from-project</td><td>Windows: the schedule open in Project</td></tr>
+<tr><td class="m">--free</td><td>free mode, said explicitly</td></tr>
+<tr><td class="m">--secret</td><td>secret mode, experimental; chapter 6</td></tr>
+<tr><td class="m">--secret on, off, ask</td><td>stores the mode preference and exits</td></tr>
+<tr><td class="m">--config</td><td>shows the stored mode preference</td></tr>
+</table>
+<p>If the analysis with an agent is done on another computer, it should be one the company allows to receive the schedule.</p>
+</section>
+
+<section class="ch">
+<h1>The Cronoaudit tab in Project</h1>
+<p class="lede">The tab is an entry shortcut, on Windows. It exports the open schedule to XML and hands it to the engine, or opens your agent on it. It computes nothing itself: the figures come from the engine, the same as on the other paths. Everything it does can be done by hand.</p>
+
+<h2>Install, update and remove</h2>
+<p>First, install cronoaudit with <code>install.ps1</code>, as in chapter 3. The tab looks for the skill in the two installed folders, and for Python in this order: <code>py -3</code>, <code>python</code>, <code>python3</code> and cronoaudit's bundled Python. Then, with Project closed, in PowerShell:</p>
+<pre>irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/msproject/install-msproject.ps1 | iex</pre>
+<p>The installer backs up what it changes before changing it: <code>Global.MPT</code>, where personal macros live, and the ribbon file. It opens Project, copies cronoaudit's module into <code>Global.MPT</code> and adds the tab without removing your other tabs. It changes no security setting and checks at the end that the buttons answer.</p>
+<p>During the installation Project opens and asks two things, which are yours to answer:</p>
+<ol>
+<li>if a Logon window with profiles appears, choose Computer;</li>
+<li>at the warning about the template's macros, click Disable macros.</li>
+</ol>
+<p>To update, run the same command: the previous module is replaced. To remove, set <code>$env:CRONOAUDIT_MSPROJECT_REMOVE="1"</code> in the same window and run the same command. Installation, update, removal and the buttons were tested on Windows on 22 and 23/11/2026. If the tab does not appear, close and open Project; if it is still missing, run the tab installer again.</p>
+
+<h2>The buttons</h2>
+<table>
+<tr><th>Group</th><th>Button</th><th>What it does</th></tr>
+<tr><td>Com o agente de IA</td><td>Analisar</td><td>asks for the mode and opens your agent on the schedule that is open</td></tr>
+<tr><td></td><td>Comparar versões</td><td>asks for the mode, lists the other versions in the same folder and opens the agent with both</td></tr>
+<tr><td>Sem IA (nada sai do computador)</td><td>Relatório</td><td>runs the engine and opens the report in the browser</td></tr>
+<tr><td></td><td>Comparar</td><td>the same, for two versions</td></tr>
+<tr><td></td><td>Exportar XML</td><td>only exports the XML and opens the folder, to take elsewhere</td></tr>
+<tr><td>Ajustes</td><td>Configurar</td><td>agent, run folder, Python, review.py and mode</td></tr>
+</table>
+<p>The buttons read the version saved on disk and never ask whether to save your file. In a comparison, the other version may be .mpp or .xml. A .mpp is opened read-only, exported and closed without saving, and the other version cannot be open in Project. The Sem IA buttons do not ask for the mode: no agent is involved there. If Analisar or Comparar versões find no agent installed, they offer to run without AI instead of failing.</p>
+
+<h2>The mode question</h2>
+<p>Before opening the agent, and before exporting anything, Analisar and Comparar versões ask for the mode in a dialog:</p>
+<table>
+<tr><th>Answer</th><th>What happens</th></tr>
+<tr><td>Yes</td><td>secret mode, experimental. It is the button already selected: a stray Enter never sends the schedule to the agent's provider.</td></tr>
+<tr><td>No</td><td>free mode, this time</td></tr>
+<tr><td>Cancel</td><td>the agent is not opened</td></tr>
+</table>
+<p>In free mode, the button exports the XML to the run folder, writes a <code>pedido.md</code> there and opens the agent in a visible terminal in that folder. The request states the task, the XML's name, the engine command that works on this machine, the rule that every figure comes from the engine and the exact name of every file the engine will write. It also says the mode was already settled, so the agent does not ask again.</p>
+<p>In secret mode, the button exports the XML to the run folder, which the agent never sees, and runs the engine with <code>--secret</code>. Then it opens the agent in the coded folder, <code>%USERPROFILE%\cronoaudit-work\&lt;date-time&gt;\&lt;code&gt;</code>, with no <code>pedido.md</code>, because the request would carry names. In Claude Code, answer that you trust the folder: that is what turns the guard on. When you ask, the agent builds the report with the real data, which appears in the run folder and opens in the browser. If the agent is not Claude Code, the dialog says the guard exists only there.</p>
+<p>To stop the question, choose the mode in Configurar, item 5.</p>
+
+<h2>Configurar</h2>
+<table>
+<tr><th>Item</th><th>What it changes</th></tr>
+<tr><td class="c">1</td><td>the agent: auto, claude, codex, copilot, gemini or code; auto is the first one installed, in that order</td></tr>
+<tr><td class="c">2</td><td>the run folder; empty goes back to the default, local and outside any synced folder</td></tr>
+<tr><td class="c">3</td><td>the Python command; empty detects it again</td></tr>
+<tr><td class="c">4</td><td>the path of review.py; empty detects it again</td></tr>
+<tr><td class="c">5</td><td>the mode: ask asks before opening the agent, off goes on in free mode without asking, on goes on in secret mode without asking</td></tr>
+<tr><td class="c">9</td><td>resets the tab's settings; does not change the mode</td></tr>
+</table>
+<p>The item 5 mode lives in the file <code>%USERPROFILE%\.cronoaudit\config.json</code>, which the engine and the skill also read. Changing it in one place changes it for all three.</p>
+
+<h2>The agents the tab opens</h2>
+<table>
+<tr><th>Agent</th><th>How the tab opens it</th></tr>
+<tr><td>Claude Code</td><td class="m">claude "..."</td></tr>
+<tr><td>Codex</td><td class="m">codex "..."</td></tr>
+<tr><td>GitHub Copilot CLI</td><td class="m">copilot -i "..."</td></tr>
+<tr><td>Gemini CLI</td><td class="m">gemini -i "..."</td></tr>
+<tr><td>VS Code</td><td class="m">code "&lt;run folder&gt;"</td></tr>
+</table>
+<p>On auto, the tab opens the first one it finds on the PATH, in that order. In free mode, the sentence it passes to the agent is short and unaccented, and the real request is in <code>pedido.md</code>. VS Code comes last because it cannot take the sentence on the command line: the tab opens the folder in it and copies the sentence. Open Copilot Chat (Ctrl+Alt+I), choose Agent mode and paste with Ctrl+V. Whether VS Code's Copilot Chat reads the skill installed in <code>~/.agents/skills</code> has not been measured yet.</p>
+<p>Grok Build is not on that list yet. With it, use path A: open the terminal in the schedule's folder and start the agent there. If you installed an agent while Project was open, close and open Project, because it inherits the PATH when it starts.</p>
+
+<h2>Where the files go</h2>
+<p>Each run gets a folder in <code>%LOCALAPPDATA%\cronoaudit\relatorios\&lt;date&gt;_&lt;file&gt;</code>, with the XML, <code>pedido.md</code> and, once the engine has run, the report and the JSON files. The folder is local on purpose: it stays outside OneDrive, because the XML and the report carry the project's data. Change it in Configurar, item 2.</p>
+</section>
+
+<section class="ch">
+<h1>Free mode and secret mode</h1>
+<p class="lede">The engine sends nothing, in either mode. The mode is about what an agent reads. In free mode, the agent reads the schedule and the results, and what it reads goes to its provider. In secret mode, which is experimental, the agent reads only a coded copy, and the report with the real data is built on your computer.</p>
+
+<h2>Where your data goes</h2>
+<ul>
+<li>The engine runs on your computer and does not use the network.</li>
+<li>The installers download the repository from GitHub and, on Windows and only if needed, Python from python.org. Nothing else.</li>
+<li>The agent is different. What it reads (the schedule, the report, your questions) goes to its provider, under the terms of your account or your company's. Check the company's policy before using an agent with a contract schedule.</li>
+<li>If the policy does not allow an agent, use path C, or the tab's Sem IA buttons.</li>
+</ul>
+
+<h2>How the mode is chosen</h2>
+<p>The preference lives in a single file, which the engine, the skill and the tab read: <code>~/.cronoaudit/config.json</code>, key <code>secret</code>. On Windows, <code>%USERPROFILE%\.cronoaudit\config.json</code>.</p>
+<table>
+<tr><th>Value</th><th>What happens</th></tr>
+<tr><td class="m">ask</td><td>asks every time; it is the factory default, and it also applies when the file is missing or unreadable</td></tr>
+<tr><td class="m">off</td><td>free mode, without asking</td></tr>
+<tr><td class="m">on</td><td>secret mode, without asking</td></tr>
+</table>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py --config
+python3 ~/.claude/skills/cronoaudit/scripts/review.py --secret ask</pre>
+<p>The first shows the preference. The second stores it, and also takes <code>on</code> and <code>off</code>. Who asks depends on the path. The tab asks in a dialog, in code, before any agent exists. The engine, run in a terminal, asks before opening the file; when nobody can answer, as when an agent runs it, it says in one line that it goes on in free mode. The agent, when it starts, reads the preference and asks the question itself. That last one is the agent following the skill's instruction: it makes the choice visible, but it is not a guard.</p>
+
+<h2>What gets coded</h2>
+<p>cronoaudit analyses the real file on your computer, exactly as in free mode, and then rewrites what it wrote into a coded copy.</p>
+<table>
+<tr><th>In the original</th><th>In the copy</th></tr>
+<tr><td>names of activities, resources, calendars and holidays, custom fields and their values, notes, the project header</td><td>codes like <code>T·3fa91c</code>; the letter gives the kind</td></tr>
+<tr><td>money</td><td>multiplied by a secret factor, written with the ¤ mark</td></tr>
+<tr><td>dates</td><td>day counts from a secret origin, like <code>D+0412</code>; <code>M+0013</code> is a month and <code>Y+0001</code> a year</td></tr>
+<tr><td>durations, percentages, counts, indices like SPI and CPI, row numbers, WBS codes, quantities and units</td><td>stay real</td></tr>
+</table>
+<p>The monthly rain-reserve series is left out of the copy, because it would tell the season. The file name goes too: the copy is called <code>schedule-review.html</code>, or <code>previous--to--current-cycle.html</code> in a comparison.</p>
+
+<h2>The vault and the work folder</h2>
+<p>What decoding needs lives in a local vault, in the same folder as the preference: <code>~/.cronoaudit/vault</code>. It holds each project's key, with the code table, the date origin and the money factor, and each run's real outputs. The vault never goes into the work folder. A project is the folder of the current schedule, or the name given with <code>--project</code>. rev03 and rev04 in the same folder share codes, so codes compare across versions.</p>
+<p>The work folder is new on every run, with a name that says nothing about the schedule. From the command, it is created in <code>~/cronoaudit-work</code>, or wherever <code>--workdir</code> says; from the tab, in <code>%USERPROFILE%\cronoaudit-work\&lt;date-time&gt;\&lt;code&gt;</code>. It holds only the coded copy; a <code>cronoaudit-secret.json</code>, which lists the files and explains the codes; the instructions for the agent, in <code>CLAUDE.md</code> and <code>AGENTS.md</code>; and, for Claude Code, the guard, in <code>.claude/</code>. A leak test, run with the internal test, checks that the folder holds only coded files.</p>
+
+<h2>Running in secret mode</h2>
+<p>From the tab, answer Yes to the mode question. Without the tab, you run one command yourself, in your own terminal, with the .xml or, on Windows with Project, with the .mpp:</p>
+<pre>python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev04.mpp --secret
+python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml --secret</pre>
+<p>The command shows the work folder. Start the agent inside it: <code>cd</code> to the folder, then the agent's command. The first thing the agent says is that the mode is experimental, and that you should refer to activities by code or by row number, because whatever you type with a real name goes to the AI service.</p>
+<p>It has to be you who runs it. An agent that holds the original file protects nothing. So when you ask an agent for secret mode, it does not run the engine: it shows you the command to run in your own terminal. And the engine, when it sees that Claude Code started it, refuses secret mode and stops having read nothing. If that happens, run the command in a PowerShell opened from the Start menu, or open Project from the Start menu, and not from inside an agent's terminal. Another version, or a comparison, is a new coded run, started by you.</p>
+
+<h2>The real report, at the end</h2>
+<p>When you ask, the agent runs <code>secret_decode.py finish</code>. The command decodes the work folder's report on your computer, with the synthesis the agent wrote, if any. It checks that the result equals, value for value, what the engine wrote in the vault. Then it writes the real report beside the original schedule and in the vault, and opens it in the browser. From the tab, the real report appears in the run folder. On screen, the command shows counts only, never a name, a value, a date or a path. If the check fails, it writes the engine's real output instead and says how many values differed. After its first reading, the agent offers in one line the synthesis and the report with real names, and does neither unless you ask.</p>
+
+<h2>Reading an answer with real names</h2>
+<p>The agent's answers come in codes. To read one of them with the real names, dates and values, run in your own terminal, outside the agent, the command the agent itself gives you:</p>
+<pre>python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\secret_decode.py" text "&lt;work folder&gt;"</pre>
+<p>Paste the answer and end with Ctrl+Z and Enter on a line of its own, on Windows, or with Ctrl+D, on macOS and Linux. The translation appears on your screen only. That command is yours: it prints real names, so the agent never runs it. It refuses to run inside Claude Code, and the guard stops it too.</p>
+
+<h2>The guard, in Claude Code only</h2>
+<p>In Claude Code, the work folder carries deny rules and a hook. They let the session read only its own folder, run only the skill's finishing commands and use only the tools a secret session needs. PowerShell, connectors such as OneDrive, SharePoint and Microsoft 365, sending files and messaging other sessions are closed, and a tool not on the list starts closed. The hook is a tripwire against the agent leaving the folder by habit or by a misread instruction. It is not a sandbox against an agent set on getting out.</p>
+<p>Claude Code asks whether you trust each new folder. Say yes: that is what turns the guard on, and without it the guard stays off. The question comes back on every analysis, because each has its own folder.</p>
+<p>In the other agents (Codex, GitHub Copilot, Gemini CLI, Grok Build), the folder carries the same rules as written instructions. Nothing technical stops the agent from opening other files.</p>
+
+<h2>What secret mode answers, and what it does not</h2>
+<p>It answers about logic, float, critical path, durations, progress, cost proportions and weights, differences between versions, network quality, deviations and inconsistencies, and the forensic chain by row number. It does not answer about real values, company, supplier or person names, locations, and absolute dates, such as "does this fall before the March contractual milestone?". For those questions, the agent refuses plainly and points to the way out: the decoded report on your computer, your own <code>secret_decode.py text</code>, or free mode.</p>
+
+<h2>The limits</h2>
+<ul>
+<li>It is experimental, and the agent says so when it starts.</li>
+<li>The codes do not make the schedule anonymous: its structure, durations and row numbers stay readable.</li>
+<li>Coding lowers what leaves the computer. It does not replace your company's policy on AI services.</li>
+</ul>
+<p>Tested on Windows with Claude Code on 22 and 23/11/2026, from the command, straight from the .mpp and from the Project button, and on a real 6,484-task schedule: no real name, date or value reached the coded copy, and the guard was checked by calling it directly, without the agent.</p>
 </section>
 
 <section class="ch">
@@ -153,11 +358,15 @@ cronoaudit, analyse delivery.xml and save the results in ~/Reports/september</pr
 <p class="lede">The report is a single HTML file. It opens in any browser, works offline, prints to PDF with one button, and switches between light and dark themes. Activity tables are collapsed, so the report does not open as a wall of rows; printing expands them.</p>
 
 <h2>Cover and verdict</h2>
-<p>The cover carries the file, the number of leaf activities, the status date and the baseline cost. The verdict shows cumulative physical progress weighted by cost, beside a fixed text on how to read those numbers, and the first <strong>Reading</strong> block: sentences generated by rule from this analysis's figures. A red notice appears when activities sit in violated logic, and says to settle that before discussing any date.</p>
+<p>The cover carries the file, the number of leaf activities, the status date and the baseline cost. The verdict shows cumulative physical progress weighted by cost, beside a fixed text on how to read those numbers, and the first <strong>Reading</strong> block: sentences generated by rule from this analysis's figures. When activities sit in violated logic, a red notice says to settle that before discussing any date. The notice is as wide as the breach: with up to three pairs, none on an unfinished critical activity or on the chain that holds the finish, it names the pairs and the milestones they reach, instead of condemning the whole network. With no links at all, the report says there is no network to hold.</p>
 <p>When an executive synthesis has been injected, it appears right below the cover, with the name of whoever wrote it and the time, so prose is never mistaken for measurement.</p>
 
+<h2>Deadlines and milestones</h2>
+<p>Right after the verdict and the cards comes section PZ, which answers the question a delivery is read for. Each future milestone appears against its deadline, in calendar days: the margin in the current schedule, the margin after the slippage that 80% of activities did not exceed, whether the milestone is critical, and the row where its delay starts on the driving path. A negative margin is past the deadline.</p>
+<div class="example"><b>On the fictitious example</b><p>On rev04, the seven future milestones finish within their deadline. The smallest margin is row 9's, Conclusão do Viaduto V-01: one day. With the 80% slippage, seven days, three more milestones pass their date, rows 7, 8 and 9. Row 9's delay starts at row 148, bored piles, with eleven days against the baseline.</p></div>
+
 <h2>Cards and index</h2>
-<p>One card per finding, with the count and the severity colour. The index lists the views and the findings with code, title, subtitle, count and severity, and each row leads to its section.</p>
+<p>One card per finding, with the count and the severity colour. The index lists the deadlines, the views and the findings with code, title, subtitle, count and severity, and each row leads to its section.</p>
 <table>
 <tr><th>Severity</th><th>Findings</th><th>Reads as</th></tr>
 <tr><td class="c">critical</td><td>A1, A2</td><td>invalidates every date below until settled</td></tr>
@@ -171,19 +380,19 @@ cronoaudit, analyse delivery.xml and save the results in ~/Reports/september</pr
 <div class="def"><div class="k">V1</div><div class="v">Progress by group: planned against earned in each group, weighted by the group's own cost, and one column per finding. The group is the WBS branch by default or a custom field.</div></div>
 <div class="def"><div class="k">V2 to V4</div><div class="v">Starts per month, finish variance in eight bands, total float in five bands.</div></div>
 <div class="def"><div class="k">V5</div><div class="v">Calendars that carry the work: activities per calendar, shift, days per week and non-working exceptions.</div></div>
-<div class="def"><div class="k">V6</div><div class="v">Productivity and trend by resource. Chapter 7.</div></div>
-<div class="def"><div class="k">V7</div><div class="v">Network quality, the fourteen metrics. Chapter 6.</div></div>
-<div class="def"><div class="k">V8</div><div class="v">Looking forward: Earned Schedule, look-ahead, rates by group, milestones with bands, rain exposure. Chapter 8.</div></div>
-<div class="def"><div class="k">V9</div><div class="v">Forensics: driving path per milestone, calendar forensics, execution pattern. Chapter 8.</div></div>
+<div class="def"><div class="k">V6</div><div class="v">Productivity and trend by resource. Chapter 10.</div></div>
+<div class="def"><div class="k">V7</div><div class="v">Network quality, the fourteen metrics. Chapter 9.</div></div>
+<div class="def"><div class="k">V8</div><div class="v">Looking forward: Earned Schedule, look-ahead, rates by group, milestones with bands, rain exposure. Chapter 11.</div></div>
+<div class="def"><div class="k">V9</div><div class="v">Forensics: driving path per milestone, where the delay enters and where it grows most, calendar forensics, execution pattern. Chapter 11.</div></div>
 
 <h2>The findings</h2>
-<p>Each finding is a block with code, severity, title and plain-language subtitle. Inside, three fixed blocks: problem, impact and solution. Then the criterion with the counting convention, where it came from, with the Project columns, and how to reproduce it in the tool. Finally the activity table, collapsed. Only the visible row number identifies an activity, because it is the only identifier a person can find on screen. In the network findings the table shows the explicit pair, successor and predecessor, with the link type and the reason.</p>
+<p>Each finding is a block with code, severity, title and plain-language subtitle. Inside, three fixed blocks: problem, impact and solution. Then the criterion with the counting convention, where it came from, with the Project columns, and how to reproduce it in the tool. Finally the activity table, collapsed. Only the visible row number identifies an activity, because it is the only identifier a person can find on screen. In the network findings the table shows the explicit pair, successor and predecessor, with the link type and the reason. Findings that came out at zero are gathered in a single line, checked with nothing found, so the report does not open with empty blocks.</p>
 
 <h2>Conventions</h2>
-<p>The last section lists what the report assumed: the baseline slot and why it was chosen, the threshold and its unit, the tolerance, the population, the counting convention, how working days were counted, where the percentage comes from, the detected language and how confident the detection was. Nobody has to guess anything.</p>
+<p>The last section lists what the report assumed: the baseline used and why it was chosen, the threshold and its unit, the tolerance, the population, the counting convention, how working days were counted, where the percentage comes from, the detected language and how confident the detection was. Nobody has to guess anything.</p>
 
 <h2>The reading layer</h2>
-<p>Every section opens with sentences generated by rule from its own figures. They say what the data supports and nothing more; if a figure is missing, the sentence does not appear. It is what lets the report be handed to someone who was not in the room. The executive synthesis is something else: a written text, injected with author and time, which chapter 10 explains.</p>
+<p>Every section opens with sentences generated by rule from its own figures. They say what the data supports and nothing more; if a figure is missing, the sentence does not appear. It is what lets the report be handed to someone who was not in the room. The executive synthesis is something else: a written text, injected with author and time, which chapter 13 explains.</p>
 </section>
 
 <section class="ch">
@@ -242,7 +451,7 @@ cronoaudit, analyse delivery.xml and save the results in ~/Reports/september</pr
 <section class="ch">
 <h1>Network quality</h1>
 <p class="lede">Does this schedule hold as a model, before any discussion of dates? Section V7 answers with the mechanical metrics of the DCMA 14-point model, each with its formula in words, declared population and quoted threshold so it can be contested, plus what a planner asks of any schedule.</p>
-<div class="note"><b>Implementation, not certification</b>The thresholds come from a published model and are quoted so they can be discussed. Two of the fourteen metrics cannot be computed from a file and the report says so instead of approximating: the critical path test requires perturbing the schedule, and the critical path length index is 1.0 by construction without a deadline on the final milestone.</div>
+<div class="note"><b>Implementation, not certification</b>The thresholds come from a published model and are quoted so they can be discussed. Two of the fourteen metrics need more than the file carries, and the report says so instead of approximating. The critical path test requires perturbing the schedule and is never computable from a file. The critical path length index is computed only when the final milestone has a deadline; without one, it is 1.0 by construction and says nothing.</div>
 
 <table>
 <tr><th>Code</th><th>Metric</th><th>Population</th><th>Threshold</th><th>Reads as</th></tr>
@@ -257,14 +466,14 @@ cronoaudit, analyse delivery.xml and save the results in ~/Reports/september</pr
 <tr><td class="c">Q9</td><td>Invalid dates</td><td>all leaves</td><td>0%</td><td>actual date after the status date</td></tr>
 <tr><td class="c">Q10</td><td>Unassigned</td><td>incomplete with duration</td><td>count</td><td>nothing to trend</td></tr>
 <tr><td class="c">Q11</td><td>Missed activities</td><td>due by the status date</td><td>≤ 5%</td><td>did not finish on time</td></tr>
-<tr><td class="c">Q12</td><td>Critical path test</td><td>—</td><td>—</td><td>not computable from a file</td></tr>
-<tr><td class="c">Q13</td><td>Critical path length index</td><td>—</td><td>—</td><td>only with a deadline on the final milestone</td></tr>
+<tr><td class="c">Q12</td><td>Critical path test</td><td>not applicable</td><td>not applicable</td><td>not computable from a file</td></tr>
+<tr><td class="c">Q13</td><td>Critical path length index</td><td>final milestone with a deadline</td><td>≥ 0.95</td><td>remaining path plus the margin to the deadline, divided by the remaining path; without a deadline, not computed</td></tr>
 <tr><td class="c">Q14</td><td>Baseline execution index</td><td>due by the status date</td><td>≥ 0.95</td><td>finished on time divided by due</td></tr>
 </table>
 
 <h2>How to read it</h2>
 <p>Read Q1, Q2, Q5 and Q7 before any date. A schedule that fails them is not a model of the works, and every date it produces is a number with no basis. Q6 and Q8 say whether it can be controlled. Q11 and Q14 say whether it was met. Beyond the fourteen, the report shows summaries with links, which should not exist, milestones with no deadline, the number of incomplete critical activities, and whether the critical chain reaches the final milestone, which is the test of the network being whole.</p>
-<div class="example"><b>On the example schedule</b><p>An activity pinned by a must-finish-on constraint appears in Q5. A link with a three-day lag appears in Q3. A summary carrying a link is flagged. The baseline execution index falls below the floor because a due activity did not finish.</p></div>
+<div class="example"><b>On the fictitious example</b><p>On rev04, rows 77, 89, 136 and 170 have no successor and appear in Q1: 4 of 96, below the threshold, so the network is read as linked. The same four, plus row 57, carry float above 44 working days and appear in Q6. Of 43 activities due by the status date, 28 finished on time: the baseline execution index is 0.65, below the 0.95 floor, and Q11 fails too. The final milestone has a deadline, so Q13 is computed: 1.025.</p></div>
 </section>
 
 <section class="ch">

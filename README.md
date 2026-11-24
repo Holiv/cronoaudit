@@ -2,7 +2,7 @@
 
 [Português](LEIA-ME.md)
 
-![version](https://img.shields.io/badge/version-0.9.3-1f6feb)
+![version](https://img.shields.io/badge/version-0.9.4-1f6feb)
 ![licence](https://img.shields.io/badge/licence-Apache%202.0-555)
 ![Windows · macOS · Linux](https://img.shields.io/badge/Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-runs-2ea043)
 ![data](https://img.shields.io/badge/engine-no%20network-2ea043)
@@ -106,14 +106,22 @@ Portuguese:
 
 | Group | Button | What it does |
 |---|---|---|
-| Com o agente de IA | **Analisar** | opens your agent with the schedule already loaded |
-| | **Comparar versões** | lists the other versions in the same folder and opens the agent with both |
+| Com o agente de IA | **Analisar** | asks the mode (secret or free) and opens your agent with the schedule loaded |
+| | **Comparar versões** | asks the mode, lists the other versions in the same folder and opens the agent with both |
 | Sem IA | **Relatório** | writes the report and opens it; nothing leaves the computer |
 | | **Comparar** | the same, for two versions |
 | | **Exportar XML** | only exports, to take elsewhere |
 | Ajustes | **Configurar** | agent, report folder, mode |
 
 The buttons never ask whether to save your file: they read the version saved on disk.
+
+The tab opens Claude Code, Codex, GitHub Copilot, Gemini CLI or VS Code, the first it finds.
+Grok Build is not on that list yet: with it, use path A.
+
+Before opening the agent, Analisar and Comparar versões ask for the mode. **Yes** is secret mode,
+and it is the default button: the agent opens in a folder holding only the coded copy, and the
+report with the real data is built on your computer at the end. **No** is free mode, this time.
+To stop the question, choose the mode in **Configurar** (item 5). See [secret mode](#secret-mode-experimental).
 
 To install the tab, with Project closed, in PowerShell:
 
@@ -137,10 +145,12 @@ no conversation, and nothing leaves the computer.
 
 1. In MS Project: **File → Save As → XML Format (\*.xml)**. That is Project's own format; nothing
    cronoaudit needs is lost.
-2. In PowerShell:
+2. In PowerShell (the first two lines find Python; see [Install](#install)):
 
 ```
-python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" "C:\path\to\schedule.xml"
+$py = "$env:LOCALAPPDATA\cronoaudit\python\python.exe"
+if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContinue) { "py" } else { "python" } }
+& $py "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" "C:\path\to\schedule.xml"
 ```
 
 Two files, previous first, give the comparison. On Windows with Project, the command also takes the
@@ -174,9 +184,43 @@ irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex
 curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash
 ```
 
-At the end you should see **`cronoaudit 0.9.3 is installed`**. cronoaudit needs Python 3.9 or
+At the end you should see **`cronoaudit 0.9.4 is installed`**. cronoaudit needs Python 3.9 or
 later; on Windows, if there is no Python, the installer brings its own copy, with no administrator
 rights. To update, run the same command again.
+
+At the end the installer also prints the line that runs the engine on this machine, after *run
+directly*. It starts with the Python it found: `py -3`, `python` or, when it brought its own,
+`& "...\AppData\Local\cronoaudit\python\python.exe"`. That last one is not on the PATH, so
+`python` alone does not find it. That is why the Windows commands in this guide start with two
+lines that find the right Python, in the same order.
+
+**To try it before using a schedule of your own,** download the two revisions of the
+[fictitious motorway](examples/README.md) and run the engine. Everything in them is invented.
+
+Windows (PowerShell):
+
+```
+cd "$env:USERPROFILE\Downloads"
+$py = "$env:LOCALAPPDATA\cronoaudit\python\python.exe"
+if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContinue) { "py" } else { "python" } }
+Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev03.xml -OutFile rodovia-ficticia-rev03.xml
+Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev04.xml -OutFile rodovia-ficticia-rev04.xml
+& $py "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml
+```
+
+macOS / Linux (Terminal):
+
+```
+cd ~/Downloads
+curl -fsSLO https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev03.xml
+curl -fsSLO https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev04.xml
+python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml
+```
+
+If it asks for the mode, answer `y`: with no agent, nothing leaves the computer. At the end it
+prints the path of two reports in the same folder: the rev04 review and the comparison of the
+two. Open the `.html` in a browser. With an agent, ask: *analyse rodovia-ficticia-rev04.xml in
+Downloads*.
 
 ### 2. An agent (only for path A, or for the Analisar button)
 
@@ -195,8 +239,9 @@ On macOS and Linux, the official guides give each command. If your Copilot comes
 the company decides whether the CLI is enabled.
 
 All four read the skill folder the cronoaudit installer created. To check, start the agent and ask
-*"what skills do you have?"*. So far cronoaudit has been tested end to end with Claude Code; for the
-other three, the installation follows what the providers document.
+*"what skills do you have?"*. So far cronoaudit has been tested end to end with Claude Code and, in free
+mode, with GitHub Copilot CLI (21/11/2026, from the Project tab). For Codex and Grok Build, the
+installation follows what the providers document. Secret mode has been tested with Claude Code only.
 
 ### 3. The tab in Project (only for path B)
 
@@ -219,7 +264,9 @@ tab, answer **Yes** when Analisar or Comparar ask for the mode. Without the tab,
 yourself, with the `.xml` or, on Windows with Project, the `.mpp`:
 
 ```
-python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" "C:\path\to\Rev04.mpp" --secret
+$py = "$env:LOCALAPPDATA\cronoaudit\python\python.exe"
+if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContinue) { "py" } else { "python" } }
+& $py "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" "C:\path\to\Rev04.mpp" --secret
 ```
 
 cronoaudit analyses the real file on your computer and writes a coded copy in a separate folder:
@@ -228,27 +275,36 @@ by a secret factor. Durations, percentages and row numbers stay real. You open t
 folder, and it reads only the copy. When you ask for the final report, cronoaudit decodes it on your
 computer and opens it with the real names.
 
+To read one of the agent's answers with the real names, run in your own PowerShell, outside the
+agent, the command the agent gives you (`secret_decode.py text` with the folder's path), paste the
+answer, and end with Ctrl+Z and Enter on a line of its own.
+
 What it does and does not do:
-- In Claude Code, the folder carries rules that keep the agent inside it; other agents receive the
-  same rules as written instructions.
+- In Claude Code, the folder carries rules and a guard that keep the agent inside it. Only the
+  tools the session needs stay open; PowerShell, connectors (OneDrive, SharePoint, Microsoft 365),
+  sending files and messaging other sessions are closed. Other agents receive the same rules as
+  written instructions.
 - The codes do not make the schedule anonymous: its structure and durations stay readable.
 - It does not replace your company's policy on AI services.
 
-Tested on Windows with Claude Code on 22/11/2026, and on a real 6,484-task schedule: no real name,
-date or value reached the coded copy.
+Tested on Windows with Claude Code on 22 and 23/11/2026, from the command, straight from the `.mpp`
+and from the Project button, and on a real 6,484-task schedule: no real name, date or value reached
+the coded copy, and the guard was checked by calling it directly, without the agent.
 
 ## If something goes wrong
 
 | What you see | What to do |
 |---|---|
 | *'irm' is not recognized* | You are in Command Prompt (cmd). Open PowerShell. |
-| *python is not recognized* | Run the cronoaudit installer again; on Windows it brings its own Python. |
+| *python is not recognized* | The Python the installer brings is not on the PATH. Use the line the installer printed at the end, or start with the two lines that find Python, as in this guide's commands. |
 | The agent's command is not found | Close PowerShell and open a new one. |
 | The agent does not know cronoaudit | Close the agent and start it again. In Copilot, `/skills reload`. Ask *"what skills do you have?"*. |
 | `/cronoaudit` does nothing | Commands with `/` work only inside the agent, not in PowerShell. You can just ask in words. |
 | *MS Project was not found* | A `.mpp` can only be read on a computer with Project. Use path C with the XML exported by someone who has Project. |
 | A note about *unsaved changes* | It is information only: Project marks a file so just by opening it. The analysis read the version saved on disk. |
 | The tab does not appear | Close and open Project. If it is still missing, run the tab installer again. |
+| In secret mode, Claude Code asks whether you trust the folder | Say yes. Without it the folder's guard stays off. The question comes back on every analysis, because each has its own folder. |
+| Secret mode says an agent started it | Run the command in a PowerShell opened from the Start menu, or open Project from the Start menu, not from inside an agent's terminal. |
 
 ## More
 
@@ -256,8 +312,9 @@ date or value reached the coded copy.
   carries tasks, links, the eleven baselines, calendars and custom fields. When you pass a `.mpp`,
   cronoaudit asks the installed Project to do that export. The whole process:
   [`skills/cronoaudit/references/usage.md`](skills/cronoaudit/references/usage.md).
-- **Manual**, fourteen chapters: [English](docs/manual/manual-en.pdf),
-  [Português](docs/manual/manual-pt.pdf).
+- **Manual**, seventeen chapters, for version 0.9.4: [English](docs/manual/manual-en.pdf),
+  [Português](docs/manual/manual-pt.pdf). Concepts, installation, the three paths, the Project tab,
+  free and secret modes, the report section by section and how to reproduce every figure.
 - **The fictitious example**, to try first: [`examples/`](examples/). The figures in this guide come
   from the example's `.xml` files; its `.mpp` files give slightly different ones (+22 days, 14
   questions), because Project recalculated the schedule when they were created.

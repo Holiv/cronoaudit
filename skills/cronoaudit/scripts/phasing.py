@@ -194,6 +194,9 @@ def build(path: str, group_field: str | None) -> dict:
     pvp_rows = []
     pvp_gap_total = 0.0
     method_votes = defaultdict(int)
+    # Activities whose earned value the file spreads past the status date: the reason
+    # the curve to date can read less than cost x physical summed flat.
+    after_status_tasks = 0
 
     planned = defaultdict(float)      # day -> planned cost
     earned = defaultdict(float)       # day -> earned cost (physical method, file's spread)
@@ -252,6 +255,8 @@ def build(path: str, group_field: str | None) -> dict:
             # Normalise to the task's own physical percent so rounding in the daily
             # blocks cannot drift the total away from cost x physical.
             scale = (rec["physical"] / phys_total) if phys_total else 0.0
+            if any(d > cutoff and v > 0 for d, v in rec["physical_by_day"].items()):
+                after_status_tasks += 1
             for d, v in rec["physical_by_day"].items():
                 e = cost * (v * scale) / 100.0
                 earned[d] += e
@@ -260,6 +265,8 @@ def build(path: str, group_field: str | None) -> dict:
         elif cost > 0 and rec["physical"] > 0:
             # Percent set but no daily blocks: land it on the actual start day.
             day = (rec["actual_start"] or cutoff)[:10]
+            if day > cutoff:
+                after_status_tasks += 1
             e = cost * rec["physical"] / 100.0
             earned[day] += e
             if g is not None:
@@ -362,6 +369,7 @@ def build(path: str, group_field: str | None) -> dict:
             "earned_to_date": round(earned_to_date, 2),
             "earned_alt_to_date": round(alt_to_date, 2),
             "earned_phased_after_status": round(earned_after_status, 2),
+            "earned_after_status_tasks": after_status_tasks,
             "planned_pct": round(planned_to_date / bac * 100, 2) if (bac and planned_available) else None,
             "earned_pct": round(earned_to_date / bac * 100, 2) if bac else None,
             "earned_alt_pct": round(alt_to_date / bac * 100, 2) if bac else None,

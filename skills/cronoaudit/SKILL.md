@@ -111,11 +111,13 @@ before opening an XML, a report or a JSON sidecar, and before quoting anything f
   supplier or person names, locations, and absolute dates ("does this fall before the March
   contractual milestone?"). Refuse those plainly and point to the way out: the decoded
   report on the person's machine, the person's own `secret_decode.py text`, or free mode.
-- Synthesis: write it in codes, inject it with `inject_narrative.py` into
+- **The synthesis only when asked**, as in free mode. After your first reading, offer in one
+  line the synthesis and the report with real names; do not write either unasked. Asked for
+  the synthesis: write it in codes, inject it with `inject_narrative.py` into
   `schedule-review.html`, or `previous--to--current-cycle.html` for a cycle (where free mode
-  puts it too), then run
-  `python3 <scripts>/secret_decode.py finish`. It decodes on this machine, beside the
-  original, opens the report, and prints counts only.
+  puts it too), then run `python3 <scripts>/secret_decode.py finish`. Asked only for the
+  report: run `finish` without a synthesis. It decodes on this machine, beside the original,
+  opens the report, and prints counts only.
 - **Another version, or a comparison, is a new coded run started by the person.** Point to the
   MS Project tab (Comparar versões, answering Yes to secret mode) or to the `review.py ... --secret`
   command they run in their own terminal; then they open you in the new work folder.
@@ -304,7 +306,8 @@ the file does not have is reported, never silently ignored.
 severity colours, the display and body font stacks, a short label for the header, the language
 if it should not follow the schedule, and which sections to hide. Write them under `theme.*`,
 `lang` and `sections_hidden`. For deeper changes, copy `templates/report.html` to
-`templates/report.custom.html`; it takes precedence and survives updates.
+`templates/report.custom.html`; it takes precedence. An update replaces the whole skill folder,
+so keep the copy outside it too and point to it with `--template` or the profile's `template` key.
 
 `python3 scripts/profile_tool.py example` prints a filled example. The full key list and what
 each does: `references/profile.md`.

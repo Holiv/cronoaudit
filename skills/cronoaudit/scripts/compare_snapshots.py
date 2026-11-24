@@ -53,6 +53,28 @@ TERM_WORDS = {"removed_earned": "earned value of removed activities",
               "inserted_earned": "earned value of inserted activities",
               "baseline_cost_changed": "baseline cost changed on matched activities",
               "bac_change": "budget at completion changed"}
+TERM_WORDS_PT = {"removed_earned": "valor agregado das atividades removidas",
+                 "inserted_earned": "valor agregado das atividades inseridas",
+                 "baseline_cost_changed": "custo de linha de base alterado em atividades casadas",
+                 "bac_change": "orçamento na conclusão alterado"}
+
+
+def term_points(r: dict, lang: str = "en") -> str:
+    """The named terms of the residue in points only, for the console.
+
+    The report names each term with its money; the console does not, because a
+    secret run prints its console coded and a figure inside a sentence is not
+    recognised as money.
+    """
+    words = TERM_WORDS_PT if lang == "pt" else TERM_WORDS
+    terms = r.get("residual_terms") or {}
+    out = []
+    for k in TERM_KEYS:
+        p = (terms.get(k) or {}).get("points")
+        if p is not None and abs(p) >= 0.005:
+            t = f"{p:+.2f}"
+            out.append(f"{words[k]} {t.replace('.', ',') if lang == 'pt' else t}")
+    return "; ".join(out)
 
 
 def dt(v):
@@ -879,58 +901,122 @@ def compare(prev: dict, curr: dict) -> dict:
     return result
 
 
-def report(r: dict) -> str:
-    L = ["Cycle comparison", ""]
-    L.append(f"  previous  {r['previous']['source']}  status {r['previous']['status_date']}")
-    L.append(f"  current   {r['current']['source']}  status {r['current']['status_date']}")
-    L.append("")
-    def two(v):
-        return "n/a" if v is None else f"{zero(v, 2):.2f}"
+CONSOLE = {
+    "en": {
+        "title": "Cycle comparison", "previous": "previous", "current": "current", "status": "status",
+        "earned": "earned", "movement": "movement", "pp_long": "percentage points",
+        "decomp": "decomposition sums to {v} points", "residue": "unexplained residue  {v} points",
+        "moved": "dates moved:", "exec": "with actuals behind them        -> execution",
+        "replan": "with no actuals                -> replan",
+        "base": "with the BASELINE itself moved  -> the reference moved",
+        "scope": "scope: {i} inserted, {r} removed",
+        "finish": "project finish: {a} -> {b}  ({d} {u})", "unit": None,
+        "critical": "critical path: {e} entered, {l} left, {f} lost a day of float or more",
+        "logic": ("logic: {a} links added, {r} removed, {lag} lags and {t} types changed; "
+                  "constraints {ca} added, {cc} changed, {cr} removed"),
+        "duration": "duration changed on work not started: {n}",
+        "past": ("PAST REWRITTEN: {s} actual starts, {f} actual finishes, {p} percents that went down, "
+                 "{x} activities with progress removed"),
+        "warnings": "WARNINGS:", "largest": "largest contributions to the movement:",
+        "row": "{c:+8.3f} pp  id {id:<5} {a:>5.1f}% -> {b:>5.1f}%  {name}", "na": "n/a",
+    },
+    "pt": {
+        "title": "Comparação de ciclo", "previous": "anterior", "current": "atual", "status": "data de status",
+        "earned": "avanço", "movement": "movimento", "pp_long": "pontos percentuais",
+        "decomp": "a decomposição soma {v} pontos", "residue": "resíduo não explicado  {v} pontos",
+        "moved": "datas que mudaram:", "exec": "com realizado por trás           -> execução",
+        "replan": "sem realizado                    -> replanejamento",
+        "base": "com a LINHA DE BASE movida       -> a referência mudou",
+        "scope": "escopo: {i} {i?inserida|inseridas}, {r} {r?removida|removidas}",
+        "finish": "término do projeto: {a} -> {b}  ({d} {u})", "unit": "dias corridos",
+        "critical": "caminho crítico: {e} {e?entrou|entraram}, {l} {l?saiu|saíram}, {f} {f?perdeu|perderam} um dia de folga ou mais",
+        "logic": ("lógica: {a} {a?vínculo incluído|vínculos incluídos}, {r} {r?removido|removidos}, "
+                  "{lag} {lag?defasagem alterada|defasagens alteradas} e {t} {t?tipo alterado|tipos alterados}; "
+                  "restrições: {ca} {ca?incluída|incluídas}, {cc} {cc?alterada|alteradas}, {cr} {cr?removida|removidas}"),
+        "duration": "duração alterada em atividade não iniciada: {n}",
+        "past": ("PASSADO REESCRITO: {s} {s?início real|inícios reais}, {f} {f?término real|términos reais}, "
+                 "{p} {p?percentual que caiu|percentuais que caíram}, {x} {x?atividade com avanço removida|atividades com avanço removidas}"),
+        "warnings": "ALERTAS:", "largest": "maiores contribuições para o movimento:",
+        "row": "{c:+8.3f} pts linha {id:<5} {a:>5.1f}% -> {b:>5.1f}%  {name}", "na": "n/d",
+    },
+}
 
-    L.append(f"  earned    {two(r['previous']['percent_earned'])}%  ->  {two(r['current']['percent_earned'])}%")
-    L.append(f"  movement  {two(r['movement_points'])} percentage points")
-    L.append(f"  decomposition sums to {two(r['decomposition_sums_to_points'])} points")
-    L.append(f"  unexplained residue  {two(r['movement_unexplained_points'])} points")
+
+def report(r: dict, lang: str = "en", warnings: list | None = None) -> str:
+    """The console summary of a comparison, in the report's language.
+
+    `warnings` are the comparison's warnings already written in that language (the
+    cycle report builds them from their codes); without them the English sentences
+    of the comparison are printed as they are.
+    """
+    import i18n
+
+    C = {k: (lambda t: (lambda **kw: i18n.fmt(t, **kw)))(v) if isinstance(v, str) and "{" in v else v
+         for k, v in CONSOLE.get(lang, CONSOLE["en"]).items()}
+    pt = lang == "pt"
+
+    def two(v):
+        if v is None:
+            return C["na"]
+        t = f"{zero(v, 2):.2f}"
+        return t.replace(".", ",") if pt else t
+
+    def day(v):
+        # ISO in English, as before; dd/mm/yyyy in Portuguese.
+        if not pt or not v or len(str(v)) < 10:
+            return v
+        y, m, d = str(v)[:10].split("-")
+        return f"{d}/{m}/{y}"
+
+    def num(text):
+        return text.replace(".", ",") if pt else text
+
+    L = [C["title"], ""]
+    L.append(f"  {C['previous']:<9} {r['previous']['source']}  {C['status']} {day(r['previous']['status_date'])}")
+    L.append(f"  {C['current']:<9} {r['current']['source']}  {C['status']} {day(r['current']['status_date'])}")
+    L.append("")
+    L.append(f"  {C['earned']:<9} {two(r['previous']['percent_earned'])}%  ->  {two(r['current']['percent_earned'])}%")
+    L.append(f"  {C['movement']:<9} {two(r['movement_points'])} {C['pp_long']}")
+    L.append("  " + C["decomp"](v=two(r["decomposition_sums_to_points"])))
+    L.append("  " + C["residue"](v=two(r["movement_unexplained_points"])))
     L.append("")
     exec_n = sum(1 for t in r["trend"] if t["reading"] == "execution")
     replan_n = sum(1 for t in r["trend"] if t["reading"] == "replan")
     L += [
-        "  dates moved:",
-        f"    {exec_n} with actuals behind them        -> execution",
-        f"    {replan_n} with no actuals                -> replan",
-        f"    {len(r['baseline_moved'])} with the BASELINE itself moved  -> the reference moved",
+        "  " + C["moved"],
+        f"    {exec_n} {C['exec']}",
+        f"    {replan_n} {C['replan']}",
+        f"    {len(r['baseline_moved'])} {C['base']}",
         "",
-        f"  scope: {len(r['unmatched']['inserted'])} inserted, {len(r['unmatched']['removed'])} removed",
+        "  " + C["scope"](i=len(r["unmatched"]["inserted"]), r=len(r["unmatched"]["removed"])),
         "",
     ]
     pf, cp, lg, pr = r["project_finish"], r["critical_path"], r["logic"], r["past_rewritten"]
     L += [
-        f"  project finish: {pf['previous']['finish']} -> {pf['current']['finish']}"
-        f"  ({pf['delta_days']} {pf['delta_unit']})",
-        f"  critical path: {len(cp['entered'])} entered, {len(cp['left'])} left, "
-        f"{cp['float_fell_count']} lost a day of float or more",
-        f"  logic: {len(lg['links_added'])} links added, {len(lg['links_removed'])} removed, "
-        f"{len(lg['lag_changed'])} lags and {len(lg['type_changed'])} types changed; "
-        f"constraints {len(lg['constraints_added'])} added, "
-        f"{len(lg['constraints_changed'])} changed, {len(lg['constraints_removed'])} removed",
-        f"  duration changed on work not started: {len(r['duration_changed'])}",
-        f"  PAST REWRITTEN: {len(pr['actual_start'])} actual starts, "
-        f"{len(pr['actual_finish'])} actual finishes, "
-        f"{len(pr['percent_decreased'])} percents that went down, "
-        f"{len(pr['removed_with_progress'])} activities with progress removed",
+        "  " + C["finish"](a=day(pf["previous"]["finish"]), b=day(pf["current"]["finish"]),
+                                  d=num(f"{pf['delta_days']:g}") if isinstance(pf["delta_days"], (int, float))
+                                  else pf["delta_days"], u=C["unit"] or pf["delta_unit"]),
+        "  " + C["critical"](e=len(cp["entered"]), l=len(cp["left"]), f=cp["float_fell_count"]),
+        "  " + C["logic"](a=len(lg["links_added"]), r=len(lg["links_removed"]),
+                                 lag=len(lg["lag_changed"]), t=len(lg["type_changed"]),
+                                 ca=len(lg["constraints_added"]), cc=len(lg["constraints_changed"]),
+                                 cr=len(lg["constraints_removed"])),
+        "  " + C["duration"](n=len(r["duration_changed"])),
+        "  " + C["past"](s=len(pr["actual_start"]), f=len(pr["actual_finish"]),
+                                p=len(pr["percent_decreased"]), x=len(pr["removed_with_progress"])),
         "",
     ]
-    if r["warnings"]:
-        L.append("  WARNINGS:")
-        L += [f"    * {w}" for w in r["warnings"]]
+    shown = warnings if warnings is not None else r["warnings"]
+    if shown:
+        L.append("  " + C["warnings"])
+        L += [f"    * {w}" for w in shown]
         L.append("")
     if r["decomposition"]:
-        L.append("  largest contributions to the movement:")
+        L.append("  " + C["largest"])
         for d in r["decomposition"][:10]:
-            L.append(
-                f"    {d['contribution_points']:+8.3f} pp  id {d['id']:<5} "
-                f"{d['percent_previous']:>5.1f}% -> {d['percent_current']:>5.1f}%  {d['name']}"
-            )
+            L.append("    " + num(C["row"](c=d["contribution_points"], id=d["id"],
+                                                  a=d["percent_previous"], b=d["percent_current"],
+                                                  name="\0")).replace("\0", d["name"]))
     return "\n".join(L)
 
 

@@ -25,20 +25,20 @@ segurança é alterada. Para remover: `$env:CRONOAUDIT_MSPROJECT_REMOVE="1"` e o
 Testado no Windows em 22/11/2026: instalação, os botões num `.mpp` recém-aberto (sem pergunta de
 salvar; a exportação lê uma cópia do arquivo salvo em disco), instalação por cima da versão
 anterior (o módulo é substituído) e remoção. As seções 3 a 5 abaixo, de instalação manual, ficam
-como alternativa. O modo secreto ainda não está disponível pelos botões.
+como alternativa. Em 23/11/2026, a v0.5: o modo secreto pelos botões Analisar e Comparar
+versões, testado de ponta a ponta (pergunta do modo, cópia codificada numa pasta neutra, agente
+aberto nela, relatório real montado no fim, mesmos códigos entre versões), e o modo livre e os
+botões Sem IA sem mudança.
 
-**Estado anterior: v0.3, beta.** A v0.2 foi usada de ponta a ponta em duas máquinas Windows: com o
-GitHub Copilot CLI numa e o Claude Code na outra, os dois agentes relataram os mesmos números do
-motor. Ainda não medido em máquina real: da v0.2.1, a rota pelo VS Code, a lista de arquivos no
-`pedido.md` e a tela de configuração; da v0.3, tudo o que é do modo (ler e gravar o
-`config.json` pela macro, as janelas de pergunta, o `--free` na linha de comando do motor).
+Histórico: a v0.2 foi usada de ponta a ponta em duas máquinas Windows, com o GitHub Copilot CLI
+numa e o Claude Code na outra, e os dois agentes relataram os mesmos números do motor.
 
 ## 1. Os botões
 
 | Botão (macro) | O que faz | O dado sai da máquina? |
 |---|---|---|
-| **Analisar** (`CronoauditAnalisar`) | exporta o XML, grava o `pedido.md` e abre o agente na pasta, já com a skill iniciada | **sim**: o que o agente ler (o XML, os resultados, a conversa) vai para o provedor do agente |
-| **Comparar** (`CronoauditComparar`) | pede a outra versão (.mpp ou .xml), exporta as duas e abre o agente com o pedido de comparação | **sim**, idem |
+| **Analisar** (`CronoauditAnalisar`) | pergunta o modo. Livre: exporta o XML, grava o `pedido.md` e abre o agente na pasta. Secreto: exporta, roda o motor com `--secret` e abre o agente na pasta codificada | livre: **sim**, o que o agente ler vai para o provedor dele. Secreto: só a cópia codificada e o que você digitar |
+| **Comparar versões** (`CronoauditComparar`) | pergunta o modo, pede a outra versão (.mpp ou .xml), exporta as duas e abre o agente com a comparação | idem |
 | **Exportar XML** (`CronoauditExportarXml`) | só exporta o XML e abre a pasta no Explorer | **não**. Nada é enviado e nada roda. O que você fizer com o XML depois é com você |
 | **Sem IA** (`CronoauditSemIA`) | exporta, roda o motor da cronoaudit e abre o relatório HTML | **não**. Tudo roda nesta máquina |
 | **Comparar sem IA** (`CronoauditCompararSemIA`) | o mesmo, para a comparação de duas versões | **não** |
@@ -63,7 +63,8 @@ Como o botão faz o modo secreto, na ordem:
    `%USERPROFILE%\cronoaudit-work\<data e hora>\<código>`, sem o nome do cronograma;
 3. abre o agente nessa pasta, sem `pedido.md` (o pedido levaria nomes). No Claude Code, responda
    que **confia na pasta**: sem isso a trava fica desligada;
-4. no fim, o agente monta o relatório real, que aparece na pasta da rodada e abre no navegador.
+4. quando você pedir, o agente monta o relatório real, que aparece na pasta da rodada e abre no
+   navegador.
 
 A trava que impede o agente de sair da pasta (regras e um hook) só existe no Claude Code. Com
 Codex, Copilot, Gemini ou VS Code, a pasta traz as mesmas regras como instrução.
@@ -210,7 +211,8 @@ O suplemento não é necessário. À mão:
    `gemini`).
 3. Peça: *use a skill cronoaudit e analise este cronograma*.
 
-Sem agente: `python "%USERPROFILE%\.claude\skills\cronoaudit\scripts\review.py" arquivo.xml`.
+Sem agente: a linha que o instalador da cronoaudit mostrou no fim, depois de *run directly*,
+trocando `delivery.xml` pelo seu arquivo. Ela já começa pelo Python certo desta máquina.
 Para comparar, passe os dois XML, o anterior primeiro.
 
 ## 8. Como a comparação se comporta

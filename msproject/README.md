@@ -25,18 +25,18 @@ and **Disable macros**, at the template's warning. No security setting is change
 Tested on Windows on 22/11/2026: installation, the buttons on a freshly opened `.mpp` (no prompt to
 save; the export reads a copy of the file as saved on disk), installation over the previous
 version (the module is replaced) and removal. The manual installation below stays as an
-alternative. Secret mode is not yet available from the buttons.
+alternative. On 23/11/2026, v0.5: secret mode from the Analisar and Comparar versões buttons,
+tested end to end (the mode question, the coded copy in a neutral folder, the agent opened there,
+the real report built at the end, the same codes across versions), with free mode and the SemIA
+buttons unchanged.
 
-Previous status: **v0.3, beta.** v0.2 was used end to end on two Windows machines, with GitHub Copilot
-CLI on one and Claude Code on the other; both agents reported the same engine numbers. Not yet
-measured on a real machine: from v0.2.1, the VS Code route, the list of output files in
-`pedido.md` and the configuration screen; from v0.3, everything about the mode (reading and
-writing `config.json` from VBA, the dialogs, `--free` on the engine's command line).
+History: v0.2 was used end to end on two Windows machines, with GitHub Copilot CLI on one and
+Claude Code on the other, and both agents reported the same engine numbers.
 
 | Macro | Does | Data leaves the machine? |
 |---|---|---|
-| `CronoauditAnalisar` | exports the XML, writes `pedido.md` (the request) and opens the agent in that folder with the skill started | **yes**: whatever the agent reads goes to the agent's provider |
-| `CronoauditComparar` | asks for the other version (.mpp or .xml), exports both, opens the agent with a comparison request | **yes**, same |
+| `CronoauditAnalisar` | asks the mode. Free: exports the XML, writes `pedido.md` (the request) and opens the agent in that folder. Secret: exports, runs the engine with `--secret` and opens the agent in the coded folder | free: **yes**, whatever the agent reads goes to its provider. Secret: only the coded copy and what you type |
+| `CronoauditComparar` | asks the mode, asks for the other version (.mpp or .xml), exports both, opens the agent with the comparison | same |
 | `CronoauditExportarXml` | exports the XML and opens the folder in Explorer | **no**. Nothing is sent, nothing runs |
 | `CronoauditSemIA` | exports, runs the engine, opens the HTML report | **no**. Everything runs locally |
 | `CronoauditCompararSemIA` | the same for the comparison of two versions | **no** |
@@ -62,8 +62,8 @@ Secret mode (experimental), in order: the macro exports the XML to the run folde
 mode, and the agent never sees that folder; it runs the engine with `--secret`, which writes the
 coded copy to a neutral folder, `%USERPROFILE%\cronoaudit-work\<date-time>\<code>`, with no
 schedule name in its path; it opens the agent there with no `pedido.md`, since the request would
-carry names (in Claude Code, answer that you trust the folder, or the guard stays off); at the
-end the agent's `finish` builds the real report in the run folder and opens it. The engine is
+carry names (in Claude Code, answer that you trust the folder, or the guard stays off); when you
+ask for it, the agent's `finish` builds the real report in the run folder and opens it. The engine is
 given the exported XML, never the `.mpp`: exporting through Project from a process the macro is
 waiting on would hang both. The guard that keeps the agent inside the folder exists only in
 Claude Code; for the other agents the folder carries the same rules as instructions.
