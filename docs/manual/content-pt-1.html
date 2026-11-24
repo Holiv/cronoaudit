@@ -7,26 +7,28 @@
 <p>O manual não assume conhecimento prévio dos conceitos. O capítulo 2 explica cada um do zero. Quem já os domina pode ir direto ao capítulo 3.</p>
 
 <h2>O que entra e o que sai</h2>
-<div class="def"><div class="k">Entrada</div><div class="v">O cronograma exportado do MS Project em formato XML, que é o formato documentado do próprio Project. Um arquivo para a análise crítica; dois arquivos, anterior e atual, para a comparação de ciclo.</div></div>
-<div class="def"><div class="k">Saída</div><div class="v">Um relatório HTML autossuficiente, sem nenhuma referência externa, que abre em qualquer navegador e imprime em PDF. Ao lado dele, um arquivo JSON por análise, para quem quer usar os dados fora do relatório.</div></div>
+<div class="def"><div class="k">Entrada</div><div class="v">O cronograma do MS Project. Em qualquer sistema, o XML que o próprio Project exporta, que é o formato documentado dele. No Windows com o Project instalado, também o próprio .mpp, ou o cronograma aberto no Project. Um arquivo para a análise crítica; dois arquivos, anterior e atual, para a comparação de ciclo.</div></div>
+<div class="def"><div class="k">Saída</div><div class="v">Um relatório HTML autossuficiente, sem nenhuma referência externa, que abre em qualquer navegador e imprime em PDF. Ao lado dele, arquivos JSON com os mesmos dados, para quem quer usá-los fora do relatório.</div></div>
 <div class="def"><div class="k">Idioma</div><div class="v">O do cronograma. A ferramenta detecta pelo conteúdo e escreve o relatório em português ou inglês. Dá para forçar.</div></div>
-<div class="def"><div class="k">Exigências</div><div class="v">Python 3.9 ou mais recente. Nada mais. Nenhum dado sai da máquina.</div></div>
+<div class="def"><div class="k">Caminhos</div><div class="v">Três: conversando com um agente de IA, clicando na aba Cronoaudit dentro do Project, ou rodando o motor sozinho, sem IA. O capítulo 4 mostra os três.</div></div>
+<div class="def"><div class="k">Exigências</div><div class="v">Python 3.9 ou mais recente; no Windows, o instalador traz um se faltar. Para ler o .mpp direto, o MS Project no Windows. O motor não usa a rede. O que um agente lê vai para o fornecedor dele, e o capítulo 6 trata disso.</div></div>
 
-<h2>As oito respostas do relatório</h2>
+<h2>O que o relatório responde</h2>
 <table>
 <tr><th>Seção</th><th>Pergunta que responde</th></tr>
 <tr><td>Veredito e achados</td><td>A lógica se sustenta? Quais datas venceram, se moveram ou estão mal apontadas?</td></tr>
+<tr><td>Prazo e marcos</td><td>Cada marco termina dentro da data limite? Com que margem, e onde nasce o atraso dele?</td></tr>
 <tr><td>Curva S</td><td>Onde o contrato deveria estar, onde está, e o número da ferramenta bate com o do Project?</td></tr>
 <tr><td>Avanço por grupo</td><td>O avanço aconteceu onde está o dinheiro?</td></tr>
 <tr><td>Produtividade</td><td>Em três ritmos, quando cada atividade em andamento termina, e ela entra no caminho crítico?</td></tr>
 <tr><td>Qualidade da rede</td><td>O cronograma serve como modelo, antes de qualquer discussão de data?</td></tr>
 <tr><td>Olhando para frente</td><td>Quando termina de verdade, o que as próximas semanas exigem, e onde o ritmo não alcança?</td></tr>
 <tr><td>Forense</td><td>De onde veio o atraso de cada marco, por qual caminho, e quando começou?</td></tr>
-<tr><td>Comparação de ciclo</td><td>O que mudou desde a última entrega: execução, replanejamento ou a própria referência?</td></tr>
+<tr><td>Comparação de ciclo</td><td>O que mudou desde a última entrega: o prazo, a integridade da medição, o plano, o avanço? Foi execução, replanejamento ou a própria referência? E o que cobrar da contratada?</td></tr>
 </table>
 
 <h2>O que ela não faz</h2>
-<p>Não lê Primavera P6: o método transfere, mas nada foi medido nesse formato. Não produz laudo de atraso contratual: a forense reconstrói o mecanismo, e um laudo exige registro contemporâneo e método formal. Não certifica contra a norma DCMA: as catorze métricas são implementadas e rotuladas como implementação. E nunca inventa uma distribuição, um valor padrão ou um número que o arquivo não carregue. O capítulo 12 trata disso em detalhe.</p>
+<p>Não lê Primavera P6: o método transfere, mas nada foi medido nesse formato. Não produz laudo de atraso contratual: a forense reconstrói o mecanismo, e um laudo exige registro contemporâneo e método formal. Não certifica contra a norma DCMA: as catorze métricas são implementadas e rotuladas como implementação. E nunca inventa uma distribuição, um valor padrão ou um número que o arquivo não carregue. O capítulo 15 trata disso em detalhe.</p>
 </section>
 
 <section class="ch">
@@ -38,7 +40,7 @@
 <p>Quando a ferramenta de cronograma recalcula as datas, ela percorre essa rede. Se a rede diz uma coisa e a obra faz outra, toda data calculada passa a se apoiar numa lógica que não é seguida. Por isso o relatório verifica a rede antes de qualquer data.</p></div>
 
 <div class="concept"><div class="k">Linha de base</div>
-<p>A linha de base é uma cópia do plano guardada num certo momento: datas, durações e custos como estavam quando o plano foi aprovado. Tudo o que o relatório chama de variação, atraso ou antecipação é medido contra ela. O MS Project guarda até onze linhas de base, numeradas de 0 a 10, e um cronograma que cresceu pode ter a atual numa gaveta que não é a padrão. Qual gaveta vale é uma escolha, e a cronoaudit a faz pelo dado, não por um campo que se declara e não se confirma.</p></div>
+<p>A linha de base é uma cópia do plano guardada num certo momento: datas, durações e custos como estavam quando o plano foi aprovado. Tudo o que o relatório chama de variação, atraso ou antecipação é medido contra ela. O MS Project guarda até onze linhas de base: Linha de base e Linha de base 1 a 10. Um cronograma que cresceu pode ter a vigente numa que não é a padrão. Qual delas vale é uma escolha, e a cronoaudit a faz pelo dado, não por um campo que se declara e não se confirma.</p></div>
 
 <div class="concept"><div class="k">Data de status</div>
 <p>É a data até a qual o apontamento é válido: o "hoje" do cronograma. Toda comparação entre previsto e realizado é feita nela. Um arquivo sem data de status não tem como ser analisado com honestidade, e a cronoaudit se recusa a assumir a data de hoje no lugar, porque isso mudaria a resposta a cada dia em que a análise fosse repetida.</p></div>
@@ -56,96 +58,299 @@
 <p>A folga total de uma atividade é quanto ela pode atrasar sem mover o término do projeto. Folga zero significa que qualquer atraso ali empurra o fim: a atividade é crítica. O caminho crítico é a cadeia de atividades críticas que vai do início ao fim. Uma atividade com folga pode atrasar até consumi-la; depois disso, entra no caminho crítico. O Project calcula folga, datas cedo e tarde, e o sinalizador de crítica; a cronoaudit lê esses campos em vez de recalculá-los.</p></div>
 
 <div class="concept"><div class="k">Earned Schedule</div>
-<p>O valor agregado clássico mede prazo em dinheiro, e isso tem um defeito: no fim do projeto o realizado sempre alcança o orçamento, então o indicador de prazo vai a 1,0 mesmo num projeto atrasado um ano. Earned Schedule mede prazo em tempo: pergunta em que data a curva de previsto alcançou o valor que está realizado hoje. Essa data, comparada com o tempo decorrido, dá uma eficiência de prazo e um término independente, que se confronta com o término que o cronograma projeta. O capítulo 8 detalha as fórmulas.</p></div>
+<p>O valor agregado clássico mede prazo em dinheiro, e isso tem um defeito: no fim do projeto o realizado sempre alcança o orçamento, então o indicador de prazo vai a 1,0 mesmo num projeto atrasado um ano. Earned Schedule mede prazo em tempo: pergunta em que data a curva de previsto alcançou o valor que está realizado hoje. Essa data, comparada com o tempo decorrido, dá uma eficiência de prazo e um término independente, que se confronta com o término que o cronograma projeta. O capítulo 11 detalha as fórmulas.</p></div>
 
 <div class="concept"><div class="k">Produtividade por recurso</div>
 <p>Um recurso de material, como metros cúbicos de corte, tem quantidade prevista, executada e remanescente por atividade. Produtividade é quantidade por dia útil. Comparar a praticada com a necessária diz se a atividade termina quando o cronograma diz. A cronoaudit lê as quantidades das atribuições do próprio arquivo, sem campo personalizado.</p></div>
 
 <div class="concept"><div class="k">A pergunta da referência</div>
-<p>Um indicador que compara previsto com realizado tem duas metades. Se elas forem medidas contra referências diferentes, outra gaveta de linha de base, outro instante, outra população, outra unidade, a diferença entre elas não significa nada, e o número sai plausível. É a falha que a cronoaudit procura em toda parte. A pergunta que a encontra: todas as parcelas deste cálculo estão medidas contra a mesma referência?</p></div>
+<p>Um indicador que compara previsto com realizado tem duas metades. Se elas forem medidas contra referências diferentes, outra linha de base, outro instante, outra população, outra unidade, a diferença entre elas não significa nada, e o número sai plausível. É a falha que a cronoaudit procura em toda parte. A pergunta que a encontra: todas as parcelas deste cálculo estão medidas contra a mesma referência?</p></div>
 </section>
 
 <section class="ch">
 <h1>Instalação e primeira execução</h1>
-<p class="lede">A cronoaudit é uma Agent Skill: uma pasta com instruções para um assistente e os programas que fazem o trabalho. Instala-se copiando essa pasta para onde o seu assistente procura skills. O instalador faz isso para todos os assistentes de uma vez.</p>
+<p class="lede">A cronoaudit é uma Agent Skill: uma pasta com instruções para um agente de IA e os programas que fazem o trabalho. Instala-se copiando essa pasta para onde os agentes procuram skills. Um comando faz isso para todos os agentes de uma vez, e deixa o motor pronto para rodar também sem agente.</p>
 
 <h2>Instalar com um comando</h2>
-<p>No macOS ou Linux, num terminal:</p>
-<pre>curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash</pre>
-<p>No Windows, no PowerShell:</p>
+<p>No Windows, no PowerShell: aperte a tecla Windows, digite PowerShell e clique em Windows PowerShell. Use essa janela, não o Prompt de Comando.</p>
 <pre>irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex</pre>
-<p>O instalador baixa o pacote, copia a skill para os dois diretórios que, juntos, todos os assistentes leem, e roda o teste interno da ferramenta como prova de instalação. Ao fim, mostra onde a skill ficou e como invocá-la. Reinicie o assistente depois de instalar, porque as skills são lidas no início de cada sessão.</p>
+<p>No macOS ou no Linux, no Terminal:</p>
+<pre>curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash</pre>
+<p>O instalador baixa o repositório do GitHub, copia a skill para as duas pastas abaixo e roda o teste interno da ferramenta como prova de instalação. No fim aparece a linha <code>cronoaudit ... is installed</code>, com o número da versão, e o comando exato para rodar o motor nesta máquina. Reinicie o agente depois de instalar, porque as skills são lidas no início de cada sessão.</p>
+<div class="note"><b>Python no Windows</b>A cronoaudit precisa do Python 3.9 ou mais novo. No Windows, se não houver um Python que funcione, o instalador traz uma cópia própria: o pacote oficial do python.org, conferido pelo SHA-256 antes de ser aberto, em <code>%LOCALAPPDATA%\cronoaudit\python</code>. Não precisa de administrador e não mexe no registro nem no PATH. Apagar essa pasta remove esse Python por completo. No macOS e no Linux, o Python precisa já estar instalado; se faltar, o instalador para e diz isso.</div>
 <table>
-<tr><th>Diretório</th><th>Quem lê</th></tr>
+<tr><th>Pasta</th><th>Quem lê</th></tr>
 <tr><td class="m">~/.claude/skills/cronoaudit</td><td>Claude Code, OpenCode, Cursor</td></tr>
-<tr><td class="m">~/.agents/skills/cronoaudit</td><td>Codex, Gemini CLI, Cursor, GitHub Copilot, VS Code, OpenCode</td></tr>
+<tr><td class="m">~/.agents/skills/cronoaudit</td><td>Codex, GitHub Copilot, Grok Build, Gemini CLI, Cursor, VS Code, OpenCode</td></tr>
 </table>
-<p>Se preferir instalar pelo caminho nativo do seu assistente, cada um tem o seu: <code>npx skills add Holiv/cronoaudit -g</code> em qualquer cliente do formato, <code>gemini skills install</code> com a URL do repositório no Gemini CLI, o instalador de skills do Codex, o Remote Rule do Cursor, e o plugin do Claude Code. O README do repositório mantém a tabela atualizada.</p>
+<p>No Windows, <code>~</code> é <code>%USERPROFILE%</code>: as pastas são <code>%USERPROFILE%\.claude\skills\cronoaudit</code> e <code>%USERPROFILE%\.agents\skills\cronoaudit</code>. Até agora a cronoaudit foi testada de ponta a ponta com o Claude Code e, no modo livre, com o GitHub Copilot CLI (21/11/2026, pela aba do Project). Nos outros agentes, a pasta e a instalação seguem o que os fornecedores documentam. O modo secreto só foi testado com o Claude Code. Para conferir, abra o agente e pergunte quais skills ele tem.</p>
 
-<h2>Sem assistente nenhum</h2>
-<p>A ferramenta funciona sem inteligência artificial. Clone ou baixe o repositório e rode o programa diretamente. Você recebe tudo, exceto a síntese executiva redigida e a entrevista de personalização, que são as duas partes que dependem de um assistente.</p>
+<h2>Atualizar</h2>
+<p>Rode o mesmo comando de novo. O instalador apaga as duas pastas da skill e copia a versão nova por inteiro. O que mora em outro lugar não é tocado: a preferência de modo e o cofre do modo secreto, em <code>~/.cronoaudit</code>; os relatórios; o perfil da empresa, que fica onde foi gravado. Por isso, não guarde nada seu dentro da pasta da skill, porque a próxima atualização apaga. Um template de relatório personalizado fica fora dela, apontado pela opção <code>--template</code> ou pela chave <code>template</code> do perfil.</p>
+
+<h2>Um agente, para conversar</h2>
+<p>O caminho A e o botão Analisar da aba precisam de um agente instalado e com login feito. Use o agente de sua preferência, ou o que a sua empresa permite no seu computador. O README do repositório traz os comandos oficiais de instalação do Claude Code, do GitHub Copilot CLI, do Codex e do Grok Build, com o guia de cada fornecedor. Cada agente precisa de uma conta no fornecedor; confira qual plano o inclui e a política da sua empresa. Sem agente, o motor e os botões Sem IA da aba funcionam do mesmo jeito.</p>
+
+<h2>Outras formas de instalar</h2>
+<table>
+<tr><th>Caminho</th><th>Comando</th></tr>
+<tr><td>Qualquer cliente de Agent Skills</td><td class="m">npx skills add Holiv/cronoaudit -g</td></tr>
+<tr><td>Claude Code, como plugin</td><td class="m">/plugin marketplace add Holiv/cronoaudit<br>/plugin install cronoaudit@cronoaudit</td></tr>
+<tr><td>Codex</td><td class="m">$skill-installer https://github.com/Holiv/cronoaudit</td></tr>
+<tr><td>Uma equipe, pelo projeto</td><td class="m">git clone https://github.com/Holiv/cronoaudit .agents/skills/cronoaudit</td></tr>
+</table>
+<p>No Windows, três variáveis mudam o instalador. Defina na mesma janela, antes do comando: <code>$env:CRONOAUDIT_NO_PYTHON="1"</code> nunca baixa Python; <code>$env:CRONOAUDIT_EMBED_PYTHON="1"</code> usa o Python próprio mesmo havendo outro; <code>$env:CRONOAUDIT_REF="nome-da-branch"</code> instala de outra branch.</p>
+
+<h2>Primeira execução: o exemplo fictício</h2>
+<p>O repositório traz duas entregas de uma obra rodoviária inventada, com um mês de intervalo: <code>rodovia-ficticia-rev03.xml</code>, com data de status em 30/09/2026, e <code>rodovia-ficticia-rev04.xml</code>, em 30/10/2026. Rodovia, trecho, empresas, quantidades, preços e datas foram criados para o exemplo. São 142 atividades, nove marcos com data limite, dois calendários com reserva de chuva, e catorze problemas plantados de propósito. Os arquivos ficam na pasta <code>examples/</code> do repositório e não vão junto com a skill instalada: clone o repositório ou baixe os dois arquivos.</p>
 <pre>git clone https://github.com/Holiv/cronoaudit
-python3 cronoaudit/skills/cronoaudit/scripts/review.py entrega.xml</pre>
-
-<h2>Exportar o cronograma</h2>
-<p>O arquivo .mpp é um formato proprietário fechado. A cronoaudit lê o XML que o próprio Project exporta, que é um formato documentado e carrega tudo o que a análise precisa: tarefas, vínculos com lag, as onze linhas de base, calendários, campos personalizados, atribuições e o faseamento no tempo.</p>
-<div class="note"><b>No MS Project</b>Arquivo, Salvar como, e no tipo de arquivo escolha Formato XML. Guarde o XML ao lado do .mpp. Quando o XML é enviado junto com o .mpp por quem elabora o cronograma, esse passo desaparece da rotina.</div>
-<p>Há um caminho opcional para ler o .mpp diretamente, por uma biblioteca Java, para quem a tiver instalada. Ele nunca é exigido.</p>
-
-<h2>Primeira execução</h2>
-<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py entrega.xml</pre>
-<p>Em um cronograma de seis mil atividades a execução leva menos de um minuto. O terminal mostra o resumo: gaveta de linha de base usada, limiar, população, convenção de contagem, e a lista dos nove achados com a contagem de atividades de cada um. Ao lado do arquivo de entrada ficam os resultados.</p>
+cd cronoaudit
+python3 ~/.claude/skills/cronoaudit/scripts/review.py examples/rodovia-ficticia-rev04.xml</pre>
+<p>No Windows, no PowerShell, o interpretador é <code>python</code>, e o caminho da skill se escreve assim:</p>
+<pre>python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" examples\rodovia-ficticia-rev04.xml</pre>
+<p>Se o instalador trouxe o Python próprio, ele não entra no PATH, e <code>python</code> não é reconhecido. Use o comando que o instalador mostrou no fim. Ele chama o Python próprio pelo caminho, <code>&amp; "$env:LOCALAPPDATA\cronoaudit\python\python.exe"</code>, seguido do caminho do <code>review.py</code>.</p>
+<p>Enquanto a preferência de modo for <code>ask</code>, que é o padrão de fábrica, o motor pergunta o modo antes de abrir o arquivo: <code>s</code> segue no modo livre, <code>secreto</code> passa ao modo secreto, <code>nunca</code> segue no livre e não pergunta mais, <code>n</code> cancela. Sem agente, nada sai do computador em nenhum dos modos. Responda <code>s</code>, ou acrescente <code>--free</code> ao comando. O capítulo 6 explica os modos.</p>
+<p>O terminal mostra o resumo: a linha de base usada e por quê, o limiar, a população, a convenção de contagem, e os nove achados com a contagem de cada um. Na rev04, o A1 acusa duas atividades: a linha 36, imprimação do segmento 1, começou com a linha 35, base de brita graduada, ainda aberta. Os outros oito ficam em zero. Num cronograma real de 6.484 tarefas e 107 calendários, a análise levou 29 segundos num notebook comum, medidos em 22/11/2026. Ao lado do arquivo de entrada ficam os resultados, em que <code>&lt;nome&gt;</code> é o nome do arquivo, aqui <code>rodovia-ficticia-rev04</code>.</p>
 <table>
 <tr><th>Arquivo</th><th>Para que serve</th></tr>
-<tr><td class="m">entrega-review.html</td><td>o relatório, para abrir, apresentar e imprimir em PDF</td></tr>
-<tr><td class="m">entrega-review.json</td><td>os achados como dados</td></tr>
-<tr><td class="m">entrega-review-scurve.json</td><td>a curva S mensal e por grupo</td></tr>
-<tr><td class="m">entrega-review-productivity.json</td><td>ritmos por recurso e por atividade</td></tr>
-<tr><td class="m">entrega-review-quality.json</td><td>as catorze métricas com os itens</td></tr>
-<tr><td class="m">entrega-review-forecast.json</td><td>Earned Schedule, look-ahead, faixas, chuva</td></tr>
-<tr><td class="m">entrega-review-forensics.json</td><td>cadeias condutoras e padrão de execução</td></tr>
-<tr><td class="m">entrega-review-readings.json</td><td>as leituras por regra de cada seção, para citar sem redigir</td></tr>
+<tr><td class="m">&lt;nome&gt;-review.html</td><td>o relatório, para abrir, apresentar e imprimir em PDF</td></tr>
+<tr><td class="m">&lt;nome&gt;-review.json</td><td>os achados como dados</td></tr>
+<tr><td class="m">&lt;nome&gt;-review-scurve.json</td><td>a curva S mensal e por grupo</td></tr>
+<tr><td class="m">&lt;nome&gt;-review-productivity.json</td><td>ritmos por recurso e por atividade</td></tr>
+<tr><td class="m">&lt;nome&gt;-review-quality.json</td><td>as catorze métricas com os itens</td></tr>
+<tr><td class="m">&lt;nome&gt;-review-forecast.json</td><td>Earned Schedule, look-ahead, faixas, chuva</td></tr>
+<tr><td class="m">&lt;nome&gt;-review-forensics.json</td><td>cadeias condutoras e padrão de execução</td></tr>
+<tr><td class="m">&lt;nome&gt;-review-readings.json</td><td>as leituras por regra de cada seção, para citar sem redigir</td></tr>
 </table>
-<p>Opções úteis: <code>--outdir</code> para escolher onde gravar, <code>--group-by</code> para agrupar o peso por um campo personalizado, <code>--profile</code> para aplicar o perfil da empresa, <code>--lang</code> para forçar o idioma, <code>--threshold-days</code> e <code>--tolerance-days</code> para mover os limiares.</p>
+<p>Agora a comparação das duas entregas, com a anterior primeiro:</p>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py examples/rodovia-ficticia-rev03.xml examples/rodovia-ficticia-rev04.xml</pre>
+<p>Saem a análise da rev04, como acima, e o relatório de ciclo, <code>rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html</code>, com o JSON e as leituras ao lado. O término do projeto foi de 04/10/2027 para 25/10/2027, 21 dias depois. Antes do avanço, o relatório aponta o passado reescrito: o término real da linha 29 mudou e passou a coincidir com a data da linha de base, e a linha 119, que estava a 100%, foi removida. No fim vêm doze cobranças prontas para a contratada. O capítulo 12 descreve esse relatório.</p>
+<p>Os números deste manual saem dos dois XML como estão, rodados com esta versão. Aberto e salvo no Project, o exemplo é recalculado: datas de tendência, folgas e valor agregado mudam, e parte dos números muda junto.</p>
 
-<h2>Dentro de um assistente: como iniciar a conversa</h2>
-<p>Com a skill instalada, nenhum comando precisa ser lembrado. O assistente lê as instruções da skill, roda os programas, lê os resultados e conversa sobre eles. Os números vêm sempre dos programas; o assistente orquestra, interpreta e escreve. O que segue é a forma mais direta de começar.</p>
-<h3>Onde abrir</h3>
-<p>O assistente lê o disco local, portanto precisa saber onde o arquivo está. Há duas formas equivalentes: abrir o terminal já na pasta em que o XML se encontra e iniciar o assistente ali, ou iniciar em qualquer lugar e indicar o caminho completo na primeira mensagem. Quando a pasta contém mais de um XML, a mensagem deve nomear o arquivo; o assistente está instruído a listar os arquivos e perguntar qual usar, nunca a escolher em silêncio.</p>
-<h3>A primeira mensagem</h3>
-<pre>cronoaudit, faça a análise do cronograma entrega-setembro.xml
-cronoaudit, analise o cronograma que está em ~/Cronogramas/2026-09/entrega.xml
-cronoaudit, compare anterior.xml com atual.xml
-cronoaudit, analise entrega.xml e salve os resultados em ~/Relatorios/setembro</pre>
-<p>O nome da skill no início da mensagem garante que o assistente a carregue. A partir daí a linguagem é livre.</p>
-<h3>O que acontece em seguida</h3>
-<p>A análise roda uma vez. Ela e o relatório são o mesmo comando: sempre que a análise roda, o relatório HTML e os arquivos JSON são gravados ao lado do XML, ou na pasta indicada na mensagem. O assistente informa o caminho completo do relatório na primeira resposta. Depois disso a conversa segue sobre os dados já gravados, ponto a ponto, sem rodar de novo. Nada é enviado a lugar nenhum; os arquivos ficam onde foram gravados.</p>
-<p>O relatório não precisa ser aberto para a conversa acontecer. É possível discutir um achado, um ritmo ou um marco durante uma hora e só então abrir o HTML, ou nunca abri-lo. A síntese executiva é escrita apenas quando pedida.</p>
-<h3>Perguntas e pedidos úteis</h3>
-<table>
-<tr><th>Pedido</th><th>O que produz</th></tr>
-<tr><td>salve os resultados em ~/Relatorios/setembro</td><td>grava o relatório e os JSON na pasta indicada, criando-a se preciso</td></tr>
-<tr><td>agrupe por DISCIPLINA</td><td>a visão de avanço por grupo usa o campo personalizado em vez da EAP</td></tr>
-<tr><td>use o perfil perfil.json</td><td>aplica as convenções declaradas da empresa</td></tr>
-<tr><td>relatório em inglês</td><td>força o idioma, ignorando a detecção</td></tr>
-<tr><td>explique o achado A1 antes de qualquer outra coisa</td><td>o assistente lê os pares e explica cada um, sem escrever síntese</td></tr>
-<tr><td>quais atividades do C carregam mais custo de linha de base?</td><td>ordena o achado pelo peso, o que a tabela do relatório não faz</td></tr>
-<tr><td>quando termina segundo o Earned Schedule, e o que essa leitura não enxerga?</td><td>o término independente ao lado do término do cronograma, com o limite declarado</td></tr>
-<tr><td>de onde veio o atraso do marco da linha 412?</td><td>a cadeia condutora e a origem, com número de linha</td></tr>
-<tr><td>quais ritmos estão em evidência fina?</td><td>separa os veredictos sustentados dos que são pergunta</td></tr>
-<tr><td>escreva a síntese executiva e injete no relatório</td><td>quatro a seis parágrafos, com autor e hora, a partir dos JSON</td></tr>
-<tr><td>personalizar padrão da empresa</td><td>a entrevista de perfil, começando pela descoberta de campos</td></tr>
-<tr><td>rode de novo, o arquivo mudou</td><td>nova análise sobre o XML atualizado, sobrescrevendo os resultados</td></tr>
-</table>
-<h3>Planos gratuitos</h3>
-<p>Sem assistente, a ferramenta é integralmente gratuita: Python e o comando produzem o relatório completo com as leituras por regra. Com assistente, depende do plano do assistente. Até a data desta edição, o Claude Code não faz parte do plano gratuito da Anthropic e exige assinatura ou crédito de API; o Gemini CLI e o GitHub Copilot oferecem faixas gratuitas que leem o formato Agent Skills. Planos mudam; confira na hora.</p>
+<h2>Ler um .mpp direto, no Windows</h2>
+<p>No Windows com o MS Project instalado, não é preciso exportar nada. Passe o .mpp como ele está:</p>
+<pre>python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev04.mpp</pre>
+<p>O motor pede ao próprio Project para exportar uma cópia em XML, como uma pessoa faria em Arquivo, Salvar como. O arquivo é aberto só para leitura, exportado e fechado sem salvar. Ele não muda. Se já estiver aberto no Project, a sua janela não é tocada: o arquivo salvo em disco é copiado para uma pasta temporária, e é a cópia que o Project exporta. Alterações ainda não salvas ficam fora da análise, e o motor avisa. O Project marca um arquivo como alterado só por abrir, então esse aviso pode aparecer sem que nada tenha mudado.</p>
+<p>Se o Project estava fechado, ele abre visível, para qualquer pergunta dele aparecer na tela, e fecha no fim. Se ele não responder em dez minutos, o motor para e diz como exportar à mão. O XML temporário é apagado quando a rodada termina, e os relatórios ficam ao lado do .mpp. Nenhuma configuração do Project, do Office ou do Windows é alterada.</p>
+<p>Para o cronograma que está aberto no Project, use <code>--from-project</code>. Com um arquivo junto, esse arquivo é a versão anterior:</p>
+<pre>python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" --from-project
+python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev03.mpp --from-project</pre>
+<p>Fora do Windows, ou sem o Project, o .mpp não pode ser exportado ali. O motor diz isso e pede o XML, que quem tem o Project exporta em Arquivo, Salvar como, Formato XML. É o formato documentado do próprio Project, e carrega tudo o que a análise precisa: tarefas, vínculos com lag, as onze linhas de base, calendários, campos personalizados, atribuições e o faseamento no tempo. Fora do Windows existe ainda um leitor opcional de .mpp pela biblioteca mpxj, com Java instalado. Ele nunca é exigido e não foi verificado.</p>
 
 <h2>Verificar a ferramenta antes de confiar nela</h2>
 <pre>python3 ~/.claude/skills/cronoaudit/scripts/test_checks.py</pre>
-<p>O teste roda a ferramenta sobre dois cronogramas sintéticos. No positivo, cada verificação tem de acusar. No negativo, cada uma tem de ficar calada. Sem a segunda metade, um resultado limpo não vale nada: uma sonda que não consegue disparar reporta zero achados num arquivo quebrado com a mesma naturalidade de um arquivo bom.</p>
+<p>O teste roda a ferramenta sobre cronogramas sintéticos. No positivo, cada verificação tem de acusar. No negativo, cada uma tem de ficar calada. Sem a segunda metade, um resultado limpo não vale nada: uma sonda que não consegue disparar reporta zero achados num arquivo quebrado com a mesma naturalidade de um arquivo bom. O instalador roda este teste no fim. A partir de uma cópia do repositório, o teste confere também os catorze problemas do exemplo fictício. A partir da pasta instalada, que não tem o exemplo, essa parte é pulada, e o teste diz isso.</p>
+</section>
 
-<h2>Uma implementação equivalente dentro do Project</h2>
-<p>O mesmo método existe como macros para rodar dentro do MS Project, marcando as atividades no próprio cronograma e gerando o mesmo relatório. É um produto separado, do mesmo autor, e a cronoaudit não depende dele. As duas implementações seguem a mesma especificação de regras, e a contagem de uma tem de bater com a da outra no mesmo arquivo.</p>
+<section class="ch">
+<h1>Três caminhos: pelo agente, pela aba, pelo motor</h1>
+<p class="lede">Há três jeitos de usar a cronoaudit. Nos três, o motor roda no seu computador, não usa a rede e produz o mesmo relatório. O que muda é quem conversa com você.</p>
+<table>
+<tr><th>Você prefere</th><th>Caminho</th><th>O que você faz</th></tr>
+<tr><td>conversar com uma IA e deixar ela fazer tudo</td><td class="c">A. pelo agente</td><td>pede, por exemplo: analise o rodovia-ficticia-rev04.xml</td></tr>
+<tr><td>um botão, dentro do próprio Project</td><td class="c">B. pela aba</td><td>clica em Relatório ou em Analisar</td></tr>
+<tr><td>sem IA, ou num computador sem agente</td><td class="c">C. pelo motor</td><td>roda um comando sobre o arquivo</td></tr>
+</table>
+
+<h2>A. Pelo agente</h2>
+<p>Com a skill instalada, nenhum comando precisa ser lembrado. O agente lê as instruções da skill, roda o motor, lê os resultados e conversa sobre eles. Os números vêm sempre do motor; o agente orquestra, interpreta e escreve. Use o agente de sua preferência, ou o que a sua empresa permite no seu computador.</p>
+<h3>Onde abrir</h3>
+<p>O agente lê o disco local, então precisa saber onde o arquivo está. Abra o terminal na pasta do cronograma e inicie o agente ali, ou inicie em qualquer lugar e dê o caminho completo na primeira mensagem. O agente procura arquivos .mpp e .xml só naquela pasta, sem descer às subpastas. Quando os dois existem com o mesmo nome, ele usa o .mpp, que é o original. Se há mais de um cronograma, ele lista e pergunta qual, e oferece a comparação quando dois parecem versões do mesmo. Ele nunca escolhe em silêncio.</p>
+<h3>A primeira mensagem</h3>
+<pre>Analise o rodovia-ficticia-rev04.xml.
+Compare a rev03 com a rev04 e me diga o que mudou, por assunto.
+Analise o cronograma que está aberto no Project.
+Quais marcos correm risco de passar da data limite?
+Analise o rodovia-ficticia-rev04.xml e salve os resultados em ~/Relatorios/outubro.</pre>
+<p>A linguagem é livre. Se o agente não reconhecer a skill, feche e abra o agente de novo e pergunte quais skills ele tem. No Copilot, <code>/skills reload</code> recarrega as skills.</p>
+<h3>O que acontece em seguida</h3>
+<p>Numa primeira conversa, antes de ler qualquer arquivo, o agente diz para onde vão os dados: o que ele lê vai para o fornecedor dele, e o motor roda localmente, sem enviar nada. Em seguida ele resolve o modo, livre ou secreto, como o capítulo 6 descreve. Só então roda a análise, uma vez. A análise e o relatório são o mesmo comando: o relatório HTML e os arquivos JSON ficam gravados ao lado do cronograma, ou na pasta indicada na mensagem. O agente informa o caminho completo do relatório na primeira resposta. Depois a conversa segue sobre os dados já gravados, sem rodar de novo, a não ser que você peça ou que o arquivo mude.</p>
+<p>O relatório não precisa ser aberto para a conversa acontecer. Dá para discutir um achado, um ritmo ou um marco por uma hora e só depois abrir o HTML, ou nunca abri-lo. A síntese executiva só é escrita quando pedida. Depois de uma comparação, o agente oferece numa linha a síntese e a lista do que cobrar da outra parte.</p>
+<h3>Perguntas e pedidos úteis</h3>
+<table>
+<tr><th>Pedido</th><th>O que produz</th></tr>
+<tr><td>salve os resultados em ~/Relatorios/outubro</td><td>grava o relatório e os JSON na pasta indicada, criando-a se preciso</td></tr>
+<tr><td>agrupe por DISCIPLINA</td><td>a visão de avanço por grupo usa o campo personalizado em vez da EAP</td></tr>
+<tr><td>use o perfil perfil.json</td><td>aplica as convenções declaradas da empresa</td></tr>
+<tr><td>relatório em inglês</td><td>força o idioma, ignorando a detecção</td></tr>
+<tr><td>explique o achado A1 antes de qualquer outra coisa</td><td>o agente lê os pares e explica cada um, sem escrever síntese</td></tr>
+<tr><td>quais atividades do C carregam mais custo de linha de base?</td><td>ordena o achado pelo peso, o que a tabela do relatório não faz</td></tr>
+<tr><td>quando termina segundo o Earned Schedule, e o que essa leitura não enxerga?</td><td>o término independente ao lado do término do cronograma, com o limite declarado</td></tr>
+<tr><td>de onde veio o atraso do marco da linha 9?</td><td>a cadeia condutora e a origem, com número de linha</td></tr>
+<tr><td>quais ritmos estão em evidência fina?</td><td>separa os veredictos sustentados dos que são pergunta</td></tr>
+<tr><td>o que cobrar da contratada?</td><td>depois de uma comparação, a lista que o motor monta, uma cobrança por evidência</td></tr>
+<tr><td>escreva a síntese e gere o relatório final</td><td>quatro a seis parágrafos, com autor e hora, a partir dos JSON, injetados no relatório</td></tr>
+<tr><td>personalizar padrão da empresa</td><td>a entrevista de perfil, começando pela descoberta de campos</td></tr>
+<tr><td>rode de novo, o arquivo mudou</td><td>nova análise sobre o arquivo atualizado, sobrescrevendo os resultados</td></tr>
+</table>
+
+<h2>B. Pela aba Cronoaudit, dentro do Project</h2>
+<p>Para quem prefere um botão, no Windows. A aba fica entre Projeto e Exibir. Os botões Sem IA geram o relatório sem conversa; Analisar e Comparar versões abrem o seu agente já sobre o cronograma aberto. Os botões leem a versão salva em disco e nunca perguntam se é para salvar o seu arquivo. O capítulo 5 descreve a aba inteira.</p>
+
+<h2>C. Pelo motor, sem agente</h2>
+<p>Para quando não há agente no computador, ou quando a política da empresa não permite usar um. Mesmo relatório, sem conversa, e nada sai do computador. Ficam de fora só a síntese executiva redigida e as entrevistas de personalização, as duas partes que dependem de um agente.</p>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev04.xml
+python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml</pre>
+<p>No Windows, no PowerShell, comece por duas linhas que acham o Python. O instalador pode ter trazido um próprio, que não entra no PATH, e aí <code>python</code> sozinho não o encontra. A linha que o instalador mostra no fim, depois de <em>run directly</em>, também serve.</p>
+<pre>$py = "$env:LOCALAPPDATA\cronoaudit\python\python.exe"
+if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContinue) { "py" } else { "python" } }
+&amp; $py "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev04.xml</pre>
+<p>Com dois arquivos, o anterior vem primeiro. No Windows com o Project, o comando aceita também o .mpp direto e <code>--from-project</code>. Chame os programas sempre pelo caminho completo, porque a pasta de trabalho é a do cronograma, não a da skill.</p>
+<table>
+<tr><th>Opção</th><th>O que faz</th></tr>
+<tr><td class="m">--outdir PASTA</td><td>onde gravar; por padrão, ao lado do arquivo</td></tr>
+<tr><td class="m">--group-by CAMPO</td><td>agrupa o peso por um campo personalizado, em vez do ramo da EAP</td></tr>
+<tr><td class="m">--profile perfil.json</td><td>aplica o perfil da empresa</td></tr>
+<tr><td class="m">--lang pt, --lang en</td><td>força o idioma do relatório</td></tr>
+<tr><td class="m">--threshold-days N</td><td>o limiar de E e C, em dias úteis do calendário da atividade; padrão 30</td></tr>
+<tr><td class="m">--tolerance-days N</td><td>a tolerância de G; padrão 1</td></tr>
+<tr><td class="m">--template ARQUIVO</td><td>um template de relatório personalizado</td></tr>
+<tr><td class="m">--quiet</td><td>grava os arquivos sem o resumo no terminal</td></tr>
+<tr><td class="m">--from-project</td><td>Windows: o cronograma aberto no Project</td></tr>
+<tr><td class="m">--free</td><td>modo livre, dito explicitamente</td></tr>
+<tr><td class="m">--secret</td><td>modo secreto, experimental; capítulo 6</td></tr>
+<tr><td class="m">--secret on, off, ask</td><td>grava a preferência de modo e sai</td></tr>
+<tr><td class="m">--config</td><td>mostra a preferência de modo gravada</td></tr>
+</table>
+<p>Se a análise com agente for feita em outro computador, que seja um computador autorizado pela empresa a receber o cronograma.</p>
+</section>
+
+<section class="ch">
+<h1>A aba Cronoaudit no Project</h1>
+<p class="lede">A aba é um atalho de entrada, no Windows. Ela exporta o XML do cronograma aberto e entrega ao motor, ou abre o seu agente já sobre ele. Ela mesma não calcula nada: os números saem do motor, os mesmos dos outros caminhos. Tudo o que ela faz dá para fazer à mão.</p>
+
+<h2>Instalar, atualizar e remover</h2>
+<p>Antes, instale a cronoaudit pelo <code>install.ps1</code>, como no capítulo 3. A aba procura a skill nas duas pastas instaladas, e o Python nesta ordem: <code>py -3</code>, <code>python</code>, <code>python3</code> e o Python próprio da cronoaudit. Depois, com o Project fechado, no PowerShell:</p>
+<pre>irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/msproject/install-msproject.ps1 | iex</pre>
+<p>O instalador guarda uma cópia do que muda antes de mudar: o <code>Global.MPT</code>, onde ficam as macros pessoais, e o arquivo da faixa de opções. Ele abre o Project, copia o módulo da cronoaudit para o <code>Global.MPT</code> e acrescenta a aba sem apagar as suas outras abas. Não altera nenhuma configuração de segurança e confere no fim que os botões respondem.</p>
+<p>Durante a instalação o Project abre e pede duas coisas, que são suas:</p>
+<ol>
+<li>se aparecer a janela de Logon com perfis, escolha Computador;</li>
+<li>no aviso sobre as macros do modelo, clique em Desabilitar macros.</li>
+</ol>
+<p>Para atualizar, rode o mesmo comando: o módulo anterior é substituído. Para remover, defina <code>$env:CRONOAUDIT_MSPROJECT_REMOVE="1"</code> na mesma janela e rode o mesmo comando. A instalação, a atualização, a remoção e os botões foram testados no Windows em 22 e 23/11/2026. Se a aba não aparecer, feche e abra o Project; se continuar, rode o instalador da aba de novo.</p>
+
+<h2>Os botões</h2>
+<table>
+<tr><th>Grupo</th><th>Botão</th><th>O que faz</th></tr>
+<tr><td>Com o agente de IA</td><td>Analisar</td><td>pergunta o modo e abre o seu agente sobre o cronograma aberto</td></tr>
+<tr><td></td><td>Comparar versões</td><td>pergunta o modo, mostra as outras versões da mesma pasta e abre o agente com as duas</td></tr>
+<tr><td>Sem IA (nada sai do computador)</td><td>Relatório</td><td>roda o motor e abre o relatório no navegador</td></tr>
+<tr><td></td><td>Comparar</td><td>o mesmo, para duas versões</td></tr>
+<tr><td></td><td>Exportar XML</td><td>só exporta o XML e abre a pasta, para levar a outro lugar</td></tr>
+<tr><td>Ajustes</td><td>Configurar</td><td>agente, pasta das rodadas, Python, review.py e modo</td></tr>
+</table>
+<p>Os botões leem a versão salva em disco e nunca perguntam se é para salvar o seu arquivo. Na comparação, a outra versão pode ser .mpp ou .xml. Um .mpp é aberto só para leitura, exportado e fechado sem salvar, e a outra versão não pode estar aberta no Project. Os botões Sem IA não perguntam o modo: ali não há agente. Se Analisar ou Comparar versões não encontrarem agente instalado, eles oferecem rodar sem IA em vez de falhar.</p>
+
+<h2>A pergunta do modo</h2>
+<p>Antes de abrir o agente, e antes de exportar qualquer coisa, Analisar e Comparar versões perguntam o modo numa janela:</p>
+<table>
+<tr><th>Resposta</th><th>O que acontece</th></tr>
+<tr><td>Sim</td><td>modo secreto, experimental. É o botão que já vem selecionado: um Enter distraído nunca manda o cronograma ao fornecedor do agente.</td></tr>
+<tr><td>Não</td><td>modo livre, desta vez</td></tr>
+<tr><td>Cancelar</td><td>não abre o agente</td></tr>
+</table>
+<p>No modo livre, o botão exporta o XML para a pasta da rodada, grava ali um <code>pedido.md</code> e abre o agente num terminal visível nessa pasta. O pedido diz a tarefa, o nome do XML, o comando do motor que funciona nesta máquina, a regra de que todo número vem do motor e o nome exato de cada arquivo que o motor vai gravar. Ele também diz que o modo já foi escolhido, para o agente não perguntar de novo.</p>
+<p>No modo secreto, o botão exporta o XML para a pasta da rodada, que o agente nunca vê, e roda o motor com <code>--secret</code>. Depois abre o agente na pasta codificada, <code>%USERPROFILE%\cronoaudit-work\&lt;data e hora&gt;\&lt;código&gt;</code>, sem <code>pedido.md</code>, porque o pedido levaria nomes. No Claude Code, responda que confia na pasta: é isso que liga a trava. Quando você pedir, o agente monta o relatório com os dados reais, que aparece na pasta da rodada e abre no navegador. Se o agente não é o Claude Code, a janela avisa que a trava só existe nele.</p>
+<p>Para não perguntar mais, escolha o modo em Configurar, item 5.</p>
+
+<h2>Configurar</h2>
+<table>
+<tr><th>Item</th><th>O que muda</th></tr>
+<tr><td class="c">1</td><td>o agente: auto, claude, codex, copilot, gemini ou code; auto é o primeiro instalado, nessa ordem</td></tr>
+<tr><td class="c">2</td><td>a pasta das rodadas; vazio volta ao padrão, local e fora de pasta sincronizada</td></tr>
+<tr><td class="c">3</td><td>o comando do Python; vazio detecta de novo</td></tr>
+<tr><td class="c">4</td><td>o caminho do review.py; vazio detecta de novo</td></tr>
+<tr><td class="c">5</td><td>o modo: ask pergunta antes de abrir o agente, off segue no livre sem perguntar, on segue no secreto sem perguntar</td></tr>
+<tr><td class="c">9</td><td>redefine a configuração da aba; não muda o modo</td></tr>
+</table>
+<p>O modo do item 5 fica no arquivo <code>%USERPROFILE%\.cronoaudit\config.json</code>, que o motor e a skill também leem. Mudar num lugar muda para os três.</p>
+
+<h2>Os agentes que a aba abre</h2>
+<table>
+<tr><th>Agente</th><th>Como a aba abre</th></tr>
+<tr><td>Claude Code</td><td class="m">claude "..."</td></tr>
+<tr><td>Codex</td><td class="m">codex "..."</td></tr>
+<tr><td>GitHub Copilot CLI</td><td class="m">copilot -i "..."</td></tr>
+<tr><td>Gemini CLI</td><td class="m">gemini -i "..."</td></tr>
+<tr><td>VS Code</td><td class="m">code "&lt;pasta da rodada&gt;"</td></tr>
+</table>
+<p>No automático, a aba abre o primeiro que encontrar no PATH, nessa ordem. No modo livre, a frase que ela passa ao agente é curta e sem acento, e o pedido de verdade está no <code>pedido.md</code>. O VS Code vem por último porque não recebe a frase pela linha de comando: a aba abre a pasta nele e copia a frase. Abra o Copilot Chat (Ctrl+Alt+I), escolha o modo Agente e cole com Ctrl+V. Se o Copilot Chat do VS Code lê a skill instalada em <code>~/.agents/skills</code> ainda não foi medido.</p>
+<p>O Grok Build ainda não está nessa lista. Com ele, use o caminho A: abra o terminal na pasta do cronograma e inicie o agente ali. Se você instalou um agente com o Project aberto, feche e abra o Project, porque ele herda o PATH ao abrir.</p>
+
+<h2>Onde ficam os arquivos</h2>
+<p>Cada rodada tem uma pasta em <code>%LOCALAPPDATA%\cronoaudit\relatorios\&lt;data&gt;_&lt;arquivo&gt;</code>, com o XML, o <code>pedido.md</code> e, depois que o motor roda, o relatório e os JSON. A pasta é local de propósito: fica fora do OneDrive, porque o XML e o relatório carregam o dado da obra. Troque em Configurar, item 2.</p>
+</section>
+
+<section class="ch">
+<h1>Modo livre e modo secreto</h1>
+<p class="lede">O motor não envia nada, em nenhum modo. O modo trata do que um agente lê. No modo livre, o agente lê o cronograma e os resultados, e o que ele lê vai para o fornecedor dele. No modo secreto, que é experimental, o agente lê só uma cópia codificada, e o relatório com os dados reais é montado no seu computador.</p>
+
+<h2>Para onde vão os seus dados</h2>
+<ul>
+<li>O motor roda no seu computador e não usa a rede.</li>
+<li>Os instaladores baixam o repositório do GitHub e, no Windows e só se precisar, o Python do python.org. Mais nada.</li>
+<li>O agente é outra história. O que ele lê (o cronograma, o relatório, as suas perguntas) vai para o fornecedor dele, nos termos da sua conta ou da conta da empresa. Confira a política da empresa antes de usar um agente com cronograma de contrato.</li>
+<li>Se a política não permite agente, use o caminho C, ou os botões Sem IA da aba.</li>
+</ul>
+
+<h2>Como o modo é escolhido</h2>
+<p>A preferência fica num arquivo só, que o motor, a skill e a aba leem: <code>~/.cronoaudit/config.json</code>, chave <code>secret</code>. No Windows, <code>%USERPROFILE%\.cronoaudit\config.json</code>.</p>
+<table>
+<tr><th>Valor</th><th>O que acontece</th></tr>
+<tr><td class="m">ask</td><td>pergunta a cada vez; é o padrão de fábrica, e vale também quando o arquivo não existe ou está ilegível</td></tr>
+<tr><td class="m">off</td><td>modo livre, sem perguntar</td></tr>
+<tr><td class="m">on</td><td>modo secreto, sem perguntar</td></tr>
+</table>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py --config
+python3 ~/.claude/skills/cronoaudit/scripts/review.py --secret ask</pre>
+<p>O primeiro mostra a preferência. O segundo grava, e aceita também <code>on</code> e <code>off</code>. Quem pergunta depende do caminho. A aba pergunta numa janela, por código, antes de existir agente. O motor, rodado num terminal, pergunta antes de abrir o arquivo; quando ninguém pode responder, como quando um agente o roda, ele avisa numa linha que segue no modo livre. O agente, ao começar, lê a preferência e faz a pergunta ele mesmo. Essa última é o agente seguindo a instrução da skill: deixa a escolha visível, mas não é uma trava.</p>
+
+<h2>O que é codificado</h2>
+<p>A cronoaudit analisa o arquivo real no seu computador, exatamente como no modo livre, e depois reescreve o que gravou numa cópia codificada.</p>
+<table>
+<tr><th>No original</th><th>Na cópia</th></tr>
+<tr><td>nomes de atividades, recursos, calendários e feriados, campos personalizados e seus valores, notas, o cabeçalho do projeto</td><td>códigos como <code>T·3fa91c</code>; a letra diz o tipo</td></tr>
+<tr><td>valores em dinheiro</td><td>multiplicados por um fator secreto, escritos com a marca ¤</td></tr>
+<tr><td>datas</td><td>contagens de dias a partir de uma origem secreta, como <code>D+0412</code>; <code>M+0013</code> é um mês e <code>Y+0001</code> um ano</td></tr>
+<tr><td>durações, percentuais, contagens, índices como SPI e CPI, números de linha, códigos da EAP, quantidades e unidades</td><td>continuam reais</td></tr>
+</table>
+<p>A série mensal da reserva de chuva sai da cópia, porque diria a estação do ano. O nome do arquivo também sai: a cópia se chama <code>schedule-review.html</code>, ou <code>previous--to--current-cycle.html</code> numa comparação.</p>
+
+<h2>O cofre e a pasta de trabalho</h2>
+<p>O que permite decodificar fica num cofre local, na mesma pasta da preferência: <code>~/.cronoaudit/vault</code>. Ali ficam a chave de cada projeto, com a tabela de códigos, a origem das datas e o fator do dinheiro, e as saídas reais de cada rodada. O cofre nunca vai para a pasta de trabalho. Um projeto é a pasta do cronograma atual, ou o nome dado com <code>--project</code>. A rev03 e a rev04 na mesma pasta usam os mesmos códigos, e por isso os códigos se comparam entre versões.</p>
+<p>A pasta de trabalho é nova a cada rodada, com um nome que não diz nada do cronograma. Pelo comando, ela nasce em <code>~/cronoaudit-work</code>, ou onde <code>--workdir</code> indicar; pela aba, em <code>%USERPROFILE%\cronoaudit-work\&lt;data e hora&gt;\&lt;código&gt;</code>. Ela guarda só a cópia codificada; um <code>cronoaudit-secret.json</code>, que lista os arquivos e explica os códigos; as instruções para o agente, em <code>CLAUDE.md</code> e <code>AGENTS.md</code>; e, para o Claude Code, a trava, em <code>.claude/</code>. Um teste de vazamento, que roda junto com o teste interno, confere que a pasta só tem arquivos codificados.</p>
+
+<h2>Rodar no modo secreto</h2>
+<p>Pela aba, responda Sim na pergunta do modo. Sem a aba, você mesmo roda um comando, no seu terminal, com o .xml ou, no Windows com o Project, com o .mpp:</p>
+<pre>python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev04.mpp --secret
+python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml --secret</pre>
+<p>O comando mostra a pasta de trabalho. Abra o agente dentro dela: <code>cd</code> até a pasta, e o comando do agente. A primeira coisa que o agente diz é que o modo é experimental, e que você deve se referir às atividades pelo código ou pelo número da linha, porque o que você digitar com um nome real vai para o serviço de IA.</p>
+<p>Tem de ser você a rodar. Um agente que tem o arquivo original nas mãos não protege nada. Por isso, quando você pede o modo secreto a um agente, ele não roda o motor: ele mostra o comando para você rodar no seu terminal. E o motor, quando percebe que foi iniciado pelo Claude Code, recusa o modo secreto e para sem ler nada. Se isso acontecer, rode o comando num PowerShell aberto pelo menu Iniciar, ou abra o Project pelo menu Iniciar, e não de dentro do terminal de um agente. Outra versão, ou uma comparação, é uma nova rodada codificada, iniciada por você.</p>
+
+<h2>O relatório real, no fim</h2>
+<p>Quando você pede, o agente roda <code>secret_decode.py finish</code>. O comando decodifica o relatório da pasta de trabalho no seu computador, com a síntese que o agente escreveu, se houver. Ele confere que o resultado é igual, valor a valor, ao que o motor gravou no cofre. Depois grava o relatório real ao lado do cronograma original e no cofre, e abre no navegador. Pela aba, o relatório real aparece na pasta da rodada. Na tela, o comando mostra só contagens, nunca um nome, um valor, uma data ou um caminho. Se a conferência falhar, ele grava a saída real do motor no lugar e diz quantos valores divergiram. Depois da primeira leitura, o agente oferece numa linha a síntese e o relatório com os nomes reais, e não faz nenhum dos dois sem você pedir.</p>
+
+<h2>Ler uma resposta com os nomes reais</h2>
+<p>As respostas do agente vêm em códigos. Para ler uma delas com os nomes, as datas e os valores reais, rode no seu terminal, fora do agente, o comando que o próprio agente indica:</p>
+<pre>python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\secret_decode.py" text "&lt;pasta de trabalho&gt;"</pre>
+<p>Cole a resposta e termine com Ctrl+Z e Enter numa linha sozinha, no Windows, ou com Ctrl+D, no macOS e no Linux. A tradução aparece só na sua tela. Esse comando é seu: ele imprime nomes reais, então o agente nunca o roda. Ele se recusa a rodar dentro do Claude Code, e a trava também o impede.</p>
+
+<h2>A trava, só no Claude Code</h2>
+<p>No Claude Code, a pasta de trabalho traz regras de negação e um hook. Eles deixam a sessão ler só a própria pasta, rodar só os comandos de finalização da skill e usar só as ferramentas de que uma sessão secreta precisa. PowerShell, conectores como OneDrive, SharePoint e Microsoft 365, envio de arquivos e mensagens para outras sessões ficam fechados, e uma ferramenta fora da lista começa fechada. O hook é um alarme contra o agente sair da pasta por hábito ou por uma instrução mal lida. Não é uma caixa de areia contra um agente decidido a sair.</p>
+<p>O Claude Code pergunta se você confia em cada pasta nova. Responda que sim: é isso que liga a trava, e sem isso ela fica desligada. A pergunta volta a cada análise, porque cada uma tem a sua pasta.</p>
+<p>Nos outros agentes (Codex, GitHub Copilot, Gemini CLI, Grok Build), a pasta traz as mesmas regras como instrução escrita. Nada técnico impede o agente de abrir outros arquivos.</p>
+
+<h2>O que o modo secreto responde, e o que não responde</h2>
+<p>Responde sobre lógica, folga, caminho crítico, durações, avanço, proporções e pesos de custo, diferenças entre versões, qualidade da rede, desvios e inconsistências, e a cadeia forense por número de linha. Não responde sobre valores reais, nomes de empresa, de fornecedor ou de pessoa, locais, e datas absolutas, como "isto cai antes do marco contratual de março?". Para essas perguntas, o agente recusa com clareza e aponta a saída: o relatório decodificado no seu computador, o seu <code>secret_decode.py text</code>, ou o modo livre.</p>
+
+<h2>Os limites</h2>
+<ul>
+<li>É experimental, e o agente diz isso ao começar.</li>
+<li>Os códigos não tornam o cronograma anônimo: a estrutura, as durações e os números de linha continuam legíveis.</li>
+<li>Codificar diminui o que sai do computador. Não substitui a política da sua empresa sobre serviços de IA.</li>
+</ul>
+<p>Testado no Windows com o Claude Code em 22 e 23/11/2026, pelo comando, direto do .mpp e pelo botão do Project, e num cronograma real de 6.484 tarefas: nenhum nome, data ou valor real chegou à cópia codificada, e a trava foi conferida chamando-a direto, sem o agente.</p>
 </section>
 
 <section class="ch">
@@ -153,11 +358,15 @@ cronoaudit, analise entrega.xml e salve os resultados em ~/Relatorios/setembro</
 <p class="lede">O relatório é um único arquivo HTML. Abre em qualquer navegador, funciona sem internet, imprime em PDF com um botão, e alterna entre tema claro e escuro. As tabelas de atividades ficam recolhidas, para o relatório não abrir como um paredão de linhas; a impressão as expande.</p>
 
 <h2>Capa e veredito</h2>
-<p>A capa traz o arquivo, o número de atividades folha, a data de status e o custo de linha de base. O veredito mostra o avanço físico acumulado ponderado por custo, ao lado de um texto fixo sobre como ler esses números, e do primeiro bloco de <strong>Leitura</strong>: frases geradas por regra a partir dos números desta análise. Um aviso vermelho aparece quando há atividades em lógica violada, e diz para resolver isso antes de discutir qualquer data.</p>
+<p>A capa traz o arquivo, o número de atividades folha, a data de status e o custo de linha de base. O veredito mostra o avanço físico acumulado ponderado por custo, ao lado de um texto fixo sobre como ler esses números, e do primeiro bloco de <strong>Leitura</strong>: frases geradas por regra a partir dos números desta análise. Quando há atividades em lógica violada, um aviso vermelho diz para resolver isso antes de discutir qualquer data. O aviso tem o tamanho da quebra: se são até três pares, nenhum numa atividade crítica em aberto nem na cadeia que segura o término, ele nomeia os pares e os marcos que eles alcançam, em vez de condenar a rede inteira. Sem vínculo nenhum, o relatório diz que não há rede para se sustentar.</p>
 <p>Quando uma síntese executiva foi injetada, ela aparece logo abaixo da capa, com o nome de quem a escreveu e a hora, para prosa nunca ser confundida com medição.</p>
 
+<h2>Prazo e marcos</h2>
+<p>Logo depois do veredito e dos cartões vem a seção PZ, que responde a pergunta para a qual se lê uma entrega. Cada marco futuro aparece contra a sua data limite, em dias corridos: a margem no cronograma atual, a margem depois do escorregamento que 80% das atividades não ultrapassaram, se o marco é crítico, e a linha onde nasce o atraso dele no caminho condutor. Margem negativa é depois da data limite.</p>
+<div class="example"><b>No exemplo fictício</b><p>Na rev04, os sete marcos futuros terminam dentro da data limite. A menor margem é a da linha 9, Conclusão do Viaduto V-01: um dia. Com o escorregamento de 80%, sete dias, mais três marcos passam da data, as linhas 7, 8 e 9. O atraso da linha 9 nasce na linha 148, estacas escavadas, com onze dias contra a linha de base.</p></div>
+
 <h2>Cartões e índice</h2>
-<p>Um cartão por achado, com a contagem e a cor da severidade. O índice lista as visões e os achados com código, título, subtítulo, contagem e severidade, e cada linha leva à seção correspondente.</p>
+<p>Um cartão por achado, com a contagem e a cor da severidade. O índice lista o prazo, as visões e os achados com código, título, subtítulo, contagem e severidade, e cada linha leva à seção correspondente.</p>
 <table>
 <tr><th>Severidade</th><th>Achados</th><th>Lê-se</th></tr>
 <tr><td class="c">crítico</td><td>A1, A2</td><td>invalida toda data abaixo até ser resolvido</td></tr>
@@ -171,19 +380,19 @@ cronoaudit, analise entrega.xml e salve os resultados em ~/Relatorios/setembro</
 <div class="def"><div class="k">V1</div><div class="v">Avanço por grupo: previsto contra realizado em cada grupo, ponderado pelo custo do próprio grupo, e uma coluna por achado. O grupo é o ramo da EAP por padrão ou um campo personalizado.</div></div>
 <div class="def"><div class="k">V2 a V4</div><div class="v">Partidas por mês, variação de término em oito faixas, folga total em cinco faixas.</div></div>
 <div class="def"><div class="k">V5</div><div class="v">Calendários que carregam o trabalho: atividades por calendário, jornada, dias por semana e exceções não úteis.</div></div>
-<div class="def"><div class="k">V6</div><div class="v">Produtividade e tendência por recurso. Capítulo 7.</div></div>
-<div class="def"><div class="k">V7</div><div class="v">Qualidade da rede, as catorze métricas. Capítulo 6.</div></div>
-<div class="def"><div class="k">V8</div><div class="v">Olhando para frente: Earned Schedule, look-ahead, ritmos por grupo, marcos com faixa, exposição à chuva. Capítulo 8.</div></div>
-<div class="def"><div class="k">V9</div><div class="v">Forense: caminho condutor por marco, forense de calendário, padrão de execução. Capítulo 8.</div></div>
+<div class="def"><div class="k">V6</div><div class="v">Produtividade e tendência por recurso. Capítulo 10.</div></div>
+<div class="def"><div class="k">V7</div><div class="v">Qualidade da rede, as catorze métricas. Capítulo 9.</div></div>
+<div class="def"><div class="k">V8</div><div class="v">Olhando para frente: Earned Schedule, look-ahead, ritmos por grupo, marcos com faixa, exposição à chuva. Capítulo 11.</div></div>
+<div class="def"><div class="k">V9</div><div class="v">Forense: caminho condutor por marco, onde o atraso entra e onde mais cresce, forense de calendário, padrão de execução. Capítulo 11.</div></div>
 
 <h2>Os achados</h2>
-<p>Cada achado é um bloco com código, severidade, título e subtítulo em linguagem simples. Dentro, três blocos fixos: problema, impacto e solução. Depois, o critério com a convenção de contagem, de onde saiu, com as colunas do Project, e como reproduzir na ferramenta. Por fim a tabela de atividades, recolhida. Só o número de linha visível identifica uma atividade, porque é o único identificador que uma pessoa encontra na tela. Nos achados de rede, a tabela mostra o par explícito, sucessora e predecessora, com o tipo de vínculo e o motivo.</p>
+<p>Cada achado é um bloco com código, severidade, título e subtítulo em linguagem simples. Dentro, três blocos fixos: problema, impacto e solução. Depois, o critério com a convenção de contagem, de onde saiu, com as colunas do Project, e como reproduzir na ferramenta. Por fim a tabela de atividades, recolhida. Só o número de linha visível identifica uma atividade, porque é o único identificador que uma pessoa encontra na tela. Nos achados de rede, a tabela mostra o par explícito, sucessora e predecessora, com o tipo de vínculo e o motivo. Os achados que deram zero aparecem juntos numa linha só, verificados sem ocorrência, para o relatório não abrir com blocos vazios.</p>
 
 <h2>Convenções</h2>
-<p>A última seção lista o que o relatório assumiu: a gaveta de linha de base e por que ela foi escolhida, o limiar e a unidade, a tolerância, a população, a convenção de contagem, como os dias úteis foram contados, de onde vem o percentual, o idioma detectado e com que confiança. Ninguém precisa adivinhar nada.</p>
+<p>A última seção lista o que o relatório assumiu: a linha de base usada e por que ela foi escolhida, o limiar e a unidade, a tolerância, a população, a convenção de contagem, como os dias úteis foram contados, de onde vem o percentual, o idioma detectado e com que confiança. Ninguém precisa adivinhar nada.</p>
 
 <h2>A camada de leitura</h2>
-<p>Cada seção abre com frases geradas por regra a partir dos próprios números dela. Elas dizem o que o dado sustenta e nada mais; se um número falta, a frase não aparece. É o que permite entregar o relatório a alguém que não estava na sala. A síntese executiva é outra coisa: um texto redigido, injetado com autor e hora, que o capítulo 10 explica.</p>
+<p>Cada seção abre com frases geradas por regra a partir dos próprios números dela. Elas dizem o que o dado sustenta e nada mais; se um número falta, a frase não aparece. É o que permite entregar o relatório a alguém que não estava na sala. A síntese executiva é outra coisa: um texto redigido, injetado com autor e hora, que o capítulo 13 explica.</p>
 </section>
 
 <section class="ch">
@@ -242,7 +451,7 @@ cronoaudit, analise entrega.xml e salve os resultados em ~/Relatorios/setembro</
 <section class="ch">
 <h1>Qualidade da rede</h1>
 <p class="lede">Este cronograma se sustenta como modelo, antes de qualquer discussão de data? A seção V7 responde com as métricas mecânicas do modelo DCMA de 14 pontos, cada uma com fórmula em palavras, população declarada e limiar citado para poder ser contestado, mais o que um planejador pergunta de qualquer cronograma.</p>
-<div class="note"><b>Implementação, não certificação</b>Os limiares vêm de um modelo publicado e são citados para que possam ser discutidos. Duas das catorze métricas não são computáveis a partir de um arquivo e o relatório diz isso em vez de aproximar: o teste de caminho crítico exige perturbar o cronograma, e o índice de comprimento do caminho crítico é 1,0 por construção sem data limite no marco final.</div>
+<div class="note"><b>Implementação, não certificação</b>Os limiares vêm de um modelo publicado e são citados para que possam ser discutidos. Duas das catorze métricas pedem mais do que o arquivo traz, e o relatório diz isso em vez de aproximar. O teste de caminho crítico exige perturbar o cronograma e nunca é computável de um arquivo. O índice de comprimento do caminho crítico só é calculado quando o marco final tem data limite; sem ela, ele é 1,0 por construção e não diz nada.</div>
 
 <table>
 <tr><th>Código</th><th>Métrica</th><th>População</th><th>Limiar</th><th>Lê-se</th></tr>
@@ -257,14 +466,14 @@ cronoaudit, analise entrega.xml e salve os resultados em ~/Relatorios/setembro</
 <tr><td class="c">Q9</td><td>Datas inválidas</td><td>todas as folhas</td><td>0%</td><td>data real depois da data de status</td></tr>
 <tr><td class="c">Q10</td><td>Sem recurso</td><td>incompletas com duração</td><td>contagem</td><td>nada para tendenciar</td></tr>
 <tr><td class="c">Q11</td><td>Atividades perdidas</td><td>devidas até a data de status</td><td>≤ 5%</td><td>não terminaram no prazo</td></tr>
-<tr><td class="c">Q12</td><td>Teste de caminho crítico</td><td>—</td><td>—</td><td>não computável de um arquivo</td></tr>
-<tr><td class="c">Q13</td><td>Índice de comprimento do caminho crítico</td><td>—</td><td>—</td><td>só com data limite no marco final</td></tr>
+<tr><td class="c">Q12</td><td>Teste de caminho crítico</td><td>não se aplica</td><td>não se aplica</td><td>não computável de um arquivo</td></tr>
+<tr><td class="c">Q13</td><td>Índice de comprimento do caminho crítico</td><td>marco final com data limite</td><td>≥ 0,95</td><td>caminho restante mais a margem até a data limite, dividido pelo caminho restante; sem data limite, não calculado</td></tr>
 <tr><td class="c">Q14</td><td>Índice de execução da linha de base</td><td>devidas até a data de status</td><td>≥ 0,95</td><td>terminadas no prazo dividido por devidas</td></tr>
 </table>
 
 <h2>Como ler</h2>
 <p>Leia Q1, Q2, Q5 e Q7 antes de qualquer data. Um cronograma que falha nelas não é modelo da obra, e toda data que ele produz é número sem base. Q6 e Q8 dizem se ele pode ser controlado. Q11 e Q14 dizem se foi cumprido. Além das catorze, o relatório mostra resumos com vínculo, que não deveriam existir, marcos sem data limite, o número de atividades críticas incompletas, e se a cadeia crítica chega ao marco final, que é o teste de a rede estar inteira.</p>
-<div class="example"><b>No cronograma de exemplo</b><p>Uma atividade presa por restrição de deve terminar em aparece em Q5. Um vínculo com lag de três dias aparece em Q3. Um resumo que carrega vínculo é sinalizado. O índice de execução da linha de base fica abaixo do piso porque uma atividade devida não terminou.</p></div>
+<div class="example"><b>No exemplo fictício</b><p>Na rev04, as linhas 77, 89, 136 e 170 não têm sucessora e aparecem em Q1: 4 de 96, abaixo do limiar, então a rede é lida como vinculada. As mesmas quatro, mais a linha 57, têm folga acima de 44 dias úteis e aparecem em Q6. De 43 atividades devidas até a data de status, 28 terminaram no prazo: o índice de execução da linha de base fica em 0,65, abaixo do piso de 0,95, e Q11 também não atende. O marco final tem data limite, então Q13 é calculado: 1,025.</p></div>
 </section>
 
 <section class="ch">
