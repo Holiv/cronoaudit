@@ -37,6 +37,17 @@ forward and backward pass over the links and calendars, so they agree with the l
 
 ## Run it
 
+After installing, the shortest way: the installer copies these files to a `cronoaudit-exemplo`
+folder in your user folder, and this command runs the comparison and opens the report in your
+browser:
+
+```
+python3 ~/.claude/skills/cronoaudit/scripts/review.py --example
+```
+
+On Windows, use the line the installer printed at the end, the one ending in `--example`. From a
+copy of the repository:
+
 ```
 python3 skills/cronoaudit/scripts/review.py \
     examples/rodovia-ficticia-rev03.xml examples/rodovia-ficticia-rev04.xml \

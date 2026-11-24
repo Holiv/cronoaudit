@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="pt"><head><meta charset="utf-8">
-<title>cronoaudit — manual técnico 0.9.4</title>
+<title>cronoaudit — manual técnico 1.0.0</title>
 <meta name="author" content="Helton da Silva de Oliveira">
 <link rel="stylesheet" href="style.css">
 </head><body>
 <div class="cover">
-  <p class="kicker">Manual técnico · versão 0.9.4</p>
+  <p class="kicker">Manual técnico · versão 1.0.0</p>
   <h1>crono<em>audit</em></h1>
   <p class="sub">Análise crítica de cronograma, do arquivo ao veredito. Como instalar, como usar, como ler o relatório e como reproduzir cada número.</p>
   <svg viewBox="0 0 520 150" aria-hidden="true">
@@ -28,7 +28,7 @@
 </div>
 <div class="front">
   <h2>Sobre este manual</h2>
-  <p>Este manual acompanha a versão 0.9.4 da cronoaudit. Ele foi escrito para quem recebe um cronograma e precisa dizer se aquilo é verdade, e não assume que o leitor conheça os conceitos: cada capítulo começa pelo conceito, depois mostra o que a ferramenta faz com ele.</p>
+  <p>Este manual acompanha a versão 1.0.0 da cronoaudit. Ele foi escrito para quem recebe um cronograma e precisa dizer se aquilo é verdade, e não assume que o leitor conheça os conceitos: cada capítulo começa pelo conceito, depois mostra o que a ferramenta faz com ele.</p>
 <p>Todos os exemplos usam os cronogramas sintéticos que acompanham a ferramenta. Nenhum dado real de contrato, contratada ou pessoa aparece aqui.</p>
 <p>A ferramenta segue o formato aberto Agent Skills e funciona com qualquer agente que o leia, e também sem agente nenhum. O código-fonte, a licença e a versão mais recente estão em github.com/Holiv/cronoaudit.</p>
   <h2 style="margin-top:12mm">Sumário</h2>
@@ -220,20 +220,21 @@
 <pre>irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex</pre>
 <p>No macOS ou no Linux, no Terminal:</p>
 <pre>curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash</pre>
-<p>O instalador baixa o repositório do GitHub, copia a skill para as duas pastas abaixo e roda o teste interno da ferramenta como prova de instalação. No fim aparece a linha <code>cronoaudit ... is installed</code>, com o número da versão, e o comando exato para rodar o motor nesta máquina. Reinicie o agente depois de instalar, porque as skills são lidas no início de cada sessão.</p>
+<p>O instalador baixa o repositório do GitHub, copia a skill para as duas pastas abaixo, copia o exemplo fictício para a pasta <code>cronoaudit-exemplo</code> e roda o teste interno da ferramenta como prova de instalação. Depois pergunta só o que é escolha sua. No Windows, se encontrar o MS Project, pergunta se você quer também a aba Cronoaudit, que o capítulo 5 descreve. E pergunta se você quer ver o exemplo agora: ele compara duas revisões de uma obra inventada e abre o relatório no navegador. As mensagens saem em português num sistema em português, e em inglês nos outros.</p>
+<p>No fim aparece <code>Pronto: cronoaudit 1.0.0 instalada.</code>, ou <code>cronoaudit 1.0.0 is installed.</code> num sistema em inglês. Logo abaixo, o instalador mostra como usar. Com um agente de IA, abra o agente na pasta do cronograma e peça a análise; se ele já estava aberto, feche e abra de novo, porque as skills são lidas no início de cada sessão. Sem agente, a linha depois de <em>Sem agente</em> traz o comando certo para este computador. A última linha roda o exemplo de novo.</p>
 <div class="note"><b>Python no Windows</b>A cronoaudit precisa do Python 3.9 ou mais novo. No Windows, se não houver um Python que funcione, o instalador traz uma cópia própria: o pacote oficial do python.org, conferido pelo SHA-256 antes de ser aberto, em <code>%LOCALAPPDATA%\cronoaudit\python</code>. Não precisa de administrador e não mexe no registro nem no PATH. Apagar essa pasta remove esse Python por completo. No macOS e no Linux, o Python precisa já estar instalado; se faltar, o instalador para e diz isso.</div>
 <table>
 <tr><th>Pasta</th><th>Quem lê</th></tr>
 <tr><td class="m">~/.claude/skills/cronoaudit</td><td>Claude Code, OpenCode, Cursor</td></tr>
-<tr><td class="m">~/.agents/skills/cronoaudit</td><td>Codex, GitHub Copilot, Grok Build, Gemini CLI, Cursor, VS Code, OpenCode</td></tr>
+<tr><td class="m">~/.agents/skills/cronoaudit</td><td>Codex, GitHub Copilot e outros clientes de Agent Skills</td></tr>
 </table>
-<p>No Windows, <code>~</code> é <code>%USERPROFILE%</code>: as pastas são <code>%USERPROFILE%\.claude\skills\cronoaudit</code> e <code>%USERPROFILE%\.agents\skills\cronoaudit</code>. Até agora a cronoaudit foi testada de ponta a ponta com o Claude Code e, no modo livre, com o GitHub Copilot CLI (21/11/2026, pela aba do Project). Nos outros agentes, a pasta e a instalação seguem o que os fornecedores documentam. O modo secreto só foi testado com o Claude Code. Para conferir, abra o agente e pergunte quais skills ele tem.</p>
+<p>No Windows, <code>~</code> é <code>%USERPROFILE%</code>: as pastas são <code>%USERPROFILE%\.claude\skills\cronoaudit</code> e <code>%USERPROFILE%\.agents\skills\cronoaudit</code>. A cronoaudit foi testada de ponta a ponta com o Claude Code e, no modo livre, com o GitHub Copilot CLI (21/11/2026, pela aba do Project). No Codex, a instalação segue o que o fornecedor documenta. O modo secreto foi testado com o Claude Code. Para conferir, abra o agente e pergunte quais skills ele tem.</p>
 
 <h2 id="ch3-2">Atualizar</h2>
 <p>Rode o mesmo comando de novo. O instalador apaga as duas pastas da skill e copia a versão nova por inteiro. O que mora em outro lugar não é tocado: a preferência de modo e o cofre do modo secreto, em <code>~/.cronoaudit</code>; os relatórios; o perfil da empresa, que fica onde foi gravado. Por isso, não guarde nada seu dentro da pasta da skill, porque a próxima atualização apaga. Um template de relatório personalizado fica fora dela, apontado pela opção <code>--template</code> ou pela chave <code>template</code> do perfil.</p>
 
 <h2 id="ch3-3">Um agente, para conversar</h2>
-<p>O caminho A e o botão Analisar da aba precisam de um agente instalado e com login feito. Use o agente de sua preferência, ou o que a sua empresa permite no seu computador. O README do repositório traz os comandos oficiais de instalação do Claude Code, do GitHub Copilot CLI, do Codex e do Grok Build, com o guia de cada fornecedor. Cada agente precisa de uma conta no fornecedor; confira qual plano o inclui e a política da sua empresa. Sem agente, o motor e os botões Sem IA da aba funcionam do mesmo jeito.</p>
+<p>O caminho A e o botão Analisar da aba precisam de um agente instalado e com login feito. Use o agente de sua preferência, ou o que a sua empresa permite no seu computador. O README do repositório traz os comandos oficiais de instalação do Claude Code, do GitHub Copilot CLI e do Codex, com o guia de cada fornecedor. Cada agente precisa de uma conta no fornecedor; confira qual plano o inclui e a política da sua empresa. Sem agente, o motor e os botões Sem IA da aba funcionam do mesmo jeito.</p>
 
 <h2 id="ch3-4">Outras formas de instalar</h2>
 <table>
@@ -243,17 +244,18 @@
 <tr><td>Codex</td><td class="m">$skill-installer https://github.com/Holiv/cronoaudit</td></tr>
 <tr><td>Uma equipe, pelo projeto</td><td class="m">git clone https://github.com/Holiv/cronoaudit .agents/skills/cronoaudit</td></tr>
 </table>
-<p>No Windows, três variáveis mudam o instalador. Defina na mesma janela, antes do comando: <code>$env:CRONOAUDIT_NO_PYTHON="1"</code> nunca baixa Python; <code>$env:CRONOAUDIT_EMBED_PYTHON="1"</code> usa o Python próprio mesmo havendo outro; <code>$env:CRONOAUDIT_REF="nome-da-branch"</code> instala de outra branch.</p>
+<p>Algumas variáveis mudam o instalador. No Windows, defina na mesma janela, antes do comando: <code>$env:CRONOAUDIT_NO_PYTHON="1"</code> nunca baixa Python; <code>$env:CRONOAUDIT_EMBED_PYTHON="1"</code> usa o Python próprio mesmo havendo outro; <code>$env:CRONOAUDIT_REF="nome-da-branch"</code> instala de outra branch. <code>$env:CRONOAUDIT_PLUGIN</code> e <code>$env:CRONOAUDIT_EXAMPLE</code> respondem de antemão as duas perguntas, a da aba e a do exemplo: <code>"1"</code> é sim, <code>"0"</code> é não. No macOS e no Linux valem <code>CRONOAUDIT_REF</code> e <code>CRONOAUDIT_EXAMPLE</code>, escritas antes do <code>bash</code>, como em <code>curl ... | CRONOAUDIT_EXAMPLE=0 bash</code>.</p>
 
 <h2 id="ch3-5">Primeira execução: o exemplo fictício</h2>
-<p>O repositório traz duas entregas de uma obra rodoviária inventada, com um mês de intervalo: <code>rodovia-ficticia-rev03.xml</code>, com data de status em 30/09/2026, e <code>rodovia-ficticia-rev04.xml</code>, em 30/10/2026. Rodovia, trecho, empresas, quantidades, preços e datas foram criados para o exemplo. São 142 atividades, nove marcos com data limite, dois calendários com reserva de chuva, e catorze problemas plantados de propósito. Os arquivos ficam na pasta <code>examples/</code> do repositório e não vão junto com a skill instalada: clone o repositório ou baixe os dois arquivos.</p>
-<pre>git clone https://github.com/Holiv/cronoaudit
-cd cronoaudit
-python3 ~/.claude/skills/cronoaudit/scripts/review.py examples/rodovia-ficticia-rev04.xml</pre>
-<p>No Windows, no PowerShell, o interpretador é <code>python</code>, e o caminho da skill se escreve assim:</p>
-<pre>python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" examples\rodovia-ficticia-rev04.xml</pre>
-<p>Se o instalador trouxe o Python próprio, ele não entra no PATH, e <code>python</code> não é reconhecido. Use o comando que o instalador mostrou no fim. Ele chama o Python próprio pelo caminho, <code>&amp; "$env:LOCALAPPDATA\cronoaudit\python\python.exe"</code>, seguido do caminho do <code>review.py</code>.</p>
-<p>Enquanto a preferência de modo for <code>ask</code>, que é o padrão de fábrica, o motor pergunta o modo antes de abrir o arquivo: <code>s</code> segue no modo livre, <code>secreto</code> passa ao modo secreto, <code>nunca</code> segue no livre e não pergunta mais, <code>n</code> cancela. Sem agente, nada sai do computador em nenhum dos modos. Responda <code>s</code>, ou acrescente <code>--free</code> ao comando. O capítulo 6 explica os modos.</p>
+<p>O instalador copia para a pasta <code>cronoaudit-exemplo</code>, na sua pasta de usuário (<code>~/cronoaudit-exemplo</code>; no Windows, <code>%USERPROFILE%\cronoaudit-exemplo</code>), duas entregas de uma obra rodoviária inventada, com um mês de intervalo: <code>rodovia-ficticia-rev03.xml</code>, com data de status em 30/09/2026, e <code>rodovia-ficticia-rev04.xml</code>, em 30/10/2026. Rodovia, trecho, empresas, quantidades, preços e datas foram criados para o exemplo. São 142 atividades, nove marcos com data limite, dois calendários com reserva de chuva, e catorze problemas plantados de propósito. A pasta traz também <code>rodovia-ficticia-rev03.mpp</code> e <code>rodovia-ficticia-rev04.mpp</code>, para experimentar a aba dentro do Project.</p>
+<p>No fim da instalação, o instalador pergunta se você quer ver o exemplo agora. Para ver de novo, use a última linha que ele mostrou, a que termina em <code>--example</code>:</p>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py --example</pre>
+<p>O <code>--example</code>, ou <code>--exemplo</code>, compara a rev03 com a rev04 no modo livre, sem perguntar o modo, porque os dados são inventados. Ele grava os resultados na própria pasta <code>cronoaudit-exemplo</code> e abre o relatório da comparação no navegador. Se não achar o exemplo, ele pede para rodar o instalador de novo, que traz o exemplo. Os mesmos arquivos estão na pasta <code>examples/</code> do repositório, para quem preferir clonar.</p>
+<p>No Windows, a linha que o instalador mostra já começa pelo Python certo desta máquina. Se o instalador trouxe o Python próprio, ele não entra no PATH, e <code>python</code> sozinho não o encontra: use essa linha, ou as duas linhas que acham o Python, no caminho C do capítulo 4.</p>
+<p>O relatório que abre é o de ciclo, <code>rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html</code>. O término do projeto foi de 04/10/2027 para 25/10/2027, 21 dias depois. Antes do avanço, o relatório aponta o passado reescrito: o término real da linha 29 mudou e passou a coincidir com a data da linha de base, e a linha 119, que estava a 100%, foi removida. No fim vêm doze cobranças prontas para a contratada. O capítulo 12 descreve esse relatório. Na mesma pasta ficam o JSON e as leituras do ciclo, e a análise da rev04, com os arquivos da tabela abaixo.</p>
+<p>Para analisar uma entrega só, passe o arquivo ao motor:</p>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py ~/cronoaudit-exemplo/rodovia-ficticia-rev04.xml</pre>
+<p>Enquanto a preferência de modo for <code>ask</code>, que é o padrão de fábrica, o motor pergunta antes de abrir o arquivo. Ele avisa que os resultados vão sair com os dados reais, no modo livre, e que, se um agente de IA ler esses arquivos depois, o que ele ler vai para o fornecedor dele. As respostas: <code>s</code>, sim; <code>secreto</code>, uma cópia codificada para o agente; <code>nunca</code>, sim, e não perguntar mais; <code>n</code> cancela. Sem agente, nada sai do computador em nenhum dos modos. Responda <code>s</code>, ou acrescente <code>--free</code> ao comando. O capítulo 6 explica os modos.</p>
 <p>O terminal mostra o resumo: a linha de base usada e por quê, o limiar, a população, a convenção de contagem, e os nove achados com a contagem de cada um. Na rev04, o A1 acusa duas atividades: a linha 36, imprimação do segmento 1, começou com a linha 35, base de brita graduada, ainda aberta. Os outros oito ficam em zero. Num cronograma real de 6.484 tarefas e 107 calendários, a análise levou 29 segundos num notebook comum, medidos em 22/11/2026. Ao lado do arquivo de entrada ficam os resultados, em que <code>&lt;nome&gt;</code> é o nome do arquivo, aqui <code>rodovia-ficticia-rev04</code>.</p>
 <table>
 <tr><th>Arquivo</th><th>Para que serve</th></tr>
@@ -266,10 +268,7 @@ python3 ~/.claude/skills/cronoaudit/scripts/review.py examples/rodovia-ficticia-
 <tr><td class="m">&lt;nome&gt;-review-forensics.json</td><td>cadeias condutoras e padrão de execução</td></tr>
 <tr><td class="m">&lt;nome&gt;-review-readings.json</td><td>as leituras por regra de cada seção, para citar sem redigir</td></tr>
 </table>
-<p>Agora a comparação das duas entregas, com a anterior primeiro:</p>
-<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py examples/rodovia-ficticia-rev03.xml examples/rodovia-ficticia-rev04.xml</pre>
-<p>Saem a análise da rev04, como acima, e o relatório de ciclo, <code>rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html</code>, com o JSON e as leituras ao lado. O término do projeto foi de 04/10/2027 para 25/10/2027, 21 dias depois. Antes do avanço, o relatório aponta o passado reescrito: o término real da linha 29 mudou e passou a coincidir com a data da linha de base, e a linha 119, que estava a 100%, foi removida. No fim vêm doze cobranças prontas para a contratada. O capítulo 12 descreve esse relatório.</p>
-<p>Os números deste manual saem dos dois XML como estão, rodados com esta versão. Aberto e salvo no Project, o exemplo é recalculado: datas de tendência, folgas e valor agregado mudam, e parte dos números muda junto.</p>
+<p>Os números deste manual saem dos dois XML como estão, rodados com esta versão. Os .mpp da pasta dão números um pouco diferentes, porque o Project recalculou o cronograma ao criá-los: na comparação, 22 dias no término e 14 cobranças, contra 21 dias e 12 cobranças nos XML.</p>
 
 <h2 id="ch3-6">Ler um .mpp direto, no Windows</h2>
 <p>No Windows com o MS Project instalado, não é preciso exportar nada. Passe o .mpp como ele está:</p>
@@ -283,7 +282,7 @@ python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-fi
 
 <h2 id="ch3-7">Verificar a ferramenta antes de confiar nela</h2>
 <pre>python3 ~/.claude/skills/cronoaudit/scripts/test_checks.py</pre>
-<p>O teste roda a ferramenta sobre cronogramas sintéticos. No positivo, cada verificação tem de acusar. No negativo, cada uma tem de ficar calada. Sem a segunda metade, um resultado limpo não vale nada: uma sonda que não consegue disparar reporta zero achados num arquivo quebrado com a mesma naturalidade de um arquivo bom. O instalador roda este teste no fim. A partir de uma cópia do repositório, o teste confere também os catorze problemas do exemplo fictício. A partir da pasta instalada, que não tem o exemplo, essa parte é pulada, e o teste diz isso.</p>
+<p>O teste roda a ferramenta sobre cronogramas sintéticos. No positivo, cada verificação tem de acusar. No negativo, cada uma tem de ficar calada. Sem a segunda metade, um resultado limpo não vale nada: uma sonda que não consegue disparar reporta zero achados num arquivo quebrado com a mesma naturalidade de um arquivo bom. O instalador roda este teste no fim, depois de copiar o exemplo. O teste confere também os catorze problemas do exemplo fictício, que ele procura na pasta <code>examples/</code> de uma cópia do repositório ou em <code>~/cronoaudit-exemplo</code>. Se o exemplo não estiver em nenhuma das duas, essa parte é pulada, e o teste diz isso.</p>
 </section>
 
 <section class="ch">
@@ -335,7 +334,7 @@ Analise o rodovia-ficticia-rev04.xml e salve os resultados em ~/Relatorios/outub
 <p>Para quando não há agente no computador, ou quando a política da empresa não permite usar um. Mesmo relatório, sem conversa, e nada sai do computador. Ficam de fora só a síntese executiva redigida e as entrevistas de personalização, as duas partes que dependem de um agente.</p>
 <pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev04.xml
 python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml</pre>
-<p>No Windows, no PowerShell, comece por duas linhas que acham o Python. O instalador pode ter trazido um próprio, que não entra no PATH, e aí <code>python</code> sozinho não o encontra. A linha que o instalador mostra no fim, depois de <em>run directly</em>, também serve.</p>
+<p>No Windows, no PowerShell, comece por duas linhas que acham o Python. O instalador pode ter trazido um próprio, que não entra no PATH, e aí <code>python</code> sozinho não o encontra. A linha que o instalador mostra no fim, depois de <em>Sem agente</em>, também serve.</p>
 <pre>$py = "$env:LOCALAPPDATA\cronoaudit\python\python.exe"
 if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContinue) { "py" } else { "python" } }
 &amp; $py "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev04.xml</pre>
@@ -350,9 +349,10 @@ if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContin
 <tr><td class="m">--tolerance-days N</td><td>a tolerância de G; padrão 1</td></tr>
 <tr><td class="m">--template ARQUIVO</td><td>um template de relatório personalizado</td></tr>
 <tr><td class="m">--quiet</td><td>grava os arquivos sem o resumo no terminal</td></tr>
+<tr><td class="m">--example, --exemplo</td><td>roda o exemplo fictício no modo livre e abre a comparação no navegador</td></tr>
 <tr><td class="m">--from-project</td><td>Windows: o cronograma aberto no Project</td></tr>
 <tr><td class="m">--free</td><td>modo livre, dito explicitamente</td></tr>
-<tr><td class="m">--secret</td><td>modo secreto, experimental; capítulo 6</td></tr>
+<tr><td class="m">--secret</td><td>modo secreto; capítulo 6</td></tr>
 <tr><td class="m">--secret on, off, ask</td><td>grava a preferência de modo e sai</td></tr>
 <tr><td class="m">--config</td><td>mostra a preferência de modo gravada</td></tr>
 </table>
@@ -361,10 +361,10 @@ if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContin
 
 <section class="ch">
 <p class="chno">5</p><h1 class="ch" id="ch5">A aba Cronoaudit no Project</h1>
-<p class="lede">A aba é um atalho de entrada, no Windows. Ela exporta o XML do cronograma aberto e entrega ao motor, ou abre o seu agente já sobre ele. Ela mesma não calcula nada: os números saem do motor, os mesmos dos outros caminhos. Tudo o que ela faz dá para fazer à mão.</p>
+<p class="lede">A aba é um atalho de entrada, no Windows. Ela exporta o XML do cronograma aberto e entrega ao motor, ou abre o seu agente já sobre ele. Ela mesma não calcula nada: os números saem do motor, os mesmos dos outros caminhos. Tudo o que ela faz dá para fazer à mão. Este capítulo descreve a aba v0.6: três agentes, e janelas em português direto, com acento.</p>
 
 <h2 id="ch5-1">Instalar, atualizar e remover</h2>
-<p>Antes, instale a cronoaudit pelo <code>install.ps1</code>, como no capítulo 3. A aba procura a skill nas duas pastas instaladas, e o Python nesta ordem: <code>py -3</code>, <code>python</code>, <code>python3</code> e o Python próprio da cronoaudit. Depois, com o Project fechado, no PowerShell:</p>
+<p>O instalador da cronoaudit, no capítulo 3, oferece a aba quando encontra o MS Project. A aba procura a skill nas duas pastas instaladas, e o Python nesta ordem: <code>py -3</code>, <code>python</code>, <code>python3</code> e o Python próprio da cronoaudit. Para instalar só a aba, ou de novo, com o Project fechado, no PowerShell:</p>
 <pre>irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/msproject/install-msproject.ps1 | iex</pre>
 <p>O instalador guarda uma cópia do que muda antes de mudar: o <code>Global.MPT</code>, onde ficam as macros pessoais, e o arquivo da faixa de opções. Ele abre o Project, copia o módulo da cronoaudit para o <code>Global.MPT</code> e acrescenta a aba sem apagar as suas outras abas. Não altera nenhuma configuração de segurança e confere no fim que os botões respondem.</p>
 <p>Durante a instalação o Project abre e pede duas coisas, que são suas:</p>
@@ -384,24 +384,24 @@ if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContin
 <tr><td></td><td>Exportar XML</td><td>só exporta o XML e abre a pasta, para levar a outro lugar</td></tr>
 <tr><td>Ajustes</td><td>Configurar</td><td>agente, pasta das rodadas, Python, review.py e modo</td></tr>
 </table>
-<p>Os botões leem a versão salva em disco e nunca perguntam se é para salvar o seu arquivo. Na comparação, a outra versão pode ser .mpp ou .xml. Um .mpp é aberto só para leitura, exportado e fechado sem salvar, e a outra versão não pode estar aberta no Project. Os botões Sem IA não perguntam o modo: ali não há agente. Se Analisar ou Comparar versões não encontrarem agente instalado, eles oferecem rodar sem IA em vez de falhar.</p>
+<p>Os botões leem a versão salva em disco e nunca perguntam se é para salvar o seu arquivo. Na comparação, a outra versão pode ser .mpp ou .xml. Um .mpp é aberto só para leitura, exportado e fechado sem salvar, e a outra versão não pode estar aberta no Project. Os botões Sem IA não perguntam o modo: ali não há agente. Se Analisar ou Comparar versões não encontrarem agente instalado, eles oferecem rodar sem IA em vez de falhar. Para experimentar sem um cronograma seu, abra no Project o <code>rodovia-ficticia-rev04.mpp</code> da pasta <code>cronoaudit-exemplo</code>.</p>
 
 <h2 id="ch5-3">A pergunta do modo</h2>
-<p>Antes de abrir o agente, e antes de exportar qualquer coisa, Analisar e Comparar versões perguntam o modo numa janela:</p>
+<p>Antes de abrir o agente, e antes de exportar qualquer coisa, Analisar e Comparar versões perguntam o modo numa janela. Ela pergunta "Abrir o Claude Code no modo SECRETO?", com o nome do seu agente, explica os dois modos e oferece três botões:</p>
 <table>
 <tr><th>Resposta</th><th>O que acontece</th></tr>
-<tr><td>Sim</td><td>modo secreto, experimental. É o botão que já vem selecionado: um Enter distraído nunca manda o cronograma ao fornecedor do agente.</td></tr>
-<tr><td>Não</td><td>modo livre, desta vez</td></tr>
+<tr><td>Sim</td><td>modo secreto. É o botão que já vem selecionado: um Enter distraído nunca manda o cronograma ao fornecedor do agente.</td></tr>
+<tr><td>Não</td><td>modo livre, só desta vez</td></tr>
 <tr><td>Cancelar</td><td>não abre o agente</td></tr>
 </table>
 <p>No modo livre, o botão exporta o XML para a pasta da rodada, grava ali um <code>pedido.md</code> e abre o agente num terminal visível nessa pasta. O pedido diz a tarefa, o nome do XML, o comando do motor que funciona nesta máquina, a regra de que todo número vem do motor e o nome exato de cada arquivo que o motor vai gravar. Ele também diz que o modo já foi escolhido, para o agente não perguntar de novo.</p>
-<p>No modo secreto, o botão exporta o XML para a pasta da rodada, que o agente nunca vê, e roda o motor com <code>--secret</code>. Depois abre o agente na pasta codificada, <code>%USERPROFILE%\cronoaudit-work\&lt;data e hora&gt;\&lt;código&gt;</code>, sem <code>pedido.md</code>, porque o pedido levaria nomes. No Claude Code, responda que confia na pasta: é isso que liga a trava. Quando você pedir, o agente monta o relatório com os dados reais, que aparece na pasta da rodada e abre no navegador. Se o agente não é o Claude Code, a janela avisa que a trava só existe nele.</p>
+<p>No modo secreto, o botão exporta o XML para a pasta da rodada, que o agente nunca vê, e roda o motor com <code>--secret</code>. Depois abre o agente na pasta codificada, <code>%USERPROFILE%\cronoaudit-work\&lt;data e hora&gt;\&lt;código&gt;</code>, sem <code>pedido.md</code>, porque o pedido levaria nomes. Antes, uma janela "Modo SECRETO pronto." mostra a pasta codificada, pede para você falar das atividades pelo código ou pelo número da linha, e diz em que pasta o relatório com os dados reais vai aparecer. No Claude Code, ela avisa que ele vai perguntar se você confia na pasta: responda que sim, porque é isso que liga a trava. Quando você pedir, o agente monta o relatório com os dados reais, que aparece na pasta da rodada e abre no navegador. Se o agente não é o Claude Code, a janela do modo avisa que a pasta traz as regras por escrito e que a trava só existe no Claude Code.</p>
 <p>Para não perguntar mais, escolha o modo em Configurar, item 5.</p>
 
 <h2 id="ch5-4">Configurar</h2>
 <table>
 <tr><th>Item</th><th>O que muda</th></tr>
-<tr><td class="c">1</td><td>o agente: auto, claude, codex, copilot, gemini ou code; auto é o primeiro instalado, nessa ordem</td></tr>
+<tr><td class="c">1</td><td>o agente: auto, claude, codex ou copilot; auto é o primeiro que estiver instalado, nessa ordem</td></tr>
 <tr><td class="c">2</td><td>a pasta das rodadas; vazio volta ao padrão, local e fora de pasta sincronizada</td></tr>
 <tr><td class="c">3</td><td>o comando do Python; vazio detecta de novo</td></tr>
 <tr><td class="c">4</td><td>o caminho do review.py; vazio detecta de novo</td></tr>
@@ -416,11 +416,8 @@ if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContin
 <tr><td>Claude Code</td><td class="m">claude "..."</td></tr>
 <tr><td>Codex</td><td class="m">codex "..."</td></tr>
 <tr><td>GitHub Copilot CLI</td><td class="m">copilot -i "..."</td></tr>
-<tr><td>Gemini CLI</td><td class="m">gemini -i "..."</td></tr>
-<tr><td>VS Code</td><td class="m">code "&lt;pasta da rodada&gt;"</td></tr>
 </table>
-<p>No automático, a aba abre o primeiro que encontrar no PATH, nessa ordem. No modo livre, a frase que ela passa ao agente é curta e sem acento, e o pedido de verdade está no <code>pedido.md</code>. O VS Code vem por último porque não recebe a frase pela linha de comando: a aba abre a pasta nele e copia a frase. Abra o Copilot Chat (Ctrl+Alt+I), escolha o modo Agente e cole com Ctrl+V. Se o Copilot Chat do VS Code lê a skill instalada em <code>~/.agents/skills</code> ainda não foi medido.</p>
-<p>O Grok Build ainda não está nessa lista. Com ele, use o caminho A: abra o terminal na pasta do cronograma e inicie o agente ali. Se você instalou um agente com o Project aberto, feche e abra o Project, porque ele herda o PATH ao abrir.</p>
+<p>No automático, a aba abre o primeiro que encontrar no computador, nessa ordem. No modo livre, a frase que ela passa ao agente é curta e sem acento, e o pedido de verdade está no <code>pedido.md</code>. Pela aba, a cronoaudit foi testada com o Claude Code e, no modo livre, com o GitHub Copilot CLI; no Codex, a instalação segue o que o fornecedor documenta. Se você instalou um agente com o Project aberto, feche e abra o Project, porque ele herda o PATH ao abrir.</p>
 
 <h2 id="ch5-6">Onde ficam os arquivos</h2>
 <p>Cada rodada tem uma pasta em <code>%LOCALAPPDATA%\cronoaudit\relatorios\&lt;data&gt;_&lt;arquivo&gt;</code>, com o XML, o <code>pedido.md</code> e, depois que o motor roda, o relatório e os JSON. A pasta é local de propósito: fica fora do OneDrive, porque o XML e o relatório carregam o dado da obra. Troque em Configurar, item 2.</p>
@@ -428,7 +425,7 @@ if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContin
 
 <section class="ch">
 <p class="chno">6</p><h1 class="ch" id="ch6">Modo livre e modo secreto</h1>
-<p class="lede">O motor não envia nada, em nenhum modo. O modo trata do que um agente lê. No modo livre, o agente lê o cronograma e os resultados, e o que ele lê vai para o fornecedor dele. No modo secreto, que é experimental, o agente lê só uma cópia codificada, e o relatório com os dados reais é montado no seu computador.</p>
+<p class="lede">O motor não envia nada, em nenhum modo. O modo trata do que um agente lê. No modo livre, o agente lê o cronograma e os resultados, e o que ele lê vai para o fornecedor dele. No modo secreto, o agente lê só uma cópia codificada, e o relatório com os dados reais é montado no seu computador.</p>
 
 <h2 id="ch6-1">Para onde vão os seus dados</h2>
 <ul>
@@ -469,7 +466,7 @@ python3 ~/.claude/skills/cronoaudit/scripts/review.py --secret ask</pre>
 <p>Pela aba, responda Sim na pergunta do modo. Sem a aba, você mesmo roda um comando, no seu terminal, com o .xml ou, no Windows com o Project, com o .mpp:</p>
 <pre>python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev04.mpp --secret
 python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml --secret</pre>
-<p>O comando mostra a pasta de trabalho. Abra o agente dentro dela: <code>cd</code> até a pasta, e o comando do agente. A primeira coisa que o agente diz é que o modo é experimental, e que você deve se referir às atividades pelo código ou pelo número da linha, porque o que você digitar com um nome real vai para o serviço de IA.</p>
+<p>O comando mostra a pasta de trabalho e diz para abrir o agente dentro dela: <code>cd</code> até a pasta, depois <code>claude</code>, <code>copilot</code> ou <code>codex</code>. A primeira coisa que o agente diz é que você deve se referir às atividades pelo código ou pelo número da linha, porque o que você digitar com um nome real vai para o serviço de IA.</p>
 <p>Tem de ser você a rodar. Um agente que tem o arquivo original nas mãos não protege nada. Por isso, quando você pede o modo secreto a um agente, ele não roda o motor: ele mostra o comando para você rodar no seu terminal. E o motor, quando percebe que foi iniciado pelo Claude Code, recusa o modo secreto e para sem ler nada. Se isso acontecer, rode o comando num PowerShell aberto pelo menu Iniciar, ou abra o Project pelo menu Iniciar, e não de dentro do terminal de um agente. Outra versão, ou uma comparação, é uma nova rodada codificada, iniciada por você.</p>
 
 <h2 id="ch6-6">O relatório real, no fim</h2>
@@ -483,14 +480,13 @@ python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml
 <h2 id="ch6-8">A trava, só no Claude Code</h2>
 <p>No Claude Code, a pasta de trabalho traz regras de negação e um hook. Eles deixam a sessão ler só a própria pasta, rodar só os comandos de finalização da skill e usar só as ferramentas de que uma sessão secreta precisa. PowerShell, conectores como OneDrive, SharePoint e Microsoft 365, envio de arquivos e mensagens para outras sessões ficam fechados, e uma ferramenta fora da lista começa fechada. O hook é um alarme contra o agente sair da pasta por hábito ou por uma instrução mal lida. Não é uma caixa de areia contra um agente decidido a sair.</p>
 <p>O Claude Code pergunta se você confia em cada pasta nova. Responda que sim: é isso que liga a trava, e sem isso ela fica desligada. A pergunta volta a cada análise, porque cada uma tem a sua pasta.</p>
-<p>Nos outros agentes (Codex, GitHub Copilot, Gemini CLI, Grok Build), a pasta traz as mesmas regras como instrução escrita. Nada técnico impede o agente de abrir outros arquivos.</p>
+<p>No Codex e no GitHub Copilot, a pasta traz as mesmas regras por escrito. Nada técnico impede o agente de abrir outros arquivos.</p>
 
 <h2 id="ch6-9">O que o modo secreto responde, e o que não responde</h2>
 <p>Responde sobre lógica, folga, caminho crítico, durações, avanço, proporções e pesos de custo, diferenças entre versões, qualidade da rede, desvios e inconsistências, e a cadeia forense por número de linha. Não responde sobre valores reais, nomes de empresa, de fornecedor ou de pessoa, locais, e datas absolutas, como "isto cai antes do marco contratual de março?". Para essas perguntas, o agente recusa com clareza e aponta a saída: o relatório decodificado no seu computador, o seu <code>secret_decode.py text</code>, ou o modo livre.</p>
 
 <h2 id="ch6-10">Os limites</h2>
 <ul>
-<li>É experimental, e o agente diz isso ao começar.</li>
 <li>Os códigos não tornam o cronograma anônimo: a estrutura, as durações e os números de linha continuam legíveis.</li>
 <li>Codificar diminui o que sai do computador. Não substitui a política da sua empresa sobre serviços de IA.</li>
 </ul>
@@ -849,7 +845,7 @@ python3 $S/review.py rodovia-ficticia-rev04.xml --profile perfil.json</pre>
 <p>G é termômetro: use para escolher o que inspecionar, nunca reporte sozinho. O percentual físico pode ter sido digitado, e tudo calculado a partir dele herda isso; o relatório diz qual campo usou. A linha de base usada é eleita do dado, porque o campo que deveria declará-la não é confiável; confira com quem é dono do cronograma. Se a tabela de calendários mostrar jornada ou semana diferente do que a obra pratica, toda data herda o erro. Um ritmo em evidência fina é pergunta. Uma origem forense que cai no próprio marco aponta para data digitada ou cadeia rompida, e alguém tem de abrir o arquivo.</p>
 
 <h2 id="ch15-4">Formatos e escopo</h2>
-<p>O XML do MS Project é o formato medido. Um .mpp lido no Windows passa pelo próprio Project, que exporta esse mesmo XML, então segue o mesmo caminho medido. Fora do Windows, a leitura de .mpp e de Primavera P6 pela biblioteca mpxj, com Java, é opcional e não verificada. O modo secreto é experimental. A ferramenta não gera laudo contratual, não certifica contra norma, e não substitui a reunião: entrega o que a reunião precisa para não virar discussão sobre a conta.</p>
+<p>O XML do MS Project é o formato medido. Um .mpp lido no Windows passa pelo próprio Project, que exporta esse mesmo XML, então segue o mesmo caminho medido. Fora do Windows, a leitura de .mpp e de Primavera P6 pela biblioteca mpxj, com Java, é opcional e não verificada. A ferramenta não gera laudo contratual, não certifica contra norma, e não substitui a reunião: entrega o que a reunião precisa para não virar discussão sobre a conta.</p>
 </section>
 
 <section class="ch">
@@ -875,7 +871,7 @@ python3 $S/review.py rodovia-ficticia-rev04.xml --profile perfil.json</pre>
 <p>É o que E procura: término puxado para antes sem execução. Reprogramar para antes pode ser legítimo, mas tem de ter motivo, e o E é a lista de perguntas. Se o motivo existe, fica registrado; se não, a tendência está otimista.</p>
 
 <h2 id="ch16-7">Tem dados sensíveis saindo da máquina</h2>
-<p>O motor, não: ele roda no seu computador e não usa a rede, e o relatório é um arquivo local sem referência externa. Os instaladores baixam só o repositório do GitHub e, no Windows e se precisar, o Python do python.org. O agente é outra história. No modo livre, o que ele lê (o cronograma, o relatório, as suas perguntas) vai para o fornecedor dele, nos termos da sua conta ou da conta da empresa. No modo secreto, experimental, ele lê só uma cópia codificada, mais o que você digitar. Se a política da empresa não permite agente, use o motor sozinho ou os botões Sem IA da aba. O capítulo 6 trata dos dois modos.</p>
+<p>O motor, não: ele roda no seu computador e não usa a rede, e o relatório é um arquivo local sem referência externa. Os instaladores baixam só o repositório do GitHub e, no Windows e se precisar, o Python do python.org. O agente é outra história. No modo livre, o que ele lê (o cronograma, o relatório, as suas perguntas) vai para o fornecedor dele, nos termos da sua conta ou da conta da empresa. No modo secreto, ele lê só uma cópia codificada, mais o que você digitar. Se a política da empresa não permite agente, use o motor sozinho ou os botões Sem IA da aba. O capítulo 6 trata dos dois modos.</p>
 
 <h2 id="ch16-8">Como atualizo</h2>
 <p>Rode o mesmo comando de instalação de novo. Ele apaga a pasta da skill e copia a versão nova inteira. A preferência de modo e o cofre, em <code>~/.cronoaudit</code>, o perfil da empresa e os relatórios ficam onde estão. Um template personalizado guardado dentro da pasta da skill seria apagado: guarde-o fora e aponte com <code>--template</code> ou com a chave <code>template</code> do perfil. Para a aba do Project, rode o instalador da aba de novo.</p>
@@ -904,7 +900,7 @@ python3 $S/review.py rodovia-ficticia-rev04.xml --profile perfil.json</pre>
 <dt>Linha de base <i>baseline</i></dt><dd>Cópia do plano guardada num instante, contra a qual se mede variação.</dd>
 <dt>Linha de base usada <i>baseline used</i></dt><dd>Das onze linhas de base que o Project guarda (Linha de base e Linha de base 1 a 10), a que a análise usa. Eleita pela cobertura de custo.</dd>
 <dt>Look-ahead</dt><dd>O que precisa começar e terminar nas próximas semanas, e se o ritmo alcança.</dd>
-<dt>Modo livre e modo secreto <i>free mode, secret mode</i></dt><dd>No livre, o agente lê o cronograma, e o que ele lê vai para o fornecedor dele. No secreto, experimental, ele lê só uma cópia codificada.</dd>
+<dt>Modo livre e modo secreto <i>free mode, secret mode</i></dt><dd>No livre, o agente lê o cronograma, e o que ele lê vai para o fornecedor dele. No secreto, ele lê só uma cópia codificada.</dd>
 <dt>Origem <i>origin</i></dt><dd>Nó mais fundo do caminho condutor que ainda carrega variação. Onde o atraso entrou.</dd>
 <dt>Passado reescrito <i>rewritten past</i></dt><dd>Data real alterada ou retirada, percentual que caiu, ou atividade com avanço removida de uma entrega para a outra. Achado sobre o registro, não sobre a obra.</dd>
 <dt>Percentual físico <i>physical percent complete</i></dt><dd>Quanto do serviço saiu, declarado. Distinto do percentual de duração.</dd>

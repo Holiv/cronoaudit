@@ -39,8 +39,9 @@ Attribute VB_Name = "Cronoaudit"
 ' A pergunta daqui e feita por codigo, antes de o agente existir. A da skill e o agente seguindo
 ' instrucao. Sao coisas diferentes e o LEIA-ME diz isso.
 '
-' Este arquivo e ASCII puro (subconjunto do cp1252) com fim de linha CRLF: o editor do VBA
-' importa no codigo de pagina da maquina. Por isso as mensagens nao levam acento.
+' Este arquivo e Windows-1252 com fim de linha CRLF: o editor do VBA importa no codigo de
+' pagina da maquina, que no Windows em portugues ou ingles e o 1252. As janelas levam acento;
+' o que vai para o cmd (os echo) e para a linha de comando do agente fica em ASCII.
 ' O pedido.md e gravado em UTF-8; o texto passado na linha de comando e ASCII e curto.
 
 Option Explicit
@@ -48,8 +49,7 @@ Option Explicit
 Private Const APP As String = "cronoaudit"
 Private Const SEC As String = "config"
 Private Const TITULO As String = "cronoaudit"
-' Ordem da deteccao automatica. O VS Code fica por ultimo: nao recebe o pedido pela linha de
-' comando, entao depende de colar.
+' Ordem da deteccao automatica: o primeiro que estiver no PATH.
 Private Const AGENTES As String = "claude codex copilot"
 ' Curto e ASCII de proposito: e a unica frase que atravessa a linha de comando.
 Private Const PROMPT_INICIAL As String = "Use the cronoaudit skill. Read pedido.md in this folder and follow it."

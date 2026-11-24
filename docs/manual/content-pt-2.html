@@ -192,7 +192,7 @@ python3 $S/review.py rodovia-ficticia-rev04.xml --profile perfil.json</pre>
 <p>G é termômetro: use para escolher o que inspecionar, nunca reporte sozinho. O percentual físico pode ter sido digitado, e tudo calculado a partir dele herda isso; o relatório diz qual campo usou. A linha de base usada é eleita do dado, porque o campo que deveria declará-la não é confiável; confira com quem é dono do cronograma. Se a tabela de calendários mostrar jornada ou semana diferente do que a obra pratica, toda data herda o erro. Um ritmo em evidência fina é pergunta. Uma origem forense que cai no próprio marco aponta para data digitada ou cadeia rompida, e alguém tem de abrir o arquivo.</p>
 
 <h2>Formatos e escopo</h2>
-<p>O XML do MS Project é o formato medido. Um .mpp lido no Windows passa pelo próprio Project, que exporta esse mesmo XML, então segue o mesmo caminho medido. Fora do Windows, a leitura de .mpp e de Primavera P6 pela biblioteca mpxj, com Java, é opcional e não verificada. O modo secreto é experimental. A ferramenta não gera laudo contratual, não certifica contra norma, e não substitui a reunião: entrega o que a reunião precisa para não virar discussão sobre a conta.</p>
+<p>O XML do MS Project é o formato medido. Um .mpp lido no Windows passa pelo próprio Project, que exporta esse mesmo XML, então segue o mesmo caminho medido. Fora do Windows, a leitura de .mpp e de Primavera P6 pela biblioteca mpxj, com Java, é opcional e não verificada. A ferramenta não gera laudo contratual, não certifica contra norma, e não substitui a reunião: entrega o que a reunião precisa para não virar discussão sobre a conta.</p>
 </section>
 
 <section class="ch">
@@ -218,7 +218,7 @@ python3 $S/review.py rodovia-ficticia-rev04.xml --profile perfil.json</pre>
 <p>É o que E procura: término puxado para antes sem execução. Reprogramar para antes pode ser legítimo, mas tem de ter motivo, e o E é a lista de perguntas. Se o motivo existe, fica registrado; se não, a tendência está otimista.</p>
 
 <h2>Tem dados sensíveis saindo da máquina</h2>
-<p>O motor, não: ele roda no seu computador e não usa a rede, e o relatório é um arquivo local sem referência externa. Os instaladores baixam só o repositório do GitHub e, no Windows e se precisar, o Python do python.org. O agente é outra história. No modo livre, o que ele lê (o cronograma, o relatório, as suas perguntas) vai para o fornecedor dele, nos termos da sua conta ou da conta da empresa. No modo secreto, experimental, ele lê só uma cópia codificada, mais o que você digitar. Se a política da empresa não permite agente, use o motor sozinho ou os botões Sem IA da aba. O capítulo 6 trata dos dois modos.</p>
+<p>O motor, não: ele roda no seu computador e não usa a rede, e o relatório é um arquivo local sem referência externa. Os instaladores baixam só o repositório do GitHub e, no Windows e se precisar, o Python do python.org. O agente é outra história. No modo livre, o que ele lê (o cronograma, o relatório, as suas perguntas) vai para o fornecedor dele, nos termos da sua conta ou da conta da empresa. No modo secreto, ele lê só uma cópia codificada, mais o que você digitar. Se a política da empresa não permite agente, use o motor sozinho ou os botões Sem IA da aba. O capítulo 6 trata dos dois modos.</p>
 
 <h2>Como atualizo</h2>
 <p>Rode o mesmo comando de instalação de novo. Ele apaga a pasta da skill e copia a versão nova inteira. A preferência de modo e o cofre, em <code>~/.cronoaudit</code>, o perfil da empresa e os relatórios ficam onde estão. Um template personalizado guardado dentro da pasta da skill seria apagado: guarde-o fora e aponte com <code>--template</code> ou com a chave <code>template</code> do perfil. Para a aba do Project, rode o instalador da aba de novo.</p>
@@ -247,7 +247,7 @@ python3 $S/review.py rodovia-ficticia-rev04.xml --profile perfil.json</pre>
 <dt>Linha de base <i>baseline</i></dt><dd>Cópia do plano guardada num instante, contra a qual se mede variação.</dd>
 <dt>Linha de base usada <i>baseline used</i></dt><dd>Das onze linhas de base que o Project guarda (Linha de base e Linha de base 1 a 10), a que a análise usa. Eleita pela cobertura de custo.</dd>
 <dt>Look-ahead</dt><dd>O que precisa começar e terminar nas próximas semanas, e se o ritmo alcança.</dd>
-<dt>Modo livre e modo secreto <i>free mode, secret mode</i></dt><dd>No livre, o agente lê o cronograma, e o que ele lê vai para o fornecedor dele. No secreto, experimental, ele lê só uma cópia codificada.</dd>
+<dt>Modo livre e modo secreto <i>free mode, secret mode</i></dt><dd>No livre, o agente lê o cronograma, e o que ele lê vai para o fornecedor dele. No secreto, ele lê só uma cópia codificada.</dd>
 <dt>Origem <i>origin</i></dt><dd>Nó mais fundo do caminho condutor que ainda carrega variação. Onde o atraso entrou.</dd>
 <dt>Passado reescrito <i>rewritten past</i></dt><dd>Data real alterada ou retirada, percentual que caiu, ou atividade com avanço removida de uma entrega para a outra. Achado sobre o registro, não sobre a obra.</dd>
 <dt>Percentual físico <i>physical percent complete</i></dt><dd>Quanto do serviço saiu, declarado. Distinto do percentual de duração.</dd>

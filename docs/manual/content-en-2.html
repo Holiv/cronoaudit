@@ -192,7 +192,7 @@ python3 $S/review.py rodovia-ficticia-rev04.xml --profile profile.json</pre>
 <p>G is a thermometer: use it to choose what to inspect, never report it alone. The physical percent may have been typed, and everything computed from it inherits that; the report says which field it used. The baseline used is elected from the data, because the field that should declare it is not dependable; check it with whoever owns the schedule. If the calendar table shows a shift or week different from what the works practise, every date inherits the error. A thin-evidence rate is a question. A forensic origin that lands on the milestone itself points to a typed date or a broken chain, and someone has to open the file.</p>
 
 <h2>Formats and scope</h2>
-<p>MS Project XML is the measured format. A .mpp read on Windows goes through Project itself, which exports that same XML, so it follows the same measured path. Off Windows, reading .mpp and Primavera P6 through the mpxj library, with Java, is optional and unverified. Secret mode is experimental. The tool does not produce a contractual claim, does not certify against a standard, and does not replace the meeting: it delivers what the meeting needs so it does not turn into an argument about the arithmetic.</p>
+<p>MS Project XML is the measured format. A .mpp read on Windows goes through Project itself, which exports that same XML, so it follows the same measured path. Off Windows, reading .mpp and Primavera P6 through the mpxj library, with Java, is optional and unverified. The tool does not produce a contractual claim, does not certify against a standard, and does not replace the meeting: it delivers what the meeting needs so it does not turn into an argument about the arithmetic.</p>
 </section>
 
 <section class="ch">
@@ -218,7 +218,7 @@ python3 $S/review.py rodovia-ficticia-rev04.xml --profile profile.json</pre>
 <p>That is what E looks for: finish pulled earlier with no execution. Reprogramming earlier can be legitimate, but it needs a reason, and E is the list of questions. If the reason exists, it gets recorded; if not, the forecast is optimistic.</p>
 
 <h2>Does sensitive data leave the machine</h2>
-<p>Not from the engine: it runs on your computer and does not use the network, and the report is a local file with no external reference. The installers download only the repository from GitHub and, on Windows and if needed, Python from python.org. The agent is different. In free mode, what it reads (the schedule, the report, your questions) goes to its provider, under the terms of your account or your company's. In secret mode, experimental, it reads only a coded copy, plus what you type. If the company's policy does not allow an agent, use the engine alone or the tab's Sem IA buttons. Chapter 6 deals with both modes.</p>
+<p>Not from the engine: it runs on your computer and does not use the network, and the report is a local file with no external reference. The installers download only the repository from GitHub and, on Windows and if needed, Python from python.org. The agent is different. In free mode, what it reads (the schedule, the report, your questions) goes to its provider, under the terms of your account or your company's. In secret mode, it reads only a coded copy, plus what you type. If the company's policy does not allow an agent, use the engine alone or the tab's Sem IA buttons. Chapter 6 deals with both modes.</p>
 
 <h2>How do I update</h2>
 <p>Run the same install command again. It deletes the skill folder and copies the whole new version. The mode preference and the vault, in <code>~/.cronoaudit</code>, the organisation profile and the reports stay where they are. A customised template kept inside the skill folder would be deleted: keep it outside and point to it with <code>--template</code> or the profile's <code>template</code> key. For the Project tab, run the tab installer again.</p>
@@ -240,7 +240,7 @@ python3 $S/review.py rodovia-ficticia-rev04.xml --profile profile.json</pre>
 <dt>Driving path <i>caminho condutor</i></dt><dd>Chain of predecessors that actually sets a milestone's date, chosen link by link by the one that lands latest.</dd>
 <dt>Earned Schedule <i>ES</i></dt><dd>Date at which the planned curve reached today's earned value. Schedule measured in time.</dd>
 <dt>Finish variance <i>variação de término</i></dt><dd>Current finish minus baseline finish, in working days of the activity's calendar.</dd>
-<dt>Free mode, secret mode <i>modo livre, modo secreto</i></dt><dd>In free mode the agent reads the schedule, and what it reads goes to its provider. In secret mode, experimental, it reads only a coded copy.</dd>
+<dt>Free mode, secret mode <i>modo livre, modo secreto</i></dt><dd>In free mode the agent reads the schedule, and what it reads goes to its provider. In secret mode, it reads only a coded copy.</dd>
 <dt>FS, SS, FF, SF <i>TI, II, TT, IT</i></dt><dd>Finish-to-start, start-to-start, finish-to-finish, start-to-finish: the four link types.</dd>
 <dt>Lag and lead <i>lag, lead</i></dt><dd>Mandatory wait and permitted overlap on a link. A lead is negative lag.</dd>
 <dt>Leaf activity <i>atividade folha</i></dt><dd>Activity with no children in the WBS. The only one the analysis counts; summaries are aggregations of it.</dd>
