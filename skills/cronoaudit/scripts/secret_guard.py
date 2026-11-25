@@ -242,12 +242,25 @@ def decide(guard: Guard, call: dict):
         return False, str(exc)
 
 
+def from_claude_code(call) -> bool:
+    """Claude Code gives every hook CLAUDE_PROJECT_DIR and a PreToolUse payload with
+    `tool_name`. Another agent that also reads this folder's .claude/settings.json
+    (GitHub Copilot CLI does: measured) runs the hook without either. The
+    guard knows only Claude Code's tools, so there it steps aside and the folder's written
+    rules are what apply, as the documentation says for every agent but Claude Code."""
+    return bool(os.environ.get("CLAUDE_PROJECT_DIR")) or "tool_name" in call
+
+
 def main() -> int:
     if len(sys.argv) > 1 and sys.argv[1] in ("-h", "--help"):
         print(__doc__.strip())
         return 0
     try:
         call = json.loads(sys.stdin.read() or "{}")
+        if not isinstance(call, dict):
+            raise ValueError("payload is not an object")
+        if not from_claude_code(call):
+            return 0
         ok, reason = decide(load_guard(), call)
     except Exception as exc:   # fail closed
         ok, reason = False, f"the secret-mode guard could not check this call ({type(exc).__name__})"

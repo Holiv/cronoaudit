@@ -10,6 +10,8 @@
 # Agent Skills client reads:
 #   $HOME\.claude\skills\cronoaudit   Claude Code, OpenCode, Cursor
 #   $HOME\.agents\skills\cronoaudit   Codex, GitHub Copilot, and other Agent Skills clients
+#   $HOME\.copilot\skills\cronoaudit  GitHub Copilot CLI, when it is on the machine: version
+#                                     1.0.116 did not find the skill in .agents (25/11/2026)
 #
 # Then, when MS Project is on the machine, it offers the Cronoaudit tab (the add-in
 # installer, from the same branch), copies the fictitious example to
@@ -194,7 +196,11 @@ function Invoke-CronoauditInstall {
                  Where-Object { Test-Path (Join-Path $_.FullName "SKILL.md") } | Select-Object -First 1
         if (-not $skill) { throw "the download did not contain skills\cronoaudit\SKILL.md" }
 
-        foreach ($dest in @("$HOME\.claude\skills\cronoaudit", "$HOME\.agents\skills\cronoaudit")) {
+        $dests = @("$HOME\.claude\skills\cronoaudit", "$HOME\.agents\skills\cronoaudit")
+        if ((Test-Path "$HOME\.copilot") -or (Get-Command copilot -ErrorAction SilentlyContinue)) {
+            $dests += "$HOME\.copilot\skills\cronoaudit"
+        }
+        foreach ($dest in $dests) {
             if (Test-Path $dest) { Remove-Item -Recurse -Force $dest }
             New-Item -ItemType Directory -Path $dest -Force | Out-Null
             Copy-Item -Path (Join-Path $skill.FullName "*") -Destination $dest -Recurse -Force

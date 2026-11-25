@@ -1424,6 +1424,28 @@ def guard_checks() -> list:
             r = subprocess.run([sys.executable, hook], input=payload, capture_output=True, text=True)
             if r.returncode != code:
                 failures.append(f"guard: the hook process returned {r.returncode}, not {code}")
+        # Another agent reading .claude/settings.json (GitHub Copilot CLI, measured) runs
+        # the hook with its own payload and no CLAUDE_PROJECT_DIR: the guard steps aside
+        # there. The same payload inside Claude Code is checked, and blocked.
+        _other = json.dumps({"toolName": "view", "toolArgs": {"path": original}, "cwd": work})
+        _env_other = {k: v for k, v in os.environ.items() if k != "CLAUDE_PROJECT_DIR"}
+        r1 = subprocess.run([sys.executable, hook], input=_other, capture_output=True, text=True, env=_env_other)
+        r2 = subprocess.run([sys.executable, hook], input=_other, capture_output=True, text=True,
+                            env=dict(_env_other, CLAUDE_PROJECT_DIR=work))
+        r3 = subprocess.run([sys.executable, hook], input="[1, 2]", capture_output=True, text=True, env=_env_other)
+        if (r1.returncode, r2.returncode, r3.returncode) != (0, 2, 2):
+            failures.append(f"guard: outside Claude Code it did not step aside, or inside it did not check: "
+                            f"{r1.returncode} {r2.returncode} {r3.returncode}")
+        # The command as written in settings.json runs with no variable to expand.
+        _cmd = json.load(open(os.path.join(work, ".claude", "settings.json"),
+                              encoding="utf-8"))["hooks"]["PreToolUse"][0]["hooks"][0]["command"]
+        if os.name != "nt":
+            r4 = subprocess.run(_cmd, shell=True, capture_output=True, text=True, env=_env_other,
+                                input=json.dumps({"tool_name": "Read", "tool_input": {"file_path": original},
+                                                  "cwd": work}))
+            if "CLAUDE_PROJECT_DIR" in _cmd or r4.returncode != 2:
+                failures.append(f"guard: the settings command needs a variable or did not block: "
+                                f"{r4.returncode} {r4.stderr[-150:]}")
         settings = json.load(open(os.path.join(work, ".claude", "settings.json"), encoding="utf-8"))
         deny = settings["permissions"]["deny"]
         if not {"PowerShell", "Monitor"} <= set(deny) or \

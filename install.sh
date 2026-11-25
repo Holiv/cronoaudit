@@ -8,6 +8,8 @@
 # Agent Skills client reads:
 #   ~/.claude/skills/cronoaudit   Claude Code, OpenCode, Cursor
 #   ~/.agents/skills/cronoaudit   Codex, GitHub Copilot, and other Agent Skills clients
+#   ~/.copilot/skills/cronoaudit  GitHub Copilot CLI, when it is on the machine (a Copilot
+#                                 CLI did not find the skill in ~/.agents, measured)
 #
 # Then it copies the fictitious example to ~/cronoaudit-exemplo, offers to run it
 # (CRONOAUDIT_EXAMPLE=0|1 answers in advance), and says how to use the skill.
@@ -78,7 +80,10 @@ install_to() {
 }
 
 case "$ONLY" in
-  all)    install_to "$HOME/.claude/skills/cronoaudit"; install_to "$HOME/.agents/skills/cronoaudit" ;;
+  all)    install_to "$HOME/.claude/skills/cronoaudit"; install_to "$HOME/.agents/skills/cronoaudit"
+          if [[ -d "$HOME/.copilot" ]] || command -v copilot >/dev/null 2>&1; then
+            install_to "$HOME/.copilot/skills/cronoaudit"
+          fi ;;
   claude) install_to "$HOME/.claude/skills/cronoaudit" ;;
   agents) install_to "$HOME/.agents/skills/cronoaudit" ;;
   *) die "--only must be all, claude or agents" ;;

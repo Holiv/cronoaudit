@@ -296,6 +296,7 @@ def write_guard(workdir: str) -> None:
         "skill_dir": home_form(SKILL_DIR),
     })
     python = sys.executable.replace("\\", "/")
+    guard_path = os.path.join(workdir, ".claude", "hooks", GUARD_NAME).replace("\\", "/")
     deny_dir = deny_pattern(cfg_mod.config_dir())
     _write_json(os.path.join(workdir, ".claude", "settings.json"), {
         "permissions": {
@@ -313,7 +314,11 @@ def write_guard(workdir: str) -> None:
         "disableClaudeAiConnectors": True,
         "hooks": {"PreToolUse": [{"matcher": GUARD_MATCHER, "hooks": [{
             "type": "command",
-            "command": f'"{python}" "${{CLAUDE_PROJECT_DIR}}/.claude/hooks/{GUARD_NAME}"',
+            # The guard by its full path, not through ${CLAUDE_PROJECT_DIR}: only Claude
+            # Code defines that variable, and another agent reading this file (Copilot
+            # CLI does) ran the command with it empty and blocked every call. The path
+            # is the agent's own working folder, which it already knows.
+            "command": f'"{python}" "{guard_path}"',
             "timeout": 30,
             # A hook that cannot start (wrong interpreter, PowerShell reading the
             # quoted path as a string) would otherwise let every call through.
