@@ -39,6 +39,17 @@ lógica.
 
 ## Como rodar
 
+Depois de instalar, o caminho mais curto: o instalador copia estes arquivos para a pasta
+`cronoaudit-exemplo`, na sua pasta de usuário, e este comando roda a comparação e abre o
+relatório no navegador:
+
+```
+python3 ~/.claude/skills/cronoaudit/scripts/review.py --example
+```
+
+No Windows, use a linha que o instalador mostrou no fim, a que termina em `--example`. A partir
+de uma cópia do repositório:
+
 ```
 python3 skills/cronoaudit/scripts/review.py \
     examples/rodovia-ficticia-rev03.xml examples/rodovia-ficticia-rev04.xml \

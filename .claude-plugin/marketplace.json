@@ -9,7 +9,7 @@
       "name": "cronoaudit",
       "source": "./",
       "description": "Nine integrity checks with stable codes, S-curve from the file's own phasing, productivity by resource, network quality, Earned Schedule, forensics. One command over the scheduling tool's XML export.",
-      "version": "0.9.4",
+      "version": "1.0.0",
       "category": "productivity",
       "homepage": "https://github.com/Holiv/cronoaudit"
     }

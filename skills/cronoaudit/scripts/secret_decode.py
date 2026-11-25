@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Secret mode, the way back: decode on this machine. EXPERIMENTAL.
+"""Secret mode, the way back: decode on this machine.
 
     python3 secret_decode.py finish [WORKDIR] [--no-open]
         Decode the coded report(s) of a work folder, including the synthesis the

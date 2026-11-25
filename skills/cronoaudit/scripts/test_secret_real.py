@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Secret mode (experimental) on a real export, when one is on this machine.
+"""Secret mode on a real export, when one is on this machine.
 
     python3 scripts/test_secret_real.py
 

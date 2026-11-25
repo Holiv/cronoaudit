@@ -1,5 +1,5 @@
 Attribute VB_Name = "Cronoaudit"
-' cronoaudit para MS Project - v0.5 (23/11/2026)
+' cronoaudit para MS Project - v0.6 (24/11/2026)
 '
 ' A cronoaudit e uma SKILL: o agente le o cronograma por ela, conversa com o planejador,
 ' interpreta e personaliza o relatorio. O motor em Python e o instrumento da skill: e dele
@@ -8,8 +8,7 @@ Attribute VB_Name = "Cronoaudit"
 '
 ' Macros publicas, da mais usada para a menos:
 '   CronoauditAnalisar        exporta o XML do arquivo ativo, grava pedido.md na pasta da rodada
-'                             e abre o agente nela: Claude Code, Codex, Copilot CLI ou Gemini CLI
-'                             num terminal; ou o VS Code, com o pedido na area de transferencia.
+'                             e abre o agente nela, num terminal: Claude Code, Codex ou Copilot CLI.
 '                             Antes de abrir o agente, a macro confere o modo configurado:
 '                             LIVRE, o que o agente ler vai para o provedor dele; SECRETO, o motor
 '                             roda aqui e o agente abre numa pasta so com a copia codificada.
@@ -22,7 +21,7 @@ Attribute VB_Name = "Cronoaudit"
 '
 ' Precisa de Python 3.9+ e da skill instalada pelo install.ps1 da cronoaudit.
 ' Configuracao em HKCU\Software\VB and VBA Program Settings\cronoaudit\config
-'   agente    auto | claude | codex | copilot | gemini | code   pasta   onde as rodadas sao gravadas
+'   agente    auto | claude | codex | copilot                   pasta   onde as rodadas sao gravadas
 '   python    comando do Python (ex.: py -3)                review  caminho do review.py
 '   ultimo    pasta da ultima rodada                        outro   ultima "outra versao" do Comparar
 '
@@ -40,8 +39,9 @@ Attribute VB_Name = "Cronoaudit"
 ' A pergunta daqui e feita por codigo, antes de o agente existir. A da skill e o agente seguindo
 ' instrucao. Sao coisas diferentes e o LEIA-ME diz isso.
 '
-' Este arquivo e ASCII puro (subconjunto do cp1252) com fim de linha CRLF: o editor do VBA
-' importa no codigo de pagina da maquina. Por isso as mensagens nao levam acento.
+' Este arquivo e Windows-1252 com fim de linha CRLF: o editor do VBA importa no codigo de
+' pagina da maquina, que no Windows em portugues ou ingles e o 1252. As janelas levam acento;
+' o que vai para o cmd (os echo) e para a linha de comando do agente fica em ASCII.
 ' O pedido.md e gravado em UTF-8; o texto passado na linha de comando e ASCII e curto.
 
 Option Explicit
@@ -49,9 +49,8 @@ Option Explicit
 Private Const APP As String = "cronoaudit"
 Private Const SEC As String = "config"
 Private Const TITULO As String = "cronoaudit"
-' Ordem da deteccao automatica. O VS Code fica por ultimo: nao recebe o pedido pela linha de
-' comando, entao depende de colar.
-Private Const AGENTES As String = "claude codex copilot gemini code"
+' Ordem da deteccao automatica: o primeiro que estiver no PATH.
+Private Const AGENTES As String = "claude codex copilot"
 ' Curto e ASCII de proposito: e a unica frase que atravessa a linha de comando.
 Private Const PROMPT_INICIAL As String = "Use the cronoaudit skill. Read pedido.md in this folder and follow it."
 ' No modo secreto nao ha pedido.md: a pasta so tem a copia codificada, e a skill reconhece a
@@ -80,9 +79,9 @@ Public Sub CronoauditExportarXml()
     If Not ExportarCopia(destino, origem) Then Exit Sub
     SaveSetting APP, SEC, "ultimo", pasta
     MsgBox "XML exportado em:" & vbCrLf & destino & vbCrLf & vbCrLf & _
-        "A pasta vai abrir. Para analisar, abra o seu agente nessa pasta e peca:" & vbCrLf & _
+        "A pasta vai abrir. Para analisar, abra o seu agente nela e peça:" & vbCrLf & _
         "  use a skill cronoaudit e leia este XML" & vbCrLf & vbCrLf & _
-        "Nada foi enviado a lugar nenhum e o motor nao rodou.", vbInformation, TITULO
+        "Nada foi enviado para lugar nenhum, e a análise não rodou.", vbInformation, TITULO
     On Error Resume Next
     Shell "explorer.exe /select,""" & destino & """", vbNormalFocus
     On Error GoTo 0
@@ -112,40 +111,39 @@ Public Sub CronoauditConfigurar()
     ' O estado vai num MsgBox, que cresce com o texto. O InputBox corta o que nao cabe,
     ' entao fica so com o menu, curto. Caminhos longos aparecem com %LOCALAPPDATA% e
     ' %USERPROFILE% no lugar do comeco, cada um na sua linha.
-    If MsgBox("Configuracao atual" & vbCrLf & vbCrLf & _
+    If MsgBox("Configuração atual" & vbCrLf & vbCrLf & _
         "1  Agente:" & vbCrLf & "     " & GetSetting(APP, SEC, "agente", "auto") & vbCrLf & _
         "2  Pasta das rodadas:" & vbCrLf & "     " & Abreviar(PastaRaiz()) & vbCrLf & _
         "3  Python:" & vbCrLf & "     " & Abreviar(ValorOuAuto(GetSetting(APP, SEC, "python", ""))) & vbCrLf & _
         "4  review.py:" & vbCrLf & "     " & Abreviar(ValorOuAuto(GetSetting(APP, SEC, "review", ""))) & vbCrLf & _
         "5  Modo:" & vbCrLf & "     " & DescreverModo(LerSecret(aviso)) & vbCrLf & vbCrLf & _
         "OK para alterar um item. Cancelar para sair.", vbOKCancel + vbInformation, TITULO) <> vbOK Then Exit Sub
-    op = InputBox("Numero do item a alterar:" & vbCrLf & vbCrLf & _
+    op = InputBox("Número do item que você quer alterar:" & vbCrLf & vbCrLf & _
         "1 agente    2 pasta    3 Python" & vbCrLf & _
         "4 review.py    5 modo" & vbCrLf & _
         "9 redefinir tudo", TITULO, "1")
     If StrPtr(op) = 0 Then Exit Sub
     Select Case Trim$(op)
         Case "1"
-            v = InputBox("auto, claude, codex, copilot," & vbCrLf & _
-                "gemini ou code (VS Code)." & vbCrLf & vbCrLf & _
-                "auto = o primeiro instalado," & vbCrLf & _
+            v = InputBox("auto, claude, codex ou copilot." & vbCrLf & vbCrLf & _
+                "auto = o primeiro que estiver instalado," & vbCrLf & _
                 "nessa ordem.", TITULO, GetSetting(APP, SEC, "agente", "auto"))
             If StrPtr(v) = 0 Then Exit Sub
             v = LCase$(Trim$(v))
             If v = "" Then v = "auto"
             If v <> "auto" And Not EhAgente(v) Then
-                MsgBox "Agente desconhecido: " & v & vbCrLf & "Use auto, claude, codex, copilot, gemini ou code.", vbExclamation, TITULO
+                MsgBox "Agente desconhecido: " & v & vbCrLf & "Use auto, claude, codex ou copilot.", vbExclamation, TITULO
                 Exit Sub
             End If
             SaveSetting APP, SEC, "agente", v
             If v <> "auto" Then
                 If Not NoPath(v) Then
-                    MsgBox "Guardado, mas o comando '" & v & "' nao foi encontrado no PATH agora." & vbCrLf & _
-                        "Se acabou de instalar, feche e abra o Project.", vbExclamation, TITULO
+                    MsgBox "Guardado. Mas o comando '" & v & "' não foi encontrado agora neste computador." & vbCrLf & _
+                        "Se você acabou de instalar, feche e abra o Project.", vbExclamation, TITULO
                 End If
             End If
         Case "2"
-            v = InputBox("Pasta das rodadas." & vbCrLf & "Vazio = voltar ao padrao" & vbCrLf & _
+            v = InputBox("Pasta das rodadas." & vbCrLf & "Vazio = voltar ao padrão" & vbCrLf & _
                 "(local, fora de pasta sincronizada).", TITULO, PastaRaiz())
             If StrPtr(v) = 0 Then Exit Sub
             v = Trim$(v)
@@ -174,20 +172,20 @@ Public Sub CronoauditConfigurar()
             End If
             If GravarSecret(v) Then
                 MsgBox "Modo gravado: " & DescreverModo(v) & vbCrLf & vbCrLf & _
-                    "Vale tambem para o motor e para a skill:" & vbCrLf & Abreviar(ArquivoConfig()), vbInformation, TITULO
+                    "Vale também para o motor e para a skill:" & vbCrLf & Abreviar(ArquivoConfig()), vbInformation, TITULO
             End If
         Case "9"
-            If MsgBox("Apagar a configuracao deste suplemento neste usuario?" & vbCrLf & vbCrLf & _
-                "Os relatorios ja gravados nao sao apagados." & vbCrLf & _
-                "O modo (item 5) nao muda aqui: ele e compartilhado com o motor e a skill.", _
+            If MsgBox("Apagar a configuração da aba para este usuário?" & vbCrLf & vbCrLf & _
+                "Os relatórios já gravados continuam onde estão." & vbCrLf & _
+                "O modo (item 5) não muda: ele vale também para o motor e para a skill.", _
                 vbOKCancel + vbExclamation, TITULO) = vbOK Then
                 On Error Resume Next
                 DeleteSetting APP, SEC
                 On Error GoTo 0
-                MsgBox "Configuracao redefinida.", vbInformation, TITULO
+                MsgBox "Configuração redefinida.", vbInformation, TITULO
             End If
         Case Else
-            MsgBox "Opcao desconhecida: " & op, vbExclamation, TITULO
+            MsgBox "Opção desconhecida: " & op, vbExclamation, TITULO
     End Select
 End Sub
 
@@ -233,21 +231,21 @@ Private Sub FluxoComparacao(ByVal comIA As Boolean)
         If Not ResolverAgente(agente, comIA, secreto) Then Exit Sub
     End If
 
-    ativoEhAtual = MsgBox("O arquivo aberto e a versao MAIS NOVA?" & vbCrLf & vbCrLf & _
-        "Sim: em seguida escolha a versao anterior." & vbCrLf & _
-        "Nao: em seguida escolha a versao mais nova.", vbYesNoCancel + vbQuestion, TITULO)
+    ativoEhAtual = MsgBox("O arquivo aberto é a versão MAIS NOVA?" & vbCrLf & vbCrLf & _
+        "Sim: em seguida, escolha a versão anterior." & vbCrLf & _
+        "Não: em seguida, escolha a versão mais nova.", vbYesNoCancel + vbQuestion, TITULO)
     If ativoEhAtual = vbCancel Then Exit Sub
 
     outro = EscolherArquivo()
     If outro = "" Then Exit Sub
     If LCase$(outro) = LCase$(origem) Then
-        MsgBox "Voce escolheu o proprio arquivo aberto. Escolha a outra versao.", vbExclamation, TITULO
+        MsgBox "Você escolheu o próprio arquivo aberto. Escolha a outra versão.", vbExclamation, TITULO
         Exit Sub
     End If
 
     If AtivarSeAberto(outro) Then
         AtivarSeAberto origem
-        MsgBox "A outra versao esta aberta no Project. Feche-a antes de comparar.", vbExclamation, TITULO
+        MsgBox "A outra versão está aberta no Project. Feche-a antes de comparar.", vbExclamation, TITULO
         Exit Sub
     End If
 
@@ -303,17 +301,17 @@ Private Function ResolverAgente(ByRef agente As String, ByRef comIA As Boolean, 
     If cfg = "" Or Not (cfg = "auto" Or EhAgente(cfg)) Then cfg = "auto"
     If cfg = "auto" Then
         agente = AcharAgente()
-        motivo = "Nao encontrei nenhum agente no PATH (claude, codex, copilot, gemini, code)."
+        motivo = "Não encontrei nenhum agente de IA instalado (Claude Code, Codex ou Copilot)."
     Else
         If NoPath(cfg) Then agente = cfg Else agente = ""
-        motivo = "O agente configurado ('" & cfg & "') nao foi encontrado no PATH."
+        motivo = "O agente configurado ('" & cfg & "') não foi encontrado neste computador."
     End If
     If agente = "" Then
         If MsgBox(motivo & vbCrLf & _
-            "Se acabou de instalar um, feche e abra o Project." & vbCrLf & vbCrLf & _
-            "Rodar agora SEM IA? O motor da cronoaudit gera o relatorio nesta maquina, " & _
+            "Se você acabou de instalar um, feche e abra o Project." & vbCrLf & vbCrLf & _
+            "Quer gerar o relatório SEM IA? A cronoaudit faz o relatório neste computador, " & _
             "sem conversa e sem enviar nada." & vbCrLf & vbCrLf & _
-            "Sim: rodar sem IA.    Nao: cancelar.", vbYesNo + vbQuestion, TITULO) = vbYes Then
+            "Sim: gerar sem IA.    Não: cancelar.", vbYesNo + vbQuestion, TITULO) = vbYes Then
             comIA = False
             ResolverAgente = True
         End If
@@ -331,8 +329,8 @@ Private Function ResolverModo(ByVal agente As String, ByRef secreto As Boolean) 
     Dim aviso As String, cabeca As String, trava As String
     secreto = False
     If agente <> "claude" Then
-        trava = "Com o " & IIf(agente = "code", "VS Code", agente) & ", a pasta secreta traz as regras como instrucao. A trava que " & _
-            "impede o agente de sair dela so existe no Claude Code." & vbCrLf & vbCrLf
+        trava = "Com o " & NomeDoAgente(agente) & ", a pasta secreta traz as regras por escrito. A trava que " & _
+            "impede o agente de sair da pasta só existe no Claude Code." & vbCrLf & vbCrLf
     End If
     Select Case LerSecret(aviso)
         Case "off"
@@ -342,23 +340,23 @@ Private Function ResolverModo(ByVal agente As String, ByRef secreto As Boolean) 
             If trava = "" Then
                 ResolverModo = True
             Else
-                ResolverModo = (MsgBox("Modo SECRETO (o configurado)." & vbCrLf & vbCrLf & trava & _
-                    "OK: seguir no modo secreto.    Cancelar: nao abrir o agente.", _
+                ResolverModo = (MsgBox("Modo SECRETO, como está configurado." & vbCrLf & vbCrLf & trava & _
+                    "OK: seguir no modo secreto.    Cancelar: não abrir o agente.", _
                     vbOKCancel + vbInformation, TITULO) = vbOK)
             End If
         Case Else
             If aviso <> "" Then cabeca = aviso & vbCrLf & "Por isso a pergunta voltou." & vbCrLf & vbCrLf
-            Select Case MsgBox(cabeca & "Abrir o agente (" & agente & ") no modo SECRETO?" & vbCrLf & vbCrLf & _
-                "SECRETO: o motor roda nesta maquina e o agente le so uma copia codificada. Nomes viram " & _
-                "codigos, valores sao multiplicados por um fator secreto e datas viram contagens de dias. " & _
-                "O relatorio final, com os dados reais, e montado nesta maquina." & vbCrLf & vbCrLf & _
-                "LIVRE: o agente le o XML e os resultados como estao, e isso vai para o provedor dele, nas " & _
-                "condicoes da sua conta ou da sua empresa. Confira se a politica da empresa permite." & vbCrLf & vbCrLf & _
+            Select Case MsgBox(cabeca & "Abrir o " & NomeDoAgente(agente) & " no modo SECRETO?" & vbCrLf & vbCrLf & _
+                "SECRETO: a análise roda neste computador, e o agente lê só uma cópia codificada. Os nomes viram " & _
+                "códigos, os valores são multiplicados por um fator secreto e as datas viram contagens de dias. " & _
+                "O relatório com os dados reais é montado neste computador." & vbCrLf & vbCrLf & _
+                "LIVRE: o agente lê o cronograma e os resultados como estão, e isso vai para o fornecedor dele, nas " & _
+                "condições da sua conta ou da sua empresa. Confira se a política da empresa permite." & vbCrLf & vbCrLf & _
                 trava & _
                 "Sim: modo SECRETO." & vbCrLf & _
-                "Nao: modo LIVRE, desta vez." & vbCrLf & _
-                "Cancelar: nao abrir o agente." & vbCrLf & vbCrLf & _
-                "Para nao perguntar mais, escolha o modo em Configurar, item 5.", _
+                "Não: modo LIVRE, só desta vez." & vbCrLf & _
+                "Cancelar: não abrir o agente." & vbCrLf & vbCrLf & _
+                "Para não perguntar mais, escolha o modo em Configurar, item 5.", _
                 vbYesNoCancel + vbQuestion + vbDefaultButton1, TITULO)
                 Case vbYes
                     secreto = True
@@ -401,23 +399,23 @@ Private Function LerSecret(ByRef aviso As String) As String
     LerSecret = "ask"
     If Not ArquivoExiste(ArquivoConfig()) Then Exit Function
     If Not LerTextoAscii(ArquivoConfig(), txt, soAscii) Then
-        aviso = "Nao consegui ler a configuracao do modo:" & vbCrLf & Abreviar(ArquivoConfig())
+        aviso = "Não consegui ler a configuração do modo:" & vbCrLf & Abreviar(ArquivoConfig())
         Exit Function
     End If
     If Not PareceObjeto(txt) Then
-        aviso = "A configuracao do modo esta ilegivel:" & vbCrLf & Abreviar(ArquivoConfig())
+        aviso = "A configuração do modo está ilegível:" & vbCrLf & Abreviar(ArquivoConfig())
         Exit Function
     End If
     If InStr(1, txt, """secret""", vbBinaryCompare) = 0 Then Exit Function
     If Not AcharSecret(txt, ini, fim) Then
-        aviso = "A configuracao do modo esta ilegivel:" & vbCrLf & Abreviar(ArquivoConfig())
+        aviso = "A configuração do modo está ilegível:" & vbCrLf & Abreviar(ArquivoConfig())
         Exit Function
     End If
     v = LCase$(Trim$(Mid$(txt, ini, fim - ini + 1)))
     If v = "ask" Or v = "on" Or v = "off" Then
         LerSecret = v
     Else
-        aviso = "A configuracao do modo tem um valor desconhecido (" & Left$(v, 20) & "):" & vbCrLf & Abreviar(ArquivoConfig())
+        aviso = "A configuração do modo tem um valor desconhecido (" & Left$(v, 20) & "):" & vbCrLf & Abreviar(ArquivoConfig())
     End If
 End Function
 
@@ -434,7 +432,7 @@ Private Function GravarSecret(ByVal valor As String) As Boolean
     If ArquivoExiste(dest) Then
         If LerTextoAscii(dest, txt, soAscii) Then
             If Not soAscii Then
-                MsgBox "A configuracao do modo tem caracteres que este suplemento nao regrava com seguranca:" & vbCrLf & _
+                MsgBox "A configuração do modo tem caracteres que a aba não consegue regravar com segurança:" & vbCrLf & _
                     Abreviar(dest) & vbCrLf & vbCrLf & _
                     "Nada foi alterado. Grave pelo motor, num terminal:" & vbCrLf & _
                     "  review.py --secret " & valor, vbExclamation, TITULO
@@ -565,18 +563,12 @@ End Function
 '   claude "PROMPT"        sessao interativa com pedido inicial
 '   codex "PROMPT"         idem
 '   copilot -i "PROMPT"    --interactive: sessao interativa que executa o pedido
-'   gemini -i "PROMPT"     --prompt-interactive: executa o pedido e continua interativo
-'   code "PASTA"           abre a pasta no VS Code; o pedido vai pela area de transferencia
 Private Function AbrirAgente(ByVal agente As String, ByVal pasta As String, ByVal frase As String) As Boolean
     Dim sh As Object, linha As String, cmd As String
-    If agente = "code" Then
-        AbrirAgente = AbrirVSCode(pasta, frase)
-        Exit Function
-    End If
     Select Case agente
         Case "claude", "codex"
             linha = agente & " """ & frase & """"
-        Case "copilot", "gemini"
+        Case "copilot"
             linha = agente & " -i """ & frase & """"
         Case Else
             MsgBox "Agente desconhecido: " & agente, vbCritical, TITULO
@@ -597,71 +589,12 @@ Private Function AbrirAgente(ByVal agente As String, ByVal pasta As String, ByVa
     End If
     sh.Run cmd, 1, False
     If Err.Number <> 0 Then
-        Falha "abrir o agente (a politica da maquina pode bloquear processos abertos por macro)", Err
+        Falha "abrir o agente (a política deste computador pode impedir que uma macro abra programas)", Err
         On Error GoTo 0
         Exit Function
     End If
     On Error GoTo 0
     AbrirAgente = True
-End Function
-
-' O VS Code nao recebe pedido pela linha de comando. A pasta da rodada abre nele e a frase
-' curta vai para a area de transferencia: a pessoa abre o Copilot Chat em modo agente e cola.
-Private Function AbrirVSCode(ByVal pasta As String, ByVal frase As String) As Boolean
-    Dim sh As Object, copiou As Boolean
-    copiou = CopiarParaAreaDeTransferencia(frase)
-    On Error Resume Next
-    Set sh = CreateObject("WScript.Shell")
-    If Err.Number <> 0 Then
-        Falha "abrir o VS Code (WScript.Shell bloqueado)", Err
-        On Error GoTo 0
-        Exit Function
-    End If
-    sh.Run "cmd /c code """ & pasta & """", 0, False
-    If Err.Number <> 0 Then
-        Falha "abrir o VS Code (a politica da maquina pode bloquear processos abertos por macro)", Err
-        On Error GoTo 0
-        Exit Function
-    End If
-    On Error GoTo 0
-    If copiou Then
-        MsgBox "O VS Code vai abrir na pasta da rodada." & vbCrLf & vbCrLf & _
-            "1. Abra o Copilot Chat (Ctrl+Alt+I) e escolha o modo Agente." & vbCrLf & _
-            "2. Cole o pedido com Ctrl+V e envie. Ele ja esta na area de transferencia:" & vbCrLf & vbCrLf & _
-            "   " & PROMPT_INICIAL, vbInformation, TITULO
-    Else
-        MsgBox "O VS Code vai abrir na pasta da rodada." & vbCrLf & vbCrLf & _
-            "1. Abra o Copilot Chat (Ctrl+Alt+I) e escolha o modo Agente." & vbCrLf & _
-            "2. Nao consegui usar a area de transferencia. Digite o pedido:" & vbCrLf & vbCrLf & _
-            "   " & PROMPT_INICIAL, vbInformation, TITULO
-    End If
-    AbrirVSCode = True
-End Function
-
-' Texto ASCII para a area de transferencia, pelo clip do Windows. chcp 1252 antes, para o
-' clip ler o arquivo no mesmo codigo de pagina em que o VBA o gravou.
-Private Function CopiarParaAreaDeTransferencia(ByVal txt As String) As Boolean
-    Dim f As Integer, tmp As String, sh As Object, rc As Long
-    tmp = Environ$("TEMP") & "\cronoaudit-prompt.txt"
-    On Error Resume Next
-    f = FreeFile
-    Open tmp For Output As #f
-    If Err.Number <> 0 Then
-        Err.Clear
-        On Error GoTo 0
-        Exit Function
-    End If
-    Print #f, txt;
-    Close #f
-    Set sh = CreateObject("WScript.Shell")
-    If Err.Number = 0 Then
-        rc = sh.Run("cmd /c ""chcp 1252 >nul & clip < """ & tmp & """""", 0, True)
-        If Err.Number = 0 Then CopiarParaAreaDeTransferencia = (rc = 0)
-    End If
-    Err.Clear
-    Kill tmp
-    Err.Clear
-    On Error GoTo 0
 End Function
 
 Private Function AcharAgente() As String
@@ -672,6 +605,16 @@ Private Function AcharAgente() As String
             Exit Function
         End If
     Next c
+End Function
+
+' O nome que a pessoa reconhece, para as mensagens.
+Private Function NomeDoAgente(ByVal agente As String) As String
+    Select Case agente
+        Case "claude": NomeDoAgente = "Claude Code"
+        Case "codex": NomeDoAgente = "Codex"
+        Case "copilot": NomeDoAgente = "Copilot"
+        Case Else: NomeDoAgente = agente
+    End Select
 End Function
 
 Private Function EhAgente(ByVal nome As String) As Boolean
@@ -842,15 +785,15 @@ Private Function PreVoo(ByRef origem As String) As Boolean
         Exit Function
     End If
     If LCase$(Right$(origem, 4)) = ".xml" Then
-        MsgBox "O arquivo aberto ja e um XML. Abra o .mpp, ou use a cronoaudit direto pelo terminal sobre este XML.", vbExclamation, TITULO
+        MsgBox "O arquivo aberto já é um XML. Abra o .mpp, ou rode a cronoaudit pelo terminal sobre este XML.", vbExclamation, TITULO
         Exit Function
     End If
     ' Nada de perguntar por alteracoes nao salvas: o Project marca o arquivo assim so por abrir
     ' (medido em 22/11/2026), e "salvar" gravaria o arquivo da pessoa. A exportacao le uma
     ' COPIA do arquivo como esta em disco; a janela da pessoa nao e tocada.
     If ActiveProject.Subprojects.Count > 0 Then
-        If MsgBox("Este arquivo e um mestre com " & ActiveProject.Subprojects.Count & _
-            " subprojetos. A analise de um mestre e menos confiavel que a de cada subprojeto. Continuar?", _
+        If MsgBox("Este arquivo é um projeto mestre com " & ActiveProject.Subprojects.Count & _
+            " subprojetos. A análise de um projeto mestre é menos confiável que a de cada subprojeto. Continuar?", _
             vbOKCancel + vbExclamation, TITULO) <> vbOK Then Exit Function
     End If
     PreVoo = True
@@ -877,12 +820,12 @@ Private Function ExportarXml(ByVal destino As String, ByVal original As String, 
         If Err.Number <> 0 Then Err.Clear: DoEvents: FileClose Save:=pjDoNotSave
         Err.Clear
         If AtivarSeAberto(destino) Then
-            MsgBox "O XML ficou aberto no Project e nao consegui fechar. Feche sem salvar:" & vbCrLf & destino, vbExclamation, TITULO
+            MsgBox "O XML ficou aberto no Project e não consegui fechá-lo. Feche sem salvar:" & vbCrLf & destino, vbExclamation, TITULO
         End If
         If reabrir Then
             If Not AtivarSeAberto(original) Then FileOpenEx Name:=original
             If Err.Number <> 0 Then
-                MsgBox "O XML foi gerado, mas nao consegui reabrir o original:" & vbCrLf & original & vbCrLf & _
+                MsgBox "O XML foi gerado, mas não consegui reabrir o original:" & vbCrLf & original & vbCrLf & _
                     "Erro " & Err.Number & ": " & Err.Description & vbCrLf & "Abra o arquivo manualmente.", vbCritical, TITULO
                 Err.Clear
             End If
@@ -891,9 +834,9 @@ Private Function ExportarXml(ByVal destino As String, ByVal original As String, 
     End If
 
     If errNum <> 0 Or Not ArquivoExiste(destino) Then
-        MsgBox "Nao consegui gravar o XML em:" & vbCrLf & destino & vbCrLf & vbCrLf & _
+        MsgBox "Não consegui gravar o XML em:" & vbCrLf & destino & vbCrLf & vbCrLf & _
             "Erro " & errNum & ": " & errDesc & vbCrLf & vbCrLf & _
-            "Se a politica da maquina bloqueia gravacao por macro, use Arquivo > Salvar como > XML e abra a skill pelo terminal.", _
+            "Se a política deste computador impede que uma macro grave arquivos, use Arquivo > Salvar como > XML e rode a cronoaudit pelo terminal.", _
             vbCritical, TITULO
         Exit Function
     End If
@@ -942,7 +885,7 @@ Private Function ExportarOutro(ByVal caminho As String, ByVal destino As String,
     On Error GoTo 0
     Application.Alerts True
     If LCase$(ActiveProject.FullName) <> LCase$(caminho) Then
-        MsgBox "Abri o arquivo, mas o ativo nao e ele:" & vbCrLf & ActiveProject.FullName & vbCrLf & "Nada foi exportado.", vbCritical, TITULO
+        MsgBox "Abri o arquivo, mas o projeto ativo não é ele:" & vbCrLf & ActiveProject.FullName & vbCrLf & "Nada foi exportado.", vbCritical, TITULO
         Exit Function
     End If
     ok = ExportarXml(destino, caminho, False)
@@ -954,13 +897,13 @@ Private Function ExportarOutro(ByVal caminho As String, ByVal destino As String,
         On Error GoTo 0
     End If
     If AtivarSeAberto(caminho) Then
-        MsgBox "A outra versao ficou aberta (somente leitura). Feche sem salvar:" & vbCrLf & caminho, vbExclamation, TITULO
+        MsgBox "A outra versão ficou aberta (somente leitura). Feche sem salvar:" & vbCrLf & caminho, vbExclamation, TITULO
     End If
     If Not AtivarSeAberto(original) Then
         On Error Resume Next
         FileOpenEx Name:=original
         If Err.Number <> 0 Then
-            MsgBox "Nao consegui reabrir o original:" & vbCrLf & original & vbCrLf & "Abra o arquivo manualmente.", vbCritical, TITULO
+            MsgBox "Não consegui reabrir o original:" & vbCrLf & original & vbCrLf & "Abra o arquivo manualmente.", vbCritical, TITULO
             Err.Clear
         End If
         On Error GoTo 0
@@ -983,19 +926,20 @@ Private Sub AbrirSecreto(ByVal agente As String, ByVal py As String, ByVal rv As
     If Not RodarMotorSecreto(py, rv, arquivos, raiz, pastaProjeto) Then Exit Sub
     trabalho = AcharPastaDeTrabalho(raiz)
     If trabalho = "" Then
-        MsgBox "O motor rodou, mas a pasta de trabalho codificada nao apareceu em:" & vbCrLf & raiz & vbCrLf & vbCrLf & _
-            "O agente nao foi aberto.", vbExclamation, TITULO
+        MsgBox "A análise rodou, mas a pasta codificada não apareceu em:" & vbCrLf & raiz & vbCrLf & vbCrLf & _
+            "O agente não foi aberto.", vbExclamation, TITULO
         Exit Sub
     End If
     If agente = "claude" Then
-        confia = "No Claude Code, responda que CONFIA na pasta. Sem isso a trava fica desligada." & vbCrLf & vbCrLf
+        confia = "O Claude Code vai perguntar se você confia na pasta: responda que sim. É isso que liga a " & _
+            "trava, e a pergunta volta a cada pasta nova." & vbCrLf & vbCrLf
     End If
     MsgBox "Modo SECRETO pronto." & vbCrLf & vbCrLf & _
-        "O agente vai abrir numa pasta so com a copia codificada:" & vbCrLf & Abreviar(trabalho) & vbCrLf & vbCrLf & _
+        "O agente vai abrir numa pasta só com a cópia codificada:" & vbCrLf & Abreviar(trabalho) & vbCrLf & vbCrLf & _
         confia & _
-        "Refira-se as atividades pelo codigo ou pelo ID da linha: o que voce digitar com nome ou valor " & _
-        "real vai para o servico de IA." & vbCrLf & vbCrLf & _
-        "No fim, o agente monta o relatorio com os dados reais nesta maquina, nesta pasta:" & vbCrLf & _
+        "Fale das atividades pelo código ou pelo número da linha: o que você digitar com nome ou valor " & _
+        "real vai para o serviço de IA." & vbCrLf & vbCrLf & _
+        "Quando você pedir, o agente monta o relatório com os dados reais neste computador, nesta pasta:" & vbCrLf & _
         Abreviar(pastaRodada), vbInformation, TITULO
     AbrirAgente agente, trabalho, frase
 End Sub
@@ -1016,16 +960,16 @@ Private Function RodarMotorSecreto(ByVal py As String, ByVal rv As String, ByVal
     rc = sh.Run("cmd /c ""title cronoaudit - modo secreto && " & cmd & _
         " || (echo. & echo A cronoaudit terminou com erro. & pause & exit /b 1)""", 1, True)
     If Err.Number <> 0 Then
-        Falha "executar o Python (a politica da maquina pode bloquear processos abertos por macro)", Err
+        Falha "executar o Python (a política deste computador pode impedir que uma macro abra programas)", Err
         On Error GoTo 0
         Exit Function
     End If
     On Error GoTo 0
     If rc <> 0 Then
-        MsgBox "A cronoaudit terminou com codigo " & rc & " e o agente nao foi aberto. A mensagem dela " & _
+        MsgBox "A cronoaudit terminou com o código " & rc & " e o agente não foi aberto. A mensagem dela " & _
             "ficou no terminal." & vbCrLf & vbCrLf & _
             "Se ela disse que foi iniciada por um agente, feche o Project e abra de novo pelo menu " & _
-            "Iniciar ou pelo arquivo, nao de dentro de um terminal do agente.", vbExclamation, TITULO
+            "Iniciar ou pelo arquivo, não de dentro de um terminal do agente.", vbExclamation, TITULO
         Exit Function
     End If
     RodarMotorSecreto = True
@@ -1075,13 +1019,13 @@ Private Function RodarMotor(ByVal py As String, ByVal rv As String, ByVal arquiv
     cmd = py & " """ & rv & """ " & arquivos & " --outdir """ & pasta & """ --free"
     rc = sh.Run("cmd /c ""title cronoaudit && " & cmd & " || (echo. & echo A cronoaudit terminou com erro. & pause & exit /b 1)""", 1, True)
     If Err.Number <> 0 Then
-        Falha "executar o Python (a politica da maquina pode bloquear processos abertos por macro)", Err
+        Falha "executar o Python (a política deste computador pode impedir que uma macro abra programas)", Err
         On Error GoTo 0
         Exit Function
     End If
     On Error GoTo 0
     If rc <> 0 Then
-        MsgBox "A cronoaudit terminou com codigo " & rc & ". A mensagem dela ficou no terminal." & vbCrLf & vbCrLf & _
+        MsgBox "A cronoaudit terminou com o código " & rc & ". A mensagem dela ficou no terminal." & vbCrLf & vbCrLf & _
             "Comando:" & vbCrLf & cmd, vbExclamation, TITULO
         Exit Function
     End If
@@ -1091,7 +1035,7 @@ End Function
 Private Sub AbrirRelatorio(ByVal html As String)
     On Error Resume Next
     If Not ArquivoExiste(html) Then
-        MsgBox "A cronoaudit rodou, mas o relatorio esperado nao esta em:" & vbCrLf & html, vbExclamation, TITULO
+        MsgBox "A cronoaudit rodou, mas o relatório esperado não está em:" & vbCrLf & html, vbExclamation, TITULO
         Shell "explorer.exe """ & Left$(html, InStrRev(html, "\") - 1) & """", vbNormalFocus
     Else
         Shell "explorer.exe """ & html & """", vbNormalFocus
@@ -1114,16 +1058,16 @@ Private Function AcharMotor(ByRef py As String, ByRef rv As String) As Boolean
             End If
         Next c
         If rv = "" Then
-            MsgBox "Nao achei a skill cronoaudit instalada (review.py)." & vbCrLf & vbCrLf & _
-                "Instale com o comando do README, ou informe o caminho em CronoauditConfigurar.", vbCritical, TITULO
+            MsgBox "Não achei a cronoaudit instalada neste computador." & vbCrLf & vbCrLf & _
+                "Instale com o comando do README, ou informe o caminho do review.py em Configurar.", vbCritical, TITULO
             Exit Function
         End If
         SaveSetting APP, SEC, "review", rv
     End If
     ' A v0.3 passa --free ao motor. Um motor anterior nao conhece a chave e pararia com erro.
     If Not ArquivoExiste(Left$(rv, InStrRev(rv, "\")) & "cronoaudit_config.py") Then
-        MsgBox "A skill instalada e mais antiga que este suplemento (v0.3):" & vbCrLf & Abreviar(rv) & vbCrLf & vbCrLf & _
-            "Rode de novo o instalador da cronoaudit para atualizar a skill.", vbCritical, TITULO
+        MsgBox "A cronoaudit instalada é mais antiga que esta aba:" & vbCrLf & Abreviar(rv) & vbCrLf & vbCrLf & _
+            "Rode de novo o instalador da cronoaudit para atualizar.", vbCritical, TITULO
         Exit Function
     End If
 
@@ -1142,8 +1086,8 @@ Private Function AcharMotor(ByRef py As String, ByRef rv As String) As Boolean
             Exit Function
         End If
     Next c
-    MsgBox "Nao achei Python 3.9 ou mais novo que a macro consiga executar." & vbCrLf & vbCrLf & _
-        "Rode de novo o instalador da cronoaudit (ele traz um Python proprio), ou informe o comando em CronoauditConfigurar.", vbCritical, TITULO
+    MsgBox "Não achei um Python 3.9 ou mais novo que a aba consiga usar." & vbCrLf & vbCrLf & _
+        "Rode de novo o instalador da cronoaudit (ele traz um Python próprio), ou informe o comando em Configurar.", vbCritical, TITULO
 End Function
 
 ' Verdadeiro se o comando executa um Python >= 3.9. O alias da Microsoft Store devolve 9009.
@@ -1170,7 +1114,7 @@ Private Function EscolherArquivo() As String
     If p <> "" Then GoTo validar
     On Error Resume Next
     Set shApp = CreateObject("Shell.Application")
-    Set item = shApp.BrowseForFolder(0, "Escolha a outra versao do cronograma (.mpp ou .xml)", &H4000 + &H10 + &H40, 0)
+    Set item = shApp.BrowseForFolder(0, "Escolha a outra versão do cronograma (.mpp ou .xml)", &H4000 + &H10 + &H40, 0)
     falhou = (Err.Number <> 0)
     If Not falhou And Not item Is Nothing Then p = item.Self.Path
     falhou = falhou Or (Err.Number <> 0)
@@ -1178,7 +1122,7 @@ Private Function EscolherArquivo() As String
     On Error GoTo 0
     If Not falhou And p = "" Then Exit Function   ' cancelou a janela
     If falhou Then
-        p = InputBox("Caminho completo da outra versao (.mpp ou .xml):", TITULO, GetSetting(APP, SEC, "outro", ""))
+        p = InputBox("Caminho completo da outra versão (.mpp ou .xml):", TITULO, GetSetting(APP, SEC, "outro", ""))
     End If
     If p = "" Then Exit Function
 validar:
@@ -1187,7 +1131,7 @@ validar:
         Exit Function
     End If
     If Not ArquivoExiste(p) Then
-        MsgBox "Arquivo nao encontrado:" & vbCrLf & p, vbExclamation, TITULO
+        MsgBox "Arquivo não encontrado:" & vbCrLf & p, vbExclamation, TITULO
         Exit Function
     End If
     Select Case LCase$(Mid$(p, InStrRev(p, ".")))
@@ -1222,8 +1166,8 @@ Private Function EscolherNaPasta() As String
     For i = 1 To n
         txt = txt & i & "   " & lista(i) & vbCrLf
     Next i
-    r = InputBox("Outras versoes nesta pasta:" & vbCrLf & vbCrLf & txt & vbCrLf & _
-        "Digite o numero. 0 para procurar em outra pasta.", TITULO, "1")
+    r = InputBox("Outras versões nesta pasta:" & vbCrLf & vbCrLf & txt & vbCrLf & _
+        "Digite o número. 0 para procurar em outra pasta.", TITULO, "1")
     If r = "" Then EscolherNaPasta = "-": Exit Function
     If Not IsNumeric(r) Then EscolherNaPasta = "-": Exit Function
     i = CLng(r)
@@ -1297,8 +1241,8 @@ Private Function NovaPastaDeRodada(ByVal base As String) As String
     Err.Clear
     On Error GoTo 0
     If Not existe Then
-        MsgBox "Nao consegui criar a pasta da rodada:" & vbCrLf & p & vbCrLf & vbCrLf & _
-            "Troque a pasta em CronoauditConfigurar.", vbCritical, TITULO
+        MsgBox "Não consegui criar a pasta da rodada:" & vbCrLf & p & vbCrLf & vbCrLf & _
+            "Troque a pasta em Configurar.", vbCritical, TITULO
         Exit Function
     End If
     NovaPastaDeRodada = p
@@ -1361,7 +1305,7 @@ Private Sub DeleteSettingSeguro(ByVal chave As String)
 End Sub
 
 Private Sub Falha(ByVal etapa As String, ByVal e As ErrObject)
-    MsgBox "Falhou ao " & etapa & "." & vbCrLf & vbCrLf & _
+    MsgBox "Não consegui " & etapa & "." & vbCrLf & vbCrLf & _
         "Erro " & e.Number & " (" & e.Source & "): " & e.Description, vbCritical, TITULO
     e.Clear
 End Sub

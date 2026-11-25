@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
-<title>cronoaudit — technical manual 0.9.4</title>
+<title>cronoaudit — technical manual 1.0.0</title>
 <meta name="author" content="Helton da Silva de Oliveira">
 <link rel="stylesheet" href="style.css">
 </head><body>
 <div class="cover">
-  <p class="kicker">Technical manual · version 0.9.4</p>
+  <p class="kicker">Technical manual · version 1.0.0</p>
   <h1>crono<em>audit</em></h1>
   <p class="sub">Schedule critical analysis, from the file to the verdict. How to install, how to use, how to read the report, and how to reproduce every figure.</p>
   <svg viewBox="0 0 520 150" aria-hidden="true">
@@ -28,7 +28,7 @@
 </div>
 <div class="front">
   <h2>About this manual</h2>
-  <p>This manual accompanies version 0.9.4 of cronoaudit. It was written for whoever receives a schedule and has to say whether it is true, and it does not assume the reader knows the concepts: every chapter starts from the concept, then shows what the tool does with it.</p>
+  <p>This manual accompanies version 1.0.0 of cronoaudit. It was written for whoever receives a schedule and has to say whether it is true, and it does not assume the reader knows the concepts: every chapter starts from the concept, then shows what the tool does with it.</p>
 <p>Every example uses the synthetic schedules shipped with the tool. No real contract, contractor or person appears here.</p>
 <p>The tool follows the open Agent Skills format and works with any agent that reads it, and with no agent at all. Source, licence and the latest version are at github.com/Holiv/cronoaudit.</p>
   <h2 style="margin-top:12mm">Contents</h2>
@@ -220,20 +220,22 @@
 <pre>irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex</pre>
 <p>On macOS or Linux, in Terminal:</p>
 <pre>curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash</pre>
-<p>The installer downloads the repository from GitHub, copies the skill to the two folders below and runs the tool's internal test as proof of installation. At the end you see the line <code>cronoaudit ... is installed</code>, with the version number, and the exact command to run the engine on this machine. Restart the agent after installing, because skills are read at the start of each session.</p>
+<p>The installer downloads the repository from GitHub, copies the skill to the two folders below, copies the fictitious example to the <code>cronoaudit-exemplo</code> folder and runs the tool's internal test as proof of installation. Then it asks only what is yours to choose. On Windows, if it finds MS Project, it asks whether you also want the Cronoaudit tab, which chapter 5 describes. And it asks whether you want to see the example now: it compares two revisions of an invented works and opens the report in the browser. Its messages are in Portuguese on a Portuguese system, and in English elsewhere.</p>
+<p>At the end you see <code>cronoaudit 1.0.0 is installed.</code>, or <code>Pronto: cronoaudit 1.0.0 instalada.</code> on a Portuguese system. Right below, the installer shows how to use it. With an AI agent, open the agent in the schedule's folder and ask for the review; if it was already open, close it and open it again, because skills are read at the start of each session. With no agent, the line after <em>With no agent</em> gives the right command for this computer. The last line runs the example again.</p>
 <div class="note"><b>Python on Windows</b>cronoaudit needs Python 3.9 or later. On Windows, if there is no working Python, the installer brings its own copy: the official package from python.org, checked against its SHA-256 before it is unpacked, in <code>%LOCALAPPDATA%\cronoaudit\python</code>. It needs no administrator rights and changes neither the registry nor the PATH. Deleting that folder removes this Python completely. On macOS and Linux, Python must already be installed; if it is missing, the installer stops and says so.</div>
 <table>
 <tr><th>Folder</th><th>Who reads it</th></tr>
 <tr><td class="m">~/.claude/skills/cronoaudit</td><td>Claude Code, OpenCode, Cursor</td></tr>
-<tr><td class="m">~/.agents/skills/cronoaudit</td><td>Codex, GitHub Copilot, Grok Build, Gemini CLI, Cursor, VS Code, OpenCode</td></tr>
+<tr><td class="m">~/.agents/skills/cronoaudit</td><td>Codex, GitHub Copilot and other Agent Skills clients</td></tr>
+<tr><td class="m">~/.copilot/skills/cronoaudit</td><td>GitHub Copilot CLI, when it is on the computer: one version of it did not find the skill in ~/.agents</td></tr>
 </table>
-<p>On Windows, <code>~</code> is <code>%USERPROFILE%</code>: the folders are <code>%USERPROFILE%\.claude\skills\cronoaudit</code> and <code>%USERPROFILE%\.agents\skills\cronoaudit</code>. So far cronoaudit has been tested end to end with Claude Code and, in free mode, with GitHub Copilot CLI (21/11/2026, from the Project tab). For the other agents, the folder and the installation follow what the providers document. Secret mode has been tested with Claude Code only. To check, start the agent and ask which skills it has.</p>
+<p>On Windows, <code>~</code> is <code>%USERPROFILE%</code>: the folders are <code>%USERPROFILE%\.claude\skills\cronoaudit</code> and <code>%USERPROFILE%\.agents\skills\cronoaudit</code>. cronoaudit has been tested end to end with Claude Code and, in free mode, with GitHub Copilot CLI (21/11/2026, from the Project tab). For Codex, the installation follows what the provider documents. Secret mode has been tested with Claude Code and, on 25/11/2026, with GitHub Copilot CLI, which followed the folder's written rules without the lock: it spoke only in codes, did not run the engine and asked before writing the synthesis. To check, start the agent and ask which skills it has.</p>
 
 <h2 id="ch3-2">Update</h2>
 <p>Run the same command again. The installer deletes both skill folders and copies the new version in full. What lives elsewhere is not touched: the mode preference and the secret-mode vault, in <code>~/.cronoaudit</code>; the reports; the organisation profile, which stays where it was saved. So keep nothing of your own inside the skill folder, because the next update deletes it. A customised report template lives outside it, pointed to by the <code>--template</code> option or the profile's <code>template</code> key.</p>
 
 <h2 id="ch3-3">An agent, to talk to</h2>
-<p>Path A and the tab's Analisar button need an agent installed and signed in. Use the agent you prefer, or the one your company allows on your computer. The repository README gives the official install commands for Claude Code, GitHub Copilot CLI, Codex and Grok Build, with each provider's guide. Each agent needs an account with its provider; check which plan includes it and your company's policy. Without an agent, the engine and the tab's Sem IA buttons work the same way.</p>
+<p>Path A and the tab's Analisar button need an agent installed and signed in. Use the agent you prefer, or the one your company allows on your computer. The repository README gives the official install commands for Claude Code, GitHub Copilot CLI and Codex, with each provider's guide. Each agent needs an account with its provider; check which plan includes it and your company's policy. Without an agent, the engine and the tab's Sem IA buttons work the same way.</p>
 
 <h2 id="ch3-4">Other ways to install</h2>
 <table>
@@ -243,17 +245,18 @@
 <tr><td>Codex</td><td class="m">$skill-installer https://github.com/Holiv/cronoaudit</td></tr>
 <tr><td>A team, through the project</td><td class="m">git clone https://github.com/Holiv/cronoaudit .agents/skills/cronoaudit</td></tr>
 </table>
-<p>On Windows, three variables change the installer. Set them in the same window, before the command: <code>$env:CRONOAUDIT_NO_PYTHON="1"</code> never downloads Python; <code>$env:CRONOAUDIT_EMBED_PYTHON="1"</code> uses the bundled Python even if there is another; <code>$env:CRONOAUDIT_REF="branch-name"</code> installs from another branch.</p>
+<p>A few variables change the installer. On Windows, set them in the same window, before the command: <code>$env:CRONOAUDIT_NO_PYTHON="1"</code> never downloads Python; <code>$env:CRONOAUDIT_EMBED_PYTHON="1"</code> uses the bundled Python even if there is another; <code>$env:CRONOAUDIT_REF="branch-name"</code> installs from another branch. <code>$env:CRONOAUDIT_PLUGIN</code> and <code>$env:CRONOAUDIT_EXAMPLE</code> answer the two questions in advance, the tab's and the example's: <code>"1"</code> is yes, <code>"0"</code> is no. On macOS and Linux, <code>CRONOAUDIT_REF</code> and <code>CRONOAUDIT_EXAMPLE</code> apply, written before <code>bash</code>, as in <code>curl ... | CRONOAUDIT_EXAMPLE=0 bash</code>.</p>
 
 <h2 id="ch3-5">First run: the fictitious example</h2>
-<p>The repository carries two deliveries of an invented road project, one month apart: <code>rodovia-ficticia-rev03.xml</code>, with status date 30/09/2026, and <code>rodovia-ficticia-rev04.xml</code>, at 30/10/2026. Road, section, companies, quantities, prices and dates were made up for the example. There are 142 activities, nine milestones with a deadline, two calendars with a rain reserve, and fourteen problems planted on purpose. The files are in the repository's <code>examples/</code> folder and do not come with the installed skill: clone the repository or download the two files.</p>
-<pre>git clone https://github.com/Holiv/cronoaudit
-cd cronoaudit
-python3 ~/.claude/skills/cronoaudit/scripts/review.py examples/rodovia-ficticia-rev04.xml</pre>
-<p>On Windows, in PowerShell, the interpreter is <code>python</code>, and the skill's path is written like this:</p>
-<pre>python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" examples\rodovia-ficticia-rev04.xml</pre>
-<p>If the installer brought its own Python, it is not on the PATH, and <code>python</code> is not recognised. Use the command the installer showed at the end. It calls the bundled Python by its path, <code>&amp; "$env:LOCALAPPDATA\cronoaudit\python\python.exe"</code>, followed by the path of <code>review.py</code>.</p>
-<p>While the mode preference is <code>ask</code>, the factory default, the engine asks for the mode before opening the file: <code>s</code> goes on in free mode, <code>secreto</code> switches to secret mode, <code>nunca</code> goes on in free mode and stops asking, <code>n</code> cancels. With no agent, nothing leaves the computer in either mode. Answer <code>s</code>, or add <code>--free</code> to the command. Chapter 6 explains the modes.</p>
+<p>The installer copies to the <code>cronoaudit-exemplo</code> folder, in your user folder (<code>~/cronoaudit-exemplo</code>; on Windows, <code>%USERPROFILE%\cronoaudit-exemplo</code>), two deliveries of an invented road project, one month apart: <code>rodovia-ficticia-rev03.xml</code>, with status date 30/09/2026, and <code>rodovia-ficticia-rev04.xml</code>, at 30/10/2026. Road, section, companies, quantities, prices and dates were made up for the example. There are 142 activities, nine milestones with a deadline, two calendars with a rain reserve, and fourteen problems planted on purpose. The folder also holds <code>rodovia-ficticia-rev03.mpp</code> and <code>rodovia-ficticia-rev04.mpp</code>, to try the tab inside Project.</p>
+<p>At the end of the installation, the installer asks whether you want to see the example now. To see it again, use the last line it showed, the one ending in <code>--example</code>:</p>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py --example</pre>
+<p><code>--example</code>, or <code>--exemplo</code>, compares rev03 with rev04 in free mode, with no mode question, because the data is invented. It writes the results in the <code>cronoaudit-exemplo</code> folder itself and opens the comparison report in the browser. If it cannot find the example, it asks you to run the installer again, which brings the example. The same files are in the repository's <code>examples/</code> folder, for whoever prefers to clone it.</p>
+<p>On Windows, the line the installer shows already starts with this machine's right Python. If the installer brought its own Python, it is not on the PATH, and <code>python</code> alone does not find it: use that line, or the two lines that find Python, in path C of chapter 4.</p>
+<p>The report that opens is the cycle report, <code>rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html</code>. The project finish moved from 04/10/2027 to 25/10/2027, 21 days later. Before progress, the report points to the rewritten past: the actual finish of row 29 changed and now equals the baseline date, and row 119, which was at 100%, was removed. At the end come twelve ready questions for the contractor. Chapter 12 describes this report. The same folder holds the cycle's JSON and readings, and the review of rev04, with the files in the table below.</p>
+<p>To review a single delivery, pass the file to the engine:</p>
+<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py ~/cronoaudit-exemplo/rodovia-ficticia-rev04.xml</pre>
+<p>While the mode preference is <code>ask</code>, the factory default, the engine asks before opening the file. It says that the results will carry the real data, in free mode, and that if an AI agent reads them later, what it reads goes to its provider. The answers: <code>y</code> or <code>s</code>, yes; <code>secret</code> or <code>secreto</code>, a coded copy for the agent; <code>never</code> or <code>nunca</code>, yes, and do not ask again; <code>n</code> cancels. With no agent, nothing leaves the computer in either mode. Answer yes, or add <code>--free</code> to the command. Chapter 6 explains the modes.</p>
 <p>The terminal shows the summary: the baseline used and why, the threshold, the population, the counting convention, and the nine findings with each one's count. On rev04, A1 flags two activities: row 36, priming on segment 1, started while row 35, graded crushed-stone base, was still open. The other eight stay at zero. On a real schedule of 6,484 tasks and 107 calendars, the analysis took 29 seconds on an ordinary laptop, measured on 22/11/2026. The results sit beside the input file, where <code>&lt;name&gt;</code> is the file's name, here <code>rodovia-ficticia-rev04</code>.</p>
 <table>
 <tr><th>File</th><th>What it is for</th></tr>
@@ -266,10 +269,7 @@ python3 ~/.claude/skills/cronoaudit/scripts/review.py examples/rodovia-ficticia-
 <tr><td class="m">&lt;name&gt;-review-forensics.json</td><td>driving chains and execution pattern</td></tr>
 <tr><td class="m">&lt;name&gt;-review-readings.json</td><td>each section's rule-built readings, to quote without composing</td></tr>
 </table>
-<p>Now the comparison of the two deliveries, previous first:</p>
-<pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py examples/rodovia-ficticia-rev03.xml examples/rodovia-ficticia-rev04.xml</pre>
-<p>Out come the review of rev04, as above, and the cycle report, <code>rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html</code>, with its JSON and readings beside it. The project finish moved from 04/10/2027 to 25/10/2027, 21 days later. Before progress, the report points to the rewritten past: the actual finish of row 29 changed and now equals the baseline date, and row 119, which was at 100%, was removed. At the end come twelve ready questions for the contractor. Chapter 12 describes this report.</p>
-<p>The figures in this manual come from the two XML files as they are, run with this version. Opened and saved in Project, the example is recalculated: forecast dates, float and earned value change, and some of the figures change with them.</p>
+<p>The figures in this manual come from the two XML files as they are, run with this version. The folder's .mpp files give slightly different figures, because Project recalculated the schedule when they were created: in the comparison, 22 days on the finish and 14 questions, against 21 days and 12 questions for the XML files.</p>
 
 <h2 id="ch3-6">Reading a .mpp directly, on Windows</h2>
 <p>On Windows with MS Project installed, there is nothing to export. Pass the .mpp as it is:</p>
@@ -283,7 +283,7 @@ python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-fi
 
 <h2 id="ch3-7">Verify the tool before trusting it</h2>
 <pre>python3 ~/.claude/skills/cronoaudit/scripts/test_checks.py</pre>
-<p>The test runs the tool over synthetic schedules. On the positive one, every check must fire. On the negative one, every check must stay silent. Without the second half a clean result is worth nothing: a probe that cannot fire reports zero findings on a broken file as readily as on a sound one. The installer runs this test at the end. From a copy of the repository, the test also checks the fictitious example's fourteen problems. From the installed folder, which has no example, that part is skipped, and the test says so.</p>
+<p>The test runs the tool over synthetic schedules. On the positive one, every check must fire. On the negative one, every check must stay silent. Without the second half a clean result is worth nothing: a probe that cannot fire reports zero findings on a broken file as readily as on a sound one. The installer runs this test at the end, after copying the example. The test also checks the fictitious example's fourteen problems, which it looks for in the <code>examples/</code> folder of a copy of the repository or in <code>~/cronoaudit-exemplo</code>. If the example is in neither, that part is skipped, and the test says so.</p>
 </section>
 
 <section class="ch">
@@ -335,7 +335,7 @@ Analyse rodovia-ficticia-rev04.xml and save the results in ~/Reports/october.</p
 <p>For when there is no agent on the computer, or the company's policy does not allow one. Same report, no conversation, and nothing leaves the computer. Only the written executive synthesis and the customisation interviews are left out, the two parts that depend on an agent.</p>
 <pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev04.xml
 python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml</pre>
-<p>On Windows, in PowerShell, start with two lines that find Python. The installer may have brought its own, which is not on the PATH, and then <code>python</code> alone does not find it. The line the installer prints at the end, after <em>run directly</em>, works too.</p>
+<p>On Windows, in PowerShell, start with two lines that find Python. The installer may have brought its own, which is not on the PATH, and then <code>python</code> alone does not find it. The line the installer prints at the end, after <em>With no agent</em>, works too.</p>
 <pre>$py = "$env:LOCALAPPDATA\cronoaudit\python\python.exe"
 if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContinue) { "py" } else { "python" } }
 &amp; $py "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev04.xml</pre>
@@ -350,9 +350,10 @@ if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContin
 <tr><td class="m">--tolerance-days N</td><td>the G tolerance; default 1</td></tr>
 <tr><td class="m">--template FILE</td><td>a customised report template</td></tr>
 <tr><td class="m">--quiet</td><td>writes the files without the console summary</td></tr>
+<tr><td class="m">--example, --exemplo</td><td>runs the fictitious example in free mode and opens the comparison in the browser</td></tr>
 <tr><td class="m">--from-project</td><td>Windows: the schedule open in Project</td></tr>
 <tr><td class="m">--free</td><td>free mode, said explicitly</td></tr>
-<tr><td class="m">--secret</td><td>secret mode, experimental; chapter 6</td></tr>
+<tr><td class="m">--secret</td><td>secret mode; chapter 6</td></tr>
 <tr><td class="m">--secret on, off, ask</td><td>stores the mode preference and exits</td></tr>
 <tr><td class="m">--config</td><td>shows the stored mode preference</td></tr>
 </table>
@@ -361,10 +362,10 @@ if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContin
 
 <section class="ch">
 <p class="chno">5</p><h1 class="ch" id="ch5">The Cronoaudit tab in Project</h1>
-<p class="lede">The tab is an entry shortcut, on Windows. It exports the open schedule to XML and hands it to the engine, or opens your agent on it. It computes nothing itself: the figures come from the engine, the same as on the other paths. Everything it does can be done by hand.</p>
+<p class="lede">The tab is an entry shortcut, on Windows. It exports the open schedule to XML and hands it to the engine, or opens your agent on it. It computes nothing itself: the figures come from the engine, the same as on the other paths. Everything it does can be done by hand. This chapter describes tab v0.6: three agents, and windows in plain Portuguese, with accents.</p>
 
 <h2 id="ch5-1">Install, update and remove</h2>
-<p>First, install cronoaudit with <code>install.ps1</code>, as in chapter 3. The tab looks for the skill in the two installed folders, and for Python in this order: <code>py -3</code>, <code>python</code>, <code>python3</code> and cronoaudit's bundled Python. Then, with Project closed, in PowerShell:</p>
+<p>The cronoaudit installer, in chapter 3, offers the tab when it finds MS Project. The tab looks for the skill in the two installed folders, and for Python in this order: <code>py -3</code>, <code>python</code>, <code>python3</code> and cronoaudit's bundled Python. To install only the tab, or again, with Project closed, in PowerShell:</p>
 <pre>irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/msproject/install-msproject.ps1 | iex</pre>
 <p>The installer backs up what it changes before changing it: <code>Global.MPT</code>, where personal macros live, and the ribbon file. It opens Project, copies cronoaudit's module into <code>Global.MPT</code> and adds the tab without removing your other tabs. It changes no security setting and checks at the end that the buttons answer.</p>
 <p>During the installation Project opens and asks two things, which are yours to answer:</p>
@@ -384,24 +385,24 @@ if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContin
 <tr><td></td><td>Exportar XML</td><td>only exports the XML and opens the folder, to take elsewhere</td></tr>
 <tr><td>Ajustes</td><td>Configurar</td><td>agent, run folder, Python, review.py and mode</td></tr>
 </table>
-<p>The buttons read the version saved on disk and never ask whether to save your file. In a comparison, the other version may be .mpp or .xml. A .mpp is opened read-only, exported and closed without saving, and the other version cannot be open in Project. The Sem IA buttons do not ask for the mode: no agent is involved there. If Analisar or Comparar versões find no agent installed, they offer to run without AI instead of failing.</p>
+<p>The buttons read the version saved on disk and never ask whether to save your file. In a comparison, the other version may be .mpp or .xml. A .mpp is opened read-only, exported and closed without saving, and the other version cannot be open in Project. The Sem IA buttons do not ask for the mode: no agent is involved there. If Analisar or Comparar versões find no agent installed, they offer to run without AI instead of failing. To try it without a schedule of your own, open <code>rodovia-ficticia-rev04.mpp</code> from the <code>cronoaudit-exemplo</code> folder in Project.</p>
 
 <h2 id="ch5-3">The mode question</h2>
-<p>Before opening the agent, and before exporting anything, Analisar and Comparar versões ask for the mode in a dialog:</p>
+<p>Before opening the agent, and before exporting anything, Analisar and Comparar versões ask for the mode in a dialog. It asks "Abrir o Claude Code no modo SECRETO?", with your agent's name, explains both modes and offers three buttons:</p>
 <table>
 <tr><th>Answer</th><th>What happens</th></tr>
-<tr><td>Yes</td><td>secret mode, experimental. It is the button already selected: a stray Enter never sends the schedule to the agent's provider.</td></tr>
-<tr><td>No</td><td>free mode, this time</td></tr>
+<tr><td>Yes</td><td>secret mode. It is the button already selected: a stray Enter never sends the schedule to the agent's provider.</td></tr>
+<tr><td>No</td><td>free mode, this time only</td></tr>
 <tr><td>Cancel</td><td>the agent is not opened</td></tr>
 </table>
 <p>In free mode, the button exports the XML to the run folder, writes a <code>pedido.md</code> there and opens the agent in a visible terminal in that folder. The request states the task, the XML's name, the engine command that works on this machine, the rule that every figure comes from the engine and the exact name of every file the engine will write. It also says the mode was already settled, so the agent does not ask again.</p>
-<p>In secret mode, the button exports the XML to the run folder, which the agent never sees, and runs the engine with <code>--secret</code>. Then it opens the agent in the coded folder, <code>%USERPROFILE%\cronoaudit-work\&lt;date-time&gt;\&lt;code&gt;</code>, with no <code>pedido.md</code>, because the request would carry names. In Claude Code, answer that you trust the folder: that is what turns the guard on. When you ask, the agent builds the report with the real data, which appears in the run folder and opens in the browser. If the agent is not Claude Code, the dialog says the guard exists only there.</p>
+<p>In secret mode, the button exports the XML to the run folder, which the agent never sees, and runs the engine with <code>--secret</code>. Then it opens the agent in the coded folder, <code>%USERPROFILE%\cronoaudit-work\&lt;date-time&gt;\&lt;code&gt;</code>, with no <code>pedido.md</code>, because the request would carry names. First, a "Modo SECRETO pronto." window shows the coded folder, asks you to talk about activities by code or by row number, and says in which folder the report with the real data will appear. With Claude Code, it warns that Claude Code will ask whether you trust the folder: say yes, because that is what turns the guard on. When you ask, the agent builds the report with the real data, which appears in the run folder and opens in the browser. If the agent is not Claude Code, the mode dialog says the folder carries the rules in writing and the guard exists only in Claude Code.</p>
 <p>To stop the question, choose the mode in Configurar, item 5.</p>
 
 <h2 id="ch5-4">Configurar</h2>
 <table>
 <tr><th>Item</th><th>What it changes</th></tr>
-<tr><td class="c">1</td><td>the agent: auto, claude, codex, copilot, gemini or code; auto is the first one installed, in that order</td></tr>
+<tr><td class="c">1</td><td>the agent: auto, claude, codex or copilot; auto is the first one installed, in that order</td></tr>
 <tr><td class="c">2</td><td>the run folder; empty goes back to the default, local and outside any synced folder</td></tr>
 <tr><td class="c">3</td><td>the Python command; empty detects it again</td></tr>
 <tr><td class="c">4</td><td>the path of review.py; empty detects it again</td></tr>
@@ -416,11 +417,8 @@ if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContin
 <tr><td>Claude Code</td><td class="m">claude "..."</td></tr>
 <tr><td>Codex</td><td class="m">codex "..."</td></tr>
 <tr><td>GitHub Copilot CLI</td><td class="m">copilot -i "..."</td></tr>
-<tr><td>Gemini CLI</td><td class="m">gemini -i "..."</td></tr>
-<tr><td>VS Code</td><td class="m">code "&lt;run folder&gt;"</td></tr>
 </table>
-<p>On auto, the tab opens the first one it finds on the PATH, in that order. In free mode, the sentence it passes to the agent is short and unaccented, and the real request is in <code>pedido.md</code>. VS Code comes last because it cannot take the sentence on the command line: the tab opens the folder in it and copies the sentence. Open Copilot Chat (Ctrl+Alt+I), choose Agent mode and paste with Ctrl+V. Whether VS Code's Copilot Chat reads the skill installed in <code>~/.agents/skills</code> has not been measured yet.</p>
-<p>Grok Build is not on that list yet. With it, use path A: open the terminal in the schedule's folder and start the agent there. If you installed an agent while Project was open, close and open Project, because it inherits the PATH when it starts.</p>
+<p>On auto, the tab opens the first one it finds on the computer, in that order. In free mode, the sentence it passes to the agent is short and unaccented, and the real request is in <code>pedido.md</code>. From the tab, cronoaudit has been tested with Claude Code and, in free mode, with GitHub Copilot CLI; for Codex, the installation follows what the provider documents. If you installed an agent while Project was open, close and open Project, because it inherits the PATH when it starts.</p>
 
 <h2 id="ch5-6">Where the files go</h2>
 <p>Each run gets a folder in <code>%LOCALAPPDATA%\cronoaudit\relatorios\&lt;date&gt;_&lt;file&gt;</code>, with the XML, <code>pedido.md</code> and, once the engine has run, the report and the JSON files. The folder is local on purpose: it stays outside OneDrive, because the XML and the report carry the project's data. Change it in Configurar, item 2.</p>
@@ -428,7 +426,7 @@ if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContin
 
 <section class="ch">
 <p class="chno">6</p><h1 class="ch" id="ch6">Free mode and secret mode</h1>
-<p class="lede">The engine sends nothing, in either mode. The mode is about what an agent reads. In free mode, the agent reads the schedule and the results, and what it reads goes to its provider. In secret mode, which is experimental, the agent reads only a coded copy, and the report with the real data is built on your computer.</p>
+<p class="lede">The engine sends nothing, in either mode. The mode is about what an agent reads. In free mode, the agent reads the schedule and the results, and what it reads goes to its provider. In secret mode, the agent reads only a coded copy, and the report with the real data is built on your computer.</p>
 
 <h2 id="ch6-1">Where your data goes</h2>
 <ul>
@@ -469,7 +467,7 @@ python3 ~/.claude/skills/cronoaudit/scripts/review.py --secret ask</pre>
 <p>From the tab, answer Yes to the mode question. Without the tab, you run one command yourself, in your own terminal, with the .xml or, on Windows with Project, with the .mpp:</p>
 <pre>python "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev04.mpp --secret
 python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml --secret</pre>
-<p>The command shows the work folder. Start the agent inside it: <code>cd</code> to the folder, then the agent's command. The first thing the agent says is that the mode is experimental, and that you should refer to activities by code or by row number, because whatever you type with a real name goes to the AI service.</p>
+<p>The command shows the work folder and says to open the agent inside it: <code>cd</code> to the folder, then <code>claude</code>, <code>copilot</code> or <code>codex</code>. The first thing the agent says is that you should refer to activities by code or by row number, because whatever you type with a real name goes to the AI service.</p>
 <p>It has to be you who runs it. An agent that holds the original file protects nothing. So when you ask an agent for secret mode, it does not run the engine: it shows you the command to run in your own terminal. And the engine, when it sees that Claude Code started it, refuses secret mode and stops having read nothing. If that happens, run the command in a PowerShell opened from the Start menu, or open Project from the Start menu, and not from inside an agent's terminal. Another version, or a comparison, is a new coded run, started by you.</p>
 
 <h2 id="ch6-6">The real report, at the end</h2>
@@ -483,14 +481,13 @@ python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml
 <h2 id="ch6-8">The guard, in Claude Code only</h2>
 <p>In Claude Code, the work folder carries deny rules and a hook. They let the session read only its own folder, run only the skill's finishing commands and use only the tools a secret session needs. PowerShell, connectors such as OneDrive, SharePoint and Microsoft 365, sending files and messaging other sessions are closed, and a tool not on the list starts closed. The hook is a tripwire against the agent leaving the folder by habit or by a misread instruction. It is not a sandbox against an agent set on getting out.</p>
 <p>Claude Code asks whether you trust each new folder. Say yes: that is what turns the guard on, and without it the guard stays off. The question comes back on every analysis, because each has its own folder.</p>
-<p>In the other agents (Codex, GitHub Copilot, Gemini CLI, Grok Build), the folder carries the same rules as written instructions. Nothing technical stops the agent from opening other files.</p>
+<p>In Codex and GitHub Copilot, the folder carries the same rules in writing. Nothing technical stops the agent from opening other files.</p>
 
 <h2 id="ch6-9">What secret mode answers, and what it does not</h2>
 <p>It answers about logic, float, critical path, durations, progress, cost proportions and weights, differences between versions, network quality, deviations and inconsistencies, and the forensic chain by row number. It does not answer about real values, company, supplier or person names, locations, and absolute dates, such as "does this fall before the March contractual milestone?". For those questions, the agent refuses plainly and points to the way out: the decoded report on your computer, your own <code>secret_decode.py text</code>, or free mode.</p>
 
 <h2 id="ch6-10">The limits</h2>
 <ul>
-<li>It is experimental, and the agent says so when it starts.</li>
 <li>The codes do not make the schedule anonymous: its structure, durations and row numbers stay readable.</li>
 <li>Coding lowers what leaves the computer. It does not replace your company's policy on AI services.</li>
 </ul>
@@ -849,7 +846,7 @@ python3 $S/review.py rodovia-ficticia-rev04.xml --profile profile.json</pre>
 <p>G is a thermometer: use it to choose what to inspect, never report it alone. The physical percent may have been typed, and everything computed from it inherits that; the report says which field it used. The baseline used is elected from the data, because the field that should declare it is not dependable; check it with whoever owns the schedule. If the calendar table shows a shift or week different from what the works practise, every date inherits the error. A thin-evidence rate is a question. A forensic origin that lands on the milestone itself points to a typed date or a broken chain, and someone has to open the file.</p>
 
 <h2 id="ch15-4">Formats and scope</h2>
-<p>MS Project XML is the measured format. A .mpp read on Windows goes through Project itself, which exports that same XML, so it follows the same measured path. Off Windows, reading .mpp and Primavera P6 through the mpxj library, with Java, is optional and unverified. Secret mode is experimental. The tool does not produce a contractual claim, does not certify against a standard, and does not replace the meeting: it delivers what the meeting needs so it does not turn into an argument about the arithmetic.</p>
+<p>MS Project XML is the measured format. A .mpp read on Windows goes through Project itself, which exports that same XML, so it follows the same measured path. Off Windows, reading .mpp and Primavera P6 through the mpxj library, with Java, is optional and unverified. The tool does not produce a contractual claim, does not certify against a standard, and does not replace the meeting: it delivers what the meeting needs so it does not turn into an argument about the arithmetic.</p>
 </section>
 
 <section class="ch">
@@ -875,7 +872,7 @@ python3 $S/review.py rodovia-ficticia-rev04.xml --profile profile.json</pre>
 <p>That is what E looks for: finish pulled earlier with no execution. Reprogramming earlier can be legitimate, but it needs a reason, and E is the list of questions. If the reason exists, it gets recorded; if not, the forecast is optimistic.</p>
 
 <h2 id="ch16-7">Does sensitive data leave the machine</h2>
-<p>Not from the engine: it runs on your computer and does not use the network, and the report is a local file with no external reference. The installers download only the repository from GitHub and, on Windows and if needed, Python from python.org. The agent is different. In free mode, what it reads (the schedule, the report, your questions) goes to its provider, under the terms of your account or your company's. In secret mode, experimental, it reads only a coded copy, plus what you type. If the company's policy does not allow an agent, use the engine alone or the tab's Sem IA buttons. Chapter 6 deals with both modes.</p>
+<p>Not from the engine: it runs on your computer and does not use the network, and the report is a local file with no external reference. The installers download only the repository from GitHub and, on Windows and if needed, Python from python.org. The agent is different. In free mode, what it reads (the schedule, the report, your questions) goes to its provider, under the terms of your account or your company's. In secret mode, it reads only a coded copy, plus what you type. If the company's policy does not allow an agent, use the engine alone or the tab's Sem IA buttons. Chapter 6 deals with both modes.</p>
 
 <h2 id="ch16-8">How do I update</h2>
 <p>Run the same install command again. It deletes the skill folder and copies the whole new version. The mode preference and the vault, in <code>~/.cronoaudit</code>, the organisation profile and the reports stay where they are. A customised template kept inside the skill folder would be deleted: keep it outside and point to it with <code>--template</code> or the profile's <code>template</code> key. For the Project tab, run the tab installer again.</p>
@@ -897,7 +894,7 @@ python3 $S/review.py rodovia-ficticia-rev04.xml --profile profile.json</pre>
 <dt>Driving path <i>caminho condutor</i></dt><dd>Chain of predecessors that actually sets a milestone's date, chosen link by link by the one that lands latest.</dd>
 <dt>Earned Schedule <i>ES</i></dt><dd>Date at which the planned curve reached today's earned value. Schedule measured in time.</dd>
 <dt>Finish variance <i>variação de término</i></dt><dd>Current finish minus baseline finish, in working days of the activity's calendar.</dd>
-<dt>Free mode, secret mode <i>modo livre, modo secreto</i></dt><dd>In free mode the agent reads the schedule, and what it reads goes to its provider. In secret mode, experimental, it reads only a coded copy.</dd>
+<dt>Free mode, secret mode <i>modo livre, modo secreto</i></dt><dd>In free mode the agent reads the schedule, and what it reads goes to its provider. In secret mode, it reads only a coded copy.</dd>
 <dt>FS, SS, FF, SF <i>TI, II, TT, IT</i></dt><dd>Finish-to-start, start-to-start, finish-to-finish, start-to-finish: the four link types.</dd>
 <dt>Lag and lead <i>lag, lead</i></dt><dd>Mandatory wait and permitted overlap on a link. A lead is negative lag.</dd>
 <dt>Leaf activity <i>atividade folha</i></dt><dd>Activity with no children in the WBS. The only one the analysis counts; summaries are aggregations of it.</dd>

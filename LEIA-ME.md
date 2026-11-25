@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-![versão](https://img.shields.io/badge/vers%C3%A3o-0.9.4-1f6feb)
+![versão](https://img.shields.io/badge/vers%C3%A3o-1.0.0-1f6feb)
 ![licença](https://img.shields.io/badge/licen%C3%A7a-Apache%202.0-555)
 ![Windows · macOS · Linux](https://img.shields.io/badge/Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-roda-2ea043)
 ![dados](https://img.shields.io/badge/motor-n%C3%A3o%20usa%20a%20rede-2ea043)
@@ -86,8 +86,8 @@ Exemplos do que dizer:
 - *Escreva a síntese e gere o relatório final.*
 
 Use o agente de sua preferência, ou o que a sua empresa permite no seu computador. Este guia
-mostra quatro: Claude Code, GitHub Copilot, Codex (OpenAI) e Grok Build (xAI). Como instalar está
-em [Instalar](#instalar).
+mostra três: Claude Code, GitHub Copilot e Codex (OpenAI). Como instalar está em
+[Instalar](#instalar).
 
 **Como é uma conversa** (teste com a rodovia fictícia, em 22/11/2026):
 
@@ -114,15 +114,17 @@ Para quem prefere um botão. A aba fica entre **Projeto** e **Exibir**:
 
 Os botões nunca perguntam se é para salvar o seu arquivo: eles leem a versão salva em disco.
 
-A aba abre Claude Code, Codex, GitHub Copilot, Gemini CLI ou VS Code, o primeiro que encontrar.
-O Grok Build ainda não está nessa lista: com ele, use o caminho A.
+A aba abre o Claude Code, o Codex ou o GitHub Copilot, o primeiro que encontrar no computador.
+Para experimentar sem um cronograma seu, abra o `rodovia-ficticia-rev04.mpp` da pasta
+`cronoaudit-exemplo`, que o instalador cria na sua pasta de usuário.
 
 Antes de abrir o agente, Analisar e Comparar versões perguntam o modo. **Sim** é o modo secreto,
 e já vem selecionado: o agente abre numa pasta só com a cópia codificada, e o relatório com os
 dados reais é montado no seu computador no fim. **Não** é o modo livre, desta vez. Para não
-perguntar mais, escolha o modo em **Configurar** (item 5). Veja o [modo secreto](#modo-secreto-experimental).
+perguntar mais, escolha o modo em **Configurar** (item 5). Veja o [modo secreto](#modo-secreto).
 
-Para instalar a aba, com o Project fechado, no PowerShell:
+O instalador da cronoaudit oferece a aba quando encontra o MS Project no computador (veja
+[Instalar](#instalar)). Para instalar só a aba, ou instalar de novo, com o Project fechado:
 
 ```
 irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/msproject/install-msproject.ps1 | iex
@@ -170,7 +172,7 @@ Enter. Use essa janela, não o "Prompt de Comando" (cmd). No macOS, abra o **Ter
 
 ### 1. A cronoaudit (sempre)
 
-Um comando instala para todos os agentes de uma vez e para o uso sem agente.
+Um comando instala a cronoaudit para todos os agentes e para o uso sem agente.
 
 **Windows (PowerShell):**
 
@@ -184,43 +186,23 @@ irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex
 curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash
 ```
 
-No fim deve aparecer **`cronoaudit 0.9.4 is installed`**. A cronoaudit precisa do Python 3.9 ou
-mais novo; no Windows, se não houver Python, o instalador traz uma cópia própria, sem precisar de
-administrador. Para atualizar, rode o mesmo comando de novo.
+O instalador faz o resto e pergunta só o que é escolha sua:
+- no Windows, traz o Python se o computador não tiver um, sem precisar de administrador;
+- se encontrar o MS Project, pergunta se você quer também a aba Cronoaudit;
+- copia o exemplo fictício para a pasta `cronoaudit-exemplo` e pergunta se você quer vê-lo agora:
+  ele compara duas revisões de uma obra inventada e abre o relatório no navegador;
+- no fim, mostra como usar, com o comando certo para o seu computador.
 
-No fim, o instalador também mostra a linha para rodar o motor nesta máquina, depois de
-*run directly*. Ela começa pelo Python que ele achou: `py -3`, `python` ou, quando ele trouxe o
-próprio, `& "...\AppData\Local\cronoaudit\python\python.exe"`. Esse último não entra no PATH,
-então `python` sozinho não o encontra. Por isso os comandos do Windows neste guia começam por
-duas linhas que acham o Python certo, nessa mesma ordem.
+No fim aparece **`Pronto: cronoaudit 1.0.0 instalada.`** Para atualizar, rode o mesmo comando de
+novo.
 
-**Para experimentar antes de usar com um cronograma seu,** baixe as duas revisões da
-[rodovia fictícia](examples/LEIA-ME.md) e rode o motor. Tudo nelas é inventado.
+Para ver o exemplo de novo, use a última linha que o instalador mostrou, a que termina em
+`--example`. O que foi plantado nele, e onde aparece no relatório, está em
+[`examples/`](examples/LEIA-ME.md).
 
-Windows (PowerShell):
-
-```
-cd "$env:USERPROFILE\Downloads"
-$py = "$env:LOCALAPPDATA\cronoaudit\python\python.exe"
-if (-not (Test-Path $py)) { $py = if (Get-Command py -ErrorAction SilentlyContinue) { "py" } else { "python" } }
-Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev03.xml -OutFile rodovia-ficticia-rev03.xml
-Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev04.xml -OutFile rodovia-ficticia-rev04.xml
-& $py "$env:USERPROFILE\.claude\skills\cronoaudit\scripts\review.py" rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml
-```
-
-macOS / Linux (Terminal):
-
-```
-cd ~/Downloads
-curl -fsSLO https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev03.xml
-curl -fsSLO https://raw.githubusercontent.com/Holiv/cronoaudit/main/examples/rodovia-ficticia-rev04.xml
-python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml
-```
-
-Se ele perguntar o modo, responda `s`: sem agente, nada sai do computador. No fim, ele mostra o
-caminho de dois relatórios na mesma pasta: o da rev04 e o da comparação entre as duas. Abra o
-`.html` no navegador. Com um agente, peça: *analise a rodovia-ficticia-rev04.xml que está em
-Downloads*.
+No Windows, o Python que o instalador traz não entra no PATH, então `python` sozinho não o
+encontra. Por isso os comandos do Windows neste guia começam por duas linhas que acham o Python
+certo. A linha que o instalador mostra no fim também serve.
 
 ### 2. Um agente (só para o caminho A, ou para o botão Analisar)
 
@@ -233,20 +215,22 @@ inclui e a política da sua empresa.
 | Claude Code (Anthropic) | `irm https://claude.ai/install.ps1 \| iex` | `claude` | [code.claude.com](https://code.claude.com/docs/en/setup) |
 | GitHub Copilot CLI | `winget install GitHub.Copilot` | `copilot` | [docs.github.com](https://docs.github.com/pt/copilot/how-tos/copilot-cli/set-up-copilot-cli/install-copilot-cli) |
 | Codex (OpenAI) | `powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 \| iex"` | `codex` | [github.com/openai/codex](https://github.com/openai/codex) |
-| Grok Build (xAI) | `irm https://x.ai/cli/install.ps1 \| iex` | `grok` | [docs.x.ai](https://docs.x.ai/build/overview) |
 
 No macOS e no Linux, os guias oficiais trazem o comando de cada um. No Copilot, se ele vem da
 empresa, é a empresa que decide se a CLI está habilitada.
 
-Os quatro leem a pasta de skills que o instalador da cronoaudit criou. Para conferir, abra o
-agente e pergunte *"quais skills você tem?"*. Até agora a cronoaudit foi testada de ponta a ponta
-com o Claude Code e, no modo livre, com o GitHub Copilot CLI (21/11/2026, pela aba do Project). No
-Codex e no Grok Build, a instalação segue o que os fornecedores documentam. O modo secreto só foi
-testado com o Claude Code.
+Os três leem a pasta de skills que o instalador da cronoaudit criou. Para conferir, abra o
+agente e pergunte *"quais skills você tem?"*. A cronoaudit foi testada de ponta a ponta com o
+Claude Code e, no modo livre, com o GitHub Copilot CLI (21/11/2026, pela aba do Project). No
+Codex, a instalação segue o que o fornecedor documenta. O modo secreto foi testado com o
+Claude Code e, em 25/11/2026, com o GitHub Copilot CLI: sem a trava, que só existe no Claude
+Code, ele seguiu as regras escritas da pasta, falou só por códigos, não rodou o motor e pediu
+antes de escrever a síntese.
 
 ### 3. A aba no Project (só para o caminho B)
 
-Veja o [caminho B](#b-pela-aba-cronoaudit-dentro-do-project-windows).
+O instalador do passo 1 oferece a aba quando encontra o MS Project. Os detalhes estão no
+[caminho B](#b-pela-aba-cronoaudit-dentro-do-project-windows).
 
 ## Para onde vão os seus dados
 
@@ -258,7 +242,7 @@ Veja o [caminho B](#b-pela-aba-cronoaudit-dentro-do-project-windows).
   empresa antes de usar um agente com cronograma de contrato.
 - **Se a política não permite agente,** use o caminho C, ou os botões "Sem IA" da aba.
 
-### Modo secreto (experimental)
+### Modo secreto
 
 Para conversar com o agente sem que os nomes, os valores e as datas saiam do seu computador. Pela
 aba do Project, responda **Sim** quando Analisar ou Comparar perguntarem o modo. Sem a aba, você

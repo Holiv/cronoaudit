@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Secret mode, the codec: what an agent reads instead of the schedule. EXPERIMENTAL.
+"""Secret mode, the codec: what an agent reads instead of the schedule.
 
 The engine runs on the real data, unchanged. This module only rewrites its OUTPUT
 (the JSON sidecars and the payload embedded in the HTML report) so that an agent

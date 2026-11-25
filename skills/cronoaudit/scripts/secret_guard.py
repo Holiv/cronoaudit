@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Secret mode, the Claude Code guard: a PreToolUse hook. EXPERIMENTAL.
+"""Secret mode, the Claude Code guard: a PreToolUse hook.
 
 Copied by secret_mode.py into <work folder>/.claude/hooks/ and registered in
 <work folder>/.claude/settings.json. Claude Code sends each tool call as JSON on
@@ -242,12 +242,29 @@ def decide(guard: Guard, call: dict):
         return False, str(exc)
 
 
+def from_claude_code(call) -> bool:
+    """Whether Claude Code itself started this hook.
+
+    Another agent also reads this folder's .claude/settings.json and runs the hook:
+    GitHub Copilot CLI does, and it sends Claude Code's own payload shape, so the payload
+    proves nothing (measured). What Claude Code gives its hooks and other agents do not
+    is its own environment: CLAUDECODE and CLAUDE_CODE_SESSION_ID, present in the hook
+    of a Claude Code started from a clean environment (measured). The guard knows only
+    Claude Code's tools, so anywhere else it steps aside and the folder's written rules
+    are what apply, as the documentation says for every agent but Claude Code."""
+    return bool(os.environ.get("CLAUDECODE") or os.environ.get("CLAUDE_CODE_SESSION_ID"))
+
+
 def main() -> int:
     if len(sys.argv) > 1 and sys.argv[1] in ("-h", "--help"):
         print(__doc__.strip())
         return 0
     try:
         call = json.loads(sys.stdin.read() or "{}")
+        if not isinstance(call, dict):
+            raise ValueError("payload is not an object")
+        if not from_claude_code(call):
+            return 0
         ok, reason = decide(load_guard(), call)
     except Exception as exc:   # fail closed
         ok, reason = False, f"the secret-mode guard could not check this call ({type(exc).__name__})"

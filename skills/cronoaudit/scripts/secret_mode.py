@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Secret mode, the run: real analysis into the vault, coded copy into a work folder.
-EXPERIMENTAL.
 
     python3 review.py delivery.xml --secret                  # run by the PERSON, in a terminal
     python3 review.py previous.xml current.xml --secret      # the cycle, same codes on both
@@ -260,7 +259,7 @@ def python_name() -> str:
 def agent_notes(script_dir: str, lang: str) -> str:
     s = script_dir
     py = python_name()
-    return f"""# cronoaudit: SECRET-mode work folder (experimental)
+    return f"""# cronoaudit: SECRET-mode work folder
 
 Every file here is a CODED copy of a schedule review. Names are tokens (`T·3fa91c`),
 money is multiplied by a secret factor, dates are day counts from a secret origin
@@ -292,12 +291,12 @@ def write_guard(workdir: str) -> None:
     os.makedirs(hooks, exist_ok=True)
     shutil.copyfile(os.path.join(HERE, "secret_guard.py"), os.path.join(hooks, GUARD_NAME))
     _write_json(os.path.join(hooks, GUARD_CONFIG), {
-        "experimental": True,
         # Where the skill's scripts are, so its finishing commands are allowed. The
         # work folder is the hook's own grandparent and is not written anywhere.
         "skill_dir": home_form(SKILL_DIR),
     })
     python = sys.executable.replace("\\", "/")
+    guard_path = os.path.join(workdir, ".claude", "hooks", GUARD_NAME).replace("\\", "/")
     deny_dir = deny_pattern(cfg_mod.config_dir())
     _write_json(os.path.join(workdir, ".claude", "settings.json"), {
         "permissions": {
@@ -315,7 +314,17 @@ def write_guard(workdir: str) -> None:
         "disableClaudeAiConnectors": True,
         "hooks": {"PreToolUse": [{"matcher": GUARD_MATCHER, "hooks": [{
             "type": "command",
-            "command": f'"{python}" "${{CLAUDE_PROJECT_DIR}}/.claude/hooks/{GUARD_NAME}"',
+            # The guard by its full path, not through ${CLAUDE_PROJECT_DIR}: only Claude
+            # Code defines that variable, and another agent reading this file (Copilot
+            # CLI does) ran the command with it empty and blocked every call. The path
+            # is the agent's own working folder, which it already knows.
+            "command": f'"{python}" "{guard_path}"',
+            # GitHub Copilot CLI reads this file too and, on Windows, runs a hook's command
+            # in PowerShell, where a quoted path is a string and not a call: the hook
+            # errored and Copilot, failing closed, denied every call (measured). Copilot
+            # takes this field for Windows instead; Claude Code ignores it and runs the
+            # command above (measured). There the guard sees no Claude Code and steps aside.
+            "powershell": f'& "{python}" "{guard_path}"',
             "timeout": 30,
             # A hook that cannot start (wrong interpreter, PowerShell reading the
             # quoted path as a string) would otherwise let every call through.
@@ -413,7 +422,7 @@ def run(args) -> int:
             coded_files.append(os.path.basename(target))
         script_dir = home_form(HERE)
         _write_json(os.path.join(workdir, MANIFEST), {
-            "cronoaudit": "secret mode", "experimental": True, "run": run_id,
+            "cronoaudit": "secret mode", "run": run_id,
             "lang": lang, "files": coded_files,
             "codes": {"token": "T·3fa91c (letter = kind: " + ", ".join(
                 f"{k} {v}" for k, v in codec_mod.CATEGORIES.items()) + ")",

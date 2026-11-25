@@ -488,7 +488,7 @@ def example_checks() -> dict:
 
 def _example_folder():
     """Where the fictitious example is: CRONOAUDIT_EXAMPLE_DIR, the repository's
-    examples/, or ~/cronoaudit-exemplo. None when it is nowhere."""
+    examples/, or the folder the installer fills. None when it is nowhere."""
     places = (os.environ.get("CRONOAUDIT_EXAMPLE_DIR"),
               os.path.join(os.path.dirname(os.path.dirname(ROOT)), "examples"),
               os.path.join(os.path.expanduser("~"), "cronoaudit-exemplo"))
@@ -594,7 +594,7 @@ def mode_checks() -> list:
             with open(cfg.config_path(), "w", encoding="utf-8") as fh:
                 fh.write("{not json")
             r = engine([xml, "--outdir", out, "--quiet", "--lang", "en"], home)
-            if r.returncode != 0 or "could not be read" not in r.stderr or "FREE mode" not in r.stderr:
+            if r.returncode != 0 or "could not be read" not in r.stderr or "free mode" not in r.stderr:
                 failures.append(f"modes: a corrupt file was not said on stderr before going on: {r.stderr!r}")
             r = engine(["--secret", "off"], home)
             if r.returncode != 0 or not r.stdout.startswith("secret: off\n") or cfg.load()["status"] != "ok":
@@ -651,7 +651,7 @@ def mode_checks() -> list:
                 failures.append("modes: --secret with --free was not rejected")
             # ---- run by a person, --secret runs: a work folder, nothing beside the file
             r = engine([xml, "--secret", "--outdir", out, "--quiet", "--lang", "en"], home)
-            if r.returncode != 0 or not nothing_written() or no_work() or "Work folder" not in r.stdout:
+            if r.returncode != 0 or not nothing_written() or no_work() or "coded copy" not in r.stdout:
                 failures.append(f"modes: --secret run by a person did not write a work folder only: "
                                 f"rc {r.returncode} {r.stderr[-200:]!r}")
 
@@ -693,9 +693,9 @@ def mode_checks() -> list:
             lines = [ln for ln in r.stderr.splitlines() if ln.strip()]
             if r.returncode != 0 or nothing_written():
                 failures.append(f"modes: 'ask' with no terminal blocked the run: rc {r.returncode} {r.stderr!r}")
-            if len(lines) != 1 or "FREE mode" not in lines[0] or "--secret" not in lines[0]:
+            if len(lines) != 1 or "free mode" not in lines[0] or "--secret" not in lines[0]:
                 failures.append(f"modes: 'ask' with no terminal did not say one line on stderr: {lines}")
-            if "FREE mode" in r.stdout:
+            if "free mode" in r.stdout:
                 failures.append("modes: the free-mode line went to stdout, where a program reads results")
             # "off" says nothing at all.
             engine(["--secret", "off"], home)
@@ -723,7 +723,7 @@ def mode_checks() -> list:
                 if got != want or cfg.load()["secret"] != pref:
                     failures.append(f"modes: answering {text!r} gave {got} with preference "
                                     f"{cfg.load()['secret']}, not {want} with {pref}")
-                if "Modo LIVRE: o que o agente ler vai para o provedor dele. Continuar?" not in shown:
+                if "Os resultados vão sair com os dados reais (modo livre)." not in shown:
                     failures.append("modes: the question is not the agreed sentence")
 
             # ---- every mode string exists in both languages, with the same placeholders
@@ -742,7 +742,7 @@ def mode_checks() -> list:
 
 
 # ---------------------------------------------------------------------------
-# Secret mode (experimental). Three properties, each tested here:
+# Secret mode. Three properties, each tested here:
 #   equality  the coded output decodes to exactly what free mode writes
 #   no leak   nothing of the file's identity is anywhere in the work folder
 #   guard     the Claude Code hook allows the session's work and blocks the rest
@@ -1135,8 +1135,8 @@ def secret_unit_checks() -> list:
             failures.append(f"narrative: the planned figure's source was {'not ' if want else ''}"
                             f"named with an S-curve {sc_inputs}: {v}")
     # The checks below run on the fictitious example. A repository checkout has it in
-    # examples/; an installed copy does not. Without it they are skipped, and the run
-    # says so, instead of failing on a missing file.
+    # examples/; an installed copy has it where the installer puts it. Without it they
+    # are skipped, and the run says so, instead of failing on a missing file.
     _exdir = _example_folder()
     if not _exdir:
         print("  (the fictitious example is not on this machine: its checks are skipped)")
@@ -1209,11 +1209,50 @@ def secret_unit_checks() -> list:
                 _txt = fh.read()
             _found = set(re.findall(r'"version": "([0-9.]+)"', _txt)) | \
                 set(re.findall(r"badge/vers(?:ion|%C3%A3o)-([0-9.]+)-", _txt)) | \
-                set(re.findall(r"cronoaudit ([0-9.]+) is installed", _txt))
+                set(re.findall(r"cronoaudit ([0-9.]+) (?:is installed|instalada)", _txt))
             if _found != {_ver}:
                 _where[_f] = sorted(_found)
     if _where:
         failures.append(f"version: {_ver} in VERSION, other versions in {_where}")
+    # The add-in module is imported into Project's VBA. It is Windows-1252 with CRLF; what
+    # goes to a cmd window or to an agent's command line (the echo texts and the short
+    # requests) stays ASCII, because cmd's code page would mangle an accent. Every agent
+    # the tab can detect has a way to be opened.
+    _bas_p = os.path.join(_repo, "msproject", "Cronoaudit.bas")
+    if os.path.exists(_bas_p):
+        with open(_bas_p, "rb") as fh:
+            _b = fh.read()
+        try:
+            _t = _b.decode("cp1252")
+        except UnicodeDecodeError:
+            _t = ""
+        _cmd_lines = [l for l in _t.split("\r\n") if "echo" in l or "Const PROMPT" in l]
+        _i = _t.find("Private Function AbrirAgente(")
+        _body = _t[_i:_t.find("End Function", _i)]
+        _m = re.search(r'Const AGENTES As String = "([^"]+)"', _t)
+        _agents = _m.group(1).split() if _m else ["?"]
+        _opened = set(re.findall(r'"([a-z]+)"', " ".join(l for l in _body.splitlines()
+                                                          if l.strip().startswith("Case "))))
+        _closed = [a for a in _agents if a not in _opened]
+        if not _t or _b.count(b"\n") != _b.count(b"\r\n") or _closed \
+                or any(ord(c) > 127 for l in _cmd_lines for c in l):
+            failures.append(f"add-in: Cronoaudit.bas is not cp1252 with CRLF, a cmd or prompt line is "
+                            f"not ASCII, or agents have no way to be opened: {_closed}")
+    if _exdir:
+        # The example in one command: --example runs the fictitious motorway in free mode, with
+        # no question, and writes the comparison; with no example on the machine it says so.
+        _exo = tempfile.mkdtemp()
+        _env = dict(os.environ, CRONOAUDIT_EXAMPLE_DIR=_exdir, CRONOAUDIT_OPEN="0")
+        _r = subprocess.run([sys.executable, os.path.join(HERE, "review.py"), "--example", "--outdir", _exo],
+                            capture_output=True, text=True, env=_env, stdin=subprocess.DEVNULL)
+        _cyc_html = os.path.join(_exo, "rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html")
+        _r2 = subprocess.run([sys.executable, os.path.join(HERE, "review.py"), "--example", "--outdir", _exo],
+                             capture_output=True, text=True, stdin=subprocess.DEVNULL,
+                             env=dict(_env, CRONOAUDIT_EXAMPLE_DIR=tempfile.mkdtemp()))
+        if _r.returncode != 0 or not os.path.exists(_cyc_html) or _cyc_html not in _r.stdout \
+                or _r2.returncode == 0 or "cronoaudit" not in _r2.stderr + _r2.stdout:
+            failures.append(f"example: --example did not run the example, or ran without one: "
+                            f"{_r.returncode} {_r.stderr[-200:]} / {_r2.returncode}")
     # The Agent Skills format caps the description at 1024 characters. Claude Code takes a
     # longer one; GitHub Copilot CLI refused the whole skill ("Skill description must be at
     # most 1024 characters", measured), so it was never found there.
@@ -1387,15 +1426,44 @@ def guard_checks() -> list:
             ok, _reason = g.decide(guard, {"tool_name": tool, "tool_input": inp, "cwd": work})
             if ok != want:
                 failures.append(f"guard: {label} was {'allowed' if ok else 'blocked'}")
-        # The hook as Claude Code runs it: exit 2 blocks, 0 allows, garbage blocks.
+        # The hook as Claude Code runs it: exit 2 blocks, 0 allows, garbage blocks. Claude
+        # Code gives its hooks its own environment; another agent does not.
+        _agent_vars = ("CLAUDECODE", "CLAUDE_CODE_SESSION_ID", "CLAUDE_PROJECT_DIR", "CLAUDE_CODE_CHILD_SESSION")
+        _env_other = {k: v for k, v in os.environ.items() if k not in _agent_vars}
+        _env_claude = dict(_env_other, CLAUDECODE="1", CLAUDE_CODE_SESSION_ID="test", CLAUDE_PROJECT_DIR=work)
         for payload, code in ((json.dumps({"tool_name": "Read", "tool_input": {"file_path": original},
                                            "cwd": work}), 2),
                               (json.dumps({"tool_name": "Bash", "tool_input": {"command": "ls"},
                                            "cwd": work}), 0),
                               ("not json", 2)):
-            r = subprocess.run([sys.executable, hook], input=payload, capture_output=True, text=True)
+            r = subprocess.run([sys.executable, hook], input=payload, capture_output=True, text=True,
+                               env=_env_claude)
             if r.returncode != code:
                 failures.append(f"guard: the hook process returned {r.returncode}, not {code}")
+        # Another agent reading .claude/settings.json (GitHub Copilot CLI, measured) runs the
+        # hook without Claude Code's environment, even with Claude Code's payload shape: the
+        # guard steps aside there. The same payloads inside Claude Code are checked.
+        _other = json.dumps({"tool_name": "Read", "tool_input": {"file_path": original}, "cwd": work})
+        r1 = subprocess.run([sys.executable, hook], input=_other, capture_output=True, text=True, env=_env_other)
+        r2 = subprocess.run([sys.executable, hook], input=_other, capture_output=True, text=True, env=_env_claude)
+        r3 = subprocess.run([sys.executable, hook], input="[1, 2]", capture_output=True, text=True, env=_env_other)
+        if (r1.returncode, r2.returncode, r3.returncode) != (0, 2, 2):
+            failures.append(f"guard: outside Claude Code it did not step aside, or inside it did not check: "
+                            f"{r1.returncode} {r2.returncode} {r3.returncode}")
+        # The command as written in settings.json runs with no variable to expand, and
+        # Copilot on Windows gets a PowerShell call of the same two paths.
+        _hook_cfg = json.load(open(os.path.join(work, ".claude", "settings.json"),
+                                   encoding="utf-8"))["hooks"]["PreToolUse"][0]["hooks"][0]
+        _cmd = _hook_cfg["command"]
+        if _hook_cfg.get("powershell") != "& " + _cmd:
+            failures.append(f"guard: the PowerShell form of the hook is missing or differs: {_hook_cfg}")
+        if os.name != "nt":
+            r4 = subprocess.run(_cmd, shell=True, capture_output=True, text=True, env=_env_claude,
+                                input=json.dumps({"tool_name": "Read", "tool_input": {"file_path": original},
+                                                  "cwd": work}))
+            if "CLAUDE_PROJECT_DIR" in _cmd or r4.returncode != 2:
+                failures.append(f"guard: the settings command needs a variable or did not block: "
+                                f"{r4.returncode} {r4.stderr[-150:]}")
         settings = json.load(open(os.path.join(work, ".claude", "settings.json"), encoding="utf-8"))
         deny = settings["permissions"]["deny"]
         if not {"PowerShell", "Monitor"} <= set(deny) or \
@@ -2714,7 +2782,7 @@ def run_all() -> int:
     print("         without reading inside an agent and run a coded work folder outside one;")
     print("         'ask' with no terminal says one line on stderr and goes on")
     t = secret["totals"]
-    print(f"  secret (experimental): {t['runs']} runs, {t['sidecars']} sidecars and {t['reports']} reports "
+    print(f"  secret: {t['runs']} runs, {t['sidecars']} sidecars and {t['reports']} reports "
           f"decoded equal to free mode ({t['values_equal']} report values); no text, date, money or")
     print("         path of the files in any work folder or output; guard allows the session's work and")
     print("         blocks the vault, the original, interpreters, variables and `text`; collisions resolved")

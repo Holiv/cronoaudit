@@ -26,7 +26,7 @@ python3 $S/review.py Rev03.mpp --from-project           # Rev03 against the one 
 python3 $S/review.py delivery.xml --profile profile.json --group-by DISCIPLINA
 python3 $S/review.py delivery.xml --outdir reports --lang pt
 python3 $S/review.py --config                           # the stored mode preference
-python3 $S/review.py delivery.xml --secret              # secret mode, experimental: run by the PERSON
+python3 $S/review.py delivery.xml --secret              # secret mode: run by the PERSON
 ```
 
 Settle the mode first: see "Modes: free and secret" below.
@@ -50,7 +50,7 @@ before opening an XML, a report or a JSON sidecar, and before quoting anything f
 
 - **Free mode.** You read the schedule and the results, and whatever you read goes to your
   provider, under the person's or the company's account.
-- **Secret mode (experimental).** You never see the schedule. The person runs the engine
+- **Secret mode.** You never see the schedule. The person runs the engine
   on their own machine; it writes the real report into a local vault and a **coded copy**
   into a work folder, and you are started inside that folder. Names are tokens (`T·3fa91c`),
   money is multiplied by a secret factor, dates are day counts from a secret origin
@@ -95,7 +95,7 @@ before opening an XML, a report or a JSON sidecar, and before quoting anything f
 
 ### In a secret session
 
-- **Say this first, in the person's language:** "Secret mode (experimental). Refer to
+- **Say this first, in the person's language:** "Secret mode. Refer to
   activities by code or by row ID: anything you type with a real name or value goes to the
   AI service."
 - Read only the files in the folder; `cronoaudit-secret.json` lists them, the code shapes
@@ -136,7 +136,7 @@ it; the work folder holds only coded files (a leak test proves it on every test 
 only its own folder, run only the finishing scripts and use only the tools a secret session
 needs: PowerShell, connectors, Artifact, SendUserFile, SendMessage and any tool not on its
 list are closed. The hook is a tripwire, not a
-sandbox. **For Copilot CLI, Codex and Grok nothing is enforced yet**: the folder carries
+sandbox. **For Copilot CLI and Codex nothing is enforced**: the folder carries
 the same rules as instructions only. Coding lowers what leaves the machine; it does not
 make the structure, durations and row IDs anonymous, and it does not replace the company's
 own policy on AI services. If the person asks whether their data is protected, say exactly
