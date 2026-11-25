@@ -1253,6 +1253,17 @@ def secret_unit_checks() -> list:
                 or _r2.returncode == 0 or "cronoaudit" not in _r2.stderr + _r2.stdout:
             failures.append(f"example: --example did not run the example, or ran without one: "
                             f"{_r.returncode} {_r.stderr[-200:]} / {_r2.returncode}")
+    # The Agent Skills format caps the description at 1024 characters. Claude Code takes a
+    # longer one; GitHub Copilot CLI refused the whole skill ("Skill description must be at
+    # most 1024 characters", measured), so it was never found there.
+    with open(os.path.join(ROOT, "SKILL.md"), encoding="utf-8") as fh:
+        _front = fh.read().split("---")[1]
+    _desc = next((l[len("description:"):].strip() for l in _front.splitlines()
+                  if l.startswith("description:")), "")
+    _name = next((l[len("name:"):].strip() for l in _front.splitlines() if l.startswith("name:")), "")
+    if not _desc or len(_desc) > 1024 or _name != "cronoaudit":
+        failures.append(f"skill: the description has {len(_desc)} characters (at most 1024), "
+                        f"or the name is not cronoaudit: {_name!r}")
     # The synthesis is written only when asked, in a secret session as in free mode: an
     # agent wrote one unasked in the Windows test of 23/11/2026.
     with open(os.path.join(ROOT, "SKILL.md"), encoding="utf-8") as fh:
