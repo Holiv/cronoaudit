@@ -319,6 +319,12 @@ def write_guard(workdir: str) -> None:
             # CLI does) ran the command with it empty and blocked every call. The path
             # is the agent's own working folder, which it already knows.
             "command": f'"{python}" "{guard_path}"',
+            # GitHub Copilot CLI reads this file too and, on Windows, runs a hook's command
+            # in PowerShell, where a quoted path is a string and not a call: the hook
+            # errored and Copilot, failing closed, denied every call (measured). Copilot
+            # takes this field for Windows instead; Claude Code ignores it and runs the
+            # command above (measured). There the guard sees no Claude Code and steps aside.
+            "powershell": f'& "{python}" "{guard_path}"',
             "timeout": 30,
             # A hook that cannot start (wrong interpreter, PowerShell reading the
             # quoted path as a string) would otherwise let every call through.

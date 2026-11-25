@@ -1450,9 +1450,13 @@ def guard_checks() -> list:
         if (r1.returncode, r2.returncode, r3.returncode) != (0, 2, 2):
             failures.append(f"guard: outside Claude Code it did not step aside, or inside it did not check: "
                             f"{r1.returncode} {r2.returncode} {r3.returncode}")
-        # The command as written in settings.json runs with no variable to expand.
-        _cmd = json.load(open(os.path.join(work, ".claude", "settings.json"),
-                              encoding="utf-8"))["hooks"]["PreToolUse"][0]["hooks"][0]["command"]
+        # The command as written in settings.json runs with no variable to expand, and
+        # Copilot on Windows gets a PowerShell call of the same two paths.
+        _hook_cfg = json.load(open(os.path.join(work, ".claude", "settings.json"),
+                                   encoding="utf-8"))["hooks"]["PreToolUse"][0]["hooks"][0]
+        _cmd = _hook_cfg["command"]
+        if _hook_cfg.get("powershell") != "& " + _cmd:
+            failures.append(f"guard: the PowerShell form of the hook is missing or differs: {_hook_cfg}")
         if os.name != "nt":
             r4 = subprocess.run(_cmd, shell=True, capture_output=True, text=True, env=_env_claude,
                                 input=json.dumps({"tool_name": "Read", "tool_input": {"file_path": original},
