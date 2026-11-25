@@ -223,7 +223,9 @@ Os três leem a pasta de skills que o instalador da cronoaudit criou. Para confe
 agente e pergunte *"quais skills você tem?"*. A cronoaudit foi testada de ponta a ponta com o
 Claude Code e, no modo livre, com o GitHub Copilot CLI (21/11/2026, pela aba do Project). No
 Codex, a instalação segue o que o fornecedor documenta. O modo secreto foi testado com o
-Claude Code.
+Claude Code e, em 25/11/2026, com o GitHub Copilot CLI: sem a trava, que só existe no Claude
+Code, ele seguiu as regras escritas da pasta, falou só por códigos, não rodou o motor e pediu
+antes de escrever a síntese.
 
 ### 3. A aba no Project (só para o caminho B)
 

@@ -221,7 +221,10 @@ the company decides whether the CLI is enabled.
 All three read the skill folder the cronoaudit installer created. To check, start the agent and ask
 *"what skills do you have?"*. cronoaudit has been tested end to end with Claude Code and, in free
 mode, with GitHub Copilot CLI (21/11/2026, from the Project tab). For Codex, the installation
-follows what the provider documents. Secret mode has been tested with Claude Code.
+follows what the provider documents. Secret mode has been tested with Claude Code and, on
+25/11/2026, with GitHub Copilot CLI: without the lock, which exists only in Claude Code, it
+followed the folder's written rules, spoke only in codes, did not run the engine and asked before
+writing the synthesis.
 
 ### 3. The tab in Project (only for path B)
 
