@@ -243,12 +243,16 @@ def decide(guard: Guard, call: dict):
 
 
 def from_claude_code(call) -> bool:
-    """Claude Code gives every hook CLAUDE_PROJECT_DIR and a PreToolUse payload with
-    `tool_name`. Another agent that also reads this folder's .claude/settings.json
-    (GitHub Copilot CLI does: measured) runs the hook without either. The
-    guard knows only Claude Code's tools, so there it steps aside and the folder's written
-    rules are what apply, as the documentation says for every agent but Claude Code."""
-    return bool(os.environ.get("CLAUDE_PROJECT_DIR")) or "tool_name" in call
+    """Whether Claude Code itself started this hook.
+
+    Another agent also reads this folder's .claude/settings.json and runs the hook:
+    GitHub Copilot CLI does, and it sends Claude Code's own payload shape, so the payload
+    proves nothing (measured). What Claude Code gives its hooks and other agents do not
+    is its own environment: CLAUDECODE and CLAUDE_CODE_SESSION_ID, present in the hook
+    of a Claude Code started from a clean environment (measured). The guard knows only
+    Claude Code's tools, so anywhere else it steps aside and the folder's written rules
+    are what apply, as the documentation says for every agent but Claude Code."""
+    return bool(os.environ.get("CLAUDECODE") or os.environ.get("CLAUDE_CODE_SESSION_ID"))
 
 
 def main() -> int:

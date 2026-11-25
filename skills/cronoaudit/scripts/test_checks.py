@@ -1426,23 +1426,26 @@ def guard_checks() -> list:
             ok, _reason = g.decide(guard, {"tool_name": tool, "tool_input": inp, "cwd": work})
             if ok != want:
                 failures.append(f"guard: {label} was {'allowed' if ok else 'blocked'}")
-        # The hook as Claude Code runs it: exit 2 blocks, 0 allows, garbage blocks.
+        # The hook as Claude Code runs it: exit 2 blocks, 0 allows, garbage blocks. Claude
+        # Code gives its hooks its own environment; another agent does not.
+        _agent_vars = ("CLAUDECODE", "CLAUDE_CODE_SESSION_ID", "CLAUDE_PROJECT_DIR", "CLAUDE_CODE_CHILD_SESSION")
+        _env_other = {k: v for k, v in os.environ.items() if k not in _agent_vars}
+        _env_claude = dict(_env_other, CLAUDECODE="1", CLAUDE_CODE_SESSION_ID="test", CLAUDE_PROJECT_DIR=work)
         for payload, code in ((json.dumps({"tool_name": "Read", "tool_input": {"file_path": original},
                                            "cwd": work}), 2),
                               (json.dumps({"tool_name": "Bash", "tool_input": {"command": "ls"},
                                            "cwd": work}), 0),
                               ("not json", 2)):
-            r = subprocess.run([sys.executable, hook], input=payload, capture_output=True, text=True)
+            r = subprocess.run([sys.executable, hook], input=payload, capture_output=True, text=True,
+                               env=_env_claude)
             if r.returncode != code:
                 failures.append(f"guard: the hook process returned {r.returncode}, not {code}")
-        # Another agent reading .claude/settings.json (GitHub Copilot CLI, measured) runs
-        # the hook with its own payload and no CLAUDE_PROJECT_DIR: the guard steps aside
-        # there. The same payload inside Claude Code is checked, and blocked.
-        _other = json.dumps({"toolName": "view", "toolArgs": {"path": original}, "cwd": work})
-        _env_other = {k: v for k, v in os.environ.items() if k != "CLAUDE_PROJECT_DIR"}
+        # Another agent reading .claude/settings.json (GitHub Copilot CLI, measured) runs the
+        # hook without Claude Code's environment, even with Claude Code's payload shape: the
+        # guard steps aside there. The same payloads inside Claude Code are checked.
+        _other = json.dumps({"tool_name": "Read", "tool_input": {"file_path": original}, "cwd": work})
         r1 = subprocess.run([sys.executable, hook], input=_other, capture_output=True, text=True, env=_env_other)
-        r2 = subprocess.run([sys.executable, hook], input=_other, capture_output=True, text=True,
-                            env=dict(_env_other, CLAUDE_PROJECT_DIR=work))
+        r2 = subprocess.run([sys.executable, hook], input=_other, capture_output=True, text=True, env=_env_claude)
         r3 = subprocess.run([sys.executable, hook], input="[1, 2]", capture_output=True, text=True, env=_env_other)
         if (r1.returncode, r2.returncode, r3.returncode) != (0, 2, 2):
             failures.append(f"guard: outside Claude Code it did not step aside, or inside it did not check: "
@@ -1451,7 +1454,7 @@ def guard_checks() -> list:
         _cmd = json.load(open(os.path.join(work, ".claude", "settings.json"),
                               encoding="utf-8"))["hooks"]["PreToolUse"][0]["hooks"][0]["command"]
         if os.name != "nt":
-            r4 = subprocess.run(_cmd, shell=True, capture_output=True, text=True, env=_env_other,
+            r4 = subprocess.run(_cmd, shell=True, capture_output=True, text=True, env=_env_claude,
                                 input=json.dumps({"tool_name": "Read", "tool_input": {"file_path": original},
                                                   "cwd": work}))
             if "CLAUDE_PROJECT_DIR" in _cmd or r4.returncode != 2:
