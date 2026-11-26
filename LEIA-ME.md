@@ -2,6 +2,8 @@
 
 [English](README.md)
 
+![cronoaudit: auditoria de cronograma de obra, no seu computador. Um motor local em Python e uma Agent Skill para o seu agente de IA.](docs/img/pt/banner.png)
+
 ![versão](https://img.shields.io/badge/vers%C3%A3o-1.0.0-1f6feb)
 ![licença](https://img.shields.io/badge/licen%C3%A7a-Apache%202.0-555)
 ![Windows · macOS · Linux](https://img.shields.io/badge/Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-roda-2ea043)
@@ -18,6 +20,12 @@ mensagem de erro:
 É uma Agent Skill de código aberto, com um motor local em Python. Você usa do jeito que preferir:
 conversando com um agente de IA, clicando num botão dentro do MS Project, ou rodando sem IA
 nenhuma. O motor roda no seu computador e não envia nada.
+
+<p align="center">
+<img src="docs/img/pt/demo.gif" alt="Demonstração: um comando compara duas revisões do exemplo fictício no terminal, depois o relatório abre e rola dos alertas até as cobranças para a contratada" width="640">
+</p>
+
+*A saída real do terminal e o relatório real do exemplo fictício, reproduzidos como animação.*
 
 ![O topo de um relatório de comparação: quatro alertas e o término do projeto 21 dias depois](docs/img/pt/hero.png)
 
@@ -117,27 +125,18 @@ o outro método de valor agregado informaria:
 **o que cobrar da contratada**. No exemplo são 12 cobranças, cada uma citando a sua linha:
 
 <p align="center">
-<img src="docs/img/pt/ask.png" alt="O que cobrar da contratada: 12 cobranças em três grupos" width="640">
+<img src="docs/img/pt/ask.png" alt="O que cobrar da contratada: 12 cobranças em três grupos" width="720">
 </p>
 
 ## Escolha como usar
+
+![Como funciona: o motor mede no seu computador e não envia nada. Você chega a ele conversando com um agente de IA por meio da skill, clicando num botão dentro do MS Project, ou sem IA nenhuma.](docs/img/pt/how-it-works.png)
 
 | Você prefere | Caminho | O que você faz |
 |---|---|---|
 | Conversar com uma IA e deixar ela fazer tudo | **A. Pelo agente** | *"analise o Rev04.mpp"* |
 | Um botão, dentro do próprio Project | **B. Pela aba Cronoaudit** | clica em **Relatório** ou **Analisar** |
 | Sem IA, ou num computador sem agente | **C. Pelo motor** | um comando, sobre o XML exportado |
-
-```mermaid
-flowchart LR
-    C[Cronograma no MS Project] -->|A. você pede ao agente| AG(Agente de IA)
-    C -->|B. botão na aba Cronoaudit| PJ(MS Project)
-    C -->|C. Salvar como XML| M
-    AG --> M[Motor da cronoaudit<br/>no seu computador]
-    PJ --> M
-    M --> R[Relatório no navegador]
-    M -->|números medidos| AG
-```
 
 Nos três, o motor roda no seu computador e não envia nada. O que muda é quem conversa com você.
 

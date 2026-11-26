@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>cronoaudit README demo stage</title>
+<!--
+  The stage of the README demo. One fixed-size stage, driven by window.seek(t). No CSS
+  transitions or timers: every property is computed from t, so a frame is the same
+  every time it is rendered. demo.js supplies the real material through window.init():
+    term     lines the engine printed, cmd the command that was run
+    anchors  positions of the report's own elements, measured in the live iframe
+  Two scenes: the terminal (3.3 s to 10.7 s) and the report (10.7 s to 26.4 s).
+  Identity: cronoaudit's guide (docs/guia/style.css).
+-->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Source+Code+Pro:wght@400;500;600&display=swap');
+:root{
+  --paper:#FBF9F4; --ink:#17191C; --ink2:#3F434A; --ink3:#6B6E74; --ref:#B3261E;
+  --grid:#ECE7DB; --line:#CFC9BC; --wash:#F1EDE2; --white:#FFFFFF;
+  --ref-soft:#F6E3E0; --term:#17191C; --term2:#22252A; --term-ink:#E9E4D8; --term-dim:#8D9097; --term-hi:#F4A79D;
+  --display:"Fraunces",Georgia,serif;
+  --sans:"Source Sans 3",Helvetica,Arial,sans-serif;
+  --mono:"Source Code Pro",Menlo,monospace;
+  --W:1080px; --H:1350px; --pad:48px; --capH:292px; --footH:70px;
+  --capF:68px; --subF:36px; --termF:24px; --k:1.75;
+}
+body.f11{ --H:1080px; --capH:226px; --footH:60px; --capF:58px; --subF:31px; --termF:21px; }
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper)}
+#stage{position:relative;width:var(--W);height:var(--H);overflow:hidden;background-color:var(--paper);color:var(--ink);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:27px 27px;background-position:12px 6px;font-family:var(--sans)}
+.scene{position:absolute;inset:0;opacity:0}
+.cap{position:absolute;left:var(--pad);right:var(--pad);top:44px;height:var(--capH);display:flex;flex-direction:column;justify-content:center}
+.cap h2{font:600 var(--capF)/1.07 var(--display);font-variation-settings:"opsz" 110;letter-spacing:-.022em;margin:0;text-wrap:balance}
+.cap h2 em{font-style:italic;font-weight:400;color:var(--ref)}
+.cap p{font:500 var(--subF)/1.2 var(--sans);color:var(--ink2);margin:14px 0 0}
+.cap p b{color:var(--ref);font-weight:600}
+.rule{display:block;width:76px;height:4px;background:var(--ref);margin:0 0 20px}
+.body{position:absolute;left:var(--pad);right:var(--pad);top:calc(44px + var(--capH) + 14px);bottom:var(--footH)}
+#foot{position:absolute;left:var(--pad);right:var(--pad);bottom:22px;display:flex;justify-content:space-between;
+  font:500 19px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)}
+#foot b{color:var(--ink);font-weight:600}
+.mark{display:inline-block;font:600 17px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;padding:7px 10px;border-radius:2px;white-space:nowrap}
+.mark.real{background:var(--term-ink);color:var(--term)}
+.mark.ink{background:var(--ink);color:var(--paper)}
+.mark.ref{background:var(--ref);color:#fff}
+
+/* ---- 1. hook ---- */
+
+/* ---- 2. terminal ---- */
+.term{position:absolute;inset:0;background:var(--term);border-radius:12px;overflow:hidden;box-shadow:0 1px 0 rgba(0,0,0,.25),0 22px 40px -26px rgba(23,25,28,.7);display:flex;flex-direction:column}
+.term .bar{display:flex;align-items:center;gap:9px;background:var(--term2);padding:14px 20px;flex:none}
+.term .bar i{width:15px;height:15px;border-radius:50%;background:#4A4E55;display:block}
+.term .bar i:first-child{background:var(--ref)}
+.term .bar span.t{font:500 18px var(--mono);letter-spacing:.08em;color:var(--term-dim);margin-left:10px;text-transform:uppercase}
+.term .bar .mark{margin-left:auto}
+.term .scr{position:relative;flex:1;overflow:hidden}
+.term pre{position:absolute;left:0;right:0;top:0;margin:0;padding:20px 26px 22px;font:400 var(--termF)/1.5 var(--mono);color:var(--term-ink);white-space:pre-wrap;word-break:break-word}
+.term pre .l{display:none;padding-left:2ch;text-indent:-2ch;min-height:1.5em}
+.term pre .l.on{display:block}
+.term pre .cmd{color:#fff;font-weight:600}
+.term pre .cmd .ps{color:var(--term-hi)}
+.term pre .cmd .cur{display:inline-block;width:.6em;height:1.05em;background:var(--term-ink);vertical-align:-.18em;margin-left:2px}
+.term pre .hl{background:rgba(244,167,157,.17);color:#fff;box-shadow:-26px 0 0 rgba(244,167,157,.17),26px 0 0 rgba(244,167,157,.17)}
+
+/* ---- 3. the report, live in an iframe ---- */
+.browser{position:absolute;inset:0;border:2px solid var(--ink);border-radius:12px;overflow:hidden;background:#EDEFEE;box-shadow:0 22px 40px -28px rgba(23,25,28,.7);display:flex;flex-direction:column}
+.browser .bar{display:flex;align-items:center;gap:9px;background:var(--wash);border-bottom:1px solid var(--line);padding:12px 18px;flex:none}
+.browser .bar i{width:15px;height:15px;border-radius:50%;background:var(--line);display:block}
+.browser .bar .url{flex:1;margin-left:10px;background:var(--white);border:1px solid var(--line);border-radius:18px;padding:5px 18px;font:400 18px var(--mono);color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.browser .shot{position:relative;flex:1;overflow:hidden}
+.browser iframe{position:absolute;left:0;top:0;border:0;transform-origin:0 0;transform:scale(var(--k));background:#EDEFEE}
+#hl{position:absolute;inset:0;pointer-events:none}
+#hl div{position:absolute;border:5px solid var(--ref);border-radius:10px;box-shadow:0 0 0 9999px rgba(23,25,28,.0);opacity:0}
+
+/* ---- 4. two parts ---- */
+
+/* ---- 5. secret mode ---- */
+
+/* ---- 6. close ---- */
+</style>
+</head>
+<body>
+<div id="stage">
+
+
+  <!-- 2. one command: the engine's real output, played back -->
+  <section class="scene" id="s2" data-a="3.3" data-b="10.7">
+    <div class="cap" data-in="3.3" data-out="7.3"><span class="rule"></span><h2>One command compares the <em>two revisions.</em></h2></div>
+    <div class="cap" data-in="7.3" data-out="10.7"><span class="rule"></span><h2>The engine runs <em>on your machine.</em> Nothing is sent.</h2></div>
+    <div class="body">
+      <div class="term">
+        <div class="bar"><i></i><i></i><i></i><span class="t">terminal</span><span class="mark real">real output</span></div>
+        <div class="scr"><pre id="pre"></pre></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. the report: the engine's own HTML, scrolled -->
+  <section class="scene" id="s3" data-a="10.7" data-b="26.4">
+    <div class="cap" data-in="10.7" data-out="13.3"><span class="rule"></span><h2>The report opens in your browser, <em>warnings first.</em></h2></div>
+    <div class="cap" data-in="13.3" data-out="16.6"><span class="rule"></span><h2>The project finish moved: <em>+21 days.</em></h2></div>
+    <div class="cap" data-in="16.6" data-out="19.9"><span class="rule"></span><h2>The past was <em>rewritten</em> on 2 activities.</h2></div>
+    <div class="cap" data-in="19.9" data-out="23.7"><span class="rule"></span><h2>Progress moved 4.57 points. The work adds up to 4.90.</h2><p>The <b>0.33</b> difference is named, line by line.</p></div>
+    <div class="cap" data-in="23.7" data-out="26.4"><span class="rule"></span><h2><em>12 questions</em> to ask the contractor, already written.</h2></div>
+    <div class="body">
+      <div class="browser">
+        <div class="bar"><i></i><i></i><i></i><span class="url" id="url"></span><span class="mark ink">real report</span></div>
+        <div class="shot" id="shot"><iframe id="rep" scrolling="yes"></iframe><div id="hl"></div></div>
+      </div>
+    </div>
+  </section>
+
+
+
+
+  <div id="foot"><span><b>cronoaudit 1.0</b></span><span>fictitious example data</span></div>
+</div>
+
+<script>
+"use strict";
+const DURATION = 41, FPS = 30, T0 = 3.3, T1 = 26.4;   // the two scenes kept here
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const ease = x => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const out3 = x => 1 - Math.pow(1 - clamp(x), 3);
+const lerp = (a, b, x) => a + (b - a) * x;
+const QS = new URLSearchParams(location.search);
+const fmt = QS.get("fmt") === "11" ? "11" : "45";
+const LANG = QS.get("lang") === "pt" ? "pt" : "en";
+document.body.className = "f" + fmt;
+document.documentElement.lang = LANG === "pt" ? "pt-BR" : "en";
+
+/* The markup above is the English version. For pt-BR every drawn text is replaced
+   here (selector -> HTML); the terminal, the report and the secret-mode captures
+   come from the engine's own Portuguese output, supplied by render.js. */
+const PT = {
+  "#s2 > .cap:nth-child(1) h2": "Um comando compara as <em>duas revisões.</em>",
+  "#s2 > .cap:nth-child(2) h2": "O motor roda <em>na sua máquina.</em> Nada é enviado.",
+  "#s2 .mark": "saída real",
+  "#s3 > .cap:nth-child(1) h2": "O relatório abre no navegador, <em>alertas primeiro.</em>",
+  "#s3 > .cap:nth-child(2) h2": "O término do projeto mudou: <em>+21 dias.</em>",
+  "#s3 > .cap:nth-child(3) h2": "O passado foi <em>reescrito</em> em 2 atividades.",
+  "#s3 > .cap:nth-child(4) h2": "O avanço andou 4,57 pontos. O trabalho soma 4,90.",
+  "#s3 > .cap:nth-child(4) p": "A diferença de <b>0,33</b> tem nome, linha por linha.",
+  "#s3 > .cap:nth-child(5) h2": "<em>12 perguntas</em> para a contratada, já escritas.",
+  "#s3 .mark": "relatório real",
+  "#foot span:nth-child(2)": "dados de exemplo fictício",
+};
+if (LANG === "pt") for (const [sel, html] of Object.entries(PT)) {
+  const e = document.querySelector(sel); if (!e) throw new Error("no element for " + sel); e.innerHTML = html;
+}
+/* the engine's own words, per output language, for the lines the terminal holds on */
+const TERMRX = LANG === "pt"
+  ? { hl: [/^\s+avanço\s/, /^\s+movimento\s/, /decomposição soma/, /resíduo não explicado/, /^\s+término do projeto:/, /^\s+PASSADO REESCRITO/, /^\s+report\s.*cycle\.html$/],
+      cycle: /^=== Comparação de ciclo/, past: /^\s+PASSADO REESCRITO/ }
+  : { hl: [/^\s+earned\s/, /^\s+movement\s/, /decomposition sums/, /unexplained residue/, /^\s+project finish:/, /^\s+PAST REWRITTEN/, /^\s+report\s.*cycle\.html$/],
+      cycle: /^=== Cycle comparison/, past: /^\s+PAST REWRITTEN/ };
+
+let D = null;          // data from render.js
+let TERM = null;       // terminal timeline
+let STOPS = null;      // report scroll keyframes
+const K = 1.75;        // report zoom: 560 CSS px wide, drawn 980 px wide
+
+/* piecewise-linear keyframes [[t, v], ...] with an easing per segment */
+function key(ks, t, e = ease) {
+  if (t <= ks[0][0]) return ks[0][1];
+  for (let i = 1; i < ks.length; i++)
+    if (t <= ks[i][0]) return lerp(ks[i - 1][1], ks[i][1], e((t - ks[i - 1][0]) / (ks[i][0] - ks[i - 1][0])));
+  return ks[ks.length - 1][1];
+}
+
+window.init = function (data) {
+  D = data;
+  // ---- terminal: the command line, then the captured lines, one element each
+  const pre = $("#pre");
+  const c = document.createElement("div"); c.className = "l cmd on";
+  c.innerHTML = '<span class="ps">~/cronoaudit-exemplo $ </span><span id="typed"></span><span class="cur" id="cur"></span>';
+  pre.appendChild(c);
+  const HL = TERMRX.hl;
+  D.term.forEach(line => {
+    const d = document.createElement("div"); d.className = "l" + (HL.some(r => r.test(line)) ? " hl" : "");
+    d.textContent = line; pre.appendChild(d);
+  });
+  const idx = r => D.term.findIndex(l => r.test(l));
+  const iCycle = idx(TERMRX.cycle), iPast = idx(TERMRX.past), n = D.term.length;
+  if (iCycle < 0 || iPast < 0) throw new Error("terminal capture: expected lines not found");
+  TERM = { lines: $$("#pre .l:not(.cmd)"), n: [[4.75, 0], [5.6, iCycle], [7.7, iPast + 1], [9.2, iPast + 1], [10.15, n]] };
+  // ---- report
+  $("#url").textContent = "~/cronoaudit-exemplo/" + D.reportName;
+  layout();
+};
+
+/* sizes that depend on the format; called again once the report was measured */
+window.layout = function (anchors) {
+  const shot = $("#shot"), rep = $("#rep");
+  const vw = shot.clientWidth / K, vh = shot.clientHeight / K;
+  rep.style.width = vw + "px"; rep.style.height = vh + "px";
+  if (!anchors) return { vw: Math.round(vw), vh };
+  D.a = anchors;
+  const A = anchors, top = (r, pad) => Math.max(0, r.y - pad);
+  const y1 = top(A.warn, 14);                                   // the four warnings
+  const y2 = A.finish.y + A.finish.h / 2 - vh * .42;            // the +21 card
+  const y3 = top(A.past, 18);                                   // C5 past rewritten
+  const y4 = A.tiles.y + A.tiles.h + 18 - vh;                   // progress tiles at the bottom edge
+  const y5 = top(A.ask, 14);                                    // what to ask the contractor
+  STOPS = [[10.7, 0], [11.5, 0], [13.0, y1], [13.5, y1], [14.3, y2], [16.6, y2], [17.5, y3], [19.2, y3], [19.8, y3 + 60],
+           [20.7, y4], [23.7, y4], [24.6, y5], [26.4, y5 + 150]];
+  const hl = $("#hl"); hl.innerHTML = "";
+  [["finish", 14.4, 16.5], ["pastHead", 17.6, 19.8], ["tileMov", 20.8, 23.6], ["tileExp", 21.5, 23.6], ["tileRes", 22.2, 23.6]].forEach(([k, a, b]) => {
+    const d = document.createElement("div"); d.dataset.k = k; d.dataset.a = a; d.dataset.b = b; hl.appendChild(d);
+  });
+  return { vw: Math.round(vw), vh };
+};
+
+function fade(t, a, b, fi = .32, fo = .26) {
+  let o = 1;
+  if (a != null && a > 0) o *= out3((t - a) / fi);
+  if (b != null && b < DURATION) o *= 1 - clamp((t - (b - fo)) / fo);
+  return o;
+}
+
+/* Draw the whole stage at time t. Returns the scroll position the report must be at. */
+window.seek = function (t) {
+  $$(".scene").forEach(s => {
+    const a = +s.dataset.a, b = +s.dataset.b;
+    const o = t < a || t >= b ? 0 : fade(t, a, b);
+    s.style.opacity = o; s.style.visibility = o > 0 ? "visible" : "hidden";
+  });
+  $$("[data-in]").forEach(e => {
+    const a = +e.dataset.in, b = e.dataset.out ? +e.dataset.out : null;
+    const oi = a > 0 ? out3((t - a) / .4) : 1;
+    const o = t < a ? 0 : oi * (b == null ? 1 : 1 - clamp((t - (b - .25)) / .25));
+    e.style.opacity = o; e.style.transform = `translateY(${(1 - oi) * 16}px)`;
+  });
+
+  // ---- terminal
+  if (TERM) {
+    const typed = D.cmd.slice(0, Math.round(key([[3.6, 0], [4.6, D.cmd.length]], t, x => x)));
+    $("#typed").textContent = typed;
+    $("#cur").style.display = t < 4.7 ? "inline-block" : "none";
+    const n = Math.floor(key(TERM.n, t, x => x));
+    TERM.lines.forEach((l, i) => l.classList.toggle("on", i < n));
+    const pre = $("#pre"), scr = pre.parentElement;
+    pre.style.top = Math.min(0, scr.clientHeight - pre.offsetHeight) + "px";
+  }
+
+  // ---- report scroll and outlines
+  let y = 0;
+  if (STOPS) {
+    y = Math.max(0, key(STOPS, t));
+    $$("#hl div").forEach(d => {
+      const r = D.a[d.dataset.k], a = +d.dataset.a, b = +d.dataset.b, m = d.dataset.k === "finish" ? 20 : 5;
+      d.style.left = (r.x * K - m) + "px"; d.style.top = ((r.y - y) * K - m) + "px";
+      d.style.width = (r.w * K + 2 * m) + "px"; d.style.height = (r.h * K + 2 * m) + "px";
+      d.style.opacity = t < a || t > b ? 0 : out3((t - a) / .3) * (1 - clamp((t - (b - .2)) / .2));
+    });
+  }
+
+  return y;
+};
+window.META = { T0, T1 };
+</script>
+</body>
+</html>

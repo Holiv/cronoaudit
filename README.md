@@ -2,6 +2,8 @@
 
 [Português](LEIA-ME.md)
 
+![cronoaudit: an audit for construction schedules that runs on your computer. A local Python engine, plus an Agent Skill for your AI agent.](docs/img/en/banner.png)
+
 ![version](https://img.shields.io/badge/version-1.0.0-1f6feb)
 ![licence](https://img.shields.io/badge/licence-Apache%202.0-555)
 ![Windows · macOS · Linux](https://img.shields.io/badge/Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-runs-2ea043)
@@ -18,6 +20,12 @@ than an error message:
 It is an open-source Agent Skill with a local Python engine. Use it the way you prefer: talking to
 an AI agent, clicking a button inside MS Project, or with no AI at all. The engine runs on your
 computer and sends nothing.
+
+<p align="center">
+<img src="docs/img/en/demo.gif" alt="Demo: one command compares two revisions of the fictitious example in a terminal, then the report opens and scrolls from the warnings to the questions for the contractor" width="640">
+</p>
+
+*The real terminal output and the real report for the fictitious example, replayed as an animation.*
 
 ![The top of a comparison report: four warnings and the project finish 21 days later](docs/img/en/hero.png)
 
@@ -119,27 +127,18 @@ quality; and at the end, **what to ask the contractor**. In the example that is 
 one citing its row:
 
 <p align="center">
-<img src="docs/img/en/ask.png" alt="What to ask the contractor: 12 questions in three groups" width="640">
+<img src="docs/img/en/ask.png" alt="What to ask the contractor: 12 questions in three groups" width="720">
 </p>
 
 ## Choose how to use it
+
+![How it works: the engine measures on your computer and sends nothing. You reach it by talking to an AI agent through the skill, by clicking a button inside MS Project, or with no AI at all.](docs/img/en/how-it-works.png)
 
 | You prefer | Path | What you do |
 |---|---|---|
 | To talk to an AI and let it do everything | **A. Through the agent** | *"analyse Rev04.mpp"* |
 | A button, inside Project itself | **B. The Cronoaudit tab** | click **Relatório** or **Analisar** |
 | No AI, or a computer with no agent | **C. The engine** | one command, on the exported XML |
-
-```mermaid
-flowchart LR
-    C[Schedule in MS Project] -->|A. you ask the agent| AG(AI agent)
-    C -->|B. button on the Cronoaudit tab| PJ(MS Project)
-    C -->|C. Save As XML| M
-    AG --> M[cronoaudit engine<br/>on your computer]
-    PJ --> M
-    M --> R[Report in the browser]
-    M -->|measured figures| AG
-```
 
 In all three, the engine runs on your computer and sends nothing. What changes is who talks to you.
 
