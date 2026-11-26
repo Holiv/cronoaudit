@@ -368,6 +368,9 @@ cópia codificada, e a trava foi conferida chamando-a direto, sem o agente.
   tarefas, vínculos, as onze linhas de base, calendários e campos personalizados. Quando você passa
   um `.mpp`, a cronoaudit pede ao Project instalado para fazer essa exportação. O processo completo,
   em inglês: [`skills/cronoaudit/references/usage.md`](skills/cronoaudit/references/usage.md).
+- **Guia ilustrado**, 23 páginas: a revisão 4 da rodovia fictícia contada do começo ao fim, com o
+  terminal, o relatório, o modo secreto lado a lado e uma folha de consulta.
+  [Português](docs/guia/guia-pt.pdf), [inglês](docs/guia/guia-en.pdf).
 - **Manual**, dezessete capítulos, da versão 1.0: [português](docs/manual/manual-pt.pdf),
   [inglês](docs/manual/manual-en.pdf). Conceitos, instalação, os três caminhos, a aba do Project,
   os modos livre e secreto, o relatório seção por seção e como reproduzir cada número.

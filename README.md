@@ -368,6 +368,9 @@ the coded copy, and the guard was checked by calling it directly, without the ag
   carries tasks, links, the eleven baselines, calendars and custom fields. When you pass a `.mpp`,
   cronoaudit asks the installed Project to do that export. The whole process:
   [`skills/cronoaudit/references/usage.md`](skills/cronoaudit/references/usage.md).
+- **Illustrated guide**, 23 pages: revision 4 of the fictitious motorway told from start to finish,
+  with the terminal, the report, secret mode side by side and a one-page cheat sheet.
+  [English](docs/guia/guia-en.pdf), [Português](docs/guia/guia-pt.pdf).
 - **Manual**, seventeen chapters, for version 1.0: [English](docs/manual/manual-en.pdf),
   [Português](docs/manual/manual-pt.pdf). Concepts, installation, the three paths, the Project tab,
   free and secret modes, the report section by section and how to reproduce every figure.
