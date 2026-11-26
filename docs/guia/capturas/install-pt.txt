@@ -1,0 +1,24 @@
+instalada em ~/.claude/skills/cronoaudit
+instalada em ~/.agents/skills/cronoaudit
+exemplo fictício em ~/cronoaudit-exemplo
+Conferindo...
+Autoteste: tudo certo.
+  report   ~/cronoaudit-exemplo/rodovia-ficticia-rev04-review.html
+  data     ~/cronoaudit-exemplo/rodovia-ficticia-rev04-review.json
+  report   ~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html
+  data     ~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.json
+O relatório do exemplo abriu no navegador. Ele também está em:
+  ~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html
+
+Pronto: cronoaudit 1.0.0 instalada.
+
+Com um agente de IA (Claude Code, Copilot ou Codex): abra o agente na pasta do cronograma e
+peça, por exemplo, "analise o Rev04.xml". Se ele já estava aberto, feche e abra de novo.
+
+Sem agente, num terminal:
+    python3 ~/.claude/skills/cronoaudit/scripts/review.py cronograma.xml
+O cronograma vem do MS Project: Arquivo > Salvar como > Formato XML.
+Para ver o exemplo de novo:
+    python3 ~/.claude/skills/cronoaudit/scripts/review.py --example
+
+Manual e ajuda: https://github.com/Holiv/cronoaudit

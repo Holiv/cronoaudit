@@ -1,0 +1,2231 @@
+{
+  "status_date": "2026-10-30T17:00:00",
+  "milestones": [
+    {
+      "id": 9,
+      "name": "Conclusão do Viaduto V-01 (km 27+400)",
+      "finish": "2027-08-26",
+      "baseline_finish": "2027-07-23",
+      "variance_days": 25,
+      "deadline": "2027-08-27T17:00:00",
+      "critical": true,
+      "chain_length": 14,
+      "reaches_started": true,
+      "open_end": false,
+      "origin": {
+        "id": 148,
+        "name": "Estacas escavadas — encontros (E1 e E2)",
+        "variance_days": 11,
+        "started": true
+      },
+      "amplifier": {
+        "id": 157,
+        "name": "Lançamento das vigas pré-moldadas",
+        "added_days": 8
+      },
+      "chain": [
+        {
+          "id": 9,
+          "uid": 9,
+          "name": "Conclusão do Viaduto V-01 (km 27+400)",
+          "finish": "2027-08-26",
+          "baseline_finish": "2027-07-23",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 167,
+          "uid": 167,
+          "name": "Prova de carga e inspeção final",
+          "finish": "2027-08-26",
+          "baseline_finish": "2027-07-23",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 166,
+          "uid": 166,
+          "name": "Sinalização e iluminação do viaduto",
+          "finish": "2027-08-19",
+          "baseline_finish": "2027-07-16",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 165,
+          "uid": 165,
+          "name": "Impermeabilização e pavimentação do tabuleiro",
+          "finish": "2027-08-09",
+          "baseline_finish": "2027-07-06",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 162,
+          "uid": 162,
+          "name": "Juntas de dilatação",
+          "finish": "2027-07-28",
+          "baseline_finish": "2027-06-24",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 161,
+          "uid": 161,
+          "name": "Barreiras New Jersey e guarda-corpos",
+          "finish": "2027-07-20",
+          "baseline_finish": "2027-06-16",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 159,
+          "uid": 159,
+          "name": "Concretagem do tabuleiro",
+          "finish": "2027-06-29",
+          "baseline_finish": "2027-05-25",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 158,
+          "uid": 158,
+          "name": "Pré-lajes e armação do tabuleiro",
+          "finish": "2027-06-03",
+          "baseline_finish": "2027-04-29",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 157,
+          "uid": 157,
+          "name": "Lançamento das vigas pré-moldadas",
+          "finish": "2027-04-23",
+          "baseline_finish": "2027-03-16",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 154,
+          "uid": 154,
+          "name": "Aparelhos de apoio",
+          "finish": "2027-03-23",
+          "baseline_finish": "2027-02-22",
+          "variance_days": 17,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 152,
+          "uid": 152,
+          "name": "Travessas",
+          "finish": "2027-03-11",
+          "baseline_finish": "2027-02-10",
+          "variance_days": 17,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 151,
+          "uid": 151,
+          "name": "Pilares",
+          "finish": "2027-01-20",
+          "baseline_finish": "2026-12-16",
+          "variance_days": 17,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 149,
+          "uid": 149,
+          "name": "Blocos de coroamento",
+          "finish": "2026-11-10",
+          "baseline_finish": "2026-10-16",
+          "variance_days": 17,
+          "started": true,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 148,
+          "uid": 148,
+          "name": "Estacas escavadas — encontros (E1 e E2)",
+          "finish": "2026-09-21",
+          "baseline_finish": "2026-09-04",
+          "variance_days": 11,
+          "started": true,
+          "finished": true,
+          "critical": false
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Termo de Recebimento Provisório (TRP)",
+      "finish": "2027-10-25",
+      "baseline_finish": "2027-09-20",
+      "variance_days": 25,
+      "deadline": "2027-11-03T17:00:00",
+      "critical": true,
+      "chain_length": 19,
+      "reaches_started": true,
+      "open_end": false,
+      "origin": {
+        "id": 148,
+        "name": "Estacas escavadas — encontros (E1 e E2)",
+        "variance_days": 11,
+        "started": true
+      },
+      "amplifier": {
+        "id": 157,
+        "name": "Lançamento das vigas pré-moldadas",
+        "added_days": 8
+      },
+      "chain": [
+        {
+          "id": 10,
+          "uid": 10,
+          "name": "Termo de Recebimento Provisório (TRP)",
+          "finish": "2027-10-25",
+          "baseline_finish": "2027-09-20",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 174,
+          "uid": 174,
+          "name": "Desmobilização do canteiro e da usina",
+          "finish": "2027-10-25",
+          "baseline_finish": "2027-09-20",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 173,
+          "uid": 173,
+          "name": "Correção de pendências da vistoria",
+          "finish": "2027-10-01",
+          "baseline_finish": "2027-08-27",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 172,
+          "uid": 172,
+          "name": "Vistoria final com a fiscalização",
+          "finish": "2027-09-17",
+          "baseline_finish": "2027-08-13",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 169,
+          "uid": 169,
+          "name": "Limpeza final e recomposição das áreas de apoio",
+          "finish": "2027-09-10",
+          "baseline_finish": "2027-08-06",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 9,
+          "uid": 9,
+          "name": "Conclusão do Viaduto V-01 (km 27+400)",
+          "finish": "2027-08-26",
+          "baseline_finish": "2027-07-23",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 167,
+          "uid": 167,
+          "name": "Prova de carga e inspeção final",
+          "finish": "2027-08-26",
+          "baseline_finish": "2027-07-23",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 166,
+          "uid": 166,
+          "name": "Sinalização e iluminação do viaduto",
+          "finish": "2027-08-19",
+          "baseline_finish": "2027-07-16",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 165,
+          "uid": 165,
+          "name": "Impermeabilização e pavimentação do tabuleiro",
+          "finish": "2027-08-09",
+          "baseline_finish": "2027-07-06",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 162,
+          "uid": 162,
+          "name": "Juntas de dilatação",
+          "finish": "2027-07-28",
+          "baseline_finish": "2027-06-24",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 161,
+          "uid": 161,
+          "name": "Barreiras New Jersey e guarda-corpos",
+          "finish": "2027-07-20",
+          "baseline_finish": "2027-06-16",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 159,
+          "uid": 159,
+          "name": "Concretagem do tabuleiro",
+          "finish": "2027-06-29",
+          "baseline_finish": "2027-05-25",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 158,
+          "uid": 158,
+          "name": "Pré-lajes e armação do tabuleiro",
+          "finish": "2027-06-03",
+          "baseline_finish": "2027-04-29",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 157,
+          "uid": 157,
+          "name": "Lançamento das vigas pré-moldadas",
+          "finish": "2027-04-23",
+          "baseline_finish": "2027-03-16",
+          "variance_days": 25,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 154,
+          "uid": 154,
+          "name": "Aparelhos de apoio",
+          "finish": "2027-03-23",
+          "baseline_finish": "2027-02-22",
+          "variance_days": 17,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 152,
+          "uid": 152,
+          "name": "Travessas",
+          "finish": "2027-03-11",
+          "baseline_finish": "2027-02-10",
+          "variance_days": 17,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 151,
+          "uid": 151,
+          "name": "Pilares",
+          "finish": "2027-01-20",
+          "baseline_finish": "2026-12-16",
+          "variance_days": 17,
+          "started": false,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 149,
+          "uid": 149,
+          "name": "Blocos de coroamento",
+          "finish": "2026-11-10",
+          "baseline_finish": "2026-10-16",
+          "variance_days": 17,
+          "started": true,
+          "finished": false,
+          "critical": true,
+          "via": "FS"
+        },
+        {
+          "id": 148,
+          "uid": 148,
+          "name": "Estacas escavadas — encontros (E1 e E2)",
+          "finish": "2026-09-21",
+          "baseline_finish": "2026-09-04",
+          "variance_days": 11,
+          "started": true,
+          "finished": true,
+          "critical": false
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Liberação ao tráfego — Segmento 3 — km 24+000 ao km 30+000",
+      "finish": "2027-05-12",
+      "baseline_finish": "2027-04-26",
+      "variance_days": 13,
+      "deadline": "2027-05-17T17:00:00",
+      "critical": false,
+      "chain_length": 11,
+      "reaches_started": true,
+      "open_end": false,
+      "origin": {
+        "id": 87,
+        "name": "Aterro compactado — Seg. 3",
+        "variance_days": 7,
+        "started": true
+      },
+      "amplifier": {
+        "id": 92,
+        "name": "Drenos profundos longitudinais — Seg. 3",
+        "added_days": 6
+      },
+      "chain": [
+        {
+          "id": 7,
+          "uid": 7,
+          "name": "Liberação ao tráfego — Segmento 3 — km 24+000 ao km 30+000",
+          "finish": "2027-05-12",
+          "baseline_finish": "2027-04-26",
+          "variance_days": 13,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 106,
+          "uid": 105,
+          "name": "Defensas metálicas e barreiras — Seg. 3",
+          "finish": "2027-05-12",
+          "baseline_finish": "2027-04-26",
+          "variance_days": 13,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 102,
+          "uid": 101,
+          "name": "Acostamentos e acabamento de bordos — Seg. 3",
+          "finish": "2027-04-26",
+          "baseline_finish": "2027-04-07",
+          "variance_days": 13,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 101,
+          "uid": 100,
+          "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 3",
+          "finish": "2027-04-09",
+          "baseline_finish": "2027-03-19",
+          "variance_days": 13,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 100,
+          "uid": 99,
+          "name": "Fresagem e reperfilagem da pista existente — Seg. 3",
+          "finish": "2027-03-10",
+          "baseline_finish": "2027-02-16",
+          "variance_days": 13,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 99,
+          "uid": 98,
+          "name": "CBUQ — camada de ligação (binder) — Seg. 3",
+          "finish": "2027-02-10",
+          "baseline_finish": "2027-01-14",
+          "variance_days": 13,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 98,
+          "uid": 97,
+          "name": "Imprimação — Seg. 3",
+          "finish": "2027-01-08",
+          "baseline_finish": "2026-12-11",
+          "variance_days": 13,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 97,
+          "uid": 96,
+          "name": "Base de brita graduada simples (BGS) — Seg. 3",
+          "finish": "2026-12-23",
+          "baseline_finish": "2026-12-01",
+          "variance_days": 13,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "SS"
+        },
+        {
+          "id": 96,
+          "uid": 95,
+          "name": "Sub-base granular — Seg. 3",
+          "finish": "2026-12-11",
+          "baseline_finish": "2026-11-23",
+          "variance_days": 13,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 92,
+          "uid": 91,
+          "name": "Drenos profundos longitudinais — Seg. 3",
+          "finish": "2026-11-12",
+          "baseline_finish": "2026-10-26",
+          "variance_days": 13,
+          "started": true,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 87,
+          "uid": 86,
+          "name": "Aterro compactado — Seg. 3",
+          "finish": "2026-10-09",
+          "baseline_finish": "2026-10-02",
+          "variance_days": 7,
+          "started": true,
+          "finished": true,
+          "critical": false
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Liberação ao tráfego — Segmento 4 — km 30+000 ao km 36+000",
+      "finish": "2027-07-20",
+      "baseline_finish": "2027-07-02",
+      "variance_days": 13,
+      "deadline": "2027-07-23T17:00:00",
+      "critical": false,
+      "chain_length": 14,
+      "reaches_started": true,
+      "open_end": false,
+      "origin": {
+        "id": 133,
+        "name": "Acostamentos e acabamento de bordos — Seg. 4",
+        "variance_days": 13,
+        "started": false
+      },
+      "amplifier": {
+        "id": 133,
+        "name": "Acostamentos e acabamento de bordos — Seg. 4",
+        "added_days": 22
+      },
+      "chain": [
+        {
+          "id": 8,
+          "uid": 8,
+          "name": "Liberação ao tráfego — Segmento 4 — km 30+000 ao km 36+000",
+          "finish": "2027-07-20",
+          "baseline_finish": "2027-07-02",
+          "variance_days": 13,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 137,
+          "uid": 137,
+          "name": "Defensas metálicas e barreiras — Seg. 4",
+          "finish": "2027-07-20",
+          "baseline_finish": "2027-07-02",
+          "variance_days": 13,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 133,
+          "uid": 133,
+          "name": "Acostamentos e acabamento de bordos — Seg. 4",
+          "finish": "2027-07-02",
+          "baseline_finish": "2027-06-16",
+          "variance_days": 13,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 132,
+          "uid": 132,
+          "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 4",
+          "finish": "2027-06-18",
+          "baseline_finish": "2027-06-30",
+          "variance_days": -9,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS",
+          "baseline_moved_days": 28.0
+        },
+        {
+          "id": 131,
+          "uid": 131,
+          "name": "Fresagem e reperfilagem da pista existente — Seg. 4",
+          "finish": "2027-05-24",
+          "baseline_finish": "2027-05-06",
+          "variance_days": 13,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 130,
+          "uid": 130,
+          "name": "CBUQ — camada de ligação (binder) — Seg. 4",
+          "finish": "2027-05-03",
+          "baseline_finish": "2027-04-14",
+          "variance_days": 13,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 101,
+          "uid": 100,
+          "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 3",
+          "finish": "2027-04-09",
+          "baseline_finish": "2027-03-19",
+          "variance_days": 13,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 100,
+          "uid": 99,
+          "name": "Fresagem e reperfilagem da pista existente — Seg. 3",
+          "finish": "2027-03-10",
+          "baseline_finish": "2027-02-16",
+          "variance_days": 13,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 99,
+          "uid": 98,
+          "name": "CBUQ — camada de ligação (binder) — Seg. 3",
+          "finish": "2027-02-10",
+          "baseline_finish": "2027-01-14",
+          "variance_days": 13,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 98,
+          "uid": 97,
+          "name": "Imprimação — Seg. 3",
+          "finish": "2027-01-08",
+          "baseline_finish": "2026-12-11",
+          "variance_days": 13,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 97,
+          "uid": 96,
+          "name": "Base de brita graduada simples (BGS) — Seg. 3",
+          "finish": "2026-12-23",
+          "baseline_finish": "2026-12-01",
+          "variance_days": 13,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "SS"
+        },
+        {
+          "id": 96,
+          "uid": 95,
+          "name": "Sub-base granular — Seg. 3",
+          "finish": "2026-12-11",
+          "baseline_finish": "2026-11-23",
+          "variance_days": 13,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 92,
+          "uid": 91,
+          "name": "Drenos profundos longitudinais — Seg. 3",
+          "finish": "2026-11-12",
+          "baseline_finish": "2026-10-26",
+          "variance_days": 13,
+          "started": true,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 87,
+          "uid": 86,
+          "name": "Aterro compactado — Seg. 3",
+          "finish": "2026-10-09",
+          "baseline_finish": "2026-10-02",
+          "variance_days": 7,
+          "started": true,
+          "finished": true,
+          "critical": false
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Liberação ao tráfego — Segmento 1 — km 12+000 ao km 18+000",
+      "finish": "2027-03-25",
+      "baseline_finish": "2027-03-16",
+      "variance_days": 7,
+      "deadline": "2027-04-09T17:00:00",
+      "critical": false,
+      "chain_length": 9,
+      "reaches_started": true,
+      "open_end": false,
+      "origin": {
+        "id": 34,
+        "name": "Sub-base granular — Seg. 1",
+        "variance_days": 6,
+        "started": true
+      },
+      "amplifier": null,
+      "chain": [
+        {
+          "id": 5,
+          "uid": 5,
+          "name": "Liberação ao tráfego — Segmento 1 — km 12+000 ao km 18+000",
+          "finish": "2027-03-25",
+          "baseline_finish": "2027-03-16",
+          "variance_days": 7,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 44,
+          "uid": 44,
+          "name": "Defensas metálicas e barreiras — Seg. 1",
+          "finish": "2027-03-25",
+          "baseline_finish": "2027-03-16",
+          "variance_days": 7,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 40,
+          "uid": 40,
+          "name": "Acostamentos e acabamento de bordos — Seg. 1",
+          "finish": "2027-03-04",
+          "baseline_finish": "2027-02-22",
+          "variance_days": 7,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 39,
+          "uid": 39,
+          "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 1",
+          "finish": "2027-02-12",
+          "baseline_finish": "2027-01-29",
+          "variance_days": 7,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 38,
+          "uid": 38,
+          "name": "Fresagem e reperfilagem da pista existente — Seg. 1",
+          "finish": "2027-01-07",
+          "baseline_finish": "2026-12-22",
+          "variance_days": 7,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 37,
+          "uid": 37,
+          "name": "CBUQ — camada de ligação (binder) — Seg. 1",
+          "finish": "2026-12-04",
+          "baseline_finish": "2026-11-25",
+          "variance_days": 7,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 36,
+          "uid": 36,
+          "name": "Imprimação — Seg. 1",
+          "finish": "2026-11-11",
+          "baseline_finish": "2026-11-03",
+          "variance_days": 7,
+          "started": true,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 35,
+          "uid": 35,
+          "name": "Base de brita graduada simples (BGS) — Seg. 1",
+          "finish": "2026-11-06",
+          "baseline_finish": "2026-10-23",
+          "variance_days": 10,
+          "started": true,
+          "finished": false,
+          "critical": false,
+          "via": "SS"
+        },
+        {
+          "id": 34,
+          "uid": 34,
+          "name": "Sub-base granular — Seg. 1",
+          "finish": "2026-10-22",
+          "baseline_finish": "2026-10-15",
+          "variance_days": 6,
+          "started": true,
+          "finished": true,
+          "critical": false
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Liberação ao tráfego — Segmento 2 — km 18+000 ao km 24+000",
+      "finish": "2027-06-07",
+      "baseline_finish": "2027-05-28",
+      "variance_days": 7,
+      "deadline": "2027-06-18T17:00:00",
+      "critical": false,
+      "chain_length": 12,
+      "reaches_started": true,
+      "open_end": false,
+      "origin": {
+        "id": 34,
+        "name": "Sub-base granular — Seg. 1",
+        "variance_days": 6,
+        "started": true
+      },
+      "amplifier": null,
+      "chain": [
+        {
+          "id": 6,
+          "uid": 6,
+          "name": "Liberação ao tráfego — Segmento 2 — km 18+000 ao km 24+000",
+          "finish": "2027-06-07",
+          "baseline_finish": "2027-05-28",
+          "variance_days": 7,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 76,
+          "uid": 75,
+          "name": "Defensas metálicas e barreiras — Seg. 2",
+          "finish": "2027-06-07",
+          "baseline_finish": "2027-05-28",
+          "variance_days": 7,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 72,
+          "uid": 71,
+          "name": "Acostamentos e acabamento de bordos — Seg. 2",
+          "finish": "2027-05-19",
+          "baseline_finish": "2027-05-11",
+          "variance_days": 7,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 71,
+          "uid": 70,
+          "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 2",
+          "finish": "2027-05-05",
+          "baseline_finish": "2027-04-27",
+          "variance_days": 7,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 70,
+          "uid": 69,
+          "name": "Fresagem e reperfilagem da pista existente — Seg. 2",
+          "finish": "2027-04-08",
+          "baseline_finish": "2027-03-31",
+          "variance_days": 7,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 69,
+          "uid": 68,
+          "name": "CBUQ — camada de ligação (binder) — Seg. 2",
+          "finish": "2027-03-12",
+          "baseline_finish": "2027-03-02",
+          "variance_days": 7,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 39,
+          "uid": 39,
+          "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 1",
+          "finish": "2027-02-12",
+          "baseline_finish": "2027-01-29",
+          "variance_days": 7,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 38,
+          "uid": 38,
+          "name": "Fresagem e reperfilagem da pista existente — Seg. 1",
+          "finish": "2027-01-07",
+          "baseline_finish": "2026-12-22",
+          "variance_days": 7,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 37,
+          "uid": 37,
+          "name": "CBUQ — camada de ligação (binder) — Seg. 1",
+          "finish": "2026-12-04",
+          "baseline_finish": "2026-11-25",
+          "variance_days": 7,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 36,
+          "uid": 36,
+          "name": "Imprimação — Seg. 1",
+          "finish": "2026-11-11",
+          "baseline_finish": "2026-11-03",
+          "variance_days": 7,
+          "started": true,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 35,
+          "uid": 35,
+          "name": "Base de brita graduada simples (BGS) — Seg. 1",
+          "finish": "2026-11-06",
+          "baseline_finish": "2026-10-23",
+          "variance_days": 10,
+          "started": true,
+          "finished": false,
+          "critical": false,
+          "via": "SS"
+        },
+        {
+          "id": 34,
+          "uid": 34,
+          "name": "Sub-base granular — Seg. 1",
+          "finish": "2026-10-22",
+          "baseline_finish": "2026-10-15",
+          "variance_days": 6,
+          "started": true,
+          "finished": true,
+          "critical": false
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Conclusão da terraplenagem — todos os segmentos",
+      "finish": "2027-01-11",
+      "baseline_finish": "2027-01-05",
+      "variance_days": 4,
+      "deadline": "2027-02-16T17:00:00",
+      "critical": false,
+      "chain_length": 4,
+      "reaches_started": true,
+      "open_end": false,
+      "origin": {
+        "id": 117,
+        "name": "Aterro compactado — Seg. 4",
+        "variance_days": 5,
+        "started": true
+      },
+      "amplifier": null,
+      "chain": [
+        {
+          "id": 4,
+          "uid": 4,
+          "name": "Conclusão da terraplenagem — todos os segmentos",
+          "finish": "2027-01-11",
+          "baseline_finish": "2027-01-05",
+          "variance_days": 4,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 118,
+          "uid": 117,
+          "name": "Regularização e compactação do subleito — Seg. 4",
+          "finish": "2027-01-11",
+          "baseline_finish": "2027-01-05",
+          "variance_days": 5,
+          "started": false,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 117,
+          "uid": 116,
+          "name": "Aterro compactado — Seg. 4",
+          "finish": "2026-12-18",
+          "baseline_finish": "2026-12-11",
+          "variance_days": 5,
+          "started": true,
+          "finished": false,
+          "critical": false,
+          "via": "FS"
+        },
+        {
+          "id": 122,
+          "uid": 122,
+          "name": "Bueiro celular de concreto — Seg. 4",
+          "finish": "2026-10-20",
+          "baseline_finish": "2026-10-15",
+          "variance_days": 4,
+          "started": true,
+          "finished": true,
+          "critical": false
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "milestones": 7,
+    "with_origin": 7,
+    "open_ended_chains": 0,
+    "origins": [
+      {
+        "id": 148,
+        "name": "Estacas escavadas — encontros (E1 e E2)",
+        "milestones": 2
+      },
+      {
+        "id": 34,
+        "name": "Sub-base granular — Seg. 1",
+        "milestones": 2
+      },
+      {
+        "id": 87,
+        "name": "Aterro compactado — Seg. 3",
+        "milestones": 1
+      },
+      {
+        "id": 133,
+        "name": "Acostamentos e acabamento de bordos — Seg. 4",
+        "milestones": 1
+      },
+      {
+        "id": 117,
+        "name": "Aterro compactado — Seg. 4",
+        "milestones": 1
+      }
+    ]
+  },
+  "calendars": [
+    {
+      "uid": "1",
+      "name": "Padrão da Obra (5 dias)",
+      "years": [
+        {
+          "year": 2026,
+          "activity_days": 1242,
+          "reserve_days": 19
+        },
+        {
+          "year": 2027,
+          "activity_days": 1471,
+          "reserve_days": 32
+        }
+      ],
+      "flags": []
+    },
+    {
+      "uid": "2",
+      "name": "Terraplenagem (6 dias)",
+      "years": [
+        {
+          "year": 2026,
+          "activity_days": 678,
+          "reserve_days": 21
+        },
+        {
+          "year": 2027,
+          "activity_days": 63,
+          "reserve_days": 40
+        }
+      ],
+      "flags": []
+    }
+  ],
+  "execution": {
+    "out_of_sequence_by_month": [
+      {
+        "period": "2026-10",
+        "pairs": 1,
+        "ignored": 0
+      }
+    ],
+    "start_slippage": {
+      "sample": 45,
+      "p20": 0,
+      "p50": 0,
+      "p80": 3,
+      "started_early": 9,
+      "started_late": 13
+    }
+  },
+  "cycle": {
+    "float_consumed": [
+      {
+        "id": 63,
+        "name": "Sarjetas e valetas de proteção — Seg. 2",
+        "group": "4",
+        "float_before": 54.0,
+        "float_now": 29.0,
+        "consumed": 25.0
+      },
+      {
+        "id": 55,
+        "name": "Aterro compactado — Seg. 2",
+        "group": "4",
+        "float_before": 33.0,
+        "float_now": 21.0,
+        "consumed": 12.0
+      },
+      {
+        "id": 56,
+        "name": "Regularização e compactação do subleito — Seg. 2",
+        "group": "4",
+        "float_before": 39.0,
+        "float_now": 27.0,
+        "consumed": 12.0
+      },
+      {
+        "id": 7,
+        "name": "Liberação ao tráfego — Segmento 3 — km 24+000 ao km 30+000",
+        "group": "1",
+        "float_before": 13.0,
+        "float_now": 3.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 8,
+        "name": "Liberação ao tráfego — Segmento 4 — km 30+000 ao km 36+000",
+        "group": "1",
+        "float_before": 13.0,
+        "float_now": 3.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 62,
+        "name": "Drenos profundos longitudinais — Seg. 2",
+        "group": "4",
+        "float_before": 27.0,
+        "float_now": 17.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 66,
+        "name": "Sub-base granular — Seg. 2",
+        "group": "4",
+        "float_before": 27.0,
+        "float_now": 17.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 67,
+        "name": "Base de brita graduada simples (BGS) — Seg. 2",
+        "group": "4",
+        "float_before": 27.0,
+        "float_now": 17.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 68,
+        "name": "Imprimação — Seg. 2",
+        "group": "4",
+        "float_before": 27.0,
+        "float_now": 17.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 92,
+        "name": "Drenos profundos longitudinais — Seg. 3",
+        "group": "5",
+        "float_before": 13.0,
+        "float_now": 3.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 93,
+        "name": "Sarjetas e valetas de proteção — Seg. 3",
+        "group": "5",
+        "float_before": 40.0,
+        "float_now": 30.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 94,
+        "name": "Meios-fios e descidas d'água — Seg. 3",
+        "group": "5",
+        "float_before": 13.0,
+        "float_now": 3.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 96,
+        "name": "Sub-base granular — Seg. 3",
+        "group": "5",
+        "float_before": 13.0,
+        "float_now": 3.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 97,
+        "name": "Base de brita graduada simples (BGS) — Seg. 3",
+        "group": "5",
+        "float_before": 13.0,
+        "float_now": 3.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 98,
+        "name": "Imprimação — Seg. 3",
+        "group": "5",
+        "float_before": 13.0,
+        "float_now": 3.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 99,
+        "name": "CBUQ — camada de ligação (binder) — Seg. 3",
+        "group": "5",
+        "float_before": 13.0,
+        "float_now": 3.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 100,
+        "name": "Fresagem e reperfilagem da pista existente — Seg. 3",
+        "group": "5",
+        "float_before": 13.0,
+        "float_now": 3.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 101,
+        "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 3",
+        "group": "5",
+        "float_before": 13.0,
+        "float_now": 3.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 102,
+        "name": "Acostamentos e acabamento de bordos — Seg. 3",
+        "group": "5",
+        "float_before": 13.0,
+        "float_now": 3.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 104,
+        "name": "Sinalização horizontal — Seg. 3",
+        "group": "5",
+        "float_before": 22.0,
+        "float_now": 12.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 105,
+        "name": "Sinalização vertical e pórticos — Seg. 3",
+        "group": "5",
+        "float_before": 25.0,
+        "float_now": 15.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 106,
+        "name": "Defensas metálicas e barreiras — Seg. 3",
+        "group": "5",
+        "float_before": 13.0,
+        "float_now": 3.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 107,
+        "name": "Tachas e dispositivos auxiliares — Seg. 3",
+        "group": "5",
+        "float_before": 22.0,
+        "float_now": 12.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 109,
+        "name": "Dutos, caixas de passagem e bases — Seg. 3",
+        "group": "5",
+        "float_before": 23.0,
+        "float_now": 13.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 110,
+        "name": "Postes e luminárias LED — Seg. 3",
+        "group": "5",
+        "float_before": 17.0,
+        "float_now": 7.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 111,
+        "name": "Cabeamento, quadros de comando e energização — Seg. 3",
+        "group": "5",
+        "float_before": 17.0,
+        "float_now": 7.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 119,
+        "name": "Proteção vegetal de taludes (hidrossemeadura) — Seg. 4",
+        "group": "6",
+        "float_before": 15.0,
+        "float_now": 5.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 125,
+        "name": "Meios-fios e descidas d'água — Seg. 4",
+        "group": "6",
+        "float_before": 13.0,
+        "float_now": 3.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 130,
+        "name": "CBUQ — camada de ligação (binder) — Seg. 4",
+        "group": "6",
+        "float_before": 13.0,
+        "float_now": 3.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 131,
+        "name": "Fresagem e reperfilagem da pista existente — Seg. 4",
+        "group": "6",
+        "float_before": 13.0,
+        "float_now": 3.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 132,
+        "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 4",
+        "group": "6",
+        "float_before": 13.0,
+        "float_now": 3.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 133,
+        "name": "Acostamentos e acabamento de bordos — Seg. 4",
+        "group": "6",
+        "float_before": 13.0,
+        "float_now": 3.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 135,
+        "name": "Sinalização horizontal — Seg. 4",
+        "group": "6",
+        "float_before": 22.0,
+        "float_now": 12.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 137,
+        "name": "Defensas metálicas e barreiras — Seg. 4",
+        "group": "6",
+        "float_before": 13.0,
+        "float_now": 3.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 138,
+        "name": "Tachas e dispositivos auxiliares — Seg. 4",
+        "group": "6",
+        "float_before": 22.0,
+        "float_now": 12.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 140,
+        "name": "Dutos, caixas de passagem e bases — Seg. 4",
+        "group": "6",
+        "float_before": 23.0,
+        "float_now": 13.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 141,
+        "name": "Postes e luminárias LED — Seg. 4",
+        "group": "6",
+        "float_before": 17.0,
+        "float_now": 7.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 142,
+        "name": "Cabeamento, quadros de comando e energização — Seg. 4",
+        "group": "6",
+        "float_before": 17.0,
+        "float_now": 7.0,
+        "consumed": 10.0
+      },
+      {
+        "id": 5,
+        "name": "Liberação ao tráfego — Segmento 1 — km 12+000 ao km 18+000",
+        "group": "1",
+        "float_before": 14.0,
+        "float_now": 9.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 6,
+        "name": "Liberação ao tráfego — Segmento 2 — km 18+000 ao km 24+000",
+        "group": "1",
+        "float_before": 14.0,
+        "float_now": 9.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 27,
+        "name": "Proteção vegetal de taludes (hidrossemeadura) — Seg. 1",
+        "group": "3",
+        "float_before": 16.0,
+        "float_now": 11.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 32,
+        "name": "Meios-fios e descidas d'água — Seg. 1",
+        "group": "3",
+        "float_before": 14.0,
+        "float_now": 9.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 36,
+        "name": "Imprimação — Seg. 1",
+        "group": "3",
+        "float_before": 14.0,
+        "float_now": 9.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 37,
+        "name": "CBUQ — camada de ligação (binder) — Seg. 1",
+        "group": "3",
+        "float_before": 14.0,
+        "float_now": 9.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 38,
+        "name": "Fresagem e reperfilagem da pista existente — Seg. 1",
+        "group": "3",
+        "float_before": 14.0,
+        "float_now": 9.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 39,
+        "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 1",
+        "group": "3",
+        "float_before": 14.0,
+        "float_now": 9.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 40,
+        "name": "Acostamentos e acabamento de bordos — Seg. 1",
+        "group": "3",
+        "float_before": 14.0,
+        "float_now": 9.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 42,
+        "name": "Sinalização horizontal — Seg. 1",
+        "group": "3",
+        "float_before": 23.0,
+        "float_now": 18.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 43,
+        "name": "Sinalização vertical e pórticos — Seg. 1",
+        "group": "3",
+        "float_before": 26.0,
+        "float_now": 21.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 44,
+        "name": "Defensas metálicas e barreiras — Seg. 1",
+        "group": "3",
+        "float_before": 14.0,
+        "float_now": 9.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 45,
+        "name": "Tachas e dispositivos auxiliares — Seg. 1",
+        "group": "3",
+        "float_before": 23.0,
+        "float_now": 18.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 47,
+        "name": "Dutos, caixas de passagem e bases — Seg. 1",
+        "group": "3",
+        "float_before": 24.0,
+        "float_now": 19.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 48,
+        "name": "Postes e luminárias LED — Seg. 1",
+        "group": "3",
+        "float_before": 18.0,
+        "float_now": 13.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 49,
+        "name": "Cabeamento, quadros de comando e energização — Seg. 1",
+        "group": "3",
+        "float_before": 18.0,
+        "float_now": 13.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 58,
+        "name": "Proteção vegetal de taludes (hidrossemeadura) — Seg. 2",
+        "group": "4",
+        "float_before": 16.0,
+        "float_now": 11.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 64,
+        "name": "Meios-fios e descidas d'água — Seg. 2",
+        "group": "4",
+        "float_before": 14.0,
+        "float_now": 9.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 69,
+        "name": "CBUQ — camada de ligação (binder) — Seg. 2",
+        "group": "4",
+        "float_before": 14.0,
+        "float_now": 9.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 70,
+        "name": "Fresagem e reperfilagem da pista existente — Seg. 2",
+        "group": "4",
+        "float_before": 14.0,
+        "float_now": 9.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 71,
+        "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 2",
+        "group": "4",
+        "float_before": 14.0,
+        "float_now": 9.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 72,
+        "name": "Acostamentos e acabamento de bordos — Seg. 2",
+        "group": "4",
+        "float_before": 14.0,
+        "float_now": 9.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 74,
+        "name": "Sinalização horizontal — Seg. 2",
+        "group": "4",
+        "float_before": 26.0,
+        "float_now": 21.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 75,
+        "name": "Sinalização vertical e pórticos — Seg. 2",
+        "group": "4",
+        "float_before": 26.0,
+        "float_now": 21.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 76,
+        "name": "Defensas metálicas e barreiras — Seg. 2",
+        "group": "4",
+        "float_before": 14.0,
+        "float_now": 9.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 79,
+        "name": "Dutos, caixas de passagem e bases — Seg. 2",
+        "group": "4",
+        "float_before": 24.0,
+        "float_now": 19.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 80,
+        "name": "Postes e luminárias LED — Seg. 2",
+        "group": "4",
+        "float_before": 18.0,
+        "float_now": 13.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 81,
+        "name": "Cabeamento, quadros de comando e energização — Seg. 2",
+        "group": "4",
+        "float_before": 18.0,
+        "float_now": 13.0,
+        "consumed": 5.0
+      },
+      {
+        "id": 118,
+        "name": "Regularização e compactação do subleito — Seg. 4",
+        "group": "6",
+        "float_before": 24.0,
+        "float_now": 20.0,
+        "consumed": 4.0
+      },
+      {
+        "id": 124,
+        "name": "Sarjetas e valetas de proteção — Seg. 4",
+        "group": "6",
+        "float_before": 45.0,
+        "float_now": 41.0,
+        "consumed": 4.0
+      },
+      {
+        "id": 4,
+        "name": "Conclusão da terraplenagem — todos os segmentos",
+        "group": "1",
+        "float_before": 20.0,
+        "float_now": 17.0,
+        "consumed": 3.0
+      },
+      {
+        "id": 35,
+        "name": "Base de brita graduada simples (BGS) — Seg. 1",
+        "group": "3",
+        "float_before": 14.0,
+        "float_now": 12.0,
+        "consumed": 2.0
+      },
+      {
+        "id": 117,
+        "name": "Aterro compactado — Seg. 4",
+        "group": "6",
+        "float_before": 21.0,
+        "float_now": 20.0,
+        "consumed": 1.0
+      }
+    ],
+    "float_by_group": [
+      {
+        "group": "5",
+        "activities": 18,
+        "float_consumed_days": 166.0
+      },
+      {
+        "group": "4",
+        "activities": 20,
+        "float_consumed_days": 140.0
+      },
+      {
+        "group": "6",
+        "activities": 20,
+        "float_consumed_days": 96.0
+      },
+      {
+        "group": "3",
+        "activities": 15,
+        "float_consumed_days": 72.0
+      },
+      {
+        "group": "1",
+        "activities": 7,
+        "float_consumed_days": 33.0
+      },
+      {
+        "group": "7",
+        "activities": 16,
+        "float_consumed_days": 0.0
+      },
+      {
+        "group": "8",
+        "activities": 6,
+        "float_consumed_days": -13.0
+      }
+    ],
+    "became_critical": [],
+    "milestone_movements": [
+      {
+        "id": 10,
+        "name": "Termo de Recebimento Provisório (TRP)",
+        "finish_before": "2027-10-04",
+        "finish_now": "2027-10-25",
+        "moved_days": 21,
+        "chain_moves": [
+          {
+            "id": 174,
+            "name": "Desmobilização do canteiro e da usina",
+            "reading": "replan"
+          },
+          {
+            "id": 173,
+            "name": "Correção de pendências da vistoria",
+            "reading": "replan"
+          },
+          {
+            "id": 172,
+            "name": "Vistoria final com a fiscalização",
+            "reading": "replan"
+          },
+          {
+            "id": 169,
+            "name": "Limpeza final e recomposição das áreas de apoio",
+            "reading": "replan"
+          },
+          {
+            "id": 167,
+            "name": "Prova de carga e inspeção final",
+            "reading": "replan"
+          },
+          {
+            "id": 166,
+            "name": "Sinalização e iluminação do viaduto",
+            "reading": "replan"
+          },
+          {
+            "id": 165,
+            "name": "Impermeabilização e pavimentação do tabuleiro",
+            "reading": "replan"
+          },
+          {
+            "id": 162,
+            "name": "Juntas de dilatação",
+            "reading": "replan"
+          },
+          {
+            "id": 161,
+            "name": "Barreiras New Jersey e guarda-corpos",
+            "reading": "replan"
+          },
+          {
+            "id": 159,
+            "name": "Concretagem do tabuleiro",
+            "reading": "replan"
+          }
+        ],
+        "attribution": "replan"
+      },
+      {
+        "id": 9,
+        "name": "Conclusão do Viaduto V-01 (km 27+400)",
+        "finish_before": "2027-08-06",
+        "finish_now": "2027-08-26",
+        "moved_days": 20,
+        "chain_moves": [
+          {
+            "id": 167,
+            "name": "Prova de carga e inspeção final",
+            "reading": "replan"
+          },
+          {
+            "id": 166,
+            "name": "Sinalização e iluminação do viaduto",
+            "reading": "replan"
+          },
+          {
+            "id": 165,
+            "name": "Impermeabilização e pavimentação do tabuleiro",
+            "reading": "replan"
+          },
+          {
+            "id": 162,
+            "name": "Juntas de dilatação",
+            "reading": "replan"
+          },
+          {
+            "id": 161,
+            "name": "Barreiras New Jersey e guarda-corpos",
+            "reading": "replan"
+          },
+          {
+            "id": 159,
+            "name": "Concretagem do tabuleiro",
+            "reading": "replan"
+          },
+          {
+            "id": 158,
+            "name": "Pré-lajes e armação do tabuleiro",
+            "reading": "replan"
+          },
+          {
+            "id": 157,
+            "name": "Lançamento das vigas pré-moldadas",
+            "reading": "replan"
+          },
+          {
+            "id": 154,
+            "name": "Aparelhos de apoio",
+            "reading": "replan"
+          },
+          {
+            "id": 152,
+            "name": "Travessas",
+            "reading": "replan"
+          }
+        ],
+        "attribution": "replan"
+      },
+      {
+        "id": 7,
+        "name": "Liberação ao tráfego — Segmento 3 — km 24+000 ao km 30+000",
+        "finish_before": "2027-04-28",
+        "finish_now": "2027-05-12",
+        "moved_days": 14,
+        "chain_moves": [
+          {
+            "id": 106,
+            "name": "Defensas metálicas e barreiras — Seg. 3",
+            "reading": "replan"
+          },
+          {
+            "id": 102,
+            "name": "Acostamentos e acabamento de bordos — Seg. 3",
+            "reading": "replan"
+          },
+          {
+            "id": 101,
+            "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 3",
+            "reading": "replan"
+          },
+          {
+            "id": 100,
+            "name": "Fresagem e reperfilagem da pista existente — Seg. 3",
+            "reading": "replan"
+          },
+          {
+            "id": 99,
+            "name": "CBUQ — camada de ligação (binder) — Seg. 3",
+            "reading": "replan"
+          },
+          {
+            "id": 98,
+            "name": "Imprimação — Seg. 3",
+            "reading": "replan"
+          },
+          {
+            "id": 97,
+            "name": "Base de brita graduada simples (BGS) — Seg. 3",
+            "reading": "replan"
+          },
+          {
+            "id": 96,
+            "name": "Sub-base granular — Seg. 3",
+            "reading": "replan"
+          },
+          {
+            "id": 92,
+            "name": "Drenos profundos longitudinais — Seg. 3",
+            "reading": "execution"
+          },
+          {
+            "id": 87,
+            "name": "Aterro compactado — Seg. 3",
+            "reading": "execution"
+          }
+        ],
+        "attribution": "replan"
+      },
+      {
+        "id": 8,
+        "name": "Liberação ao tráfego — Segmento 4 — km 30+000 ao km 36+000",
+        "finish_before": "2027-07-06",
+        "finish_now": "2027-07-20",
+        "moved_days": 14,
+        "chain_moves": [
+          {
+            "id": 137,
+            "name": "Defensas metálicas e barreiras — Seg. 4",
+            "reading": "replan"
+          },
+          {
+            "id": 133,
+            "name": "Acostamentos e acabamento de bordos — Seg. 4",
+            "reading": "replan"
+          },
+          {
+            "id": 132,
+            "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 4",
+            "reading": "reference"
+          },
+          {
+            "id": 131,
+            "name": "Fresagem e reperfilagem da pista existente — Seg. 4",
+            "reading": "replan"
+          },
+          {
+            "id": 130,
+            "name": "CBUQ — camada de ligação (binder) — Seg. 4",
+            "reading": "replan"
+          },
+          {
+            "id": 101,
+            "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 3",
+            "reading": "replan"
+          },
+          {
+            "id": 100,
+            "name": "Fresagem e reperfilagem da pista existente — Seg. 3",
+            "reading": "replan"
+          },
+          {
+            "id": 99,
+            "name": "CBUQ — camada de ligação (binder) — Seg. 3",
+            "reading": "replan"
+          },
+          {
+            "id": 98,
+            "name": "Imprimação — Seg. 3",
+            "reading": "replan"
+          },
+          {
+            "id": 97,
+            "name": "Base de brita graduada simples (BGS) — Seg. 3",
+            "reading": "replan"
+          }
+        ],
+        "attribution": "replan"
+      },
+      {
+        "id": 5,
+        "name": "Liberação ao tráfego — Segmento 1 — km 12+000 ao km 18+000",
+        "finish_before": "2027-03-17",
+        "finish_now": "2027-03-25",
+        "moved_days": 8,
+        "chain_moves": [
+          {
+            "id": 44,
+            "name": "Defensas metálicas e barreiras — Seg. 1",
+            "reading": "replan"
+          },
+          {
+            "id": 40,
+            "name": "Acostamentos e acabamento de bordos — Seg. 1",
+            "reading": "replan"
+          },
+          {
+            "id": 39,
+            "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 1",
+            "reading": "replan"
+          },
+          {
+            "id": 38,
+            "name": "Fresagem e reperfilagem da pista existente — Seg. 1",
+            "reading": "replan"
+          },
+          {
+            "id": 37,
+            "name": "CBUQ — camada de ligação (binder) — Seg. 1",
+            "reading": "replan"
+          },
+          {
+            "id": 36,
+            "name": "Imprimação — Seg. 1",
+            "reading": "execution"
+          },
+          {
+            "id": 35,
+            "name": "Base de brita graduada simples (BGS) — Seg. 1",
+            "reading": "execution"
+          },
+          {
+            "id": 34,
+            "name": "Sub-base granular — Seg. 1",
+            "reading": "execution"
+          }
+        ],
+        "attribution": "replan"
+      },
+      {
+        "id": 6,
+        "name": "Liberação ao tráfego — Segmento 2 — km 18+000 ao km 24+000",
+        "finish_before": "2027-05-31",
+        "finish_now": "2027-06-07",
+        "moved_days": 7,
+        "chain_moves": [
+          {
+            "id": 76,
+            "name": "Defensas metálicas e barreiras — Seg. 2",
+            "reading": "replan"
+          },
+          {
+            "id": 72,
+            "name": "Acostamentos e acabamento de bordos — Seg. 2",
+            "reading": "replan"
+          },
+          {
+            "id": 71,
+            "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 2",
+            "reading": "replan"
+          },
+          {
+            "id": 70,
+            "name": "Fresagem e reperfilagem da pista existente — Seg. 2",
+            "reading": "replan"
+          },
+          {
+            "id": 69,
+            "name": "CBUQ — camada de ligação (binder) — Seg. 2",
+            "reading": "replan"
+          },
+          {
+            "id": 39,
+            "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 1",
+            "reading": "replan"
+          },
+          {
+            "id": 38,
+            "name": "Fresagem e reperfilagem da pista existente — Seg. 1",
+            "reading": "replan"
+          },
+          {
+            "id": 37,
+            "name": "CBUQ — camada de ligação (binder) — Seg. 1",
+            "reading": "replan"
+          },
+          {
+            "id": 36,
+            "name": "Imprimação — Seg. 1",
+            "reading": "execution"
+          },
+          {
+            "id": 35,
+            "name": "Base de brita graduada simples (BGS) — Seg. 1",
+            "reading": "execution"
+          }
+        ],
+        "attribution": "replan"
+      },
+      {
+        "id": 4,
+        "name": "Conclusão da terraplenagem — todos os segmentos",
+        "finish_before": "2027-01-05",
+        "finish_now": "2027-01-11",
+        "moved_days": 6,
+        "chain_moves": [
+          {
+            "id": 118,
+            "name": "Regularização e compactação do subleito — Seg. 4",
+            "reading": "replan"
+          },
+          {
+            "id": 117,
+            "name": "Aterro compactado — Seg. 4",
+            "reading": "execution"
+          },
+          {
+            "id": 122,
+            "name": "Bueiro celular de concreto — Seg. 4",
+            "reading": "execution"
+          }
+        ],
+        "attribution": "execution"
+      }
+    ]
+  },
+  "provenance": "mechanism reconstruction from the file's dates, links and calendars; not a contractual delay analysis, which needs contemporaneous records"
+}

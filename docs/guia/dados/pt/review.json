@@ -1,0 +1,140 @@
+{
+  "source": "rodovia-ficticia-rev04.xml",
+  "blocking": [],
+  "conventions": {
+    "threshold_days": 30,
+    "threshold_basis": "working_days_task_calendar",
+    "tolerance_days": 1,
+    "baseline_slot": "0",
+    "baseline_name": "Baseline",
+    "baseline_slot_basis": "the baseline with the widest leaf-cost coverage, ties to the higher-numbered one; summaries and external tasks excluded",
+    "calendars_in_file": 40,
+    "calendars_from_file": true,
+    "calendars_in_use": [
+      {
+        "uid": "1",
+        "name": "Padrão da Obra (5 dias)",
+        "tasks": 153,
+        "hours_per_day": 8.0,
+        "working_days_per_week": 5,
+        "exceptions": 51,
+        "non_working_exceptions": 51
+      },
+      {
+        "uid": "2",
+        "name": "Terraplenagem (6 dias)",
+        "tasks": 22,
+        "hours_per_day": 8.0,
+        "working_days_per_week": 6,
+        "exceptions": 61,
+        "non_working_exceptions": 61
+      }
+    ],
+    "link_types_evaluated": {
+      "FS": 204,
+      "SS": 15,
+      "FF": 1,
+      "SF": 0
+    },
+    "lag_honoured": true,
+    "both_complete_pairs_ignored": 0
+  },
+  "counts": {
+    "A1": {
+      "marked_rows": 2,
+      "distinct_activities": 2,
+      "as_successors": 1,
+      "as_predecessors": 1
+    },
+    "A2": {
+      "marked_rows": 0,
+      "distinct_activities": 0,
+      "as_successors": 0,
+      "as_predecessors": 0
+    },
+    "H": {
+      "marked_rows": 0,
+      "distinct_activities": 0
+    },
+    "E": {
+      "marked_rows": 0,
+      "distinct_activities": 0
+    },
+    "C": {
+      "marked_rows": 0,
+      "distinct_activities": 0
+    },
+    "G": {
+      "marked_rows": 0,
+      "distinct_activities": 0
+    },
+    "B": {
+      "marked_rows": 0,
+      "distinct_activities": 0
+    },
+    "F": {
+      "marked_rows": 0,
+      "distinct_activities": 0
+    },
+    "P": {
+      "marked_rows": 0,
+      "distinct_activities": 0
+    }
+  },
+  "findings": {
+    "A1": [
+      {
+        "code": "A1",
+        "uid": 36,
+        "id": 36,
+        "name": "Imprimação — Seg. 1",
+        "wbs": "3.3.3",
+        "role": "successor",
+        "link_type": "FS",
+        "lag_minutes": 0.0,
+        "counterpart_uid": 35,
+        "counterpart_id": 35,
+        "counterpart_name": "Base de brita graduada simples (BGS) — Seg. 1",
+        "why": "pred_not_finished"
+      },
+      {
+        "code": "A1",
+        "uid": 35,
+        "id": 35,
+        "name": "Base de brita graduada simples (BGS) — Seg. 1",
+        "wbs": "3.3.2",
+        "role": "predecessor",
+        "link_type": "FS",
+        "lag_minutes": 0.0,
+        "counterpart_uid": 36,
+        "counterpart_id": 36,
+        "counterpart_name": "Imprimação — Seg. 1",
+        "why": "pred_not_finished"
+      }
+    ],
+    "A2": [],
+    "H": [],
+    "E": [],
+    "C": [],
+    "G": [],
+    "B": [],
+    "F": [],
+    "P": []
+  },
+  "pairs": {
+    "A1": [
+      {
+        "successor_id": 36,
+        "successor_uid": 36,
+        "predecessor_id": 35,
+        "predecessor_uid": 35,
+        "link_type": "FS",
+        "why": "pred_not_finished"
+      }
+    ],
+    "A2": []
+  },
+  "ignored": {
+    "A1_both_complete": []
+  }
+}

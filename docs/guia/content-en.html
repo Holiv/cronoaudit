@@ -1,0 +1,759 @@
+<section class="page cover">
+  <p class="kick">Illustrated guide · version {{V}}</p>
+  <p class="logo">crono<em>audit</em></p>
+  <p class="head">Rev04 has arrived. The number adds up. <em>What else changed?</em></p>
+  <p class="sub">A schedule review shown from start to finish, on an invented motorway: the terminal, the report, the conversation with the agent and the list of what to ask.</p>
+  <figure>{{svg cover}}</figure>
+  <div class="meta">
+    <span>Author<b>Helton da Silva de Oliveira</b></span>
+    <span>Format<b>Agent Skill · Apache 2.0</b></span>
+    <span>Data<b>The fictitious example only</b></span>
+    <span>Edition<b>English</b></span>
+  </div>
+</section>
+
+<section class="page" id="intro">
+  <p class="kick">01 <b>· Why it exists</b></p>
+  <h1>A wrong schedule gives no error message.</h1>
+  <p class="lede">It opens, calculates and prints. The number that comes out is believable, and that is why it gets through.</p>
+  <div class="cols c32">
+    <div>
+      <p>Whoever receives the month's revision checks what can be checked by eye: the finish date, the percentage, the curve. What changes the result usually sits somewhere else. An actual date corrected after the fact. A finished activity that vanished. A baseline that moved. A duration stretched on work that has not even started.</p>
+      <p>cronoaudit is an open-source Agent Skill that does that check. A Python engine reads the XML that MS Project itself exports. It runs on your computer and does not use the network. At the end it writes a report that opens in the browser and, if you want, hands the measured figures to an AI agent so you can talk about them.</p>
+      <p>This guide shows the tool at work. Everything here was produced on an invented job, the fictitious motorway RF-140, which comes with the installation. Every page can be repeated on your computer.</p>
+    </div>
+    <div>
+      <div class="note">
+        <div class="k">Who it is for</div>
+        <p>For those who plan, those who control, and those who sign the monthly report.</p>
+        <p class="small">The technical manual explains every concept and every calculation. This guide only shows what happens when you run it.</p>
+      </div>
+    </div>
+  </div>
+  <h2>How to read the pages</h2>
+  <div class="legend3">
+    <div>{{mark real}}<p>Terminal output or a screen of the report, as the engine produced it. Paths are shown as <code>~</code>. Every cut is marked.</p></div>
+    <div>{{mark eng}}<p>A sentence written by the engine, by rule, copied unchanged. Activity names come from the example file, which is in Portuguese.</p></div>
+    <div>{{mark ilus}}<p>A conversation with an agent composed for this guide. The numbers in it are the engine's, taken from the same runs.</p></div>
+  </div>
+  <h2>The route</h2>
+  {{toc}}
+</section>
+
+<section class="page" id="obra" data-z="1.07" data-toc="The fictitious job and its two deliveries">
+  <p class="kick">02 <b>· The example</b></p>
+  <h1>A motorway that does not exist, with problems that do.</h1>
+  <p class="lede">RF-140 is invented: the stretch, the client, the contractor, the quantities, the prices and the dates. The schedule was written to read like a real road job, and most of it is healthy.</p>
+  <div class="plate">{{svg road}}</div>
+  <div class="gap2"></div>
+  <div class="facts f5">
+    <div><div class="v">142</div><div class="t">activities</div></div>
+    <div><div class="v">220</div><div class="t">links</div></div>
+    <div><div class="v">9</div><div class="t">milestones, each with a deadline</div></div>
+    <div><div class="v">2</div><div class="t">calendars in use, with holidays and a rain reserve</div></div>
+    <div><div class="v">174,992,838</div><div class="t">budget at completion, in rev04</div></div>
+  </div>
+  <div class="cols">
+    <div>
+      <h2>Two deliveries, one month apart</h2>
+      <table>
+        <tr><th>File</th><th>Status date</th><th>Role</th></tr>
+        <tr><td class="k" style="white-space:nowrap">rodovia-ficticia-rev03.xml</td><td>2026-09-30</td><td>previous delivery</td></tr>
+        <tr><td class="k" style="white-space:nowrap">rodovia-ficticia-rev04.xml</td><td>2026-10-30</td><td>current delivery</td></tr>
+      </table>
+      <div class="gap"></div>
+      <p>The job has four 6 km segments and a viaduct at km 27+400. Each segment goes through earthworks, drainage, paving, signing and lighting.</p>
+      <p>Rev03, on its own, is clean. Rev04 brings a month of real progress and fourteen changes planted on purpose. The list is on page {{pg plantados}}.</p>
+    </div>
+    <div>
+      <div class="note">
+        <div class="k">What the delivery says</div>
+        <p>Progress from 23.44% to 28.01%. Project finish on 2027-10-25. Every milestone within its deadline.</p>
+        <p class="small">All three sentences are true. None of them tells what was changed in the schedule for the number to add up.</p>
+      </div>
+      <p class="small">The example's generator is deterministic and lives in <code>examples/make_exemplo.py</code>. Every planted problem is declared at the top of the script.</p>
+    </div>
+  </div>
+  <div class="gap2"></div>
+  <h2>What the engine finds in it</h2>
+  <div class="facts f3">
+    <div><div class="v">14 of 14</div><div class="t">problems planted in the example appear in the report. An automatic test checks this on every version.</div></div>
+    <div><div class="v">12</div><div class="t">items ready to ask the contractor, one per piece of evidence, when the two deliveries are compared.</div></div>
+    <div><div class="v">43 of 43</div><div class="t">activities with earned value match, to the cent, what the file itself computed.</div></div>
+  </div>
+</section>
+
+<section class="page" id="instalar" data-z="1.07" data-toc="Install and run the example">
+  <p class="kick">03 <b>· Install</b></p>
+  <h1>One command. The example runs at the end.</h1>
+  <div class="cols c32">
+    <div>
+      <p class="lede">The installer copies the skill to the folders the agents read, brings the fictitious example and checks its own installation.</p>
+    </div>
+    <div>
+      <p class="small">This capture was made from a local copy of the repository, in an empty user folder. In the public installation the first line is the command on the cheat sheet, page {{pg cola}}, and the rest is the same.</p>
+    </div>
+  </div>
+  {{term install}}
+  <div class="gap2"></div>
+  <div class="cols c3">
+    <div><h3>Two skill folders</h3><p class="small">One for Claude Code and one for the agents that read <code>~/.agents</code>, such as Codex and GitHub Copilot. The engine is the same in both.</p></div>
+    <div><h3>A self-test</h3><p class="small">Before saying it is done, the installer runs the engine on the example and checks the result.</p></div>
+    <div><h3>Nothing global</h3><p class="small">Only Python 3.9 or later. No library is installed. On Windows, the installer brings Python if the computer has none.</p></div>
+  </div>
+  <div class="gap2"></div>
+  <div class="cols">
+    <div>
+      <h2>The installer asks only what is your choice</h2>
+      <ul>
+        <li>If it finds MS Project, it asks whether you also want the Cronoaudit tab.</li>
+        <li>It asks whether you want to see the example now. Here the answer was given in advance, through the variable <code>CRONOAUDIT_EXAMPLE=1</code>.</li>
+        <li>At the end, it shows the right command for your computer.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Other ways to install</h2>
+      <table>
+        <tr><td class="k">Any Agent Skills client</td><td><code>npx skills add Holiv/cronoaudit -g</code></td></tr>
+        <tr><td class="k">Claude Code, as a plugin</td><td><code>/plugin marketplace add Holiv/cronoaudit</code></td></tr>
+        <tr><td class="k">A team, through the project</td><td>clone the repository into <code>.agents/skills/cronoaudit</code></td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="terminal" data-z="1.07" data-toc="Rev04 has arrived: one line in the terminal">
+  <p class="kick">04 <b>· The delivery</b></p>
+  <h1 class="wide">Rev04 has arrived. Two files, one line.</h1>
+  <p class="lede">The previous delivery goes first. The engine reviews rev04 on its own and then compares the two.</p>
+  {{term cycle}}
+  <div class="gap2"></div>
+  <div class="cols c3">
+    <div><h3>One execution out of sequence</h3><p class="small">Row 36 started while its predecessor, row 35, was still open. The engine marks both ends of the link, as MS Project itself does.</p></div>
+    <div><h3>A residue of −0.33</h3><p class="small">The headline moved 4.57 points. The work done adds up to 4.90. The difference is not progress, and the engine gives each part of it a name.</p></div>
+    <div><h3>The past changed</h3><p class="small">An actual finish was altered and an activity with progress vanished. The report will show this before any percentage.</p></div>
+  </div>
+</section>
+
+<section class="page" id="relatorio" data-toc="The report, in the order you read it">
+  <p class="kick">05 <b>· The report</b></p>
+  <h1>The report opens in the browser, in the schedule's own language.</h1>
+  <p class="lede">It is one HTML file with no dependency. It opens the same on a computer with no network. Every section starts with a short reading, written by rule.</p>
+  {{img cycle-top ~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html 108mm}}
+  <p class="cap">The top of the comparison report. The four warnings come before the first number. This edition forced English with <code>--lang en</code>. By default the report follows the schedule, which is in Portuguese.</p>
+  <div class="gap"></div>
+  <div class="cols">
+    <div>
+      <h2>The reading order</h2>
+      <ol class="steps">
+        <li><div><b>Deadlines.</b> Each milestone against its deadline.</div></li>
+        <li><div><b>Integrity of the measurement.</b> Can the number be trusted?</div></li>
+        <li><div><b>Replanning.</b> What the plan changed with no work behind it.</div></li>
+        <li><div><b>Progress.</b> Where the movement came from.</div></li>
+        <li><div><b>Float and critical path.</b></div></li>
+        <li><div><b>Network quality,</b> before and after.</div></li>
+        <li><div><b>What to ask the contractor.</b></div></li>
+      </ol>
+    </div>
+    <div>
+      <div class="reading tight">
+        {{mark eng}}
+        <p>{{R cycle c5 0}}</p>
+        <p>{{R cycle c5 3}}</p>
+      </div>
+      <p class="small">Progress comes fourth on purpose. A percentage is only worth something once you know whether the record behind it was touched.</p>
+    </div>
+  </div>
+  <p class="small">Every claim in the report is marked measured, inferred or reported. Each section states the criterion it used and how to reproduce the figure in MS Project.</p>
+</section>
+
+<section class="page" id="prazos" data-toc="Deadlines: seven milestones and the margin of each">
+  <p class="kick">06 <b>· Deadlines</b></p>
+  <h1>Every milestone fits. Three of them, by less than a week.</h1>
+  <p class="lede">The rev04 forecast respects the seven future deadlines. The margin is what tells the story.</p>
+  <div class="plate">{{svg milestones}}</div>
+  <p class="cap">Drawn from the engine's figures: forecast, deadline and margin in calendar days for each milestone. P80 is the slippage that 80% of the finished activities have not exceeded.</p>
+  <div class="gap"></div>
+  <div class="reading">
+    {{mark eng}}
+    <p>{{R cycle c1 0}}</p>
+    <p>{{R cycle c1 1}}</p>
+    <p>{{R cycle c1 2}}</p>
+  </div>
+  <div class="cols">
+    <div>
+      <h2>What to do with it</h2>
+      <p>A milestone with one day of margin is not on time. It is one surprise away from being late. The report puts that margin on the first screen and says in which activity the delay starts. Between the two deliveries, the float of the Segment 3 milestone fell from 13 to 3 days.</p>
+    </div>
+    <div>
+      <h2>What the P80 band is not</h2>
+      <p>It is not a forecast. It is the distribution of what has already happened on this job, applied to the dates still ahead. It is there to order your attention.</p>
+    </div>
+  </div>
+  <div class="gap"></div>
+  {{img cycle-prazo ~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html 37mm 66mm}}
+  <p class="cap">The same section in the report: the finish before and now, and the table of milestones against their deadlines.</p>
+</section>
+
+<section class="page" id="medicao" data-z="1.07" data-toc="Before progress: can the measurement be trusted?">
+  <p class="kick">07 <b>· Integrity of the measurement</b></p>
+  <h1>Three records changed after they were reported.</h1>
+  <p class="lede">An actual date is a record. A percentage is a measurement already reported. The baseline is the ruler. When one of them reads differently from one month to the next, last month's number has lost its footing.</p>
+  {{html ba29}}
+  {{html ba119}}
+  {{html ba132}}
+  <div class="cols">
+    <div>
+      <h2>Why it comes first</h2>
+      <p>None of the three cases raises an error in MS Project. The file opens, the curve closes and the percentage goes up. Only the comparison between the two deliveries shows what was edited.</p>
+    </div>
+    <div>
+      <h2>What the engine does not claim</h2>
+      <p>It does not say there was bad faith. A correction can be legitimate. It says the correction exists, where it is, and asks for it to be stated.</p>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="plano" data-z="1.07" data-toc="What the plan changed with no work behind it">
+  <p class="kick">08 <b>· Replanning and logic</b></p>
+  <h1>The plan was rewritten in five places.</h1>
+  <p class="lede">Of the dates that moved, 12 have execution behind them and 89 have none. The five edits below are of the second kind: the plan rewritten, with no work behind it.</p>
+  <div class="cols">
+    <div>
+      {{html ba157}}
+      {{html ba63}}
+      {{html ba57}}
+    </div>
+    <div>
+      {{html balinks}}
+      <div class="reading tight">
+        {{mark eng}}
+        <p>{{R cycle c3 0}}</p>
+        <p>{{R cycle c3 2}}</p>
+        <p>{{R cycle c2 1}}</p>
+      </div>
+      <p class="small">Row 63 received a date constraint and is held until 2026-12-28. It is not on the critical path, but it lost 25 working days of float, the largest loss of the cycle.</p>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="avanco" data-z="1.07" data-toc="Progress: 4.57 points in the headline, 4.90 of work">
+  <p class="kick">09 <b>· Progress</b></p>
+  <h1>The headline moved 4.57 points. The works did 4.90.</h1>
+  <p class="lede">The difference is small and it has a name. It is the kind of number that disappears inside an aggregate percentage.</p>
+  <div class="cols">
+    <div class="plate"><h3>From 23.44% to 28.01%, part by part</h3>{{svg waterfall}}</div>
+    <div class="plate"><h3>S-curve from the file itself</h3>{{svg scurve}}</div>
+  </div>
+  <p class="cap">Drawn from the engine's figures. The curve uses the baseline cost and the physical percentage that the file itself spreads over time.</p>
+  <div class="gap"></div>
+  <div class="cols">
+    <div class="reading tight">
+      {{mark eng}}
+      <p>{{R cycle movement 0}}</p>
+      <p>{{R cycle movement 1}}</p>
+    </div>
+    <div class="reading tight">
+      {{mark eng}}
+      <p>{{R review scurve 0}}</p>
+      <p>{{R review scurve 1}}</p>
+      <p>{{R review scurve 2}}</p>
+    </div>
+  </div>
+  <div class="cols">
+    <div>
+      <h2>Checked against the file</h2>
+      <p>The engine does not ask for trust. It recomputes earned value activity by activity and compares it with what MS Project stored.</p>
+      <div class="reading tight">{{mark eng}}<p>{{R review verdict 3}}</p></div>
+    </div>
+    <div>
+      <h2>Two percentages on the same activity</h2>
+      <p>Row 55 is 95% complete by duration and 57% by physical progress. Depending on the method chosen, the progress of the whole job changes by 0.44 points. The report shows both and says which activity the gap comes from.</p>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="atraso" data-z="1.07" data-toc="Where the viaduct's delay comes from">
+  <p class="kick">10 <b>· Forensics</b></p>
+  <h1>The finish slipped 21 days. The path runs through the viaduct.</h1>
+  <p class="lede">The engine walks each milestone's driving chain backwards and shows where the delay came in and where it grew.</p>
+  <div class="plate"><h3>Driving chain of the milestone on row 9, from origin to milestone</h3>{{svg chain}}</div>
+  <p class="cap">Drawn from the engine's figures. Each point is an activity of the chain, by row number. The height is its finish variance against the baseline.</p>
+  <div class="gap"></div>
+  <div class="cols c32">
+    <div>
+      <table>
+        <tr><th>Row</th><th>Activity</th><th style="text-align:right">Finish</th><th style="text-align:right">Variance</th></tr>
+        {{html chainlist}}
+      </table>
+    </div>
+    <div>
+      <div class="reading tight">
+        {{mark eng}}
+        <p>{{R cycle c1 3}}</p>
+        <p>{{R review forensics 0}}</p>
+        <p>{{R cycle c1 4}}</p>
+      </div>
+      <h2>Execution and plan, kept apart</h2>
+      <p>The delay starts in work that was executed, on the piles of row 148. Then it grows on an activity that has not started: row 157 gained eight working days of duration in this delivery.</p>
+      <p class="small">The forensics show the mechanism. They are not a delay claim, which needs contemporaneous records and a formal method.</p>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="rede" data-z="1.07" data-toc="The network: nine checks and fourteen metrics">
+  <p class="kick">11 <b>· Network quality</b></p>
+  <h1>Fourteen DCMA-style metrics, each with its threshold.</h1>
+  <p class="lede">The rev04 network is linked and has no negative float. The two metrics it fails are the ones that measure execution against the baseline.</p>
+  {{html quality}}
+  <p class="cap">Built from the engine's figures for rev04. cronoaudit computes the fourteen metrics and quotes the thresholds. It does not certify a schedule against DCMA.</p>
+  <div class="gap"></div>
+  <div class="cols">
+    <div>
+      <div class="reading tight">
+        {{mark eng}}
+        <p>{{R review quality 0}}</p>
+        <p>{{R review quality 1}}</p>
+        <p>{{R cycle c6 0}}</p>
+        <p>{{R cycle c6 2}}</p>
+      </div>
+      <h2>What passes close to the limit</h2>
+      <p>Four open activities have no successor: rows 77, 89, 136 and 170. That is 4 of 96, under the 5%. The same four and the new row 57 carry 79 to 205 working days of float.</p>
+    </div>
+    <div>
+      <h2>Before the metrics, nine checks</h2>
+      <table>
+        <tr><th>Code</th><th>Check</th><th style="text-align:right">In rev04</th></tr>
+        <tr><td class="n">A1</td><td>Execution out of sequence</td><td class="pg">2</td></tr>
+        <tr><td class="n">A2</td><td>Total inversion</td><td class="pg">0</td></tr>
+        <tr><td class="n">H</td><td>Trend elapsed with no progress</td><td class="pg">0</td></tr>
+        <tr><td class="n">E</td><td>Pulled forward and never started</td><td class="pg">0</td></tr>
+        <tr><td class="n">C</td><td>Delayed beyond the threshold</td><td class="pg">0</td></tr>
+        <tr><td class="n">G</td><td>Duration incompatible with the window</td><td class="pg">0</td></tr>
+        <tr><td class="n">B</td><td>Milestone with no deadline</td><td class="pg">0</td></tr>
+        <tr><td class="n">F</td><td>In progress at zero percent</td><td class="pg">0</td></tr>
+        <tr><td class="n">P</td><td>Pending record</td><td class="pg">0</td></tr>
+      </table>
+      <p class="small">The two A1 activities are the two ends of a single pair: row 36 started in October with row 35 still open. Because the pair is off the critical path, the engine names it rather than reading the network as broken.</p>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="frente" data-z="1.14" data-toc="Looking forward: pace, four weeks, rain">
+  <p class="kick">12 <b>· Looking forward</b></p>
+  <h1>The pace supports the finish date. The next four weeks do not.</h1>
+  <p class="lede">The engine projects from what the job has already shown, and states the limit of each projection.</p>
+  <div class="facts">
+    <div><div class="v">2026-10-17</div><div class="t">Earned Schedule: when the plan expected today's earned value</div></div>
+    <div><div class="v">0.947</div><div class="t">schedule efficiency, SPI(t)</div></div>
+    <div><div class="v">2027-10-22</div><div class="t">independent finish at this pace, against 2027-10-25 in the schedule</div></div>
+    <div><div class="v red">1.040</div><div class="t">TSPI: what the remainder must deliver over the plan</div></div>
+  </div>
+  <div class="cols">
+    <div>
+      <div class="plate"><h3>Earning in the next 4 weeks</h3>{{svg lookahead}}</div>
+      <div class="gap"></div>
+      <div class="reading tight">
+        {{mark eng}}
+        <p>{{R review forecast 3}}</p>
+        <p>{{R review forecast 2}}</p>
+      </div>
+    </div>
+    <div>
+      <div class="plate"><h3>Where the remaining cost falls</h3>{{svg rain}}</div>
+      <div class="gap"></div>
+      <div class="reading tight">
+        {{mark eng}}
+        <p>{{R review forecast 4}}</p>
+        <p>{{R review forecast 1}}</p>
+      </div>
+    </div>
+  </div>
+  <p class="cap">Both charts were drawn from the engine's figures for rev04.</p>
+  <div class="gap"></div>
+  <div class="cols">
+    <div>
+      <h2>Two readings that seem to disagree</h2>
+      <p>In aggregate, the achieved pace and the schedule agree on the finish date. In the short term, from 2026-10-31 to 2026-11-27, 11 activities must start and 8 must finish, and the plan asks for almost three times what the job has been delivering. Both are true, and the second is the one that needs a conversation now.</p>
+    </div>
+    <div>
+      <h2>The rain is already in the calendar</h2>
+      <p>Both calendars reserve days from December to March. Half of the remaining cost falls in those months. A thirty-day slip pushes more work into the reserve.</p>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="cobrar" data-z="1.07" data-toc="What to ask the contractor">
+  <p class="kick">13 <b>· What to ask</b></p>
+  <h1>Twelve items, one per piece of evidence.</h1>
+  <p class="lede">The last section of the report turns the comparison into requests. Each item names the row, so it can be found in the schedule. The integrity of the measurement comes first.</p>
+  <div class="cols c32">
+    <div>
+      {{html demands}}
+      <p class="cap">{{mark eng}}The twelve items, as the engine wrote them for the example.</p>
+    </div>
+    <div>
+      <h2>How to use it</h2>
+      <p>The list is ready to go into minutes or a message. No item is an opinion. Each one points at a difference between the two files the contractor delivered.</p>
+      <h2>The order of the groups</h2>
+      <ol class="steps">
+        <li><div><b>Integrity of the measurement.</b> What touches the record of work already done.</div></li>
+        <li><div><b>Replanning.</b> Dates and durations moved by the plan, with no progress.</div></li>
+        <li><div><b>Logic.</b> Links and constraints edited.</div></li>
+      </ol>
+      <div class="note">
+        <div class="k">With an agent</div>
+        <p>Ask for the executive summary. The agent writes the text with these figures and the engine inserts it into the report, marked with who wrote it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="plantados" data-toc="The 14 planted traps and where each one shows">
+  <p class="kick">14 <b>· The answer key</b></p>
+  <h1 class="wide">The 14 planted traps, and where each one shows.</h1>
+  <div class="plate">{{svg roadpins}}</div>
+  <p class="cap">Each pin carries the number of its row in the table. The hollow circles apply to the whole job.</p>
+  <div class="gap"></div>
+  <table>
+    <tr><th>No.</th><th>What was planted in rev04</th><th>Where the report shows it</th><th style="text-align:right">Page</th></tr>
+    <tr><td class="n">1</td><td>Real progress in October on a dozen activities</td><td>Dates moved with actuals behind them: 12. Progress from 23.44% to 28.01%</td><td class="pg">{{pg avanco}}</td></tr>
+    <tr><td class="n">2</td><td>Row 63 held by a constraint until 2026-12-28, nothing executed</td><td>Replanning: start 46 days later, finish 53 days later. One constraint added</td><td class="pg">{{pg plano}}</td></tr>
+    <tr><td class="n">3</td><td>Row 36 started with row 35 still open</td><td>Finding A1, out of sequence, both ends marked</td><td class="pg">{{pg rede}}</td></tr>
+    <tr><td class="n">4</td><td>Rows 77, 89, 136 and 170 with no successor</td><td>Metric Q1: 4 of 96, under the threshold</td><td class="pg">{{pg rede}}</td></tr>
+    <tr><td class="n">5</td><td>The same four and row 57 with 79 to 205 days of float</td><td>Metric Q6: 5 of 103</td><td class="pg">{{pg rede}}</td></tr>
+    <tr><td class="n">6</td><td>Row 55 at 95% by duration and 57% physical</td><td>S-curve: the other method would read 0.44 points more. Productivity: inconsistent measurement</td><td class="pg">{{pg avanco}}</td></tr>
+    <tr><td class="n">7</td><td>Actual finish of row 29 changed from 2026-06-05 to 2026-06-01</td><td>Past rewritten: one actual finish, now equal to the baseline date</td><td class="pg">{{pg medicao}}</td></tr>
+    <tr><td class="n">8</td><td>One link added (94 → 106) and one removed (123 → 127)</td><td>Logic changed</td><td class="pg">{{pg plano}}</td></tr>
+    <tr><td class="n">9</td><td>Row 157, not started: 12 days became 20</td><td>Duration changed on work not started</td><td class="pg">{{pg plano}}</td></tr>
+    <tr><td class="n">10</td><td>Baseline of row 132 moved four weeks</td><td>The reference moved: a warning about the comparison basis</td><td class="pg">{{pg medicao}}</td></tr>
+    <tr><td class="n">11</td><td>Row 57 exists only in rev04. An activity at 100% exists only in rev03</td><td>Scope: 1 inserted and 1 removed. 0.33 points of the movement are not progress</td><td class="pg">{{pg avanco}}</td></tr>
+    <tr><td class="n">12</td><td>Float of the Segment 3 milestone fell from 13 to 3 days</td><td>Critical path: float lost. The forensics name the origin</td><td class="pg">{{pg prazos}}</td></tr>
+    <tr><td class="n">13</td><td>Project finish from 2027-10-04 to 2027-10-25, through the viaduct</td><td>Project finish and the chain that drives it</td><td class="pg">{{pg atraso}}</td></tr>
+    <tr><td class="n">14</td><td>Half of the remaining cost falls between December and March</td><td>Rain exposure: 50% in reserved months, 52% if everything slips thirty days</td><td class="pg">{{pg frente}}</td></tr>
+  </table>
+  <p class="small" style="margin-top:2mm">The tool's test, <code>test_checks.py</code>, checks that the two files are what the generator writes and that every item above is found. These figures hold for the <code>.xml</code> files. The example's <code>.mpp</code> files give slightly different ones, because MS Project recalculates the schedule when it opens it.</p>
+</section>
+
+<section class="page" id="conversa" data-toc="Talking to an agent about the numbers">
+  <p class="kick">15 <b>· With an agent</b></p>
+  <h1>You ask. The agent answers with the engine's numbers.</h1>
+  <p class="lede">The skill teaches the agent to run the engine and to quote what it measured. The agent does not work the schedule out in its head.</p>
+  <div class="chat">
+    <div class="bar">Claude Code <span class="where">· in the folder ~/cronoaudit-exemplo · free mode</span>{{mark ilus}}</div>
+    <div class="body">
+      <div class="you"><div class="who">You</div><p>Compare rev03 with rev04 and tell me what changed, by topic.</p></div>
+      <div class="agent"><div class="who">Agent</div>
+        <p>I ran the engine on both deliveries. I start with the deadline and, before progress, with what touches the measurement.</p>
+        <p class="e">{{R cycle c1 3}}</p>
+        <p class="e">{{R cycle c1 0}}</p>
+        <p>Three points need an answer from the contractor before any percentage:</p>
+        <p class="e">{{R cycle c5 2}}</p>
+        <p class="e">{{R cycle c5 1}}</p>
+        <p class="e">{{R review forensics 1}}</p>
+        <p>On progress:</p>
+        <p class="e">{{R cycle movement 0}}</p>
+        <p>The report is open in the browser. Do you want the list of what to ask?</p>
+      </div>
+      <div class="you"><div class="who">You</div><p>Where does the viaduct's delay come from?</p></div>
+      <div class="agent"><div class="who">Agent</div>
+        <p class="e">{{R cycle c1 2}}</p>
+        <p class="e">{{R cycle c4 0}}</p>
+        <p>That is row 157. The longer duration is on the list of what to ask:</p>
+        <p class="e">{{D 3}}</p>
+      </div>
+    </div>
+    <div class="legend"><b></b>A sentence of the engine, copied from this guide's run. The rest of the dialogue is an illustration.</div>
+  </div>
+  <div class="gap"></div>
+  <div class="cols">
+    <div><h2>What to say</h2><p class="small">Review Rev04.mpp. Compare Rev03 with Rev04 and tell me what changed. Which milestones are at risk? Write the executive summary and generate the final report.</p></div>
+    <div><h2>Where what the agent reads goes</h2><p class="small">To its provider, under the terms of your account or your company's. The engine sends nothing. If the schedule may not leave the computer, use secret mode, on page {{pg secreto}}.</p></div>
+  </div>
+</section>
+
+<section class="page" id="agentes" data-z="1.07" data-toc="Three agents, and what was tested on each">
+  <p class="kick">16 <b>· Agents</b></p>
+  <h1>Use the agent you prefer, or the one your company allows.</h1>
+  <p class="lede">cronoaudit follows the open Agent Skills format. This guide covers three agents. It also works with no agent at all.</p>
+  <div class="cols">
+    <div class="chat">
+      <div class="bar">GitHub Copilot CLI <span class="where">· free mode</span>{{mark ilus}}</div>
+      <div class="body">
+        <div class="you"><div class="who">You</div><p>Which milestones are at risk of missing their deadline?</p></div>
+        <div class="agent"><div class="who">Agent</div>
+          <p class="e">{{R review deadlines 0}}</p>
+          <p class="e">{{R review deadlines 1}}</p>
+          <p>Margins today, in calendar days: row 7, +5. Row 8, +3. Row 9, +1.</p>
+          <p class="e">{{R review forecast 3}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="chat">
+      <div class="bar">Codex <span class="where">· free mode</span>{{mark ilus}}</div>
+      <div class="body">
+        <div class="you"><div class="who">You</div><p>What do I ask the contractor first?</p></div>
+        <div class="agent"><div class="who">Agent</div>
+          <p>There are 12 items in three groups. The integrity of the measurement comes first:</p>
+          <p class="e">{{D 0}}</p>
+          <p class="e">{{D 1}}</p>
+          <p class="e">{{D 2}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="cap">Both conversations are illustrations. The sentences with the red bar are the engine's.</p>
+  <div class="gap2"></div>
+  <h2>What was tested, and when</h2>
+  <table>
+    <tr><th>Agent</th><th>Free mode</th><th>Secret mode</th></tr>
+    <tr><td class="k">Claude Code</td><td>Tested end to end.</td><td>Tested end to end. The folder carries rules and a lock that keeps the agent inside it.</td></tr>
+    <tr><td class="k">GitHub Copilot CLI</td><td>Tested on 21/11/2026.</td><td>Tested on 25/11/2026. Without the lock, it followed the folder's written rules.</td></tr>
+    <tr><td class="k">Codex</td><td colspan="2">Installation and use per the provider's documentation.</td></tr>
+  </table>
+  <div class="gap"></div>
+  <div class="cols">
+    <div class="note">
+      <div class="k">The lock</div>
+      <p>The lock that keeps the agent inside the secret-mode folder exists only in Claude Code. In other agents, the same rules arrive as written instructions.</p>
+    </div>
+    <div class="note">
+      <div class="k">Your company's policy</div>
+      <p>Each agent needs an account with its provider. Check your company's policy before using an agent with a contract schedule.</p>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="secreto" data-z="1.07" data-toc="Secret mode: the agent reads only a coded copy">
+  <p class="kick">17 <b>· Secret mode</b></p>
+  <h1>Talk to the agent without the names, values and dates leaving the computer.</h1>
+  <div class="cols c3">
+    <div><h3>1. The engine runs here</h3><p class="small">On the real file, on your computer, as always.</p></div>
+    <div><h3>2. The agent reads a copy</h3><p class="small">In a separate folder, with names replaced by codes, dates by day counts and money multiplied by a secret factor.</p></div>
+    <div><h3>3. The way back is local</h3><p class="small">The report with the real data is built on your computer, when you ask for it.</p></div>
+  </div>
+  <div class="gap"></div>
+  <h2>The question comes before anything is read</h2>
+  {{term question}}
+  <p class="cap">At a terminal, the engine asks the mode before opening the schedule. Here the answer was <code>y</code>. Answering <code>secret</code> leads to the next page.</p>
+  <div class="gap"></div>
+  <h2>Asked from inside an agent session, the engine stops</h2>
+  {{term refuse}}
+  <p class="cap">Secret mode protects only if the agent never holds the original. That is why the person runs the command, in their own terminal, or from the button on the Cronoaudit tab in MS Project.</p>
+  <div class="gap"></div>
+  <table>
+    <tr><th>Becomes a code</th><th>Example</th><th>Stays real</th></tr>
+    <tr><td>Names of projects, activities, resources and calendars</td><td class="k"><span class="tok">T·3fa91c</span></td><td rowspan="3">Durations, percentages, counts, ratios, row numbers and WBS codes.</td></tr>
+    <tr><td>Dates</td><td class="k"><span class="tok">D+0412</span>, days from a secret origin</td></tr>
+    <tr><td>Money</td><td class="k"><span class="tok">¤1,234,567</span>, multiplied by a secret factor</td></tr>
+  </table>
+</section>
+
+<section class="page" id="secreto2" data-z="1.14" data-toc="A secret run, from the command to the work folder">
+  <p class="kick">18 <b>· Secret mode, in the terminal</b></p>
+  <h1 class="wide">The same comparison, now in codes.</h1>
+  <div class="cols c32">
+    <div>
+      {{term secret}}
+      <p class="cap">Captured with the fictitious example only, in a terminal without the agent-session variables, as the test suite does.</p>
+    </div>
+    <div>
+      {{term workdir}}
+      <div class="gap"></div>
+      <h2>What changed in the output</h2>
+      <p>Compare it with page {{pg terminal}}. The percentages and the counts are the same. File names became <span class="tok">P·</span>, activity names became <span class="tok">T·</span> and dates became <span class="tok">D+</span>.</p>
+      <h2>What is in the folder</h2>
+      <p>The coded copies of the reports and of the figures, and the rules for the agent. The original is not there. The table that undoes the codes stays in a vault, outside the folder.</p>
+      <div class="note">
+        <div class="k">The folder's rules</div>
+        <p class="small">Read only the files in the folder. Never ask for or open the original schedule. Quote the codes as written. Write the synthesis only when the person asks.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="secreto3" data-z="1.07" data-toc="The same reading, real and coded, side by side">
+  <p class="kick">19 <b>· Secret mode, side by side</b></p>
+  <h1 class="wide">What you see, and what the agent sees.</h1>
+  <p class="lede">The same sentence of the engine, in this guide's two runs. On the left, the real report. On the right, the copy the agent reads.</p>
+  <div class="sbs"><div><div class="h">On your computer</div><p>{{R cycle c1 3}}</p></div><div><div class="h">In the agent's folder</div><p>{{C cycle c1 3}}</p></div></div>
+  <div class="sbs"><div><div class="h">On your computer</div><p>{{R cycle c5 2}}</p></div><div><div class="h">In the agent's folder</div><p>{{C cycle c5 2}}</p></div></div>
+  <div class="sbs"><div><div class="h">On your computer</div><p>{{R cycle c5 1}}</p></div><div><div class="h">In the agent's folder</div><p>{{C cycle c5 1}}</p></div></div>
+  <p class="cap">{{mark eng}}Sentences copied from the readings files of the two runs. The 21 days, the 100% and the row number are the same on both sides.</p>
+  <div class="gap"></div>
+  <div class="cols">
+    <div>
+      {{img cycle-cobrar ~/cronoaudit-exemplo/…-cycle.html 92mm}}
+      <p class="cap">What to ask, in the real report.</p>
+    </div>
+    <div>
+      {{img coded-cobrar ~/cronoaudit-work/{{run}}/previous--to--current-cycle.html 92mm}}
+      <p class="cap">The same section, in the coded copy.</p>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="secreto4" data-z="1.07" data-toc="The conversation in codes and the way back">
+  <p class="kick">20 <b>· Secret mode, the way back</b></p>
+  <h1 class="wide">The conversation happens in codes. The translation, on your computer.</h1>
+  <div class="chat">
+    <div class="bar">Your agent <span class="where">· started inside ~/cronoaudit-work/{{run}}</span>{{mark ilus}}</div>
+    <div class="body">
+      <div class="you"><div class="who">You</div><p>What changed in the finish, and what do I need to ask first?</p></div>
+      <div class="agent"><div class="who">Agent</div>
+        <p class="e">{{C cycle c1 3}}</p>
+        <p class="e">{{C cycle c5 2}}</p>
+        <p class="e">{{C cycle c1 2}}</p>
+        <p class="e">{{DC 3}}</p>
+        <p>Do you want me to write the synthesis and build the final report with the real names? It is built on your computer.</p>
+      </div>
+    </div>
+    <div class="legend"><b></b>A sentence of the engine, in this run's coded form. The rest of the dialogue is an illustration.</div>
+  </div>
+  <div class="gap"></div>
+  <h2>To read the answer with the real names</h2>
+  {{term decode}}
+  <p class="cap">The four sentences above, saved to a file and translated by the <code>text</code> command. Only the person runs that command, in their own terminal, outside the agent.</p>
+  <div class="gap"></div>
+  <h2>For the final report</h2>
+  {{term finish}}
+  <p class="cap">The <code>finish</code> command decodes the reports and checks every value against the engine's own output.</p>
+  <div class="gap"></div>
+  <div class="cols">
+    <div class="note"><div class="k">What secret mode does not do</div><p class="small">The codes do not make the schedule anonymous: its structure and durations stay readable. It does not replace your company's policy on AI services.</p></div>
+    <div class="note"><div class="k">Speak by code or by row</div><p class="small">Whatever you type with a real name goes to the AI service. Refer to activities by their code or row number.</p></div>
+  </div>
+</section>
+
+<section class="page" id="caminhos" data-z="1.14" data-toc="Three ways to use it, the data and the limits">
+  <p class="kick">21 <b>· Day to day</b></p>
+  <h1>Three paths. The engine is the same.</h1>
+  <table>
+    <tr><th>You prefer</th><th>Path</th><th>What you do</th></tr>
+    <tr><td>To talk to an AI and let it run things</td><td class="k">A. Through the agent</td><td>Ask in words: review Rev04.mpp</td></tr>
+    <tr><td>A button, inside MS Project itself</td><td class="k">B. The Cronoaudit tab (Windows)</td><td>Click Relatório or Analisar</td></tr>
+    <tr><td>No AI, or a computer with no agent</td><td class="k">C. The engine</td><td>One command, on the exported XML</td></tr>
+  </table>
+  <div class="gap2"></div>
+  <div class="cols">
+    <div>
+      <h2>Where the file comes from</h2>
+      <p>In MS Project: File, Save As, XML Format. That is Project's own format and nothing cronoaudit uses is lost. On Windows with Project installed, the engine also takes the <code>.mpp</code> directly and asks Project to export it. The file is opened read-only.</p>
+      <h2>Where your data goes</h2>
+      <ul>
+        <li>The engine runs on your computer and sends nothing.</li>
+        <li>The installers download this repository from GitHub and, on Windows, Python, if it is missing.</li>
+        <li>What an agent reads goes to its provider.</li>
+        <li>If the policy does not allow an agent, use path C or the tab's buttons that use no AI.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>What cronoaudit does not do</h2>
+      <ul>
+        <li>It does not read Primavera P6. Today the input is MS Project.</li>
+        <li>It does not certify against DCMA. The fourteen metrics are an implementation, with the thresholds quoted.</li>
+        <li>It does not produce a contractual delay claim. The forensics show the mechanism.</li>
+        <li>It does not recalculate the network. It reads the dates, the float and the Critical flag the file carries.</li>
+      </ul>
+      <div class="note">
+        <div class="k">Beyond this guide</div>
+        <p class="small">The technical manual explains every concept, every section of the report and how to reproduce every figure. Source, licence and the latest version: github.com/Holiv/cronoaudit</p>
+      </div>
+    </div>
+  </div>
+  <h2>With one file only</h2>
+  <div class="cols">
+    <div>
+      <p>Without the previous delivery, the report is the review of that revision: deadlines, nine checks, S-curve, progress by group, productivity by resource, fourteen metrics, looking forward and forensics.</p>
+      <p class="small">To weigh progress by discipline instead of by segment, add <code>--group-by DISCIPLINA</code>. The example carries two custom fields, DISCIPLINA and SEGMENTO.</p>
+    </div>
+    <div class="reading tight">
+      {{mark eng}}
+      <p>{{R review verdict 2}}</p>
+      <p>{{R review groups 0}}</p>
+      <p>{{R review groups 1}}</p>
+    </div>
+  </div>
+</section>
+
+<section class="page sheet" id="cola" data-toc="One-page cheat sheet">
+  <p class="kick">22 <b>· Cheat sheet</b></p>
+  <h1 class="wide">cronoaudit {{V}} on one page</h1>
+  <div class="box"><h2>Install</h2>
+  <p>macOS and Linux, in Terminal:</p>
+  <pre>curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash</pre>
+  <p>Windows, in PowerShell:</p>
+  <pre>irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex</pre>
+  <p>To update, run the same command again.</p>
+  </div>
+  <div class="cols">
+    <div>
+      <div class="box"><h2>Run with no agent</h2>
+        <pre>R=~/.claude/skills/cronoaudit/scripts/review.py
+python3 $R --example             # the example
+python3 $R Rev04.xml             # one delivery
+python3 $R Rev03.xml Rev04.xml   # two deliveries</pre>
+        <table>
+          <tr><td class="k"><code>--free</code></td><td>free mode, without the question</td></tr>
+          <tr><td class="k"><code>--secret</code></td><td>secret mode: writes the coded folder</td></tr>
+          <tr><td class="k"><code>--group-by DISCIPLINA</code></td><td>weighs by a custom field</td></tr>
+          <tr><td class="k"><code>--outdir folder</code></td><td>where to write the report</td></tr>
+          <tr><td class="k"><code>--lang en</code></td><td>forces the report language</td></tr>
+        </table>
+        <p class="small" style="margin-top:1.4mm">With two files, the previous one goes first. On Windows, use the line the installer prints at the end: the Python it brings is not on the PATH.</p>
+      </div>
+      <div class="box"><h2>Secret mode, in four steps</h2>
+        <ol class="steps">
+          <li><div>In your own terminal: <code>review.py Rev03.xml Rev04.xml --secret</code></div></li>
+          <li><div>Start the agent inside the folder the command prints.</div></li>
+          <li><div>Talk by code or by row number.</div></li>
+          <li><div>Ask for the final report. It is built on your computer, with the real names.</div></li>
+        </ol>
+      </div>
+      <div class="box"><h2>The Cronoaudit tab in MS Project (Windows)</h2>
+        <table>
+          <tr><td class="k">Analisar</td><td>asks the mode and opens your agent with the schedule</td></tr>
+          <tr><td class="k">Comparar versões</td><td>the same, with two versions from the same folder</td></tr>
+          <tr><td class="k">Relatório, Comparar</td><td>no AI: writes the report and opens it in the browser</td></tr>
+          <tr><td class="k">Exportar XML</td><td>only exports, to take to another computer</td></tr>
+        </table>
+      </div>
+      <div class="box"><h2>Where it is</h2>
+        <p>github.com/Holiv/cronoaudit<br>Apache 2.0 licence. Technical manual in <code>docs/manual</code>. Example in <code>examples</code>.</p>
+      </div>
+    </div>
+    <div>
+      <div class="box"><h2>The question and the section that answers it</h2>
+        <table>
+          <tr><td>Does any milestone pass its deadline?</td><td class="k">Deadlines</td></tr>
+          <tr><td>Did anyone touch what was already measured?</td><td class="k">Integrity of the measurement</td></tr>
+          <tr><td>Did the date move by the works or by the plan?</td><td class="k">Replanning</td></tr>
+          <tr><td>Is the percentage all progress?</td><td class="k">Progress</td></tr>
+          <tr><td>Where did the delay come in?</td><td class="k">Forensics</td></tr>
+          <tr><td>What do I ask the contractor?</td><td class="k">What to ask</td></tr>
+        </table>
+      </div>
+      <div class="box"><h2>What to say to the agent</h2>
+        <p class="say">Review Rev04.mpp.</p>
+        <p class="say">Compare Rev03 with Rev04 and tell me what changed.</p>
+        <p class="say">Which milestones are at risk of missing their deadline?</p>
+        <p class="say">Where does this milestone's delay come from?</p>
+        <p class="say">Write the executive summary and generate the final report.</p>
+      </div>
+      <div class="box"><h2>The reading order of the report</h2>
+        <p>1. Deadlines. 2. Integrity of the measurement. 3. Replanning. 4. Progress. 5. Float and critical path. 6. Network quality. Last, what to ask the contractor.</p>
+      </div>
+      <div class="box"><h2>Agents</h2>
+        <table>
+          <tr><td class="k">Claude Code</td><td>tested end to end</td></tr>
+          <tr><td class="k">GitHub Copilot CLI</td><td>free mode on 21/11/2026, secret mode on 25/11/2026</td></tr>
+          <tr><td class="k">Codex</td><td>per the provider's documentation</td></tr>
+        </table>
+        <p class="small" style="margin-top:1.4mm">The secret-mode lock exists only in Claude Code.</p>
+      </div>
+      <div class="box"><h2>Limits</h2>
+        <p>Reads MS Project (XML, or <code>.mpp</code> on Windows with Project). Does not read Primavera P6. Computes the fourteen DCMA-style metrics and does not certify against DCMA. Does not produce a delay claim.</p>
+      </div>
+    </div>
+  </div>
+</section>

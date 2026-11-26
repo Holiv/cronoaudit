@@ -1,0 +1,102 @@
+{
+  "lang": "pt",
+  "language": {
+    "lang": "pt",
+    "scores": {
+      "pt": 744,
+      "en": 2
+    },
+    "words": 929,
+    "diacritics": 237,
+    "confidence": "high",
+    "basis": "function-word and diacritic score over activity, calendar and project names"
+  },
+  "inputs": {
+    "network": {
+      "state": "linked",
+      "links": 220,
+      "open": 96,
+      "unlinked": 4,
+      "share_pct": 4.17,
+      "threshold_pct": 5.0,
+      "basis": "links between leaf activities; missing logic (Q1) = open activities with no predecessor or no successor, against its quoted threshold"
+    },
+    "network_gate": {
+      "scope": "scoped",
+      "pairs": [
+        {
+          "succ_id": 36,
+          "succ_name": "T·e82723",
+          "pred_id": 35,
+          "pred_name": "T·43d81b"
+        }
+      ],
+      "pair_count": 1,
+      "milestones": [
+        {
+          "id": 5,
+          "name": "T·45a65a"
+        },
+        {
+          "id": 6,
+          "name": "T·32017d"
+        }
+      ],
+      "reasons": [],
+      "threshold_pairs": 3,
+      "basis": "absolute with total inversion, more than threshold_pairs pairs, or a pair on an unfinished critical activity or on the chain driving the project finish; the threshold is ours",
+      "text": [
+        "1 par executado fora de sequência: linha 36, T·e82723, contra a predecessora linha 35, T·43d81b. Ele não está no caminho crítico nem na cadeia que conduz o término do projeto, então nem toda data de tendência se apoia nele; até 3 pares nessa posição são nomeados em vez de lidos como rede quebrada (o limite é nosso).",
+        "As cadeias condutoras de T·45a65a (linha 5) e T·32017d (linha 6) passam por esse par: resolva antes de citar as datas desses marcos."
+      ]
+    },
+    "file_earned_value": true,
+    "file_planned_value": true,
+    "baseline_time_phased": true,
+    "planned_available": true
+  },
+  "baseline": "linha de base",
+  "readings": {
+    "verdict": [
+      "1 par executado fora de sequência: linha 36, T·e82723, contra a predecessora linha 35, T·43d81b. Ele não está no caminho crítico nem na cadeia que conduz o término do projeto, então nem toda data de tendência se apoia nele; até 3 pares nessa posição são nomeados em vez de lidos como rede quebrada (o limite é nosso).",
+      "As cadeias condutoras de T·45a65a (linha 5) e T·32017d (linha 6) passam por esse par: resolva antes de citar as datas desses marcos.",
+      "O avanço ponderado é 28,01% contra 31,07% previsto: 3,06 pontos atrás.",
+      "O valor agregado da skill bateu com o do arquivo em 43 de 43 folhas ao centavo, zero contra zero fica fora: nada difere."
+    ],
+    "scurve": [
+      "O IDP acumulado é 0,902: a obra agregou 90,2% do que o plano esperava até agora.",
+      "O outro método de valor agregado leria 28,46% em vez de 28,01%, diferença de 0,44 pontos. Trocar o método muda a curva, não a obra.",
+      "100% dessa diferença vem da linha 55, T·367993: 95% concluída pela duração, 57% físico."
+    ],
+    "groups": [
+      "T·948154 carrega 24,0% do orçamento e está em 20,7% realizado contra 24,6% previsto.",
+      "1 grupo está mais de 5 pontos atrás do próprio previsto; o maior é T·4b6cd6."
+    ],
+    "productivity": [
+      "Das 6 atividades em andamento com tendência, 5 se apoiam em evidência sólida: 2 adiantadas, 0 para reprogramar, 1 com a linha de base perdida e a folga absorvendo, 1 que entrariam no caminho crítico.",
+      "1 projeção se apoia em evidência fina ou em quantidade derivada de percentual; leia como pergunta, não como veredicto.",
+      "1 atividade tem medição inconsistente e nenhum veredicto de ritmo: a quantidade executada e o % físico não batem. Linha 55, T·367993: 95% pela quantidade, 57% físico."
+    ],
+    "quality": [
+      "A rede não atende 2 das métricas quantitativas: Q11 Atividades perdidas, Q14 Índice de execução da linha de base.",
+      "De 43 atividades devidas até a data de status, 28 terminaram no prazo: índice de execução da linha de base de 0,65."
+    ],
+    "forecast": [
+      "O Earned Schedule cai em d+0687: o plano alcançou o realizado de hoje há 13 dias, eficiência de prazo SPI(t) de 0,947.",
+      "Nesta eficiência o término independente é d+1057 e o término do próprio cronograma é d+1060: com até 7 dias de diferença, o ritmo realizado e o cronograma concordam na data.",
+      "O TSPI é 1,040: o restante precisa rodar 4,0% acima do plano para terminar na data prevista. Modesto porque a maior parte da duração ainda está pela frente, não porque o atraso seja pequeno.",
+      "As próximas 4 semanas preveem 11,42% de medição; o ritmo praticado entrega 3,99%. Não alcançável sem mudança de ritmo.",
+      "50% do custo remanescente cai em meses que os calendários reservam para tempo ruim, 52% se tudo escorregar trinta dias."
+    ],
+    "deadlines": [
+      "Os 7 marcos com data limite terminam dentro dela no cronograma atual. A menor margem é a da linha 9, T·00dde6: 1 dia.",
+      "Com o escorregamento que 80% das atividades não ultrapassaram (7 dias), mais 3 marcos passam da data limite: linhas 7, 8, 9.",
+      "O atraso da linha 9 nasce na linha 148, T·600124 (+11 dias contra a linha de base)."
+    ],
+    "forensics": [
+      "7 de 7 marcos futuros têm origem nomeada; a atividade 148, T·600124, origina atraso em 2 deles.",
+      "Na cadeia condutora de T·b2b191, a linha 132, T·27ebc8, mostra variação de -9 dias úteis contra uma linha de base que se moveu +28 dias corridos neste ciclo: parte dessa variação é a referência se movendo, não a obra.",
+      "De 45 atividades iniciadas, 9 começaram cedo e 13 tarde; o início mediano caiu na data da linha de base."
+    ]
+  }
+}

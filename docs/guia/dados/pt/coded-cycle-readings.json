@@ -1,0 +1,109 @@
+{
+  "lang": "pt",
+  "readings": {
+    "movement": [
+      "O avanço ponderado foi de 23,44% para 28,01%: 4,57 pontos. O avanço por atividade soma 4,90, mais que o movimento: 0,33 pontos foram retirados por algo que não é trabalho feito.",
+      "A diferença tem nome: −0,27 pontos do valor agregado apagado com uma atividade removida (linha 119 da entrega anterior, T·0d8e3a, a 100%: ¤805.819); −0,06 pontos do orçamento na conclusão, que foi de ¤296.959.177 para ¤297.745.939 (+¤1.592.581 de inseridas, −¤805.819 de removidas)."
+    ],
+    "trend": [
+      "12 atividades moveram datas com datas reais por trás e 89 sem nenhuma; a própria linha de base se moveu em 1."
+    ],
+    "scope": [
+      "1 atividade inserida e 1 removida."
+    ],
+    "c1": [
+      "Os 7 marcos com data limite terminam dentro dela no cronograma atual. A menor margem é a da linha 9, T·00dde6: 1 dia.",
+      "Com o escorregamento que 80% das atividades não ultrapassaram (7 dias), mais 3 marcos passam da data limite: linhas 7, 8, 9.",
+      "O atraso da linha 9 nasce na linha 148, T·600124 (+11 dias contra a linha de base).",
+      "O término do projeto foi de d+1039 para d+1060: 21 dias corridos mais tarde.",
+      "O que segura a data atual é a linha 174, T·6acdc8, com término em d+1060. É uma aproximação: a atividade em aberto que termina por último, percorrida para trás pela predecessora que chega mais tarde; a rede não foi recalculada.",
+      "A mesma atividade segurava a data na entrega anterior."
+    ],
+    "c2": [
+      "Nenhuma atividade entrou ou saiu do caminho crítico. Críticas agora: 18, contra 18 antes.",
+      "71 atividades não concluídas perderam um dia útil de folga ou mais; a maior perda é de 25,0 dias, na linha 63.",
+      "Lido pelo próprio campo Crítica da ferramenta."
+    ],
+    "c3": [
+      "1 vínculo incluído, 1 removido, 0 com a latência alterada e 0 com o tipo alterado, entre atividades presentes nas duas entregas.",
+      "Outros 3 vínculos estão em atividades inseridas ou removidas: é escopo, não lógica editada.",
+      "Restrições em atividades não concluídas: 1 incluída, 0 alteradas e 0 removidas."
+    ],
+    "c4": [
+      "1 atividade sem início real em nenhuma das entregas teve a duração editada: 1 mais longa e 0 mais curtas, saldo de 8,0 dias úteis. Nada foi executado nelas; é o plano reescrito."
+    ],
+    "c5": [
+      "O passado foi reescrito em 2 atividades: 0 inícios reais e 1 término real mudaram, 0 percentuais concluídos caíram e 1 atividade com avanço registrado foi removida.",
+      "1 atividade com avanço registrado foi removida do cronograma, levando ¤805.819 de valor agregado; a maior é a linha 119 da entrega anterior, T·0d8e3a, a 100%.",
+      "1 das datas reais alteradas passou a coincidir exatamente com a linha de base (linha 29, T·840b1b, d+0553 → d+0549): o registro foi ajustado ao plano; peça a evidência.",
+      "Todo número que o ciclo anterior informou sobre essas atividades se apoiava num registro que não existe mais. Peça que cada correção seja declarada."
+    ],
+    "c6": [
+      "Das 13 métricas calculáveis nas duas entregas, 4 pioraram, 3 melhoraram e 6 não se moveram.",
+      "Passaram de não atende para atende: Q6 Folga alta.",
+      "Índice de execução da linha de base: 0,80 antes, 0,65 agora."
+    ]
+  },
+  "demands": [
+    {
+      "group": "Integridade da medição",
+      "id": 29,
+      "text": "Justificar a alteração do término real da linha 29, T·840b1b: d+0553 → d+0549, que passou a coincidir com a data da linha de base."
+    },
+    {
+      "group": "Integridade da medição",
+      "id": 119,
+      "text": "Explicar a remoção da linha 119 da entrega anterior, T·0d8e3a, que estava a 100%."
+    },
+    {
+      "group": "Integridade da medição",
+      "id": 132,
+      "text": "Apresentar a aprovação da mudança de linha de base da linha 132, T·27ebc8 (término da linha de base +28 dias)."
+    },
+    {
+      "group": "Replanejamento",
+      "id": 157,
+      "text": "Justificar o aumento de duração da linha 157, T·8e14aa: 12 → 20 dias úteis."
+    },
+    {
+      "group": "Replanejamento",
+      "id": 63,
+      "text": "Justificar o adiamento de 53 dias no término da linha 63, T·62903a, movido pelo plano sem avanço registrado."
+    },
+    {
+      "group": "Replanejamento",
+      "id": 66,
+      "text": "Justificar o adiamento de 25 dias no término da linha 66, T·dd147f, movido pelo plano sem avanço registrado."
+    },
+    {
+      "group": "Replanejamento",
+      "id": 32,
+      "text": "Justificar o adiamento de 15 dias no término da linha 32, T·daaa7d, movido pelo plano sem avanço registrado."
+    },
+    {
+      "group": "Replanejamento",
+      "id": 38,
+      "text": "Justificar o adiamento de 15 dias no término da linha 38, T·bd9b1e, movido pelo plano sem avanço registrado."
+    },
+    {
+      "group": "Replanejamento",
+      "id": 57,
+      "text": "Justificar a nova linha 57, T·705fed, e de onde veio o seu orçamento."
+    },
+    {
+      "group": "Lógica",
+      "id": 127,
+      "text": "Justificar a retirada do vínculo 123 → 127, T·18ea7d."
+    },
+    {
+      "group": "Lógica",
+      "id": 63,
+      "text": "Justificar a restrição Não Iniciar Antes De incluída na linha 63, T·62903a."
+    },
+    {
+      "group": "Lógica",
+      "id": 106,
+      "text": "Confirmar o novo vínculo 94 → 106, T·c81f59."
+    }
+  ]
+}

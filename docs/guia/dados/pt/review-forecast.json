@@ -1,0 +1,706 @@
+{
+  "status_date": "2026-10-30T17:00:00",
+  "earned_schedule": {
+    "available": true,
+    "project_start": "2026-03-01",
+    "status_date": "2026-10-30",
+    "ev_pct": 28.01,
+    "pv_pct": 31.07,
+    "es_date": "2026-10-17",
+    "at_days": 243,
+    "es_days": 230,
+    "sv_t_days": -13,
+    "spi_t": 0.9465,
+    "planned_finish": "2027-09-20",
+    "pd_days": 568,
+    "ieac_t_days": 600,
+    "ieac_t_date": "2027-10-22",
+    "schedule_finish": "2027-10-25",
+    "gap_vs_schedule_days": -3,
+    "gap_reading": "agree",
+    "gap_agree_days": 7,
+    "tspi": 1.04,
+    "tspi_verdict": "hard",
+    "limits": "aggregate and cost-weighted; blind to the critical path; inherits the baseline slot, the earned-value method and everything the planned curve inherits. Set beside the schedule's own finish, never in its place."
+  },
+  "lookahead": [
+    {
+      "weeks": 4,
+      "from": "2026-10-31",
+      "to": "2026-11-27",
+      "must_start": 11,
+      "must_finish": 8,
+      "planned_earning": 19977371.68,
+      "planned_earning_pct": 11.42,
+      "projected_earning_at_practised_rate": 6982083.76,
+      "projected_pct": 3.99,
+      "reachable": false,
+      "by_group": [
+        {
+          "group": "7",
+          "starts": 3,
+          "finishes": 1,
+          "cost": 6564000.0,
+          "weight_pct": 3.75
+        },
+        {
+          "group": "5",
+          "starts": 3,
+          "finishes": 1,
+          "cost": 6550400.0,
+          "weight_pct": 3.74
+        },
+        {
+          "group": "3",
+          "starts": 1,
+          "finishes": 2,
+          "cost": 6277500.0,
+          "weight_pct": 3.59
+        },
+        {
+          "group": "4",
+          "starts": 4,
+          "finishes": 4,
+          "cost": 5183760.0,
+          "weight_pct": 2.96
+        }
+      ],
+      "starts": [
+        {
+          "id": 37,
+          "name": "CBUQ — camada de ligação (binder) — Seg. 1",
+          "group": "3",
+          "start": "2026-11-12",
+          "cost": 6277500.0,
+          "weight_pct": 3.587
+        },
+        {
+          "id": 97,
+          "name": "Base de brita graduada simples (BGS) — Seg. 3",
+          "group": "5",
+          "start": "2026-11-24",
+          "cost": 3096720.0,
+          "weight_pct": 1.77
+        },
+        {
+          "id": 66,
+          "name": "Sub-base granular — Seg. 2",
+          "group": "4",
+          "start": "2026-11-27",
+          "cost": 2967800.0,
+          "weight_pct": 1.696
+        },
+        {
+          "id": 156,
+          "name": "Fabricação das vigas pré-moldadas protendidas",
+          "group": "7",
+          "start": "2026-11-11",
+          "cost": 2960000.0,
+          "weight_pct": 1.691
+        },
+        {
+          "id": 96,
+          "name": "Sub-base granular — Seg. 3",
+          "group": "5",
+          "start": "2026-11-13",
+          "cost": 2482160.0,
+          "weight_pct": 1.418
+        },
+        {
+          "id": 153,
+          "name": "Encontros e alas",
+          "group": "7",
+          "start": "2026-11-26",
+          "cost": 1908000.0,
+          "weight_pct": 1.09
+        },
+        {
+          "id": 151,
+          "name": "Pilares",
+          "group": "7",
+          "start": "2026-11-11",
+          "cost": 1696000.0,
+          "weight_pct": 0.969
+        },
+        {
+          "id": 62,
+          "name": "Drenos profundos longitudinais — Seg. 2",
+          "group": "4",
+          "start": "2026-11-05",
+          "cost": 1058200.0,
+          "weight_pct": 0.605
+        },
+        {
+          "id": 93,
+          "name": "Sarjetas e valetas de proteção — Seg. 3",
+          "group": "5",
+          "start": "2026-11-13",
+          "cost": 971520.0,
+          "weight_pct": 0.555
+        },
+        {
+          "id": 57,
+          "name": "Contenção em gabião — talude do km 21+300 — Seg. 2",
+          "group": "4",
+          "start": "2026-11-05",
+          "cost": 936000.0,
+          "weight_pct": 0.535
+        },
+        {
+          "id": 56,
+          "name": "Regularização e compactação do subleito — Seg. 2",
+          "group": "4",
+          "start": "2026-11-05",
+          "cost": 221760.0,
+          "weight_pct": 0.127
+        }
+      ],
+      "finishes": [
+        {
+          "id": 35,
+          "name": "Base de brita graduada simples (BGS) — Seg. 1",
+          "group": "3",
+          "finish": "2026-11-06",
+          "cost": 3366000.0,
+          "weight_pct": 1.924
+        },
+        {
+          "id": 149,
+          "name": "Blocos de coroamento",
+          "group": "7",
+          "finish": "2026-11-10",
+          "cost": 2067000.0,
+          "weight_pct": 1.181
+        },
+        {
+          "id": 55,
+          "name": "Aterro compactado — Seg. 2",
+          "group": "4",
+          "finish": "2026-11-04",
+          "cost": 2048200.0,
+          "weight_pct": 1.17
+        },
+        {
+          "id": 62,
+          "name": "Drenos profundos longitudinais — Seg. 2",
+          "group": "4",
+          "finish": "2026-11-26",
+          "cost": 1058200.0,
+          "weight_pct": 0.605
+        },
+        {
+          "id": 57,
+          "name": "Contenção em gabião — talude do km 21+300 — Seg. 2",
+          "group": "4",
+          "finish": "2026-11-26",
+          "cost": 936000.0,
+          "weight_pct": 0.535
+        },
+        {
+          "id": 92,
+          "name": "Drenos profundos longitudinais — Seg. 3",
+          "group": "5",
+          "finish": "2026-11-12",
+          "cost": 885040.0,
+          "weight_pct": 0.506
+        },
+        {
+          "id": 36,
+          "name": "Imprimação — Seg. 1",
+          "group": "3",
+          "finish": "2026-11-11",
+          "cost": 662400.0,
+          "weight_pct": 0.379
+        },
+        {
+          "id": 56,
+          "name": "Regularização e compactação do subleito — Seg. 2",
+          "group": "4",
+          "finish": "2026-11-18",
+          "cost": 221760.0,
+          "weight_pct": 0.127
+        }
+      ]
+    },
+    {
+      "weeks": 8,
+      "from": "2026-10-31",
+      "to": "2026-12-25",
+      "must_start": 16,
+      "must_finish": 13,
+      "planned_earning": 33182561.45,
+      "planned_earning_pct": 18.96,
+      "projected_earning_at_practised_rate": 13964167.53,
+      "projected_pct": 7.98,
+      "reachable": false,
+      "by_group": [
+        {
+          "group": "4",
+          "starts": 5,
+          "finishes": 4,
+          "cost": 8886360.0,
+          "weight_pct": 5.08
+        },
+        {
+          "group": "3",
+          "starts": 3,
+          "finishes": 3,
+          "cost": 7577500.0,
+          "weight_pct": 4.33
+        },
+        {
+          "group": "7",
+          "starts": 3,
+          "finishes": 1,
+          "cost": 6564000.0,
+          "weight_pct": 3.75
+        },
+        {
+          "group": "5",
+          "starts": 3,
+          "finishes": 4,
+          "cost": 6550400.0,
+          "weight_pct": 3.74
+        },
+        {
+          "group": "6",
+          "starts": 2,
+          "finishes": 1,
+          "cost": 1221780.0,
+          "weight_pct": 0.7
+        }
+      ],
+      "starts": [
+        {
+          "id": 37,
+          "name": "CBUQ — camada de ligação (binder) — Seg. 1",
+          "group": "3",
+          "start": "2026-11-12",
+          "cost": 6277500.0,
+          "weight_pct": 3.587
+        },
+        {
+          "id": 67,
+          "name": "Base de brita graduada simples (BGS) — Seg. 2",
+          "group": "4",
+          "start": "2026-12-08",
+          "cost": 3702600.0,
+          "weight_pct": 2.116
+        },
+        {
+          "id": 97,
+          "name": "Base de brita graduada simples (BGS) — Seg. 3",
+          "group": "5",
+          "start": "2026-11-24",
+          "cost": 3096720.0,
+          "weight_pct": 1.77
+        },
+        {
+          "id": 66,
+          "name": "Sub-base granular — Seg. 2",
+          "group": "4",
+          "start": "2026-11-27",
+          "cost": 2967800.0,
+          "weight_pct": 1.696
+        },
+        {
+          "id": 156,
+          "name": "Fabricação das vigas pré-moldadas protendidas",
+          "group": "7",
+          "start": "2026-11-11",
+          "cost": 2960000.0,
+          "weight_pct": 1.691
+        },
+        {
+          "id": 96,
+          "name": "Sub-base granular — Seg. 3",
+          "group": "5",
+          "start": "2026-11-13",
+          "cost": 2482160.0,
+          "weight_pct": 1.418
+        },
+        {
+          "id": 153,
+          "name": "Encontros e alas",
+          "group": "7",
+          "start": "2026-11-26",
+          "cost": 1908000.0,
+          "weight_pct": 1.09
+        },
+        {
+          "id": 151,
+          "name": "Pilares",
+          "group": "7",
+          "start": "2026-11-11",
+          "cost": 1696000.0,
+          "weight_pct": 0.969
+        },
+        {
+          "id": 62,
+          "name": "Drenos profundos longitudinais — Seg. 2",
+          "group": "4",
+          "start": "2026-11-05",
+          "cost": 1058200.0,
+          "weight_pct": 0.605
+        },
+        {
+          "id": 123,
+          "name": "Drenos profundos longitudinais — Seg. 4",
+          "group": "6",
+          "start": "2026-12-22",
+          "cost": 1010100.0,
+          "weight_pct": 0.577
+        },
+        {
+          "id": 93,
+          "name": "Sarjetas e valetas de proteção — Seg. 3",
+          "group": "5",
+          "start": "2026-11-13",
+          "cost": 971520.0,
+          "weight_pct": 0.555
+        },
+        {
+          "id": 57,
+          "name": "Contenção em gabião — talude do km 21+300 — Seg. 2",
+          "group": "4",
+          "start": "2026-11-05",
+          "cost": 936000.0,
+          "weight_pct": 0.535
+        },
+        {
+          "id": 32,
+          "name": "Meios-fios e descidas d'água — Seg. 1",
+          "group": "3",
+          "start": "2026-12-07",
+          "cost": 702000.0,
+          "weight_pct": 0.401
+        },
+        {
+          "id": 38,
+          "name": "Fresagem e reperfilagem da pista existente — Seg. 1",
+          "group": "3",
+          "start": "2026-12-07",
+          "cost": 598000.0,
+          "weight_pct": 0.342
+        },
+        {
+          "id": 56,
+          "name": "Regularização e compactação do subleito — Seg. 2",
+          "group": "4",
+          "start": "2026-11-05",
+          "cost": 221760.0,
+          "weight_pct": 0.127
+        },
+        {
+          "id": 118,
+          "name": "Regularização e compactação do subleito — Seg. 4",
+          "group": "6",
+          "start": "2026-12-19",
+          "cost": 211680.0,
+          "weight_pct": 0.121
+        }
+      ],
+      "finishes": [
+        {
+          "id": 37,
+          "name": "CBUQ — camada de ligação (binder) — Seg. 1",
+          "group": "3",
+          "finish": "2026-12-04",
+          "cost": 6277500.0,
+          "weight_pct": 3.587
+        },
+        {
+          "id": 35,
+          "name": "Base de brita graduada simples (BGS) — Seg. 1",
+          "group": "3",
+          "finish": "2026-11-06",
+          "cost": 3366000.0,
+          "weight_pct": 1.924
+        },
+        {
+          "id": 97,
+          "name": "Base de brita graduada simples (BGS) — Seg. 3",
+          "group": "5",
+          "finish": "2026-12-23",
+          "cost": 3096720.0,
+          "weight_pct": 1.77
+        },
+        {
+          "id": 96,
+          "name": "Sub-base granular — Seg. 3",
+          "group": "5",
+          "finish": "2026-12-11",
+          "cost": 2482160.0,
+          "weight_pct": 1.418
+        },
+        {
+          "id": 149,
+          "name": "Blocos de coroamento",
+          "group": "7",
+          "finish": "2026-11-10",
+          "cost": 2067000.0,
+          "weight_pct": 1.181
+        },
+        {
+          "id": 55,
+          "name": "Aterro compactado — Seg. 2",
+          "group": "4",
+          "finish": "2026-11-04",
+          "cost": 2048200.0,
+          "weight_pct": 1.17
+        },
+        {
+          "id": 117,
+          "name": "Aterro compactado — Seg. 4",
+          "group": "6",
+          "finish": "2026-12-18",
+          "cost": 1955100.0,
+          "weight_pct": 1.117
+        },
+        {
+          "id": 62,
+          "name": "Drenos profundos longitudinais — Seg. 2",
+          "group": "4",
+          "finish": "2026-11-26",
+          "cost": 1058200.0,
+          "weight_pct": 0.605
+        },
+        {
+          "id": 93,
+          "name": "Sarjetas e valetas de proteção — Seg. 3",
+          "group": "5",
+          "finish": "2026-12-11",
+          "cost": 971520.0,
+          "weight_pct": 0.555
+        },
+        {
+          "id": 57,
+          "name": "Contenção em gabião — talude do km 21+300 — Seg. 2",
+          "group": "4",
+          "finish": "2026-11-26",
+          "cost": 936000.0,
+          "weight_pct": 0.535
+        },
+        {
+          "id": 92,
+          "name": "Drenos profundos longitudinais — Seg. 3",
+          "group": "5",
+          "finish": "2026-11-12",
+          "cost": 885040.0,
+          "weight_pct": 0.506
+        },
+        {
+          "id": 36,
+          "name": "Imprimação — Seg. 1",
+          "group": "3",
+          "finish": "2026-11-11",
+          "cost": 662400.0,
+          "weight_pct": 0.379
+        },
+        {
+          "id": 56,
+          "name": "Regularização e compactação do subleito — Seg. 2",
+          "group": "4",
+          "finish": "2026-11-18",
+          "cost": 221760.0,
+          "weight_pct": 0.127
+        }
+      ]
+    }
+  ],
+  "rates_by_group": [],
+  "milestone_bands": {
+    "sample": 43,
+    "p50_days": 0,
+    "p80_days": 7,
+    "basis": "empirical: distribution of finish slippage (current minus baseline, calendar days) across started or due activities in this snapshot, applied to each future milestone's current finish. A series of snapshots replaces it with observed cycle-to-cycle movement.",
+    "milestones": [
+      {
+        "id": 4,
+        "name": "Conclusão da terraplenagem — todos os segmentos",
+        "finish": "2027-01-11",
+        "baseline_finish": "2027-01-05",
+        "slip_now_days": 6,
+        "p50": "2027-01-11",
+        "p80": "2027-01-18",
+        "deadline": "2027-02-16",
+        "critical": false,
+        "margin_days": 36,
+        "p80_margin_days": 29
+      },
+      {
+        "id": 5,
+        "name": "Liberação ao tráfego — Segmento 1 — km 12+000 ao km 18+000",
+        "finish": "2027-03-25",
+        "baseline_finish": "2027-03-16",
+        "slip_now_days": 9,
+        "p50": "2027-03-25",
+        "p80": "2027-04-01",
+        "deadline": "2027-04-09",
+        "critical": false,
+        "margin_days": 15,
+        "p80_margin_days": 8
+      },
+      {
+        "id": 7,
+        "name": "Liberação ao tráfego — Segmento 3 — km 24+000 ao km 30+000",
+        "finish": "2027-05-12",
+        "baseline_finish": "2027-04-26",
+        "slip_now_days": 16,
+        "p50": "2027-05-12",
+        "p80": "2027-05-19",
+        "deadline": "2027-05-17",
+        "critical": false,
+        "margin_days": 5,
+        "p80_margin_days": -2
+      },
+      {
+        "id": 6,
+        "name": "Liberação ao tráfego — Segmento 2 — km 18+000 ao km 24+000",
+        "finish": "2027-06-07",
+        "baseline_finish": "2027-05-28",
+        "slip_now_days": 10,
+        "p50": "2027-06-07",
+        "p80": "2027-06-14",
+        "deadline": "2027-06-18",
+        "critical": false,
+        "margin_days": 11,
+        "p80_margin_days": 4
+      },
+      {
+        "id": 8,
+        "name": "Liberação ao tráfego — Segmento 4 — km 30+000 ao km 36+000",
+        "finish": "2027-07-20",
+        "baseline_finish": "2027-07-02",
+        "slip_now_days": 18,
+        "p50": "2027-07-20",
+        "p80": "2027-07-27",
+        "deadline": "2027-07-23",
+        "critical": false,
+        "margin_days": 3,
+        "p80_margin_days": -4
+      },
+      {
+        "id": 9,
+        "name": "Conclusão do Viaduto V-01 (km 27+400)",
+        "finish": "2027-08-26",
+        "baseline_finish": "2027-07-23",
+        "slip_now_days": 34,
+        "p50": "2027-08-26",
+        "p80": "2027-09-02",
+        "deadline": "2027-08-27",
+        "critical": true,
+        "margin_days": 1,
+        "p80_margin_days": -6
+      },
+      {
+        "id": 10,
+        "name": "Termo de Recebimento Provisório (TRP)",
+        "finish": "2027-10-25",
+        "baseline_finish": "2027-09-20",
+        "slip_now_days": 35,
+        "p50": "2027-10-25",
+        "p80": "2027-11-01",
+        "deadline": "2027-11-03",
+        "critical": true,
+        "margin_days": 9,
+        "p80_margin_days": 2
+      }
+    ]
+  },
+  "rain_exposure": {
+    "available": true,
+    "readable": true,
+    "unreadable_reason": null,
+    "calendars_in_use": 2,
+    "calendars_with_reserve": 2,
+    "non_working_exceptions_in_use": 112,
+    "reserve_rule": "a month with at least 4 non-working exceptions on the activity's calendar",
+    "reserve_min_exceptions": 4,
+    "remaining_total": 125973578.4,
+    "in_reserve": 63592934.77,
+    "share_in_reserve_pct": 50.48,
+    "share_if_slips_30_days_pct": 51.87,
+    "basis": "inferred: remaining cost spread evenly over each activity's current span from the status date; reserve months read from each activity's own calendar",
+    "months": [
+      {
+        "period": "2026-10",
+        "remaining": 669377.88,
+        "in_reserve": 0.0,
+        "share_in_reserve": 0.0
+      },
+      {
+        "period": "2026-11",
+        "remaining": 14910035.08,
+        "in_reserve": 0.0,
+        "share_in_reserve": 0.0
+      },
+      {
+        "period": "2026-12",
+        "remaining": 14742322.39,
+        "in_reserve": 14742322.39,
+        "share_in_reserve": 100.0
+      },
+      {
+        "period": "2027-01",
+        "remaining": 18926695.93,
+        "in_reserve": 18926695.93,
+        "share_in_reserve": 100.0
+      },
+      {
+        "period": "2027-02",
+        "remaining": 16154662.7,
+        "in_reserve": 16154662.7,
+        "share_in_reserve": 100.0
+      },
+      {
+        "period": "2027-03",
+        "remaining": 13769253.75,
+        "in_reserve": 13769253.75,
+        "share_in_reserve": 100.0
+      },
+      {
+        "period": "2027-04",
+        "remaining": 19174638.89,
+        "in_reserve": 0.0,
+        "share_in_reserve": 0.0
+      },
+      {
+        "period": "2027-05",
+        "remaining": 12234055.43,
+        "in_reserve": 0.0,
+        "share_in_reserve": 0.0
+      },
+      {
+        "period": "2027-06",
+        "remaining": 11060717.79,
+        "in_reserve": 0.0,
+        "share_in_reserve": 0.0
+      },
+      {
+        "period": "2027-07",
+        "remaining": 3654596.43,
+        "in_reserve": 0.0,
+        "share_in_reserve": 0.0
+      },
+      {
+        "period": "2027-08",
+        "remaining": 254688.81,
+        "in_reserve": 0.0,
+        "share_in_reserve": 0.0
+      },
+      {
+        "period": "2027-09",
+        "remaining": 191866.67,
+        "in_reserve": 0.0,
+        "share_in_reserve": 0.0
+      },
+      {
+        "period": "2027-10",
+        "remaining": 230666.67,
+        "in_reserve": 0.0,
+        "share_in_reserve": 0.0
+      }
+    ]
+  }
+}

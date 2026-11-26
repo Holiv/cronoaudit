@@ -1,0 +1,102 @@
+{
+  "lang": "en",
+  "language": {
+    "lang": "pt",
+    "scores": {
+      "pt": 744,
+      "en": 2
+    },
+    "words": 929,
+    "diacritics": 237,
+    "confidence": "high",
+    "basis": "function-word and diacritic score over activity, calendar and project names"
+  },
+  "inputs": {
+    "network": {
+      "state": "linked",
+      "links": 220,
+      "open": 96,
+      "unlinked": 4,
+      "share_pct": 4.17,
+      "threshold_pct": 5.0,
+      "basis": "links between leaf activities; missing logic (Q1) = open activities with no predecessor or no successor, against its quoted threshold"
+    },
+    "network_gate": {
+      "scope": "scoped",
+      "pairs": [
+        {
+          "succ_id": 36,
+          "succ_name": "Imprimação — Seg. 1",
+          "pred_id": 35,
+          "pred_name": "Base de brita graduada simples (BGS) — Seg. 1"
+        }
+      ],
+      "pair_count": 1,
+      "milestones": [
+        {
+          "id": 5,
+          "name": "Liberação ao tráfego — Segmento 1 — km 12+000 ao km 18+000"
+        },
+        {
+          "id": 6,
+          "name": "Liberação ao tráfego — Segmento 2 — km 18+000 ao km 24+000"
+        }
+      ],
+      "reasons": [],
+      "threshold_pairs": 3,
+      "basis": "absolute with total inversion, more than threshold_pairs pairs, or a pair on an unfinished critical activity or on the chain driving the project finish; the threshold is ours",
+      "text": [
+        "1 pair executed out of sequence: row 36, Imprimação — Seg. 1, against its predecessor row 35, Base de brita graduada simples (BGS) — Seg. 1. It is off the critical path and off the chain that drives the project finish, so not every forecast date rests on it; up to 3 pairs in that position are named rather than read as a broken network (the threshold is ours).",
+        "The driving chains of Liberação ao tráfego — Segmento 1 — km 12+000 ao km 18+000 (row 5) and Liberação ao tráfego — Segmento 2 — km 18+000 ao km 24+000 (row 6) pass through it: settle it before quoting those milestones' dates."
+      ]
+    },
+    "file_earned_value": true,
+    "file_planned_value": true,
+    "baseline_time_phased": true,
+    "planned_available": true
+  },
+  "baseline": "baseline",
+  "readings": {
+    "verdict": [
+      "1 pair executed out of sequence: row 36, Imprimação — Seg. 1, against its predecessor row 35, Base de brita graduada simples (BGS) — Seg. 1. It is off the critical path and off the chain that drives the project finish, so not every forecast date rests on it; up to 3 pairs in that position are named rather than read as a broken network (the threshold is ours).",
+      "The driving chains of Liberação ao tráfego — Segmento 1 — km 12+000 ao km 18+000 (row 5) and Liberação ao tráfego — Segmento 2 — km 18+000 ao km 24+000 (row 6) pass through it: settle it before quoting those milestones' dates.",
+      "Weighted progress is 28.01% against 31.07% planned: 3.06 points behind.",
+      "The skill's earned value matched the file's own on 43 of 43 leaves to the cent, zero against zero left out: nothing differs."
+    ],
+    "scurve": [
+      "Cumulative SPI is 0.902: the works has earned 90.2% of what the plan expected by now.",
+      "The other earned-value method would read 28.46% instead of 28.01%, a gap of 0.44 points. Switching method changes the curve, not the works.",
+      "100% of that gap comes from row 55, Aterro compactado — Seg. 2: 95% complete by duration, 57% physical."
+    ],
+    "groups": [
+      "Segmento 2 — km 18+000 ao km 24+000 carries 24.0% of the budget and stands at 20.7% earned against 24.6% planned.",
+      "1 group is more than 5 points behind their own plan; the largest is Obras de Arte Especiais — Viaduto V-01 (km 27+400)."
+    ],
+    "productivity": [
+      "Of 6 activities in progress with a trend, 5 rest on solid evidence: 2 ahead, 0 to reprogram, 1 with the baseline missed and the float absorbing it, 1 that would enter the critical path.",
+      "1 projection rests on thin evidence or a percent-derived quantity; read them as questions, not verdicts.",
+      "1 activity has an inconsistent measurement and no pace verdict: the executed quantity and the physical percent disagree. Row 55, Aterro compactado — Seg. 2: 95% by quantity, 57% physical."
+    ],
+    "quality": [
+      "The network fails 2 of the quantitative metrics: Q11 Missed activities, Q14 Baseline execution index.",
+      "Of 43 activities due by the status date, 28 finished on time: a baseline execution index of 0.65."
+    ],
+    "forecast": [
+      "Earned Schedule falls on 2026-10-17: the plan reached today's earned value 13 days ago, a schedule efficiency SPI(t) of 0.947.",
+      "At this efficiency the independent finish is 2027-10-22 and the schedule's own finish is 2027-10-25: within 7 days of each other, the achieved pace and the schedule agree on the date.",
+      "TSPI is 1.040: the remainder must run 4.0% above the plan to finish on the planned date. Modest because most of the duration is still ahead, not because the lag is small.",
+      "The next 4 weeks plan 11.42% of earning; the practised rate delivers 3.99%. Not reachable without a change of pace.",
+      "50% of the remaining cost sits in months the calendars reserve for bad weather, 52% if everything slips thirty days."
+    ],
+    "deadlines": [
+      "All 7 milestones with a deadline finish within it in the current schedule. The smallest margin is row 9, Conclusão do Viaduto V-01 (km 27+400): 1 day.",
+      "With the slippage that 80% of the activities have not exceeded (7 days), 3 more milestones pass the deadline: rows 7, 8, 9.",
+      "The delay of row 9 starts at row 148, Estacas escavadas — encontros (E1 e E2) (+11 days against the baseline)."
+    ],
+    "forensics": [
+      "7 of 7 future milestones trace to a named origin; activity 148, Estacas escavadas — encontros (E1 e E2), originates delay on 2 of them.",
+      "On the driving chain of Liberação ao tráfego — Segmento 4 — km 30+000 ao km 36+000, row 132, CBUQ — capa de rolamento (pista nova e existente) — Seg. 4, shows a variance of -9 working days against a baseline that moved +28 calendar days this cycle: part of that variance is the reference moving, not the works.",
+      "Of 45 started activities, 9 started early and 13 late; the median start fell on the baseline date."
+    ]
+  }
+}

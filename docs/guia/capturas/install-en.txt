@@ -1,0 +1,24 @@
+installed -> ~/.claude/skills/cronoaudit
+installed -> ~/.agents/skills/cronoaudit
+fictitious example -> ~/cronoaudit-exemplo
+verifying ...
+self-test passed
+  report   ~/cronoaudit-exemplo/rodovia-ficticia-rev04-review.html
+  data     ~/cronoaudit-exemplo/rodovia-ficticia-rev04-review.json
+  report   ~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html
+  data     ~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.json
+The example's report opened in the browser. It is also in:
+  ~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html
+
+cronoaudit 1.0.0 is installed.
+
+With an AI agent (Claude Code, Copilot or Codex): open the agent in the schedule's folder and
+ask, for example, "review Rev04.xml". If it was already open, close it and open it again.
+
+With no agent, in a terminal:
+    python3 ~/.claude/skills/cronoaudit/scripts/review.py schedule.xml
+The schedule comes from MS Project: File > Save As > XML Format.
+To see the example again:
+    python3 ~/.claude/skills/cronoaudit/scripts/review.py --example
+
+Manual and help: https://github.com/Holiv/cronoaudit
