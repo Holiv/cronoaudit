@@ -95,7 +95,7 @@ agente, estão em [Instalar](#instalar).
 
 | | |
 |---|---|
-| **29 segundos** | para analisar um cronograma real de 6.484 tarefas e 107 calendários, num notebook comum (Apple M1, medido em 22/11/2026). |
+| **29 segundos** | para analisar um cronograma real com mais de 6 mil linhas, num notebook comum (medido em 22/11/2026). |
 | **Ao centavo** | o valor agregado da cronoaudit é conferido, atividade por atividade, com o que o próprio MS Project calculou. Quando não bate, o relatório diz onde. |
 | **14 de 14** | problemas plantados no exemplo fictício aparecem no relatório. A lista do que foi plantado está em [`examples/`](examples/LEIA-ME.md), e um teste automático confere a cada versão. |
 | **12 cobranças prontas** | na comparação entre duas revisões do exemplo, uma por evidência, a integridade da medição primeiro. |
@@ -341,7 +341,7 @@ O que ele faz e o que não faz:
 - Não substitui a política da sua empresa sobre serviços de IA.
 
 Testado no Windows com o Claude Code em 22 e 23/11/2026, pelo comando, direto do `.mpp` e pelo
-botão do Project, e num cronograma real de 6.484 tarefas: nenhum nome, data ou valor real chegou à
+botão do Project, e num cronograma real com mais de 6 mil linhas: nenhum nome, data ou valor real chegou à
 cópia codificada, e a trava foi conferida chamando-a direto, sem o agente.
 
 ## Se algo der errado
@@ -401,7 +401,7 @@ métricas são uma implementação, identificada como tal.
 ### Procedência
 
 Escrita a partir de um método documentado e genérico, sem portar o código de nenhuma aplicação, e
-medida num programa real de 6.484 tarefas com 107 calendários. Números de escala ficam;
+medida num programa real com mais de 6 mil linhas. Números de escala ficam;
 identidades saem: nenhum empregador, contratada, contrato, quilometragem, pessoa ou valor aparece
 neste repositório.
 

@@ -113,7 +113,7 @@
 <p>To review a single delivery, pass the file to the engine:</p>
 <pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py ~/cronoaudit-exemplo/rodovia-ficticia-rev04.xml</pre>
 <p>While the mode preference is <code>ask</code>, the factory default, the engine asks before opening the file. It says that the results will carry the real data, in free mode, and that if an AI agent reads them later, what it reads goes to its provider. The answers: <code>y</code> or <code>s</code>, yes; <code>secret</code> or <code>secreto</code>, a coded copy for the agent; <code>never</code> or <code>nunca</code>, yes, and do not ask again; <code>n</code> cancels. With no agent, nothing leaves the computer in either mode. Answer yes, or add <code>--free</code> to the command. Chapter 6 explains the modes.</p>
-<p>The terminal shows the summary: the baseline used and why, the threshold, the population, the counting convention, and the nine findings with each one's count. On rev04, A1 flags two activities: row 36, priming on segment 1, started while row 35, graded crushed-stone base, was still open. The other eight stay at zero. On a real schedule of 6,484 tasks and 107 calendars, the analysis took 29 seconds on an ordinary laptop, measured on 22/11/2026. The results sit beside the input file, where <code>&lt;name&gt;</code> is the file's name, here <code>rodovia-ficticia-rev04</code>.</p>
+<p>The terminal shows the summary: the baseline used and why, the threshold, the population, the counting convention, and the nine findings with each one's count. On rev04, A1 flags two activities: row 36, priming on segment 1, started while row 35, graded crushed-stone base, was still open. The other eight stay at zero. On a real schedule of more than 6,000 tasks, the analysis took 29 seconds on an ordinary laptop, measured on 22/11/2026. The results sit beside the input file, where <code>&lt;name&gt;</code> is the file's name, here <code>rodovia-ficticia-rev04</code>.</p>
 <table>
 <tr><th>File</th><th>What it is for</th></tr>
 <tr><td class="m">&lt;name&gt;-review.html</td><td>the report, to open, present and print to PDF</td></tr>
@@ -347,7 +347,7 @@ python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml
 <li>The codes do not make the schedule anonymous: its structure, durations and row numbers stay readable.</li>
 <li>Coding lowers what leaves the computer. It does not replace your company's policy on AI services.</li>
 </ul>
-<p>Tested on Windows with Claude Code on 22 and 23/11/2026, from the command, straight from the .mpp and from the Project button, and on a real 6,484-task schedule: no real name, date or value reached the coded copy, and the guard was checked by calling it directly, without the agent.</p>
+<p>Tested on Windows with Claude Code on 22 and 23/11/2026, from the command, straight from the .mpp and from the Project button, and on a real schedule of more than 6,000 tasks: no real name, date or value reached the coded copy, and the guard was checked by calling it directly, without the agent.</p>
 </section>
 
 <section class="ch">

@@ -113,7 +113,7 @@
 <p>Para analisar uma entrega só, passe o arquivo ao motor:</p>
 <pre>python3 ~/.claude/skills/cronoaudit/scripts/review.py ~/cronoaudit-exemplo/rodovia-ficticia-rev04.xml</pre>
 <p>Enquanto a preferência de modo for <code>ask</code>, que é o padrão de fábrica, o motor pergunta antes de abrir o arquivo. Ele avisa que os resultados vão sair com os dados reais, no modo livre, e que, se um agente de IA ler esses arquivos depois, o que ele ler vai para o fornecedor dele. As respostas: <code>s</code>, sim; <code>secreto</code>, uma cópia codificada para o agente; <code>nunca</code>, sim, e não perguntar mais; <code>n</code> cancela. Sem agente, nada sai do computador em nenhum dos modos. Responda <code>s</code>, ou acrescente <code>--free</code> ao comando. O capítulo 6 explica os modos.</p>
-<p>O terminal mostra o resumo: a linha de base usada e por quê, o limiar, a população, a convenção de contagem, e os nove achados com a contagem de cada um. Na rev04, o A1 acusa duas atividades: a linha 36, imprimação do segmento 1, começou com a linha 35, base de brita graduada, ainda aberta. Os outros oito ficam em zero. Num cronograma real de 6.484 tarefas e 107 calendários, a análise levou 29 segundos num notebook comum, medidos em 22/11/2026. Ao lado do arquivo de entrada ficam os resultados, em que <code>&lt;nome&gt;</code> é o nome do arquivo, aqui <code>rodovia-ficticia-rev04</code>.</p>
+<p>O terminal mostra o resumo: a linha de base usada e por quê, o limiar, a população, a convenção de contagem, e os nove achados com a contagem de cada um. Na rev04, o A1 acusa duas atividades: a linha 36, imprimação do segmento 1, começou com a linha 35, base de brita graduada, ainda aberta. Os outros oito ficam em zero. Num cronograma real com mais de 6 mil linhas, a análise levou 29 segundos num notebook comum, medidos em 22/11/2026. Ao lado do arquivo de entrada ficam os resultados, em que <code>&lt;nome&gt;</code> é o nome do arquivo, aqui <code>rodovia-ficticia-rev04</code>.</p>
 <table>
 <tr><th>Arquivo</th><th>Para que serve</th></tr>
 <tr><td class="m">&lt;nome&gt;-review.html</td><td>o relatório, para abrir, apresentar e imprimir em PDF</td></tr>
@@ -347,7 +347,7 @@ python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml
 <li>Os códigos não tornam o cronograma anônimo: a estrutura, as durações e os números de linha continuam legíveis.</li>
 <li>Codificar diminui o que sai do computador. Não substitui a política da sua empresa sobre serviços de IA.</li>
 </ul>
-<p>Testado no Windows com o Claude Code em 22 e 23/11/2026, pelo comando, direto do .mpp e pelo botão do Project, e num cronograma real de 6.484 tarefas: nenhum nome, data ou valor real chegou à cópia codificada, e a trava foi conferida chamando-a direto, sem o agente.</p>
+<p>Testado no Windows com o Claude Code em 22 e 23/11/2026, pelo comando, direto do .mpp e pelo botão do Project, e num cronograma real com mais de 6 mil linhas: nenhum nome, data ou valor real chegou à cópia codificada, e a trava foi conferida chamando-a direto, sem o agente.</p>
 </section>
 
 <section class="ch">

@@ -96,7 +96,7 @@ install an agent, are in [Install](#install).
 
 | | |
 |---|---|
-| **29 seconds** | to analyse a real schedule of 6,484 tasks and 107 calendars, on an ordinary laptop (Apple M1, measured on 22/11/2026). |
+| **29 seconds** | to analyse a real schedule of more than 6,000 tasks, on an ordinary laptop (measured on 22/11/2026). |
 | **To the cent** | cronoaudit's earned value is checked, activity by activity, against what MS Project itself computed. When it does not match, the report says where. |
 | **14 of 14** | problems planted in the fictitious example appear in the report. The list of what was planted is in [`examples/`](examples/), and an automatic test checks it on every version. |
 | **12 ready questions** | when comparing the example's two revisions, one per piece of evidence, the integrity of the measurement first. |
@@ -341,7 +341,7 @@ What it does and does not do:
 - It does not replace your company's policy on AI services.
 
 Tested on Windows with Claude Code on 22 and 23/11/2026, from the command, straight from the `.mpp`
-and from the Project button, and on a real 6,484-task schedule: no real name, date or value reached
+and from the Project button, and on a real schedule of more than 6,000 tasks: no real name, date or value reached
 the coded copy, and the guard was checked by calling it directly, without the agent.
 
 ## If something goes wrong
@@ -401,7 +401,7 @@ against DCMA: the fourteen metrics are an implementation, labelled as such.
 ### Provenance
 
 Written from a documented, generic method, not ported from any application's source, and measured
-on a real 6,484-task programme with 107 calendars. Numbers of scale stay; identities go: no
+on a real programme of more than 6,000 tasks. Numbers of scale stay; identities go: no
 employer, contractor, contract, chainage, person or value appears in this repository.
 
 ### Licence

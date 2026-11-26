@@ -70,7 +70,7 @@ body{color:var(--ink);font:400 22px/1.35 var(--sans)}
 /* ---- the brand frame around a real crop ---- */
 .frame{padding:22px 38px 38px}
 .frame .top{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 18px}
-.browser{border:2px solid var(--ink);border-radius:9px;overflow:hidden;background:#0D1117;box-shadow:0 20px 34px -26px rgba(23,25,28,.7)}
+.browser{border:2px solid var(--ink);border-radius:9px;overflow:hidden;background:#EDEFEE;box-shadow:0 20px 34px -26px rgba(23,25,28,.7)}
 .browser .bar{display:flex;align-items:center;gap:8px;background:var(--wash);border-bottom:1.5px solid var(--line);padding:9px 14px;height:44px}
 .browser .bar i{width:12px;height:12px;border-radius:50%;background:var(--line);display:block}
 .browser .bar .url{flex:1;margin-left:8px;background:var(--white);border:1.5px solid var(--line);border-radius:14px;padding:4px 14px;
