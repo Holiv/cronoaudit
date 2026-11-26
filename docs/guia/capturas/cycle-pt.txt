@@ -1,0 +1,72 @@
+=== Análise da entrega atual ===
+
+Análise crítica de cronograma -- rodovia-ficticia-rev04.xml
+
+Linha de base usada: linha de base (a linha de base com maior cobertura de custo nas folhas, empate para a de número mais alto; resumos e tarefas externas não votam)
+Limiar: 30 dias úteis do calendário da própria atividade, entre o término da linha de base e o término atual
+População: apenas atividades folha, ativas e não externas
+Contagem: as duas pontas de cada vínculo violado são marcadas, para bater com as rotinas da própria ferramenta de cronograma
+
+Achados, na ordem em que o método os roda:
+
+  A1       2 atividades  Execução fora de sequência  [como sucessoras 1, como predecessoras 1]
+  A2       0 atividades  Inversão total
+  H        0 atividades  Tendência vencida sem realização
+  E        0 atividades  Antecipada e nunca iniciada
+  C        0 atividades  Atrasada além do limiar
+  G        0 atividades  Duração incompatível com a janela
+  B        0 atividades  Marco sem data limite
+  F        0 atividades  Em andamento com zero por cento
+  P        0 atividades  Apontamento pendente
+
+Os achados de rede (A1, A2) condicionam todo o resto. Se não forem zero,
+toda data de tendência deste arquivo é calculada sobre lógica que a obra não segue.
+
+  report   ~/cronoaudit-exemplo/rodovia-ficticia-rev04-review.html
+  data     ~/cronoaudit-exemplo/rodovia-ficticia-rev04-review.json
+
+=== Comparação de ciclo ===
+
+Comparação de ciclo
+
+  anterior  rodovia-ficticia-rev03.xml  data de status 30/09/2026
+  atual     rodovia-ficticia-rev04.xml  data de status 30/10/2026
+
+  avanço    23,44%  ->  28,01%
+  movimento 4,57 pontos percentuais
+  a decomposição soma 4,90 pontos
+  resíduo não explicado  -0,33 pontos
+
+  datas que mudaram:
+    12 com realizado por trás           -> execução
+    89 sem realizado                    -> replanejamento
+    1 com a LINHA DE BASE movida       -> a referência mudou
+
+  escopo: 1 inserida, 1 removida
+
+  término do projeto: 04/10/2027 -> 25/10/2027  (21 dias corridos)
+  caminho crítico: 0 entraram, 0 saíram, 71 perderam um dia de folga ou mais
+  lógica: 1 vínculo incluído, 1 removido, 0 defasagens alteradas e 0 tipos alterados; restrições: 1 incluída, 0 alteradas, 0 removidas
+  duração alterada em atividade não iniciada: 1
+  PASSADO REESCRITO: 0 inícios reais, 1 término real, 0 percentuais que caíram, 1 atividade com avanço removida
+
+  ALERTAS:
+    * O passado foi reescrito em 2 atividades: uma data real mudou ou foi retirada, um percentual concluído caiu, ou uma atividade com avanço registrado foi removida. Peça que cada correção seja declarada.
+    * A linha de base se moveu em 1 atividade entre estas duas entregas. A base de comparação mudou por baixo da comparação: todo desvio que atravessa a mudança está medido contra duas referências. Reporte como achado sobre o relatório, não como desempenho.
+    * 1 atividade inserida e 1 removida. O escopo mudou, então o movimento agregado não é só avanço.
+    * −0,33 pontos percentuais do movimento NÃO são avanço por atividade, e cada parte tem nome: valor agregado das atividades removidas -0,27; orçamento na conclusão alterado -0,06. Reporte a parte explicada como avanço e cada termo como o que é, nunca o movimento de cabeçalho como avanço.
+
+  maiores contribuições para o movimento:
+      +1,520 pts linha 35      6,0% ->  85,0%  Base de brita graduada simples (BGS) — Seg. 1
+      +0,941 pts linha 34     39,0% -> 100,0%  Sub-base granular — Seg. 1
+      +0,673 pts linha 149    25,0% ->  82,0%  Blocos de coroamento
+      +0,368 pts linha 31     39,0% -> 100,0%  Sarjetas e valetas de proteção — Seg. 1
+      +0,334 pts linha 122    50,0% -> 100,0%  Bueiro celular de concreto — Seg. 4
+      +0,324 pts linha 92      0,0% ->  64,0%  Drenos profundos longitudinais — Seg. 3
+      +0,223 pts linha 117     0,0% ->  20,0%  Aterro compactado — Seg. 4
+      +0,222 pts linha 55     38,0% ->  57,0%  Aterro compactado — Seg. 2
+      +0,108 pts linha 87     89,0% -> 100,0%  Aterro compactado — Seg. 3
+      +0,106 pts linha 88      0,0% -> 100,0%  Regularização e compactação do subleito — Seg. 3
+
+  report   ~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html
+  data     ~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.json

@@ -1,0 +1,26 @@
+Os resultados vão sair com os dados reais (modo livre). Se um agente de IA ler esses arquivos depois, o que ele ler vai para o fornecedor dele. Seguir? [s] sim / [secreto] cópia codificada para o agente / [nunca] sim, e não perguntar mais
+> s
+Análise crítica de cronograma -- rodovia-ficticia-rev04.xml
+
+Linha de base usada: linha de base (a linha de base com maior cobertura de custo nas folhas, empate para a de número mais alto; resumos e tarefas externas não votam)
+Limiar: 30 dias úteis do calendário da própria atividade, entre o término da linha de base e o término atual
+População: apenas atividades folha, ativas e não externas
+Contagem: as duas pontas de cada vínculo violado são marcadas, para bater com as rotinas da própria ferramenta de cronograma
+
+Achados, na ordem em que o método os roda:
+
+  A1       2 atividades  Execução fora de sequência  [como sucessoras 1, como predecessoras 1]
+  A2       0 atividades  Inversão total
+  H        0 atividades  Tendência vencida sem realização
+  E        0 atividades  Antecipada e nunca iniciada
+  C        0 atividades  Atrasada além do limiar
+  G        0 atividades  Duração incompatível com a janela
+  B        0 atividades  Marco sem data limite
+  F        0 atividades  Em andamento com zero por cento
+  P        0 atividades  Apontamento pendente
+
+Os achados de rede (A1, A2) condicionam todo o resto. Se não forem zero,
+toda data de tendência deste arquivo é calculada sobre lógica que a obra não segue.
+
+  report   ~/cronoaudit-exemplo/rodovia-ficticia-rev04-review.html
+  data     ~/cronoaudit-exemplo/rodovia-ficticia-rev04-review.json

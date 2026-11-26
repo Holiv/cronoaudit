@@ -1,0 +1,4 @@
+The project finish moved from D+1064 to D+1085: 21 calendar days later.
+1 of the changed actual dates now falls exactly on the baseline date (row 29, T·a6623d, D+0578 → D+0574): the record was made to agree with the plan; ask for the evidence behind it.
+The delay of row 9 starts at row 148, T·d2d837 (+11 days against the baseline).
+Justify the longer duration of row 157, T·3f8f8e: 12 → 20 working days.

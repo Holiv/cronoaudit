@@ -1,0 +1,15 @@
+.claude
+AGENTS.md
+CLAUDE.md
+cronoaudit-secret.json
+current-review-forecast.json
+current-review-forensics.json
+current-review-productivity.json
+current-review-quality.json
+current-review-readings.json
+current-review-scurve.json
+current-review.html
+current-review.json
+previous--to--current-cycle-readings.json
+previous--to--current-cycle.html
+previous--to--current-cycle.json

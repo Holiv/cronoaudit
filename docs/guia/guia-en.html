@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>cronoaudit · illustrated guide 1.0.0</title>
+<meta name="author" content="Helton da Silva de Oliveira">
+<link rel="stylesheet" href="style.css">
+</head><body>
+<section class="page cover"><div class="in">
+  <p class="kick">Illustrated guide · version 1.0.0</p>
+  <p class="logo">crono<em>audit</em></p>
+  <p class="head">Rev04 has arrived. The number adds up. <em>What else changed?</em></p>
+  <p class="sub">A schedule review shown from start to finish, on an invented motorway: the terminal, the report, the conversation with the agent and the list of what to ask.</p>
+  <figure><svg viewBox="0 0 688 316" aria-hidden="true"><line x1="284" y1="6" x2="284" y2="294" stroke="#6B6E74" stroke-width="1" stroke-dasharray="2 4"/><line x1="318" y1="6" x2="318" y2="294" stroke="#B3261E" stroke-width="1" stroke-dasharray="2 4"/><text x="280.0" y="12.0" font-family="Source Code Pro" font-size="9.5" fill="#6B6E74" text-anchor="end" font-weight="400">rev03 · 2026-09-30</text><text x="322.0" y="12.0" font-family="Source Code Pro" font-size="9.5" fill="#B3261E" text-anchor="start" font-weight="400">rev04 · 2026-10-30</text><text x="0.0" y="45.0" font-family="Source Code Pro" font-size="11.0" fill="#6B6E74" text-anchor="start" font-weight="400">row 157</text><rect x="340" y="30" width="72" height="11" fill="none" stroke="#6B6E74" stroke-width="1"/><rect x="340" y="44" width="120" height="11" fill="#17191C"/><rect x="412" y="44" width="48" height="11" fill="#B3261E"/><text x="472.0" y="49.0" font-family="Fraunces" font-size="15.0" fill="#17191C" text-anchor="start" font-weight="400" font-style="italic">duration 12 → 20 working days</text><text x="0.0" y="97.0" font-family="Source Code Pro" font-size="11.0" fill="#6B6E74" text-anchor="start" font-weight="400">row 29</text><rect x="124" y="82" width="96" height="11" fill="none" stroke="#6B6E74" stroke-width="1"/><rect x="124" y="96" width="84" height="11" fill="#17191C"/><line x1="208" y1="77" x2="208" y2="113" stroke="#B3261E" stroke-width="1.5"/><path d="M220 87.5 h-9 m3 -3 l-3 3 l3 3" fill="none" stroke="#B3261E" stroke-width="1.2"/><text x="232.0" y="101.0" font-family="Fraunces" font-size="15.0" fill="#17191C" text-anchor="start" font-weight="400" font-style="italic">actual finish rewritten</text><text x="0.0" y="149.0" font-family="Source Code Pro" font-size="11.0" fill="#6B6E74" text-anchor="start" font-weight="400">row 119</text><rect x="254" y="134" width="60" height="11" fill="#6B6E74"/><rect x="254" y="148" width="60" height="11" fill="none" stroke="#B3261E" stroke-width="1" stroke-dasharray="3 3"/><text x="326.0" y="153.0" font-family="Fraunces" font-size="15.0" fill="#17191C" text-anchor="start" font-weight="400" font-style="italic">removed, it was at 100%</text><text x="0.0" y="201.0" font-family="Source Code Pro" font-size="11.0" fill="#6B6E74" text-anchor="start" font-weight="400">row 57</text><rect x="340" y="200" width="54" height="11" fill="#B3261E"/><text x="406.0" y="205.0" font-family="Fraunces" font-size="15.0" fill="#17191C" text-anchor="start" font-weight="400" font-style="italic">new in rev04</text><text x="0.0" y="253.0" font-family="Source Code Pro" font-size="11.0" fill="#6B6E74" text-anchor="start" font-weight="400">row 63</text><rect x="300" y="238" width="50" height="11" fill="none" stroke="#6B6E74" stroke-width="1"/><rect x="372" y="252" width="50" height="11" fill="#17191C"/><path d="M350 243.5 h18 m-4 -3 l4 3 l-4 3" fill="none" stroke="#B3261E" stroke-width="1.2"/><text x="434.0" y="257.0" font-family="Fraunces" font-size="15.0" fill="#17191C" text-anchor="start" font-weight="400" font-style="italic">finish 53 days later</text><line x1="0" y1="294" x2="688" y2="294" stroke="#B3261E" stroke-width="2"/><text x="0.0" y="308.0" font-family="Source Code Pro" font-size="9.5" fill="#B3261E" text-anchor="start" font-weight="400">REV03 · REFERENCE</text></svg></figure>
+  <div class="meta">
+    <span>Author<b>Helton da Silva de Oliveira</b></span>
+    <span>Format<b>Agent Skill · Apache 2.0</b></span>
+    <span>Data<b>The fictitious example only</b></span>
+    <span>Edition<b>English</b></span>
+  </div>
+</div></section>
+
+<section class="page" id="intro"><div class="in">
+  <p class="kick">01 <b>· Why it exists</b></p>
+  <h1>A wrong schedule gives no error message.</h1>
+  <p class="lede">It opens, calculates and prints. The number that comes out is believable, and that is why it gets through.</p>
+  <div class="cols c32">
+    <div>
+      <p>Whoever receives the month's revision checks what can be checked by eye: the finish date, the percentage, the curve. What changes the result usually sits somewhere else. An actual date corrected after the fact. A finished activity that vanished. A baseline that moved. A duration stretched on work that has not even started.</p>
+      <p>cronoaudit is an open-source Agent Skill that does that check. A Python engine reads the XML that MS Project itself exports. It runs on your computer and does not use the network. At the end it writes a report that opens in the browser and, if you want, hands the measured figures to an AI agent so you can talk about them.</p>
+      <p>This guide shows the tool at work. Everything here was produced on an invented job, the fictitious motorway RF-140, which comes with the installation. Every page can be repeated on your computer.</p>
+    </div>
+    <div>
+      <div class="note">
+        <div class="k">Who it is for</div>
+        <p>For those who plan, those who control, and those who sign the monthly report.</p>
+        <p class="small">The technical manual explains every concept and every calculation. This guide only shows what happens when you run it.</p>
+      </div>
+    </div>
+  </div>
+  <h2>How to read the pages</h2>
+  <div class="legend3">
+    <div><b class="mark real">real capture</b><p>Terminal output or a screen of the report, as the engine produced it. Paths are shown as <code>~</code>. Every cut is marked.</p></div>
+    <div><b class="mark eng">engine reading</b><p>A sentence written by the engine, by rule, copied unchanged. Activity names come from the example file, which is in Portuguese.</p></div>
+    <div><b class="mark ilus">illustration</b><p>A conversation with an agent composed for this guide. The numbers in it are the engine's, taken from the same runs.</p></div>
+  </div>
+  <h2>The route</h2>
+  <ol class="toc"><li>The fictitious job and its two deliveries<span>03</span></li><li>Install and run the example<span>04</span></li><li>Rev04 has arrived: one line in the terminal<span>05</span></li><li>The report, in the order you read it<span>06</span></li><li>Deadlines: seven milestones and the margin of each<span>07</span></li><li>Before progress: can the measurement be trusted?<span>08</span></li><li>What the plan changed with no work behind it<span>09</span></li><li>Progress: 4.57 points in the headline, 4.90 of work<span>10</span></li><li>Where the viaduct's delay comes from<span>11</span></li><li>The network: nine checks and fourteen metrics<span>12</span></li><li>Looking forward: pace, four weeks, rain<span>13</span></li><li>What to ask the contractor<span>14</span></li><li>The 14 planted traps and where each one shows<span>15</span></li><li>Talking to an agent about the numbers<span>16</span></li><li>Three agents, and what was tested on each<span>17</span></li><li>Secret mode: the agent reads only a coded copy<span>18</span></li><li>A secret run, from the command to the work folder<span>19</span></li><li>The same reading, real and coded, side by side<span>20</span></li><li>The conversation in codes and the way back<span>21</span></li><li>Three ways to use it, the data and the limits<span>22</span></li><li>One-page cheat sheet<span>23</span></li></ol>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="obra" data-z="1.07" data-toc="The fictitious job and its two deliveries"><div class="in" style="zoom:1.07">
+  <p class="kick">02 <b>· The example</b></p>
+  <h1>A motorway that does not exist, with problems that do.</h1>
+  <p class="lede">RF-140 is invented: the stretch, the client, the contractor, the quantities, the prices and the dates. The schedule was written to read like a real road job, and most of it is healthy.</p>
+  <div class="plate"><svg viewBox="0 0 696 100" aria-hidden="true"><rect x="30.0" y="34" width="636.0" height="20" fill="#17191C"/><line x1="30.0" y1="44" x2="666.0" y2="44" stroke="#FBF9F4" stroke-width="1.2" stroke-dasharray="9 7"/><line x1="30.0" y1="28" x2="30.0" y2="64" stroke="#17191C" stroke-width="1"/><text x="30.0" y="76.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="600">km 12</text><text x="109.5" y="76.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="middle" font-weight="400">Segment 1</text><line x1="189.0" y1="28" x2="189.0" y2="64" stroke="#17191C" stroke-width="1"/><text x="189.0" y="76.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="600">km 18</text><text x="268.5" y="76.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="middle" font-weight="400">Segment 2</text><line x1="348.0" y1="28" x2="348.0" y2="64" stroke="#17191C" stroke-width="1"/><text x="348.0" y="76.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="600">km 24</text><text x="427.5" y="76.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="middle" font-weight="400">Segment 3</text><line x1="507.0" y1="28" x2="507.0" y2="64" stroke="#17191C" stroke-width="1"/><text x="507.0" y="76.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="600">km 30</text><text x="586.5" y="76.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="middle" font-weight="400">Segment 4</text><line x1="666.0" y1="28" x2="666.0" y2="64" stroke="#17191C" stroke-width="1"/><text x="666.0" y="76.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="600">km 36</text><rect x="425.09999999999997" y="31" width="26" height="26" fill="#FBF9F4" stroke="#B3261E" stroke-width="1.5"/><path d="M425.09999999999997 57 q13 -22 26 0" fill="none" stroke="#B3261E" stroke-width="1.5"/><rect x="425.09999999999997" y="39" width="26" height="6" fill="#B3261E"/><text x="438.1" y="92.0" font-family="Source Code Pro" font-size="10.3" fill="#B3261E" text-anchor="middle" font-weight="600">Viaduct V-01 · km 27+400</text></svg></div>
+  <div class="gap2"></div>
+  <div class="facts f5">
+    <div><div class="v">142</div><div class="t">activities</div></div>
+    <div><div class="v">220</div><div class="t">links</div></div>
+    <div><div class="v">9</div><div class="t">milestones, each with a deadline</div></div>
+    <div><div class="v">2</div><div class="t">calendars in use, with holidays and a rain reserve</div></div>
+    <div><div class="v">174,992,838</div><div class="t">budget at completion, in rev04</div></div>
+  </div>
+  <div class="cols">
+    <div>
+      <h2>Two deliveries, one month apart</h2>
+      <table>
+        <tr><th>File</th><th>Status date</th><th>Role</th></tr>
+        <tr><td class="k" style="white-space:nowrap">rodovia-ficticia-rev03.xml</td><td>2026-09-30</td><td>previous delivery</td></tr>
+        <tr><td class="k" style="white-space:nowrap">rodovia-ficticia-rev04.xml</td><td>2026-10-30</td><td>current delivery</td></tr>
+      </table>
+      <div class="gap"></div>
+      <p>The job has four 6 km segments and a viaduct at km 27+400. Each segment goes through earthworks, drainage, paving, signing and lighting.</p>
+      <p>Rev03, on its own, is clean. Rev04 brings a month of real progress and fourteen changes planted on purpose. The list is on page 15.</p>
+    </div>
+    <div>
+      <div class="note">
+        <div class="k">What the delivery says</div>
+        <p>Progress from 23.44% to 28.01%. Project finish on 2027-10-25. Every milestone within its deadline.</p>
+        <p class="small">All three sentences are true. None of them tells what was changed in the schedule for the number to add up.</p>
+      </div>
+      <p class="small">The example's generator is deterministic and lives in <code>examples/make_exemplo.py</code>. Every planted problem is declared at the top of the script.</p>
+    </div>
+  </div>
+  <div class="gap2"></div>
+  <h2>What the engine finds in it</h2>
+  <div class="facts f3">
+    <div><div class="v">14 of 14</div><div class="t">problems planted in the example appear in the report. An automatic test checks this on every version.</div></div>
+    <div><div class="v">12</div><div class="t">items ready to ask the contractor, one per piece of evidence, when the two deliveries are compared.</div></div>
+    <div><div class="v">43 of 43</div><div class="t">activities with earned value match, to the cent, what the file itself computed.</div></div>
+  </div>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="instalar" data-z="1.07" data-toc="Install and run the example"><div class="in" style="zoom:1.07">
+  <p class="kick">03 <b>· Install</b></p>
+  <h1>One command. The example runs at the end.</h1>
+  <div class="cols c32">
+    <div>
+      <p class="lede">The installer copies the skill to the folders the agents read, brings the fictitious example and checks its own installation.</p>
+    </div>
+    <div>
+      <p class="small">This capture was made from a local copy of the repository, in an empty user folder. In the public installation the first line is the command on the cheat sheet, page 23, and the rest is the same.</p>
+    </div>
+  </div>
+  <div class="term"><div class="bar"><i></i><i></i><i></i><span>terminal · installation</span><b class="mark">real capture</b></div><pre><span class="l cmd">CRONOAUDIT_EXAMPLE=1 bash install.sh --from .</span><span class="l">installed -&gt; ~/.claude/skills/cronoaudit</span><span class="l">installed -&gt; ~/.agents/skills/cronoaudit</span><span class="l">fictitious example -&gt; ~/cronoaudit-exemplo</span><span class="l">verifying ...</span><span class="l">self-test passed</span><span class="l">  report   ~/cronoaudit-exemplo/rodovia-ficticia-rev04-review.html</span><span class="l">  data     ~/cronoaudit-exemplo/rodovia-ficticia-rev04-review.json</span><span class="l">  report   ~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html</span><span class="l">  data     ~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.json</span><span class="l">The example&#x27;s report opened in the browser. It is also in:</span><span class="l">  ~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html</span><span class="l"> </span><span class="l hl">cronoaudit 1.0.0 is installed.</span><span class="l"> </span><span class="l">With an AI agent (Claude Code, Copilot or Codex): open the agent in the schedule&#x27;s folder and</span><span class="l">ask, for example, &quot;review Rev04.xml&quot;. If it was already open, close it and open it again.</span><span class="l"> </span><span class="l">With no agent, in a terminal:</span><span class="l">    python3 ~/.claude/skills/cronoaudit/scripts/review.py schedule.xml</span><span class="l">The schedule comes from MS Project: File &gt; Save As &gt; XML Format.</span><span class="l">To see the example again:</span><span class="l">    python3 ~/.claude/skills/cronoaudit/scripts/review.py --example</span><span class="l"> </span><span class="l">Manual and help: https://github.com/Holiv/cronoaudit</span></pre></div>
+  <div class="gap2"></div>
+  <div class="cols c3">
+    <div><h3>Two skill folders</h3><p class="small">One for Claude Code and one for the agents that read <code>~/.agents</code>, such as Codex and GitHub Copilot. The engine is the same in both.</p></div>
+    <div><h3>A self-test</h3><p class="small">Before saying it is done, the installer runs the engine on the example and checks the result.</p></div>
+    <div><h3>Nothing global</h3><p class="small">Only Python 3.9 or later. No library is installed. On Windows, the installer brings Python if the computer has none.</p></div>
+  </div>
+  <div class="gap2"></div>
+  <div class="cols">
+    <div>
+      <h2>The installer asks only what is your choice</h2>
+      <ul>
+        <li>If it finds MS Project, it asks whether you also want the Cronoaudit tab.</li>
+        <li>It asks whether you want to see the example now. Here the answer was given in advance, through the variable <code>CRONOAUDIT_EXAMPLE=1</code>.</li>
+        <li>At the end, it shows the right command for your computer.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Other ways to install</h2>
+      <table>
+        <tr><td class="k">Any Agent Skills client</td><td><code>npx skills add Holiv/cronoaudit -g</code></td></tr>
+        <tr><td class="k">Claude Code, as a plugin</td><td><code>/plugin marketplace add Holiv/cronoaudit</code></td></tr>
+        <tr><td class="k">A team, through the project</td><td>clone the repository into <code>.agents/skills/cronoaudit</code></td></tr>
+      </table>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="terminal" data-z="1.07" data-toc="Rev04 has arrived: one line in the terminal"><div class="in" style="zoom:1.07">
+  <p class="kick">04 <b>· The delivery</b></p>
+  <h1 class="wide">Rev04 has arrived. Two files, one line.</h1>
+  <p class="lede">The previous delivery goes first. The engine reviews rev04 on its own and then compares the two.</p>
+  <div class="term"><div class="bar"><i></i><i></i><i></i><span>terminal · ~/cronoaudit-exemplo</span><b class="mark">real capture</b></div><pre><span class="l cmd">python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml --free --lang en</span><span class="l">=== Review of the current delivery ===</span><span class="l"> </span><span class="l">Schedule integrity review -- rodovia-ficticia-rev04.xml</span><span class="l cut">⋯ 4 lines cut ⋯</span><span class="l">Findings, in the order the method runs them:</span><span class="l"> </span><span class="l hl">  A1       2 activities  Execution out of sequence  [as successors 1, as predecessors 1]</span><span class="l cut">⋯ 8 lines cut ⋯</span><span class="l">Network findings (A1, A2) gate everything below them. If they are non-zero,</span><span class="l">every forecast date in this file is computed over logic the works does not follow.</span><span class="l cut">⋯ 2 lines cut ⋯</span><span class="l">=== Cycle comparison ===</span><span class="l"> </span><span class="l">Cycle comparison</span><span class="l"> </span><span class="l">  previous  rodovia-ficticia-rev03.xml  status 2026-09-30T17:00:00</span><span class="l">  current   rodovia-ficticia-rev04.xml  status 2026-10-30T17:00:00</span><span class="l"> </span><span class="l">  earned    23.44%  -&gt;  28.01%</span><span class="l">  movement  4.57 percentage points</span><span class="l">  decomposition sums to 4.90 points</span><span class="l hl">  unexplained residue  -0.33 points</span><span class="l"> </span><span class="l">  dates moved:</span><span class="l">    12 with actuals behind them        -&gt; execution</span><span class="l">    89 with no actuals                -&gt; replan</span><span class="l hl">    1 with the BASELINE itself moved  -&gt; the reference moved</span><span class="l"> </span><span class="l">  scope: 1 inserted, 1 removed</span><span class="l"> </span><span class="l">  project finish: 2027-10-04T17:00:00 -&gt; 2027-10-25T17:00:00  (21 calendar days)</span><span class="l">  critical path: 0 entered, 0 left, 71 lost a day of float or more</span><span class="l">  logic: 1 links added, 1 removed, 0 lags and 0 types changed; constraints 1 added, 0 changed, 0 removed</span><span class="l">  duration changed on work not started: 1</span><span class="l hl">  PAST REWRITTEN: 0 actual starts, 1 actual finishes, 0 percents that went down, 1 activities with progress removed</span><span class="l cut">⋯ 16 lines cut ⋯</span><span class="l">  report   ~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html</span><span class="l">  data     ~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.json</span></pre></div>
+  <div class="gap2"></div>
+  <div class="cols c3">
+    <div><h3>One execution out of sequence</h3><p class="small">Row 36 started while its predecessor, row 35, was still open. The engine marks both ends of the link, as MS Project itself does.</p></div>
+    <div><h3>A residue of −0.33</h3><p class="small">The headline moved 4.57 points. The work done adds up to 4.90. The difference is not progress, and the engine gives each part of it a name.</p></div>
+    <div><h3>The past changed</h3><p class="small">An actual finish was altered and an activity with progress vanished. The report will show this before any percentage.</p></div>
+  </div>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="relatorio" data-toc="The report, in the order you read it"><div class="in">
+  <p class="kick">05 <b>· The report</b></p>
+  <h1>The report opens in the browser, in the schedule's own language.</h1>
+  <p class="lede">It is one HTML file with no dependency. It opens the same on a computer with no network. Every section starts with a short reading, written by rule.</p>
+  <div class="browser"><div class="bar"><i></i><i></i><i></i><span class="url">~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html</span><b class="mark real">real capture</b></div><div class="shot" style="max-height:108mm"><img src="img/cycle-top-en.png" alt=""></div></div>
+  <p class="cap">The top of the comparison report. The four warnings come before the first number. This edition forced English with <code>--lang en</code>. By default the report follows the schedule, which is in Portuguese.</p>
+  <div class="gap"></div>
+  <div class="cols">
+    <div>
+      <h2>The reading order</h2>
+      <ol class="steps">
+        <li><div><b>Deadlines.</b> Each milestone against its deadline.</div></li>
+        <li><div><b>Integrity of the measurement.</b> Can the number be trusted?</div></li>
+        <li><div><b>Replanning.</b> What the plan changed with no work behind it.</div></li>
+        <li><div><b>Progress.</b> Where the movement came from.</div></li>
+        <li><div><b>Float and critical path.</b></div></li>
+        <li><div><b>Network quality,</b> before and after.</div></li>
+        <li><div><b>What to ask the contractor.</b></div></li>
+      </ol>
+    </div>
+    <div>
+      <div class="reading tight">
+        <b class="mark eng">engine reading</b>
+        <p>The past was rewritten on 2 activities: 0 actual starts and 1 actual finish changed, 0 percents complete went down, and 1 activity with recorded progress was removed.</p>
+        <p>Every figure the previous cycle reported on these activities rested on a record that no longer exists. Ask for each correction to be stated.</p>
+      </div>
+      <p class="small">Progress comes fourth on purpose. A percentage is only worth something once you know whether the record behind it was touched.</p>
+    </div>
+  </div>
+  <p class="small">Every claim in the report is marked measured, inferred or reported. Each section states the criterion it used and how to reproduce the figure in MS Project.</p>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="prazos" data-toc="Deadlines: seven milestones and the margin of each"><div class="in">
+  <p class="kick">06 <b>· Deadlines</b></p>
+  <h1>Every milestone fits. Three of them, by less than a week.</h1>
+  <p class="lede">The rev04 forecast respects the seven future deadlines. The margin is what tells the story.</p>
+  <div class="plate"><svg viewBox="0 0 696 243" aria-hidden="true"><line x1="300.0" y1="26" x2="300.0" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="303.0" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">Jan</text><line x1="335.9" y1="26" x2="335.9" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="338.9" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">Feb</text><line x1="368.4" y1="26" x2="368.4" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="371.4" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">Mar</text><line x1="404.3" y1="26" x2="404.3" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="407.3" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">Apr</text><line x1="439.1" y1="26" x2="439.1" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="442.1" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">May</text><line x1="475.0" y1="26" x2="475.0" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="478.0" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">Jun</text><line x1="509.8" y1="26" x2="509.8" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="512.8" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">Jul</text><line x1="545.7" y1="26" x2="545.7" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="548.7" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">Aug</text><line x1="581.7" y1="26" x2="581.7" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="584.7" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">Sep</text><line x1="616.5" y1="26" x2="616.5" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="619.5" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">Oct</text><line x1="652.4" y1="26" x2="652.4" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="655.4" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">Nov</text><text x="0.0" y="22.0" font-family="Source Code Pro" font-size="8.6" fill="#6B6E74" text-anchor="start" font-weight="400">MILESTONE</text><text x="232.0" y="22.0" font-family="Source Code Pro" font-size="8.6" fill="#6B6E74" text-anchor="end" font-weight="400">MARGIN</text><text x="288.0" y="22.0" font-family="Source Code Pro" font-size="8.6" fill="#6B6E74" text-anchor="end" font-weight="400">AT P80</text><text x="0.0" y="45.0" font-family="Source Code Pro" font-size="9.8" fill="#B3261E" text-anchor="start" font-weight="600"> 4</text><text x="20.0" y="45.5" font-family="Fraunces" font-size="12.1" fill="#17191C" text-anchor="start" font-weight="600">Earthworks complete</text><text x="232.0" y="45.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="end" font-weight="600">+36 d</text><text x="288.0" y="45.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="end" font-weight="400">+29 d</text><line x1="311.6" y1="42" x2="319.7" y2="42" stroke="#17191C" stroke-width="1"/><line x1="353.3" y1="33" x2="353.3" y2="51" stroke="#B3261E" stroke-width="2"/><circle cx="319.7" cy="42" r="3.6" fill="#fff" stroke="#17191C" stroke-width="1.3"/><circle cx="311.6" cy="42" r="3.8" fill="#17191C"/><text x="0.0" y="72.0" font-family="Source Code Pro" font-size="9.8" fill="#B3261E" text-anchor="start" font-weight="600"> 5</text><text x="20.0" y="72.5" font-family="Fraunces" font-size="12.1" fill="#17191C" text-anchor="start" font-weight="600">Segment 1 open to traffic</text><text x="232.0" y="72.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="end" font-weight="600">+15 d</text><text x="288.0" y="72.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="end" font-weight="400">+8 d</text><line x1="396.2" y1="69" x2="404.3" y2="69" stroke="#17191C" stroke-width="1"/><line x1="413.6" y1="60" x2="413.6" y2="78" stroke="#B3261E" stroke-width="2"/><circle cx="404.3" cy="69" r="3.6" fill="#fff" stroke="#17191C" stroke-width="1.3"/><circle cx="396.2" cy="69" r="3.8" fill="#17191C"/><text x="0.0" y="99.0" font-family="Source Code Pro" font-size="9.8" fill="#B3261E" text-anchor="start" font-weight="600"> 7</text><text x="20.0" y="99.5" font-family="Fraunces" font-size="12.1" fill="#17191C" text-anchor="start" font-weight="600">Segment 3 open to traffic</text><text x="232.0" y="99.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="end" font-weight="600">+5 d</text><text x="288.0" y="99.0" font-family="Source Code Pro" font-size="10.3" fill="#B3261E" text-anchor="end" font-weight="600">−2 d</text><rect x="457.6" y="91" width="2.3" height="10" fill="#B3261E" opacity=".18"/><line x1="451.8" y1="96" x2="460.0" y2="96" stroke="#17191C" stroke-width="1"/><line x1="457.6" y1="87" x2="457.6" y2="105" stroke="#B3261E" stroke-width="2"/><circle cx="460.0" cy="96" r="3.6" fill="#fff" stroke="#B3261E" stroke-width="1.3"/><circle cx="451.8" cy="96" r="3.8" fill="#17191C"/><text x="0.0" y="126.0" font-family="Source Code Pro" font-size="9.8" fill="#B3261E" text-anchor="start" font-weight="600"> 6</text><text x="20.0" y="126.5" font-family="Fraunces" font-size="12.1" fill="#17191C" text-anchor="start" font-weight="600">Segment 2 open to traffic</text><text x="232.0" y="126.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="end" font-weight="600">+11 d</text><text x="288.0" y="126.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="end" font-weight="400">+4 d</text><line x1="482.0" y1="123" x2="490.1" y2="123" stroke="#17191C" stroke-width="1"/><line x1="494.7" y1="114" x2="494.7" y2="132" stroke="#B3261E" stroke-width="2"/><circle cx="490.1" cy="123" r="3.6" fill="#fff" stroke="#17191C" stroke-width="1.3"/><circle cx="482.0" cy="123" r="3.8" fill="#17191C"/><text x="0.0" y="153.0" font-family="Source Code Pro" font-size="9.8" fill="#B3261E" text-anchor="start" font-weight="600"> 8</text><text x="20.0" y="153.5" font-family="Fraunces" font-size="12.1" fill="#17191C" text-anchor="start" font-weight="600">Segment 4 open to traffic</text><text x="232.0" y="153.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="end" font-weight="600">+3 d</text><text x="288.0" y="153.0" font-family="Source Code Pro" font-size="10.3" fill="#B3261E" text-anchor="end" font-weight="600">−4 d</text><rect x="535.3" y="145" width="4.6" height="10" fill="#B3261E" opacity=".18"/><line x1="531.8" y1="150" x2="539.9" y2="150" stroke="#17191C" stroke-width="1"/><line x1="535.3" y1="141" x2="535.3" y2="159" stroke="#B3261E" stroke-width="2"/><circle cx="539.9" cy="150" r="3.6" fill="#fff" stroke="#B3261E" stroke-width="1.3"/><circle cx="531.8" cy="150" r="3.8" fill="#17191C"/><text x="0.0" y="180.0" font-family="Source Code Pro" font-size="9.8" fill="#B3261E" text-anchor="start" font-weight="600"> 9</text><text x="20.0" y="180.5" font-family="Fraunces" font-size="12.1" fill="#17191C" text-anchor="start" font-weight="600">Viaduct V-01 complete</text><text x="232.0" y="180.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="end" font-weight="600">+1 d</text><text x="288.0" y="180.0" font-family="Source Code Pro" font-size="10.3" fill="#B3261E" text-anchor="end" font-weight="600">−6 d</text><rect x="575.9" y="172" width="7.0" height="10" fill="#B3261E" opacity=".18"/><line x1="574.7" y1="177" x2="582.8" y2="177" stroke="#17191C" stroke-width="1"/><line x1="575.9" y1="168" x2="575.9" y2="186" stroke="#B3261E" stroke-width="2"/><circle cx="582.8" cy="177" r="3.6" fill="#fff" stroke="#B3261E" stroke-width="1.3"/><circle cx="574.7" cy="177" r="3.8" fill="#17191C"/><text x="0.0" y="207.0" font-family="Source Code Pro" font-size="9.8" fill="#B3261E" text-anchor="start" font-weight="600">10</text><text x="20.0" y="207.5" font-family="Fraunces" font-size="12.1" fill="#17191C" text-anchor="start" font-weight="600">Provisional acceptance</text><text x="232.0" y="207.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="end" font-weight="600">+9 d</text><text x="288.0" y="207.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="end" font-weight="400">+2 d</text><line x1="644.3" y1="204" x2="652.4" y2="204" stroke="#17191C" stroke-width="1"/><line x1="654.7" y1="195" x2="654.7" y2="213" stroke="#B3261E" stroke-width="2"/><circle cx="652.4" cy="204" r="3.6" fill="#fff" stroke="#17191C" stroke-width="1.3"/><circle cx="644.3" cy="204" r="3.8" fill="#17191C"/><circle cx="304" cy="232" r="3.8" fill="#17191C"/><text x="312.0" y="235.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">forecast</text><line x1="392" y1="225" x2="392" y2="239" stroke="#B3261E" stroke-width="2"/><text x="398.0" y="235.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">deadline</text><circle cx="478" cy="232" r="3.6" fill="#fff" stroke="#17191C" stroke-width="1.3"/><text x="486.0" y="235.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">forecast with the P80 slippage</text></svg></div>
+  <p class="cap">Drawn from the engine's figures: forecast, deadline and margin in calendar days for each milestone. P80 is the slippage that 80% of the finished activities have not exceeded.</p>
+  <div class="gap"></div>
+  <div class="reading">
+    <b class="mark eng">engine reading</b>
+    <p>All 7 milestones with a deadline finish within it in the current schedule. The smallest margin is row 9, Conclusão do Viaduto V-01 (km 27+400): 1 day.</p>
+    <p>With the slippage that 80% of the activities have not exceeded (7 days), 3 more milestones pass the deadline: rows 7, 8, 9.</p>
+    <p>The delay of row 9 starts at row 148, Estacas escavadas — encontros (E1 e E2) (+11 days against the baseline).</p>
+  </div>
+  <div class="cols">
+    <div>
+      <h2>What to do with it</h2>
+      <p>A milestone with one day of margin is not on time. It is one surprise away from being late. The report puts that margin on the first screen and says in which activity the delay starts. Between the two deliveries, the float of the Segment 3 milestone fell from 13 to 3 days.</p>
+    </div>
+    <div>
+      <h2>What the P80 band is not</h2>
+      <p>It is not a forecast. It is the distribution of what has already happened on this job, applied to the dates still ahead. It is there to order your attention.</p>
+    </div>
+  </div>
+  <div class="gap"></div>
+  <div class="browser"><div class="bar"><i></i><i></i><i></i><span class="url">~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html</span><b class="mark real">real capture</b></div><div class="shot" style="max-height:37mm"><img src="img/cycle-prazo-en.png" alt="" style="margin-top:-66mm"></div></div>
+  <p class="cap">The same section in the report: the finish before and now, and the table of milestones against their deadlines.</p>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="medicao" data-z="1.07" data-toc="Before progress: can the measurement be trusted?"><div class="in" style="zoom:1.07">
+  <p class="kick">07 <b>· Integrity of the measurement</b></p>
+  <h1>Three records changed after they were reported.</h1>
+  <p class="lede">An actual date is a record. A percentage is a measurement already reported. The baseline is the ruler. When one of them reads differently from one month to the next, last month's number has lost its footing.</p>
+  <div class="ba"><div class="hd"><span class="row">row 29</span><span class="nm">Bueiros tubulares de concreto — Seg. 1</span><span class="planted">planted no. 7</span></div><div class="two"><div class="side"><div class="rv">rev03</div><div class="f">actual finish</div><div class="v">2026-06-05</div></div><div class="arrow">→</div><div class="side after"><div class="rv">rev04</div><div class="f">actual finish</div><div class="v">2026-06-01</div></div></div><div class="why"><b class="mark eng">engine reading</b>1 of the changed actual dates now falls exactly on the baseline date (row 29, Bueiros tubulares de concreto — Seg. 1, <span style="white-space:nowrap">2026-06-05</span> → <span style="white-space:nowrap">2026-06-01</span>): the record was made to agree with the plan; ask for the evidence behind it.</div></div>
+  <div class="ba"><div class="hd"><span class="row">row 119</span><span class="nm">Remanejamento de cercas da faixa de domínio — Seg. 4</span><span class="planted">planted no. 11</span></div><div class="two"><div class="side"><div class="rv">rev03</div><div class="f">state</div><div class="v">100% complete</div></div><div class="arrow">→</div><div class="side after"><div class="rv">rev04</div><div class="f">state</div><div class="v gone">no longer exists</div></div></div><div class="why"><b class="mark eng">engine reading</b>1 activity with recorded progress was removed from the schedule altogether, taking 473,600 of earned value with it; the largest is row 119 of the previous delivery, Remanejamento de cercas da faixa de domínio — Seg. 4, at 100%.</div></div>
+  <div class="ba"><div class="hd"><span class="row">row 132</span><span class="nm">CBUQ — capa de rolamento (pista nova e existente) — Seg. 4</span><span class="planted">planted no. 10</span></div><div class="two"><div class="side"><div class="rv">rev03</div><div class="f">baseline finish</div><div class="v">as approved</div></div><div class="arrow">→</div><div class="side after"><div class="rv">rev04</div><div class="f">baseline finish</div><div class="v">moved +28 days</div></div></div><div class="why"><b class="mark eng">engine reading</b>On the driving chain of Liberação ao tráfego — Segmento 4 — km 30+000 ao km 36+000, row 132, CBUQ — capa de rolamento (pista nova e existente) — Seg. 4, shows a variance of -9 working days against a baseline that moved +28 calendar days this cycle: part of that variance is the reference moving, not the works.</div></div>
+  <div class="cols">
+    <div>
+      <h2>Why it comes first</h2>
+      <p>None of the three cases raises an error in MS Project. The file opens, the curve closes and the percentage goes up. Only the comparison between the two deliveries shows what was edited.</p>
+    </div>
+    <div>
+      <h2>What the engine does not claim</h2>
+      <p>It does not say there was bad faith. A correction can be legitimate. It says the correction exists, where it is, and asks for it to be stated.</p>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="plano" data-z="1.07" data-toc="What the plan changed with no work behind it"><div class="in" style="zoom:1.07">
+  <p class="kick">08 <b>· Replanning and logic</b></p>
+  <h1>The plan was rewritten in five places.</h1>
+  <p class="lede">Of the dates that moved, 12 have execution behind them and 89 have none. The five edits below are of the second kind: the plan rewritten, with no work behind it.</p>
+  <div class="cols">
+    <div>
+      <div class="ba"><div class="hd"><span class="row">row 157</span><span class="nm">Lançamento das vigas pré-moldadas</span><span class="planted">planted no. 9</span></div><div class="two"><div class="side"><div class="rv">rev03</div><div class="f">duration</div><div class="v">12 working days</div></div><div class="arrow">→</div><div class="side after"><div class="rv">rev04</div><div class="f">duration</div><div class="v">20 working days</div></div></div><div class="why"><b class="mark eng">engine reading</b>1 activity with no actual start in either delivery had their duration edited: 1 longer and 0 shorter, a net 8.0 working days. Nothing was executed on them; this is the plan rewritten.</div></div>
+      <div class="ba"><div class="hd"><span class="row">row 63</span><span class="nm">Sarjetas e valetas de proteção — Seg. 2</span><span class="planted">planted no. 2</span></div><div class="two"><div class="side"><div class="rv">rev03</div><div class="f">finish</div><div class="v">2026-12-10</div></div><div class="arrow">→</div><div class="side after"><div class="rv">rev04</div><div class="f">finish</div><div class="v">2027-02-01</div></div></div><div class="why"><b class="mark eng">engine reading</b>Justify the 53-day postponement of the finish of row 63, Sarjetas e valetas de proteção — Seg. 2, moved by the plan with no progress recorded. Justify the Start No Earlier Than constraint added on row 63, Sarjetas e valetas de proteção — Seg. 2.</div></div>
+      <div class="ba"><div class="hd"><span class="row">row 57</span><span class="nm">Contenção em gabião — talude do km 21+300 — Seg. 2</span><span class="planted">planted no. 11</span></div><div class="two"><div class="side"><div class="rv">rev03</div><div class="f">budget</div><div class="v">did not exist</div></div><div class="arrow">→</div><div class="side after"><div class="rv">rev04</div><div class="f">budget</div><div class="v">936,000</div></div></div><div class="why"><b class="mark eng">engine reading</b>Justify the new row 57, Contenção em gabião — talude do km 21+300 — Seg. 2, and where its budget came from.</div></div>
+    </div>
+    <div>
+      <div class="ba"><div class="hd"><span class="row">row 127</span><span class="nm">Sub-base granular — Seg. 4</span><span class="planted">planted no. 8</span></div><div class="two"><div class="side"><div class="rv">rev03</div><div class="f">link</div><div class="v">123 → 127</div></div><div class="arrow">→</div><div class="side after"><div class="rv">rev04</div><div class="f">link</div><div class="v gone">removed</div></div></div><div class="why"><b class="mark eng">engine reading</b>Justify removing the link 123 → 127, Sub-base granular — Seg. 4.</div></div><div class="ba"><div class="hd"><span class="row">row 106</span><span class="nm">Defensas metálicas e barreiras — Seg. 3</span><span class="planted">planted no. 8</span></div><div class="two"><div class="side"><div class="rv">rev03</div><div class="f">link</div><div class="v">none</div></div><div class="arrow">→</div><div class="side after"><div class="rv">rev04</div><div class="f">link</div><div class="v">94 → 106</div></div></div><div class="why"><b class="mark eng">engine reading</b>Confirm the new link 94 → 106, Defensas metálicas e barreiras — Seg. 3.</div></div>
+      <div class="reading tight">
+        <b class="mark eng">engine reading</b>
+        <p>1 link added, 1 removed, 0 with the lag changed and 0 with the type changed, between activities present in both deliveries.</p>
+        <p>Constraints on unfinished activities: 1 added, 0 changed and 0 removed.</p>
+        <p>71 unfinished activities lost a working day of float or more; the largest loss is 25.0 days, on row 63.</p>
+      </div>
+      <p class="small">Row 63 received a date constraint and is held until 2026-12-28. It is not on the critical path, but it lost 25 working days of float, the largest loss of the cycle.</p>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="avanco" data-z="1.07" data-toc="Progress: 4.57 points in the headline, 4.90 of work"><div class="in" style="zoom:1.07">
+  <p class="kick">09 <b>· Progress</b></p>
+  <h1>The headline moved 4.57 points. The works did 4.90.</h1>
+  <p class="lede">The difference is small and it has a name. It is the kind of number that disappears inside an aggregate percentage.</p>
+  <div class="cols">
+    <div class="plate"><h3>From 23.44% to 28.01%, part by part</h3><svg viewBox="0 0 400 184" aria-hidden="true"><line x1="14" y1="127.6" x2="372" y2="127.6" stroke="#ECE7DB" stroke-width="1"/><text x="376.0" y="130.6" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="start" font-weight="400">24%</text><line x1="14" y1="105.2" x2="372" y2="105.2" stroke="#ECE7DB" stroke-width="1"/><text x="376.0" y="108.2" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="start" font-weight="400">25%</text><line x1="14" y1="82.8" x2="372" y2="82.8" stroke="#ECE7DB" stroke-width="1"/><text x="376.0" y="85.8" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="start" font-weight="400">26%</text><line x1="14" y1="60.3" x2="372" y2="60.3" stroke="#ECE7DB" stroke-width="1"/><text x="376.0" y="63.3" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="start" font-weight="400">27%</text><line x1="14" y1="37.9" x2="372" y2="37.9" stroke="#ECE7DB" stroke-width="1"/><text x="376.0" y="40.9" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="start" font-weight="400">28%</text><line x1="18" y1="140.1" x2="92" y2="140.1" stroke="#17191C" stroke-width="2"/><rect x="92" y="30.2" width="52" height="109.9" fill="#17191C"/><line x1="144" y1="30.2" x2="218" y2="30.2" stroke="#6B6E74" stroke-width="1" stroke-dasharray="2 3"/><rect x="166" y="30.2" width="52" height="6.1" fill="#B3261E"/><line x1="218" y1="36.3" x2="292" y2="36.3" stroke="#6B6E74" stroke-width="1" stroke-dasharray="2 3"/><rect x="240" y="36.3" width="52" height="1.5" fill="#B3261E"/><line x1="292" y1="37.7" x2="366" y2="37.7" stroke="#17191C" stroke-width="2"/><text x="44.0" y="132.1" font-family="Fraunces" font-size="16.5" fill="#17191C" text-anchor="middle" font-weight="600">23.44%</text><text x="44.0" y="168.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">rev03</text><text x="118.0" y="24.2" font-family="Fraunces" font-size="16.5" fill="#17191C" text-anchor="middle" font-weight="600">+4.90</text><text x="118.0" y="168.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">per-activity</text><text x="118.0" y="178.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">progress</text><text x="192.0" y="24.2" font-family="Fraunces" font-size="16.5" fill="#B3261E" text-anchor="middle" font-weight="600">−0.27</text><text x="192.0" y="168.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">removed</text><text x="192.0" y="178.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">activity</text><text x="266.0" y="24.2" font-family="Fraunces" font-size="16.5" fill="#B3261E" text-anchor="middle" font-weight="600">−0.06</text><text x="266.0" y="168.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">budget</text><text x="266.0" y="178.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">changed</text><text x="340.0" y="58.7" font-family="Fraunces" font-size="16.5" fill="#17191C" text-anchor="middle" font-weight="600">28.01%</text><text x="340.0" y="168.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">rev04</text></svg></div>
+    <div class="plate"><h3>S-curve from the file itself</h3><svg viewBox="0 0 384 170" aria-hidden="true"><line x1="40" y1="150.0" x2="368" y2="150.0" stroke="#ECE7DB" stroke-width="1"/><text x="36.0" y="153.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="end" font-weight="400">0%</text><line x1="40" y1="117.0" x2="368" y2="117.0" stroke="#ECE7DB" stroke-width="1"/><text x="36.0" y="120.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="end" font-weight="400">25%</text><line x1="40" y1="84.0" x2="368" y2="84.0" stroke="#ECE7DB" stroke-width="1"/><text x="36.0" y="87.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="end" font-weight="400">50%</text><line x1="40" y1="51.0" x2="368" y2="51.0" stroke="#ECE7DB" stroke-width="1"/><text x="36.0" y="54.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="end" font-weight="400">75%</text><line x1="40" y1="18.0" x2="368" y2="18.0" stroke="#ECE7DB" stroke-width="1"/><text x="36.0" y="21.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="end" font-weight="400">100%</text><text x="40.0" y="164.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">Mar 26</text><text x="94.3" y="164.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">Jun 26</text><text x="148.7" y="164.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">Sep 26</text><text x="203.0" y="164.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">Dec 26</text><text x="257.3" y="164.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">Mar 27</text><text x="311.7" y="164.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">Jun 27</text><text x="366.0" y="164.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">Sep 27</text><line x1="166.8" y1="14" x2="166.8" y2="150" stroke="#6B6E74" stroke-width="1" stroke-dasharray="2 3"/><text x="162.8" y="22.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="end" font-weight="400">status date</text><polyline points="40.0,149.4 58.1,148.0 76.2,145.4 94.3,139.4 112.4,131.8 130.6,124.0 148.7,118.2 166.8,108.9 184.9,92.2 203.0,81.9 221.1,71.8 239.2,58.7 257.3,47.9 275.4,34.0 293.6,28.6 311.7,18.7 329.8,18.3 347.9,18.1 366.0,18.0" fill="none" stroke="#17191C" stroke-width="1.4"/><polyline points="40.0,149.4 58.1,148.0 76.2,145.4 94.3,139.3 112.4,131.6 130.6,124.5 148.7,120.0 166.8,113.0" fill="none" stroke="#B3261E" stroke-width="2.4"/><circle cx="166.8" cy="113.0" r="3.4" fill="#B3261E"/><text x="158.8" y="93.0" font-family="Fraunces" font-size="13.5" fill="#17191C" text-anchor="end" font-weight="600">planned 31.07%</text><text x="174.8" y="127.0" font-family="Fraunces" font-size="13.5" fill="#B3261E" text-anchor="start" font-weight="600">earned 28.01%</text></svg></div>
+  </div>
+  <p class="cap">Drawn from the engine's figures. The curve uses the baseline cost and the physical percentage that the file itself spreads over time.</p>
+  <div class="gap"></div>
+  <div class="cols">
+    <div class="reading tight">
+      <b class="mark eng">engine reading</b>
+      <p>Weighted progress went from 23.44% to 28.01%: 4.57 points. Per-activity progress adds up to 4.90, more than the movement: 0.33 points were taken off by something other than work done.</p>
+      <p>The difference is named: −0.27 points from the earned value erased with a removed activity (row 119 of the previous delivery, Remanejamento de cercas da faixa de domínio — Seg. 4, at 100%: 473,600); −0.06 points from the budget at completion, which went from 174,530,438 to 174,992,838 (+936,000 inserted, −473,600 removed).</p>
+    </div>
+    <div class="reading tight">
+      <b class="mark eng">engine reading</b>
+      <p>Cumulative SPI is 0.902: the works has earned 90.2% of what the plan expected by now.</p>
+      <p>The other earned-value method would read 28.46% instead of 28.01%, a gap of 0.44 points. Switching method changes the curve, not the works.</p>
+      <p>100% of that gap comes from row 55, Aterro compactado — Seg. 2: 95% complete by duration, 57% physical.</p>
+    </div>
+  </div>
+  <div class="cols">
+    <div>
+      <h2>Checked against the file</h2>
+      <p>The engine does not ask for trust. It recomputes earned value activity by activity and compares it with what MS Project stored.</p>
+      <div class="reading tight"><b class="mark eng">engine reading</b><p>The skill&#x27;s earned value matched the file&#x27;s own on 43 of 43 leaves to the cent, zero against zero left out: nothing differs.</p></div>
+    </div>
+    <div>
+      <h2>Two percentages on the same activity</h2>
+      <p>Row 55 is 95% complete by duration and 57% by physical progress. Depending on the method chosen, the progress of the whole job changes by 0.44 points. The report shows both and says which activity the gap comes from.</p>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="atraso" data-z="1.07" data-toc="Where the viaduct's delay comes from"><div class="in" style="zoom:1.07">
+  <p class="kick">10 <b>· Forensics</b></p>
+  <h1>The finish slipped 21 days. The path runs through the viaduct.</h1>
+  <p class="lede">The engine walks each milestone's driving chain backwards and shows where the delay came in and where it grew.</p>
+  <div class="plate"><h3>Driving chain of the milestone on row 9, from origin to milestone</h3><svg viewBox="0 0 696 184" aria-hidden="true"><line x1="34" y1="150.0" x2="686" y2="150.0" stroke="#17191C" stroke-width="1"/><text x="28.0" y="153.0" font-family="Source Code Pro" font-size="8.6" fill="#6B6E74" text-anchor="end" font-weight="400">0</text><line x1="34" y1="110.0" x2="686" y2="110.0" stroke="#ECE7DB" stroke-width="1"/><text x="28.0" y="113.0" font-family="Source Code Pro" font-size="8.6" fill="#6B6E74" text-anchor="end" font-weight="400">+10</text><line x1="34" y1="70.0" x2="686" y2="70.0" stroke="#ECE7DB" stroke-width="1"/><text x="28.0" y="73.0" font-family="Source Code Pro" font-size="8.6" fill="#6B6E74" text-anchor="end" font-weight="400">+20</text><line x1="34" y1="30.0" x2="686" y2="30.0" stroke="#ECE7DB" stroke-width="1"/><text x="28.0" y="33.0" font-family="Source Code Pro" font-size="8.6" fill="#6B6E74" text-anchor="end" font-weight="400">+30</text><text x="34.0" y="18.0" font-family="Source Code Pro" font-size="8.6" fill="#6B6E74" text-anchor="start" font-weight="400">DAYS AGAINST THE BASELINE</text><polyline points="46.0,106.0 94.0,106.0 94.0,82.0 142.0,82.0 142.0,82.0 190.0,82.0 190.0,82.0 238.0,82.0 238.0,82.0 286.0,82.0 286.0,50.0 334.0,50.0 334.0,50.0 382.0,50.0 382.0,50.0 430.0,50.0 430.0,50.0 478.0,50.0 478.0,50.0 526.0,50.0 526.0,50.0 574.0,50.0 574.0,50.0 622.0,50.0 622.0,50.0 670.0,50.0 670.0,50.0" fill="none" stroke="#B3261E" stroke-width="2"/><circle cx="46.0" cy="106.0" r="4.2" fill="#17191C" stroke="#17191C" stroke-width="1.4"/><text x="46.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#B3261E" text-anchor="middle" font-weight="600">148</text><text x="46.0" y="96.0" font-family="Fraunces" font-size="13.8" fill="#17191C" text-anchor="middle" font-weight="600">+11</text><circle cx="94.0" cy="82.0" r="4.2" fill="#17191C" stroke="#17191C" stroke-width="1.4"/><text x="94.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#B3261E" text-anchor="middle" font-weight="600">149</text><text x="88.0" y="72.0" font-family="Fraunces" font-size="13.8" fill="#17191C" text-anchor="end" font-weight="600">+17</text><circle cx="142.0" cy="82.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="142.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">151</text><circle cx="190.0" cy="82.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="190.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">152</text><circle cx="238.0" cy="82.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="238.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">154</text><circle cx="286.0" cy="50.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="286.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#B3261E" text-anchor="middle" font-weight="600">157</text><text x="280.0" y="40.0" font-family="Fraunces" font-size="13.8" fill="#17191C" text-anchor="end" font-weight="600">+25</text><circle cx="334.0" cy="50.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="334.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">158</text><circle cx="382.0" cy="50.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="382.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">159</text><circle cx="430.0" cy="50.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="430.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">161</text><circle cx="478.0" cy="50.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="478.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">162</text><circle cx="526.0" cy="50.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="526.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">165</text><circle cx="574.0" cy="50.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="574.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">166</text><circle cx="622.0" cy="50.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="622.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">167</text><circle cx="670.0" cy="50.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="670.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">9</text><text x="55.0" y="122.0" font-family="Fraunces" font-size="11.5" fill="#17191C" text-anchor="start" font-weight="400" font-style="italic">origin</text><text x="294.0" y="66.0" font-family="Fraunces" font-size="11.5" fill="#17191C" text-anchor="start" font-weight="400" font-style="italic">duration 12 → 20</text><text x="670.0" y="178.0" font-family="Source Code Pro" font-size="8.6" fill="#6B6E74" text-anchor="middle" font-weight="400">milestone</text><circle cx="440" cy="15" r="4.2" fill="#17191C" stroke="#17191C" stroke-width="1.4"/><text x="450.0" y="18.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">started</text><circle cx="530" cy="15" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="540.0" y="18.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">not started</text></svg></div>
+  <p class="cap">Drawn from the engine's figures. Each point is an activity of the chain, by row number. The height is its finish variance against the baseline.</p>
+  <div class="gap"></div>
+  <div class="cols c32">
+    <div>
+      <table>
+        <tr><th>Row</th><th>Activity</th><th style="text-align:right">Finish</th><th style="text-align:right">Variance</th></tr>
+        <tr><td class="n">148</td><td>Estacas escavadas — encontros (E1 e E2)</td><td class="pg">2026-09-21</td><td class="pg">+11</td></tr><tr><td class="n">149</td><td>Blocos de coroamento</td><td class="pg">2026-11-10</td><td class="pg">+17</td></tr><tr><td class="n">151</td><td>Pilares</td><td class="pg">2027-01-20</td><td class="pg">+17</td></tr><tr><td class="n">152</td><td>Travessas</td><td class="pg">2027-03-11</td><td class="pg">+17</td></tr><tr><td class="n">154</td><td>Aparelhos de apoio</td><td class="pg">2027-03-23</td><td class="pg">+17</td></tr><tr><td class="n">157</td><td>Lançamento das vigas pré-moldadas</td><td class="pg">2027-04-23</td><td class="pg">+25</td></tr><tr><td class="n">158</td><td>Pré-lajes e armação do tabuleiro</td><td class="pg">2027-06-03</td><td class="pg">+25</td></tr><tr><td class="n">159</td><td>Concretagem do tabuleiro</td><td class="pg">2027-06-29</td><td class="pg">+25</td></tr><tr><td class="n">161</td><td>Barreiras New Jersey e guarda-corpos</td><td class="pg">2027-07-20</td><td class="pg">+25</td></tr><tr><td class="n">162</td><td>Juntas de dilatação</td><td class="pg">2027-07-28</td><td class="pg">+25</td></tr><tr><td class="n">165</td><td>Impermeabilização e pavimentação do tabuleiro</td><td class="pg">2027-08-09</td><td class="pg">+25</td></tr><tr><td class="n">166</td><td>Sinalização e iluminação do viaduto</td><td class="pg">2027-08-19</td><td class="pg">+25</td></tr><tr><td class="n">167</td><td>Prova de carga e inspeção final</td><td class="pg">2027-08-26</td><td class="pg">+25</td></tr><tr><td class="n">9</td><td>Conclusão do Viaduto V-01 (km 27+400)</td><td class="pg">2027-08-26</td><td class="pg">+25</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="reading tight">
+        <b class="mark eng">engine reading</b>
+        <p>The project finish moved from <span style="white-space:nowrap">2027-10-04</span> to <span style="white-space:nowrap">2027-10-25</span>: 21 calendar days later.</p>
+        <p>7 of 7 future milestones trace to a named origin; activity 148, Estacas escavadas — encontros (E1 e E2), originates delay on 2 of them.</p>
+        <p>What holds the current date is row 174, Desmobilização do canteiro e da usina, finishing on <span style="white-space:nowrap">2027-10-25</span>. This is an approximation: the last-finishing open activity, walked back through the predecessor that lands latest; the network was not recalculated.</p>
+      </div>
+      <h2>Execution and plan, kept apart</h2>
+      <p>The delay starts in work that was executed, on the piles of row 148. Then it grows on an activity that has not started: row 157 gained eight working days of duration in this delivery.</p>
+      <p class="small">The forensics show the mechanism. They are not a delay claim, which needs contemporaneous records and a formal method.</p>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="rede" data-z="1.07" data-toc="The network: nine checks and fourteen metrics"><div class="in" style="zoom:1.07">
+  <p class="kick">11 <b>· Network quality</b></p>
+  <h1>Fourteen DCMA-style metrics, each with its threshold.</h1>
+  <p class="lede">The rev04 network is linked and has no negative float. The two metrics it fails are the ones that measure execution against the baseline.</p>
+  <div class="q"><div class="pass"><div class="c">Q1</div><div class="t">Missing logic</div><div class="v">4 of 96</div><div class="s">4.17% · threshold 5%</div><div class="st">pass</div></div><div class="pass"><div class="c">Q2</div><div class="t">Leads</div><div class="v">0 of 220</div><div class="s">0.00% · threshold 0%</div><div class="st">pass</div></div><div class="pass"><div class="c">Q3</div><div class="t">Lags</div><div class="v">10 of 220</div><div class="s">4.55% · threshold 5%</div><div class="st">pass</div></div><div class="pass"><div class="c">Q4</div><div class="t">Relationship types</div><div class="v">16 of 220</div><div class="s">7.27% · threshold 10%</div><div class="st">pass</div></div><div class="pass"><div class="c">Q5</div><div class="t">Hard constraints</div><div class="v">0 of 103</div><div class="s">0.00% · threshold 5%</div><div class="st">pass</div></div><div class="pass"><div class="c">Q6</div><div class="t">High float</div><div class="v">5 of 103</div><div class="s">4.85% · threshold 5%</div><div class="st">pass</div></div><div class="pass"><div class="c">Q7</div><div class="t">Negative float</div><div class="v">0 of 103</div><div class="s">0.00% · threshold 0%</div><div class="st">pass</div></div><div class="pass"><div class="c">Q8</div><div class="t">High duration</div><div class="v">0 of 96</div><div class="s">0.00% · threshold 5%</div><div class="st">pass</div></div><div class="pass"><div class="c">Q9</div><div class="t">Invalid dates</div><div class="v">0 of 142</div><div class="s">0.00% · threshold 0%</div><div class="st">pass</div></div><div class="na"><div class="c">Q10</div><div class="t">No resource</div><div class="v">0 of 96</div><div class="s">0.00%</div><div class="st">no threshold</div></div><div class="fail"><div class="c">Q11</div><div class="t">Missed activities</div><div class="v">15 of 43</div><div class="s">34.88% · threshold 5%</div><div class="st">fail</div></div><div class="na"><div class="c">Q12</div><div class="t">Critical path test</div><div class="v">n/a</div><div class="s"></div><div class="st">not computable from one file</div></div><div class="pass"><div class="c">Q13</div><div class="t">Critical path length index</div><div class="v">1.025</div><div class="s">minimum 0.95</div><div class="st">pass</div></div><div class="fail"><div class="c">Q14</div><div class="t">Baseline execution index</div><div class="v">0.65</div><div class="s">minimum 0.95</div><div class="st">fail</div></div></div>
+  <p class="cap">Built from the engine's figures for rev04. cronoaudit computes the fourteen metrics and quotes the thresholds. It does not certify a schedule against DCMA.</p>
+  <div class="gap"></div>
+  <div class="cols">
+    <div>
+      <div class="reading tight">
+        <b class="mark eng">engine reading</b>
+        <p>The network fails 2 of the quantitative metrics: Q11 Missed activities, Q14 Baseline execution index.</p>
+        <p>Of 43 activities due by the status date, 28 finished on time: a baseline execution index of 0.65.</p>
+        <p>Of the 13 metrics computable in both deliveries, 4 worsened, 3 improved and 6 did not move.</p>
+        <p>Baseline execution index: 0.80 before, 0.65 now.</p>
+      </div>
+      <h2>What passes close to the limit</h2>
+      <p>Four open activities have no successor: rows 77, 89, 136 and 170. That is 4 of 96, under the 5%. The same four and the new row 57 carry 79 to 205 working days of float.</p>
+    </div>
+    <div>
+      <h2>Before the metrics, nine checks</h2>
+      <table>
+        <tr><th>Code</th><th>Check</th><th style="text-align:right">In rev04</th></tr>
+        <tr><td class="n">A1</td><td>Execution out of sequence</td><td class="pg">2</td></tr>
+        <tr><td class="n">A2</td><td>Total inversion</td><td class="pg">0</td></tr>
+        <tr><td class="n">H</td><td>Trend elapsed with no progress</td><td class="pg">0</td></tr>
+        <tr><td class="n">E</td><td>Pulled forward and never started</td><td class="pg">0</td></tr>
+        <tr><td class="n">C</td><td>Delayed beyond the threshold</td><td class="pg">0</td></tr>
+        <tr><td class="n">G</td><td>Duration incompatible with the window</td><td class="pg">0</td></tr>
+        <tr><td class="n">B</td><td>Milestone with no deadline</td><td class="pg">0</td></tr>
+        <tr><td class="n">F</td><td>In progress at zero percent</td><td class="pg">0</td></tr>
+        <tr><td class="n">P</td><td>Pending record</td><td class="pg">0</td></tr>
+      </table>
+      <p class="small">The two A1 activities are the two ends of a single pair: row 36 started in October with row 35 still open. Because the pair is off the critical path, the engine names it rather than reading the network as broken.</p>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="frente" data-z="1.14" data-toc="Looking forward: pace, four weeks, rain"><div class="in" style="zoom:1.14">
+  <p class="kick">12 <b>· Looking forward</b></p>
+  <h1>The pace supports the finish date. The next four weeks do not.</h1>
+  <p class="lede">The engine projects from what the job has already shown, and states the limit of each projection.</p>
+  <div class="facts">
+    <div><div class="v">2026-10-17</div><div class="t">Earned Schedule: when the plan expected today's earned value</div></div>
+    <div><div class="v">0.947</div><div class="t">schedule efficiency, SPI(t)</div></div>
+    <div><div class="v">2027-10-22</div><div class="t">independent finish at this pace, against 2027-10-25 in the schedule</div></div>
+    <div><div class="v red">1.040</div><div class="t">TSPI: what the remainder must deliver over the plan</div></div>
+  </div>
+  <div class="cols">
+    <div>
+      <div class="plate"><h3>Earning in the next 4 weeks</h3><svg viewBox="0 0 330 86" aria-hidden="true"><text x="0.0" y="11.0" font-family="Source Code Pro" font-size="11.1" fill="#6B6E74" text-anchor="start" font-weight="400">the plan expects</text><rect x="0" y="17" width="237.9" height="16" fill="none" stroke="#17191C" stroke-width="1.4"/><text x="245.9" y="30.0" font-family="Fraunces" font-size="16.9" fill="#17191C" text-anchor="start" font-weight="600">11.42%</text><text x="0.0" y="55.0" font-family="Source Code Pro" font-size="11.1" fill="#6B6E74" text-anchor="start" font-weight="400">the practised rate delivers</text><rect x="0" y="61" width="83.1" height="16" fill="#B3261E"/><text x="91.1" y="74.0" font-family="Fraunces" font-size="16.9" fill="#B3261E" text-anchor="start" font-weight="600">3.99%</text></svg></div>
+      <div class="gap"></div>
+      <div class="reading tight">
+        <b class="mark eng">engine reading</b>
+        <p>The next 4 weeks plan 11.42% of earning; the practised rate delivers 3.99%. Not reachable without a change of pace.</p>
+        <p>TSPI is 1.040: the remainder must run 4.0% above the plan to finish on the planned date. Modest because most of the duration is still ahead, not because the lag is small.</p>
+      </div>
+    </div>
+    <div>
+      <div class="plate"><h3>Where the remaining cost falls</h3><svg viewBox="0 0 330 128" aria-hidden="true"><line x1="0" y1="96" x2="330" y2="96" stroke="#17191C" stroke-width="1"/><rect x="4.0" y="93.2" width="20" height="2.8" fill="#fff" stroke="#17191C" stroke-width="1"/><text x="14.0" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#6B6E74" text-anchor="middle" font-weight="400">Oct</text><rect x="28.8" y="33.8" width="20" height="62.2" fill="#fff" stroke="#17191C" stroke-width="1"/><text x="38.8" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#6B6E74" text-anchor="middle" font-weight="400">Nov</text><rect x="53.5" y="34.5" width="20" height="61.5" fill="#B3261E"/><text x="63.5" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#B3261E" text-anchor="middle" font-weight="400">Dec</text><rect x="78.3" y="17.0" width="20" height="79.0" fill="#B3261E"/><text x="88.3" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#B3261E" text-anchor="middle" font-weight="400">Jan</text><rect x="103.1" y="28.6" width="20" height="67.4" fill="#B3261E"/><text x="113.1" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#B3261E" text-anchor="middle" font-weight="400">Feb</text><rect x="127.8" y="38.6" width="20" height="57.4" fill="#B3261E"/><text x="137.8" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#B3261E" text-anchor="middle" font-weight="400">Mar</text><rect x="152.6" y="16.0" width="20" height="80.0" fill="#fff" stroke="#17191C" stroke-width="1"/><text x="162.6" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#6B6E74" text-anchor="middle" font-weight="400">Apr</text><rect x="177.4" y="45.0" width="20" height="51.0" fill="#fff" stroke="#17191C" stroke-width="1"/><text x="187.4" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#6B6E74" text-anchor="middle" font-weight="400">May</text><rect x="202.2" y="49.9" width="20" height="46.1" fill="#fff" stroke="#17191C" stroke-width="1"/><text x="212.2" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#6B6E74" text-anchor="middle" font-weight="400">Jun</text><rect x="226.9" y="80.8" width="20" height="15.2" fill="#fff" stroke="#17191C" stroke-width="1"/><text x="236.9" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#6B6E74" text-anchor="middle" font-weight="400">Jul</text><rect x="251.7" y="94.9" width="20" height="1.1" fill="#fff" stroke="#17191C" stroke-width="1"/><text x="261.7" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#6B6E74" text-anchor="middle" font-weight="400">Aug</text><rect x="276.5" y="95.2" width="20" height="0.8" fill="#fff" stroke="#17191C" stroke-width="1"/><text x="286.5" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#6B6E74" text-anchor="middle" font-weight="400">Sep</text><rect x="301.2" y="95.0" width="20" height="1.0" fill="#fff" stroke="#17191C" stroke-width="1"/><text x="311.2" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#6B6E74" text-anchor="middle" font-weight="400">Oct</text><rect x="0" y="116" width="9" height="9" fill="#B3261E"/><text x="14.0" y="124.0" font-family="Source Code Pro" font-size="10.8" fill="#6B6E74" text-anchor="start" font-weight="400">months with a rain reserve in the calendar</text></svg></div>
+      <div class="gap"></div>
+      <div class="reading tight">
+        <b class="mark eng">engine reading</b>
+        <p>50% of the remaining cost sits in months the calendars reserve for bad weather, 52% if everything slips thirty days.</p>
+        <p>At this efficiency the independent finish is <span style="white-space:nowrap">2027-10-22</span> and the schedule&#x27;s own finish is <span style="white-space:nowrap">2027-10-25</span>: within 7 days of each other, the achieved pace and the schedule agree on the date.</p>
+      </div>
+    </div>
+  </div>
+  <p class="cap">Both charts were drawn from the engine's figures for rev04.</p>
+  <div class="gap"></div>
+  <div class="cols">
+    <div>
+      <h2>Two readings that seem to disagree</h2>
+      <p>In aggregate, the achieved pace and the schedule agree on the finish date. In the short term, from 2026-10-31 to 2026-11-27, 11 activities must start and 8 must finish, and the plan asks for almost three times what the job has been delivering. Both are true, and the second is the one that needs a conversation now.</p>
+    </div>
+    <div>
+      <h2>The rain is already in the calendar</h2>
+      <p>Both calendars reserve days from December to March. Half of the remaining cost falls in those months. A thirty-day slip pushes more work into the reserve.</p>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="cobrar" data-z="1.07" data-toc="What to ask the contractor"><div class="in" style="zoom:1.07">
+  <p class="kick">13 <b>· What to ask</b></p>
+  <h1>Twelve items, one per piece of evidence.</h1>
+  <p class="lede">The last section of the report turns the comparison into requests. Each item names the row, so it can be found in the schedule. The integrity of the measurement comes first.</p>
+  <div class="cols c32">
+    <div>
+      <div class="dem"><h3>Integrity of the measurement</h3><ol><li><span>1</span><div>Justify the change to the actual finish of row 29, Bueiros tubulares de concreto — Seg. 1: 2026-06-05 → 2026-06-01, which now equals the baseline date.</div></li><li><span>2</span><div>Explain the removal of row 119 of the previous delivery, Remanejamento de cercas da faixa de domínio — Seg. 4, which was at 100%.</div></li><li><span>3</span><div>Show the approval of the baseline change on row 132, CBUQ — capa de rolamento (pista nova e existente) — Seg. 4 (baseline finish +28 days).</div></li></ol><h3>Replanning</h3><ol><li><span>1</span><div>Justify the longer duration of row 157, Lançamento das vigas pré-moldadas: 12 → 20 working days.</div></li><li><span>2</span><div>Justify the 53-day postponement of the finish of row 63, Sarjetas e valetas de proteção — Seg. 2, moved by the plan with no progress recorded.</div></li><li><span>3</span><div>Justify the 25-day postponement of the finish of row 66, Sub-base granular — Seg. 2, moved by the plan with no progress recorded.</div></li><li><span>4</span><div>Justify the 15-day postponement of the finish of row 32, Meios-fios e descidas d&#x27;água — Seg. 1, moved by the plan with no progress recorded.</div></li><li><span>5</span><div>Justify the 15-day postponement of the finish of row 38, Fresagem e reperfilagem da pista existente — Seg. 1, moved by the plan with no progress recorded.</div></li><li><span>6</span><div>Justify the new row 57, Contenção em gabião — talude do km 21+300 — Seg. 2, and where its budget came from.</div></li></ol><h3>Logic</h3><ol><li><span>1</span><div>Justify removing the link 123 → 127, Sub-base granular — Seg. 4.</div></li><li><span>2</span><div>Justify the Start No Earlier Than constraint added on row 63, Sarjetas e valetas de proteção — Seg. 2.</div></li><li><span>3</span><div>Confirm the new link 94 → 106, Defensas metálicas e barreiras — Seg. 3.</div></li></ol></div>
+      <p class="cap"><b class="mark eng">engine reading</b>The twelve items, as the engine wrote them for the example.</p>
+    </div>
+    <div>
+      <h2>How to use it</h2>
+      <p>The list is ready to go into minutes or a message. No item is an opinion. Each one points at a difference between the two files the contractor delivered.</p>
+      <h2>The order of the groups</h2>
+      <ol class="steps">
+        <li><div><b>Integrity of the measurement.</b> What touches the record of work already done.</div></li>
+        <li><div><b>Replanning.</b> Dates and durations moved by the plan, with no progress.</div></li>
+        <li><div><b>Logic.</b> Links and constraints edited.</div></li>
+      </ol>
+      <div class="note">
+        <div class="k">With an agent</div>
+        <p>Ask for the executive summary. The agent writes the text with these figures and the engine inserts it into the report, marked with who wrote it.</p>
+      </div>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="plantados" data-toc="The 14 planted traps and where each one shows"><div class="in">
+  <p class="kick">14 <b>· The answer key</b></p>
+  <h1 class="wide">The 14 planted traps, and where each one shows.</h1>
+  <div class="plate"><svg viewBox="0 0 696 162" aria-hidden="true"><rect x="30.0" y="96" width="636.0" height="20" fill="#17191C"/><line x1="30.0" y1="106" x2="666.0" y2="106" stroke="#FBF9F4" stroke-width="1.2" stroke-dasharray="9 7"/><line x1="30.0" y1="90" x2="30.0" y2="126" stroke="#17191C" stroke-width="1"/><text x="30.0" y="138.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="600">km 12</text><text x="109.5" y="138.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="middle" font-weight="400">Segment 1</text><line x1="189.0" y1="90" x2="189.0" y2="126" stroke="#17191C" stroke-width="1"/><text x="189.0" y="138.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="600">km 18</text><text x="268.5" y="138.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="middle" font-weight="400">Segment 2</text><line x1="348.0" y1="90" x2="348.0" y2="126" stroke="#17191C" stroke-width="1"/><text x="348.0" y="138.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="600">km 24</text><text x="427.5" y="138.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="middle" font-weight="400">Segment 3</text><line x1="507.0" y1="90" x2="507.0" y2="126" stroke="#17191C" stroke-width="1"/><text x="507.0" y="138.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="600">km 30</text><text x="586.5" y="138.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="middle" font-weight="400">Segment 4</text><line x1="666.0" y1="90" x2="666.0" y2="126" stroke="#17191C" stroke-width="1"/><text x="666.0" y="138.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="600">km 36</text><rect x="425.09999999999997" y="93" width="26" height="26" fill="#FBF9F4" stroke="#B3261E" stroke-width="1.5"/><path d="M425.09999999999997 119 q13 -22 26 0" fill="none" stroke="#B3261E" stroke-width="1.5"/><rect x="425.09999999999997" y="101" width="26" height="6" fill="#B3261E"/><text x="438.1" y="154.0" font-family="Source Code Pro" font-size="10.3" fill="#B3261E" text-anchor="middle" font-weight="600">Viaduct V-01 · km 27+400</text><line x1="72.39999999999999" y1="71" x2="72.39999999999999" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="72.39999999999999" cy="62" r="9.5" fill="#B3261E"/><text x="72.4" y="65.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">7</text><line x1="125.39999999999999" y1="71" x2="125.39999999999999" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="125.39999999999999" cy="62" r="9.5" fill="#B3261E"/><text x="125.4" y="65.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">3</text><line x1="226.09999999999994" y1="71" x2="226.09999999999994" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="226.09999999999994" cy="62" r="9.5" fill="#B3261E"/><text x="226.1" y="65.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">6</text><line x1="276.45000000000005" y1="71" x2="276.45000000000005" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="276.45000000000005" cy="62" r="9.5" fill="#B3261E"/><text x="276.5" y="65.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">11</text><line x1="318.84999999999997" y1="71" x2="318.84999999999997" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="318.84999999999997" cy="62" r="9.5" fill="#B3261E"/><text x="318.8" y="65.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">2</text><line x1="382.45000000000005" y1="71" x2="382.45000000000005" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="382.45000000000005" cy="62" r="9.5" fill="#B3261E"/><text x="382.5" y="65.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">8</text><line x1="488.45000000000005" y1="71" x2="488.45000000000005" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="488.45000000000005" cy="62" r="9.5" fill="#B3261E"/><text x="488.5" y="65.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">12</text><line x1="427.5" y1="41" x2="427.5" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="427.5" cy="32" r="9.5" fill="#B3261E"/><text x="427.5" y="35.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">9</text><line x1="451.34999999999997" y1="41" x2="451.34999999999997" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="451.34999999999997" cy="32" r="9.5" fill="#B3261E"/><text x="451.3" y="35.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">13</text><line x1="538.8" y1="71" x2="538.8" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="538.8" cy="62" r="9.5" fill="#B3261E"/><text x="538.8" y="65.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">8</text><line x1="575.9" y1="71" x2="575.9" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="575.9" cy="62" r="9.5" fill="#B3261E"/><text x="575.9" y="65.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">11</text><line x1="618.3000000000001" y1="71" x2="618.3000000000001" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="618.3000000000001" cy="62" r="9.5" fill="#B3261E"/><text x="618.3" y="65.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">10</text><text x="30.0" y="16.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">ACROSS THE WHOLE JOB</text><circle cx="39.5" cy="34" r="9.5" fill="none" stroke="#B3261E" stroke-width="1.4"/><text x="39.5" y="37.4" font-family="Source Code Pro" font-size="10.9" fill="#B3261E" text-anchor="middle" font-weight="600">1</text><circle cx="63.5" cy="34" r="9.5" fill="none" stroke="#B3261E" stroke-width="1.4"/><text x="63.5" y="37.4" font-family="Source Code Pro" font-size="10.9" fill="#B3261E" text-anchor="middle" font-weight="600">4</text><circle cx="87.5" cy="34" r="9.5" fill="none" stroke="#B3261E" stroke-width="1.4"/><text x="87.5" y="37.4" font-family="Source Code Pro" font-size="10.9" fill="#B3261E" text-anchor="middle" font-weight="600">5</text><circle cx="111.5" cy="34" r="9.5" fill="none" stroke="#B3261E" stroke-width="1.4"/><text x="111.5" y="37.4" font-family="Source Code Pro" font-size="10.9" fill="#B3261E" text-anchor="middle" font-weight="600">14</text></svg></div>
+  <p class="cap">Each pin carries the number of its row in the table. The hollow circles apply to the whole job.</p>
+  <div class="gap"></div>
+  <table>
+    <tr><th>No.</th><th>What was planted in rev04</th><th>Where the report shows it</th><th style="text-align:right">Page</th></tr>
+    <tr><td class="n">1</td><td>Real progress in October on a dozen activities</td><td>Dates moved with actuals behind them: 12. Progress from 23.44% to 28.01%</td><td class="pg">10</td></tr>
+    <tr><td class="n">2</td><td>Row 63 held by a constraint until 2026-12-28, nothing executed</td><td>Replanning: start 46 days later, finish 53 days later. One constraint added</td><td class="pg">9</td></tr>
+    <tr><td class="n">3</td><td>Row 36 started with row 35 still open</td><td>Finding A1, out of sequence, both ends marked</td><td class="pg">12</td></tr>
+    <tr><td class="n">4</td><td>Rows 77, 89, 136 and 170 with no successor</td><td>Metric Q1: 4 of 96, under the threshold</td><td class="pg">12</td></tr>
+    <tr><td class="n">5</td><td>The same four and row 57 with 79 to 205 days of float</td><td>Metric Q6: 5 of 103</td><td class="pg">12</td></tr>
+    <tr><td class="n">6</td><td>Row 55 at 95% by duration and 57% physical</td><td>S-curve: the other method would read 0.44 points more. Productivity: inconsistent measurement</td><td class="pg">10</td></tr>
+    <tr><td class="n">7</td><td>Actual finish of row 29 changed from 2026-06-05 to 2026-06-01</td><td>Past rewritten: one actual finish, now equal to the baseline date</td><td class="pg">8</td></tr>
+    <tr><td class="n">8</td><td>One link added (94 → 106) and one removed (123 → 127)</td><td>Logic changed</td><td class="pg">9</td></tr>
+    <tr><td class="n">9</td><td>Row 157, not started: 12 days became 20</td><td>Duration changed on work not started</td><td class="pg">9</td></tr>
+    <tr><td class="n">10</td><td>Baseline of row 132 moved four weeks</td><td>The reference moved: a warning about the comparison basis</td><td class="pg">8</td></tr>
+    <tr><td class="n">11</td><td>Row 57 exists only in rev04. An activity at 100% exists only in rev03</td><td>Scope: 1 inserted and 1 removed. 0.33 points of the movement are not progress</td><td class="pg">10</td></tr>
+    <tr><td class="n">12</td><td>Float of the Segment 3 milestone fell from 13 to 3 days</td><td>Critical path: float lost. The forensics name the origin</td><td class="pg">7</td></tr>
+    <tr><td class="n">13</td><td>Project finish from 2027-10-04 to 2027-10-25, through the viaduct</td><td>Project finish and the chain that drives it</td><td class="pg">11</td></tr>
+    <tr><td class="n">14</td><td>Half of the remaining cost falls between December and March</td><td>Rain exposure: 50% in reserved months, 52% if everything slips thirty days</td><td class="pg">13</td></tr>
+  </table>
+  <p class="small" style="margin-top:2mm">The tool's test, <code>test_checks.py</code>, checks that the two files are what the generator writes and that every item above is found. These figures hold for the <code>.xml</code> files. The example's <code>.mpp</code> files give slightly different ones, because MS Project recalculates the schedule when it opens it.</p>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="conversa" data-toc="Talking to an agent about the numbers"><div class="in">
+  <p class="kick">15 <b>· With an agent</b></p>
+  <h1>You ask. The agent answers with the engine's numbers.</h1>
+  <p class="lede">The skill teaches the agent to run the engine and to quote what it measured. The agent does not work the schedule out in its head.</p>
+  <div class="chat">
+    <div class="bar">Claude Code <span class="where">· in the folder ~/cronoaudit-exemplo · free mode</span><b class="mark ilus">illustration</b></div>
+    <div class="body">
+      <div class="you"><div class="who">You</div><p>Compare rev03 with rev04 and tell me what changed, by topic.</p></div>
+      <div class="agent"><div class="who">Agent</div>
+        <p>I ran the engine on both deliveries. I start with the deadline and, before progress, with what touches the measurement.</p>
+        <p class="e">The project finish moved from <span style="white-space:nowrap">2027-10-04</span> to <span style="white-space:nowrap">2027-10-25</span>: 21 calendar days later.</p>
+        <p class="e">All 7 milestones with a deadline finish within it in the current schedule. The smallest margin is row 9, Conclusão do Viaduto V-01 (km 27+400): 1 day.</p>
+        <p>Three points need an answer from the contractor before any percentage:</p>
+        <p class="e">1 of the changed actual dates now falls exactly on the baseline date (row 29, Bueiros tubulares de concreto — Seg. 1, <span style="white-space:nowrap">2026-06-05</span> → <span style="white-space:nowrap">2026-06-01</span>): the record was made to agree with the plan; ask for the evidence behind it.</p>
+        <p class="e">1 activity with recorded progress was removed from the schedule altogether, taking 473,600 of earned value with it; the largest is row 119 of the previous delivery, Remanejamento de cercas da faixa de domínio — Seg. 4, at 100%.</p>
+        <p class="e">On the driving chain of Liberação ao tráfego — Segmento 4 — km 30+000 ao km 36+000, row 132, CBUQ — capa de rolamento (pista nova e existente) — Seg. 4, shows a variance of -9 working days against a baseline that moved +28 calendar days this cycle: part of that variance is the reference moving, not the works.</p>
+        <p>On progress:</p>
+        <p class="e">Weighted progress went from 23.44% to 28.01%: 4.57 points. Per-activity progress adds up to 4.90, more than the movement: 0.33 points were taken off by something other than work done.</p>
+        <p>The report is open in the browser. Do you want the list of what to ask?</p>
+      </div>
+      <div class="you"><div class="who">You</div><p>Where does the viaduct's delay come from?</p></div>
+      <div class="agent"><div class="who">Agent</div>
+        <p class="e">The delay of row 9 starts at row 148, Estacas escavadas — encontros (E1 e E2) (+11 days against the baseline).</p>
+        <p class="e">1 activity with no actual start in either delivery had their duration edited: 1 longer and 0 shorter, a net 8.0 working days. Nothing was executed on them; this is the plan rewritten.</p>
+        <p>That is row 157. The longer duration is on the list of what to ask:</p>
+        <p class="e">Justify the longer duration of row 157, Lançamento das vigas pré-moldadas: 12 → 20 working days.</p>
+      </div>
+    </div>
+    <div class="legend"><b></b>A sentence of the engine, copied from this guide's run. The rest of the dialogue is an illustration.</div>
+  </div>
+  <div class="gap"></div>
+  <div class="cols">
+    <div><h2>What to say</h2><p class="small">Review Rev04.mpp. Compare Rev03 with Rev04 and tell me what changed. Which milestones are at risk? Write the executive summary and generate the final report.</p></div>
+    <div><h2>Where what the agent reads goes</h2><p class="small">To its provider, under the terms of your account or your company's. The engine sends nothing. If the schedule may not leave the computer, use secret mode, on page 18.</p></div>
+  </div>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="agentes" data-z="1.07" data-toc="Three agents, and what was tested on each"><div class="in" style="zoom:1.07">
+  <p class="kick">16 <b>· Agents</b></p>
+  <h1>Use the agent you prefer, or the one your company allows.</h1>
+  <p class="lede">cronoaudit follows the open Agent Skills format. This guide covers three agents. It also works with no agent at all.</p>
+  <div class="cols">
+    <div class="chat">
+      <div class="bar">GitHub Copilot CLI <span class="where">· free mode</span><b class="mark ilus">illustration</b></div>
+      <div class="body">
+        <div class="you"><div class="who">You</div><p>Which milestones are at risk of missing their deadline?</p></div>
+        <div class="agent"><div class="who">Agent</div>
+          <p class="e">All 7 milestones with a deadline finish within it in the current schedule. The smallest margin is row 9, Conclusão do Viaduto V-01 (km 27+400): 1 day.</p>
+          <p class="e">With the slippage that 80% of the activities have not exceeded (7 days), 3 more milestones pass the deadline: rows 7, 8, 9.</p>
+          <p>Margins today, in calendar days: row 7, +5. Row 8, +3. Row 9, +1.</p>
+          <p class="e">The next 4 weeks plan 11.42% of earning; the practised rate delivers 3.99%. Not reachable without a change of pace.</p>
+        </div>
+      </div>
+    </div>
+    <div class="chat">
+      <div class="bar">Codex <span class="where">· free mode</span><b class="mark ilus">illustration</b></div>
+      <div class="body">
+        <div class="you"><div class="who">You</div><p>What do I ask the contractor first?</p></div>
+        <div class="agent"><div class="who">Agent</div>
+          <p>There are 12 items in three groups. The integrity of the measurement comes first:</p>
+          <p class="e">Justify the change to the actual finish of row 29, Bueiros tubulares de concreto — Seg. 1: <span style="white-space:nowrap">2026-06-05</span> → <span style="white-space:nowrap">2026-06-01</span>, which now equals the baseline date.</p>
+          <p class="e">Explain the removal of row 119 of the previous delivery, Remanejamento de cercas da faixa de domínio — Seg. 4, which was at 100%.</p>
+          <p class="e">Show the approval of the baseline change on row 132, CBUQ — capa de rolamento (pista nova e existente) — Seg. 4 (baseline finish +28 days).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="cap">Both conversations are illustrations. The sentences with the red bar are the engine's.</p>
+  <div class="gap2"></div>
+  <h2>What was tested, and when</h2>
+  <table>
+    <tr><th>Agent</th><th>Free mode</th><th>Secret mode</th></tr>
+    <tr><td class="k">Claude Code</td><td>Tested end to end.</td><td>Tested end to end. The folder carries rules and a lock that keeps the agent inside it.</td></tr>
+    <tr><td class="k">GitHub Copilot CLI</td><td>Tested on 21/11/2026.</td><td>Tested on 25/11/2026. Without the lock, it followed the folder's written rules.</td></tr>
+    <tr><td class="k">Codex</td><td colspan="2">Installation and use per the provider's documentation.</td></tr>
+  </table>
+  <div class="gap"></div>
+  <div class="cols">
+    <div class="note">
+      <div class="k">The lock</div>
+      <p>The lock that keeps the agent inside the secret-mode folder exists only in Claude Code. In other agents, the same rules arrive as written instructions.</p>
+    </div>
+    <div class="note">
+      <div class="k">Your company's policy</div>
+      <p>Each agent needs an account with its provider. Check your company's policy before using an agent with a contract schedule.</p>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="secreto" data-z="1.07" data-toc="Secret mode: the agent reads only a coded copy"><div class="in" style="zoom:1.07">
+  <p class="kick">17 <b>· Secret mode</b></p>
+  <h1>Talk to the agent without the names, values and dates leaving the computer.</h1>
+  <div class="cols c3">
+    <div><h3>1. The engine runs here</h3><p class="small">On the real file, on your computer, as always.</p></div>
+    <div><h3>2. The agent reads a copy</h3><p class="small">In a separate folder, with names replaced by codes, dates by day counts and money multiplied by a secret factor.</p></div>
+    <div><h3>3. The way back is local</h3><p class="small">The report with the real data is built on your computer, when you ask for it.</p></div>
+  </div>
+  <div class="gap"></div>
+  <h2>The question comes before anything is read</h2>
+  <div class="term"><div class="bar"><i></i><i></i><i></i><span>terminal · the mode question</span><b class="mark">real capture</b></div><pre><span class="l cmd">python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev04.xml --lang en</span><span class="l hl">The results will carry the real data (free mode). If an AI agent reads them later, what it reads goes to its provider. Go on? [y] yes / [secret] a coded copy for the agent / [never] yes, and do not ask again</span><span class="l">&gt; <span class="typed">y</span></span><span class="l">Schedule integrity review -- rodovia-ficticia-rev04.xml</span><span class="l cut">⋯ 5 lines cut ⋯</span><span class="l">  A1       2 activities  Execution out of sequence  [as successors 1, as predecessors 1]</span><span class="l cut">⋯ 10 lines cut ⋯</span><span class="l">  report   ~/cronoaudit-exemplo/rodovia-ficticia-rev04-review.html</span><span class="l">  data     ~/cronoaudit-exemplo/rodovia-ficticia-rev04-review.json</span></pre></div>
+  <p class="cap">At a terminal, the engine asks the mode before opening the schedule. Here the answer was <code>y</code>. Answering <code>secret</code> leads to the next page.</p>
+  <div class="gap"></div>
+  <h2>Asked from inside an agent session, the engine stops</h2>
+  <div class="term"><div class="bar"><i></i><i></i><i></i><span>a terminal started by an agent</span><b class="mark">real capture</b></div><pre><span class="l cmd">python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml --secret --lang en</span><span class="l">cronoaudit: SECRET mode was requested (by --secret), but this process was started by an agent (CLAUDE_CODE_CHILD_SESSION is set), so the run stopped here.</span><span class="l hl">  Nothing was read and nothing was run.</span><span class="l">  Secret mode protects only if the agent never holds the original. Run this</span><span class="l">  same command in your own terminal: it prints a work folder, and the agent</span><span class="l">  is started inside it. cronoaudit does not fall back to free mode on its own.</span></pre></div>
+  <p class="cap">Secret mode protects only if the agent never holds the original. That is why the person runs the command, in their own terminal, or from the button on the Cronoaudit tab in MS Project.</p>
+  <div class="gap"></div>
+  <table>
+    <tr><th>Becomes a code</th><th>Example</th><th>Stays real</th></tr>
+    <tr><td>Names of projects, activities, resources and calendars</td><td class="k"><span class="tok">T·3fa91c</span></td><td rowspan="3">Durations, percentages, counts, ratios, row numbers and WBS codes.</td></tr>
+    <tr><td>Dates</td><td class="k"><span class="tok">D+0412</span>, days from a secret origin</td></tr>
+    <tr><td>Money</td><td class="k"><span class="tok">¤1,234,567</span>, multiplied by a secret factor</td></tr>
+  </table>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="secreto2" data-z="1.14" data-toc="A secret run, from the command to the work folder"><div class="in" style="zoom:1.14">
+  <p class="kick">18 <b>· Secret mode, in the terminal</b></p>
+  <h1 class="wide">The same comparison, now in codes.</h1>
+  <div class="cols c32">
+    <div>
+      <div class="term"><div class="bar"><i></i><i></i><i></i><span>the person&#x27;s terminal · secret mode</span><b class="mark">real capture</b></div><pre><span class="l cmd">python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml --secret --lang en --workdir ~/cronoaudit-work</span><span class="l hl">cronoaudit: SECRET mode. The engine runs here, on the real file; an agent will read only the coded copy.</span><span class="l cut">⋯ 1 line cut ⋯</span><span class="l">Schedule integrity review -- <span class="tok">P·f89e01</span></span><span class="l cut">⋯ 17 lines cut ⋯</span><span class="l">Cycle comparison</span><span class="l"> </span><span class="l">  previous  <span class="tok">P·1e91a8</span>  status <span class="tok">D+0695T17:00:00</span></span><span class="l">  current   <span class="tok">P·f89e01</span>  status <span class="tok">D+0725T17:00:00</span></span><span class="l"> </span><span class="l">  earned    23.44%  -&gt;  28.01%</span><span class="l">  movement  4.57 percentage points</span><span class="l">  decomposition sums to 4.90 points</span><span class="l">  unexplained residue  -0.33 points</span><span class="l cut">⋯ 5 lines cut ⋯</span><span class="l">  project finish: <span class="tok">D+1064T17:00:00</span> -&gt; <span class="tok">D+1085T17:00:00</span>  (21 calendar days)</span><span class="l cut">⋯ 9 lines cut ⋯</span><span class="l">  largest contributions to the movement:</span><span class="l">      +1.520 pp  id 35      6.0% -&gt;  85.0%  <span class="tok">T·2deee1</span></span><span class="l">      +0.941 pp  id 34     39.0% -&gt; 100.0%  <span class="tok">T·bcd7f7</span></span><span class="l">      +0.673 pp  id 149    25.0% -&gt;  82.0%  <span class="tok">T·f77c84</span></span><span class="l">      +0.368 pp  id 31     39.0% -&gt; 100.0%  <span class="tok">T·8fc725</span></span><span class="l cut">⋯ 6 lines cut ⋯</span><span class="l">Done. The coded copy, the only thing the agent should read, is in:</span><span class="l hl">  ~/cronoaudit-work/b1aa2d0d62</span><span class="l">Now open your AI agent inside that folder:</span><span class="l">  cd &quot;~/cronoaudit-work/b1aa2d0d62&quot;</span><span class="l">  then claude, copilot or codex</span><span class="l">Talk about activities by their code or row number: whatever you type with a real name goes to the AI service.</span><span class="l">In Claude Code the folder has a lock that keeps the agent inside it. When it asks whether you trust the folder, say yes: that is what turns the lock on, and it asks again for every new folder. In other agents the folder carries the rules in writing.</span><span class="l">When you ask, the agent builds the report with the real data on this computer.</span></pre></div>
+      <p class="cap">Captured with the fictitious example only, in a terminal without the agent-session variables, as the test suite does.</p>
+    </div>
+    <div>
+      <div class="term"><div class="bar"><i></i><i></i><i></i><span>the work folder</span><b class="mark">real capture</b></div><pre><span class="l cmd">ls -A1 ~/cronoaudit-work/b1aa2d0d62</span><span class="l">.claude</span><span class="l">AGENTS.md</span><span class="l">CLAUDE.md</span><span class="l">cronoaudit-secret.json</span><span class="l">current-review-forecast.json</span><span class="l">current-review-forensics.json</span><span class="l">current-review-productivity.json</span><span class="l">current-review-quality.json</span><span class="l">current-review-readings.json</span><span class="l">current-review-scurve.json</span><span class="l">current-review.html</span><span class="l">current-review.json</span><span class="l">previous--to--current-cycle-readings.json</span><span class="l">previous--to--current-cycle.html</span><span class="l">previous--to--current-cycle.json</span></pre></div>
+      <div class="gap"></div>
+      <h2>What changed in the output</h2>
+      <p>Compare it with page 5. The percentages and the counts are the same. File names became <span class="tok">P·</span>, activity names became <span class="tok">T·</span> and dates became <span class="tok">D+</span>.</p>
+      <h2>What is in the folder</h2>
+      <p>The coded copies of the reports and of the figures, and the rules for the agent. The original is not there. The table that undoes the codes stays in a vault, outside the folder.</p>
+      <div class="note">
+        <div class="k">The folder's rules</div>
+        <p class="small">Read only the files in the folder. Never ask for or open the original schedule. Quote the codes as written. Write the synthesis only when the person asks.</p>
+      </div>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="secreto3" data-z="1.07" data-toc="The same reading, real and coded, side by side"><div class="in" style="zoom:1.07">
+  <p class="kick">19 <b>· Secret mode, side by side</b></p>
+  <h1 class="wide">What you see, and what the agent sees.</h1>
+  <p class="lede">The same sentence of the engine, in this guide's two runs. On the left, the real report. On the right, the copy the agent reads.</p>
+  <div class="sbs"><div><div class="h">On your computer</div><p>The project finish moved from <span style="white-space:nowrap">2027-10-04</span> to <span style="white-space:nowrap">2027-10-25</span>: 21 calendar days later.</p></div><div><div class="h">In the agent's folder</div><p>The project finish moved from <span class="tok">D+1064</span> to <span class="tok">D+1085</span>: 21 calendar days later.</p></div></div>
+  <div class="sbs"><div><div class="h">On your computer</div><p>1 of the changed actual dates now falls exactly on the baseline date (row 29, Bueiros tubulares de concreto — Seg. 1, <span style="white-space:nowrap">2026-06-05</span> → <span style="white-space:nowrap">2026-06-01</span>): the record was made to agree with the plan; ask for the evidence behind it.</p></div><div><div class="h">In the agent's folder</div><p>1 of the changed actual dates now falls exactly on the baseline date (row 29, <span class="tok">T·a6623d</span>, <span class="tok">D+0578</span> → <span class="tok">D+0574</span>): the record was made to agree with the plan; ask for the evidence behind it.</p></div></div>
+  <div class="sbs"><div><div class="h">On your computer</div><p>1 activity with recorded progress was removed from the schedule altogether, taking 473,600 of earned value with it; the largest is row 119 of the previous delivery, Remanejamento de cercas da faixa de domínio — Seg. 4, at 100%.</p></div><div><div class="h">In the agent's folder</div><p>1 activity with recorded progress was removed from the schedule altogether, taking <span class="tok">¤4,473,458</span> of earned value with it; the largest is row 119 of the previous delivery, <span class="tok">T·dce2d4</span>, at 100%.</p></div></div>
+  <p class="cap"><b class="mark eng">engine reading</b>Sentences copied from the readings files of the two runs. The 21 days, the 100% and the row number are the same on both sides.</p>
+  <div class="gap"></div>
+  <div class="cols">
+    <div>
+      <div class="browser"><div class="bar"><i></i><i></i><i></i><span class="url">~/cronoaudit-exemplo/…-cycle.html</span><b class="mark real">real capture</b></div><div class="shot" style="max-height:92mm"><img src="img/cycle-cobrar-en.png" alt=""></div></div>
+      <p class="cap">What to ask, in the real report.</p>
+    </div>
+    <div>
+      <div class="browser"><div class="bar"><i></i><i></i><i></i><span class="url">~/cronoaudit-work/b1aa2d0d62/previous--to--current-cycle.html</span><b class="mark real">real capture</b></div><div class="shot" style="max-height:92mm"><img src="img/coded-cobrar-en.png" alt=""></div></div>
+      <p class="cap">The same section, in the coded copy.</p>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="secreto4" data-z="1.07" data-toc="The conversation in codes and the way back"><div class="in" style="zoom:1.07">
+  <p class="kick">20 <b>· Secret mode, the way back</b></p>
+  <h1 class="wide">The conversation happens in codes. The translation, on your computer.</h1>
+  <div class="chat">
+    <div class="bar">Your agent <span class="where">· started inside ~/cronoaudit-work/b1aa2d0d62</span><b class="mark ilus">illustration</b></div>
+    <div class="body">
+      <div class="you"><div class="who">You</div><p>What changed in the finish, and what do I need to ask first?</p></div>
+      <div class="agent"><div class="who">Agent</div>
+        <p class="e">The project finish moved from <span class="tok">D+1064</span> to <span class="tok">D+1085</span>: 21 calendar days later.</p>
+        <p class="e">1 of the changed actual dates now falls exactly on the baseline date (row 29, <span class="tok">T·a6623d</span>, <span class="tok">D+0578</span> → <span class="tok">D+0574</span>): the record was made to agree with the plan; ask for the evidence behind it.</p>
+        <p class="e">The delay of row 9 starts at row 148, <span class="tok">T·d2d837</span> (+11 days against the baseline).</p>
+        <p class="e">Justify the longer duration of row 157, <span class="tok">T·3f8f8e</span>: 12 → 20 working days.</p>
+        <p>Do you want me to write the synthesis and build the final report with the real names? It is built on your computer.</p>
+      </div>
+    </div>
+    <div class="legend"><b></b>A sentence of the engine, in this run's coded form. The rest of the dialogue is an illustration.</div>
+  </div>
+  <div class="gap"></div>
+  <h2>To read the answer with the real names</h2>
+  <div class="term"><div class="bar"><i></i><i></i><i></i><span>the person&#x27;s terminal · the way back</span><b class="mark">real capture</b></div><pre><span class="l cmd">python3 ~/.claude/skills/cronoaudit/scripts/secret_decode.py text ~/cronoaudit-work/b1aa2d0d62 &lt; coded-answer-en.txt</span><span class="l">The project finish moved from 2027-10-04 to 2027-10-25: 21 calendar days later.</span><span class="l">1 of the changed actual dates now falls exactly on the baseline date (row 29, Bueiros tubulares de concreto — Seg. 1, 2026-06-05 → 2026-06-01): the record was made to agree with the plan; ask for the evidence behind it.</span><span class="l">The delay of row 9 starts at row 148, Estacas escavadas — encontros (E1 e E2) (+11 days against the baseline).</span><span class="l">Justify the longer duration of row 157, Lançamento das vigas pré-moldadas: 12 → 20 working days.</span></pre></div>
+  <p class="cap">The four sentences above, saved to a file and translated by the <code>text</code> command. Only the person runs that command, in their own terminal, outside the agent.</p>
+  <div class="gap"></div>
+  <h2>For the final report</h2>
+  <div class="term"><div class="bar"><i></i><i></i><i></i><span>terminal · the final report</span><b class="mark">real capture</b></div><pre><span class="l cmd">python3 ~/.claude/skills/cronoaudit/scripts/secret_decode.py finish --no-open</span><span class="l hl">cronoaudit: 2 report(s) decoded on this machine; check passed, 7386 value(s) equal to the engine&#x27;s own output. Written beside the original.</span></pre></div>
+  <p class="cap">The <code>finish</code> command decodes the reports and checks every value against the engine's own output.</p>
+  <div class="gap"></div>
+  <div class="cols">
+    <div class="note"><div class="k">What secret mode does not do</div><p class="small">The codes do not make the schedule anonymous: its structure and durations stay readable. It does not replace your company's policy on AI services.</p></div>
+    <div class="note"><div class="k">Speak by code or by row</div><p class="small">Whatever you type with a real name goes to the AI service. Refer to activities by their code or row number.</p></div>
+  </div>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="caminhos" data-z="1.14" data-toc="Three ways to use it, the data and the limits"><div class="in" style="zoom:1.14">
+  <p class="kick">21 <b>· Day to day</b></p>
+  <h1>Three paths. The engine is the same.</h1>
+  <table>
+    <tr><th>You prefer</th><th>Path</th><th>What you do</th></tr>
+    <tr><td>To talk to an AI and let it run things</td><td class="k">A. Through the agent</td><td>Ask in words: review Rev04.mpp</td></tr>
+    <tr><td>A button, inside MS Project itself</td><td class="k">B. The Cronoaudit tab (Windows)</td><td>Click Relatório or Analisar</td></tr>
+    <tr><td>No AI, or a computer with no agent</td><td class="k">C. The engine</td><td>One command, on the exported XML</td></tr>
+  </table>
+  <div class="gap2"></div>
+  <div class="cols">
+    <div>
+      <h2>Where the file comes from</h2>
+      <p>In MS Project: File, Save As, XML Format. That is Project's own format and nothing cronoaudit uses is lost. On Windows with Project installed, the engine also takes the <code>.mpp</code> directly and asks Project to export it. The file is opened read-only.</p>
+      <h2>Where your data goes</h2>
+      <ul>
+        <li>The engine runs on your computer and sends nothing.</li>
+        <li>The installers download this repository from GitHub and, on Windows, Python, if it is missing.</li>
+        <li>What an agent reads goes to its provider.</li>
+        <li>If the policy does not allow an agent, use path C or the tab's buttons that use no AI.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>What cronoaudit does not do</h2>
+      <ul>
+        <li>It does not read Primavera P6. Today the input is MS Project.</li>
+        <li>It does not certify against DCMA. The fourteen metrics are an implementation, with the thresholds quoted.</li>
+        <li>It does not produce a contractual delay claim. The forensics show the mechanism.</li>
+        <li>It does not recalculate the network. It reads the dates, the float and the Critical flag the file carries.</li>
+      </ul>
+      <div class="note">
+        <div class="k">Beyond this guide</div>
+        <p class="small">The technical manual explains every concept, every section of the report and how to reproduce every figure. Source, licence and the latest version: github.com/Holiv/cronoaudit</p>
+      </div>
+    </div>
+  </div>
+  <h2>With one file only</h2>
+  <div class="cols">
+    <div>
+      <p>Without the previous delivery, the report is the review of that revision: deadlines, nine checks, S-curve, progress by group, productivity by resource, fourteen metrics, looking forward and forensics.</p>
+      <p class="small">To weigh progress by discipline instead of by segment, add <code>--group-by DISCIPLINA</code>. The example carries two custom fields, DISCIPLINA and SEGMENTO.</p>
+    </div>
+    <div class="reading tight">
+      <b class="mark eng">engine reading</b>
+      <p>Weighted progress is 28.01% against 31.07% planned: 3.06 points behind.</p>
+      <p>Segmento 2 — km 18+000 ao km 24+000 carries 24.0% of the budget and stands at 20.7% earned against 24.6% planned.</p>
+      <p>1 group is more than 5 points behind their own plan; the largest is Obras de Arte Especiais — Viaduto V-01 (km 27+400).</p>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page sheet" id="cola" data-toc="One-page cheat sheet"><div class="in">
+  <p class="kick">22 <b>· Cheat sheet</b></p>
+  <h1 class="wide">cronoaudit 1.0.0 on one page</h1>
+  <div class="box"><h2>Install</h2>
+  <p>macOS and Linux, in Terminal:</p>
+  <pre>curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash</pre>
+  <p>Windows, in PowerShell:</p>
+  <pre>irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex</pre>
+  <p>To update, run the same command again.</p>
+  </div>
+  <div class="cols">
+    <div>
+      <div class="box"><h2>Run with no agent</h2>
+        <pre>R=~/.claude/skills/cronoaudit/scripts/review.py
+python3 $R --example             # the example
+python3 $R Rev04.xml             # one delivery
+python3 $R Rev03.xml Rev04.xml   # two deliveries</pre>
+        <table>
+          <tr><td class="k"><code>--free</code></td><td>free mode, without the question</td></tr>
+          <tr><td class="k"><code>--secret</code></td><td>secret mode: writes the coded folder</td></tr>
+          <tr><td class="k"><code>--group-by DISCIPLINA</code></td><td>weighs by a custom field</td></tr>
+          <tr><td class="k"><code>--outdir folder</code></td><td>where to write the report</td></tr>
+          <tr><td class="k"><code>--lang en</code></td><td>forces the report language</td></tr>
+        </table>
+        <p class="small" style="margin-top:1.4mm">With two files, the previous one goes first. On Windows, use the line the installer prints at the end: the Python it brings is not on the PATH.</p>
+      </div>
+      <div class="box"><h2>Secret mode, in four steps</h2>
+        <ol class="steps">
+          <li><div>In your own terminal: <code>review.py Rev03.xml Rev04.xml --secret</code></div></li>
+          <li><div>Start the agent inside the folder the command prints.</div></li>
+          <li><div>Talk by code or by row number.</div></li>
+          <li><div>Ask for the final report. It is built on your computer, with the real names.</div></li>
+        </ol>
+      </div>
+      <div class="box"><h2>The Cronoaudit tab in MS Project (Windows)</h2>
+        <table>
+          <tr><td class="k">Analisar</td><td>asks the mode and opens your agent with the schedule</td></tr>
+          <tr><td class="k">Comparar versões</td><td>the same, with two versions from the same folder</td></tr>
+          <tr><td class="k">Relatório, Comparar</td><td>no AI: writes the report and opens it in the browser</td></tr>
+          <tr><td class="k">Exportar XML</td><td>only exports, to take to another computer</td></tr>
+        </table>
+      </div>
+      <div class="box"><h2>Where it is</h2>
+        <p>github.com/Holiv/cronoaudit<br>Apache 2.0 licence. Technical manual in <code>docs/manual</code>. Example in <code>examples</code>.</p>
+      </div>
+    </div>
+    <div>
+      <div class="box"><h2>The question and the section that answers it</h2>
+        <table>
+          <tr><td>Does any milestone pass its deadline?</td><td class="k">Deadlines</td></tr>
+          <tr><td>Did anyone touch what was already measured?</td><td class="k">Integrity of the measurement</td></tr>
+          <tr><td>Did the date move by the works or by the plan?</td><td class="k">Replanning</td></tr>
+          <tr><td>Is the percentage all progress?</td><td class="k">Progress</td></tr>
+          <tr><td>Where did the delay come in?</td><td class="k">Forensics</td></tr>
+          <tr><td>What do I ask the contractor?</td><td class="k">What to ask</td></tr>
+        </table>
+      </div>
+      <div class="box"><h2>What to say to the agent</h2>
+        <p class="say">Review Rev04.mpp.</p>
+        <p class="say">Compare Rev03 with Rev04 and tell me what changed.</p>
+        <p class="say">Which milestones are at risk of missing their deadline?</p>
+        <p class="say">Where does this milestone's delay come from?</p>
+        <p class="say">Write the executive summary and generate the final report.</p>
+      </div>
+      <div class="box"><h2>The reading order of the report</h2>
+        <p>1. Deadlines. 2. Integrity of the measurement. 3. Replanning. 4. Progress. 5. Float and critical path. 6. Network quality. Last, what to ask the contractor.</p>
+      </div>
+      <div class="box"><h2>Agents</h2>
+        <table>
+          <tr><td class="k">Claude Code</td><td>tested end to end</td></tr>
+          <tr><td class="k">GitHub Copilot CLI</td><td>free mode on 21/11/2026, secret mode on 25/11/2026</td></tr>
+          <tr><td class="k">Codex</td><td>per the provider's documentation</td></tr>
+        </table>
+        <p class="small" style="margin-top:1.4mm">The secret-mode lock exists only in Claude Code.</p>
+      </div>
+      <div class="box"><h2>Limits</h2>
+        <p>Reads MS Project (XML, or <code>.mpp</code> on Windows with Project). Does not read Primavera P6. Computes the fourteen DCMA-style metrics and does not certify against DCMA. Does not produce a delay claim.</p>
+      </div>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · illustrated guide · 1.0.0</span><span class="n"></span></div></section>
+
+</body></html>

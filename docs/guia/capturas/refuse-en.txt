@@ -1,0 +1,5 @@
+cronoaudit: SECRET mode was requested (by --secret), but this process was started by an agent (CLAUDE_CODE_CHILD_SESSION is set), so the run stopped here.
+  Nothing was read and nothing was run.
+  Secret mode protects only if the agent never holds the original. Run this
+  same command in your own terminal: it prints a work folder, and the agent
+  is started inside it. cronoaudit does not fall back to free mode on its own.

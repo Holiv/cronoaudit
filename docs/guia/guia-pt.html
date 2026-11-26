@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<title>cronoaudit · guia ilustrado 1.0.0</title>
+<meta name="author" content="Helton da Silva de Oliveira">
+<link rel="stylesheet" href="style.css">
+</head><body>
+<section class="page cover"><div class="in">
+  <p class="kick">Guia ilustrado · versão 1.0.0</p>
+  <p class="logo">crono<em>audit</em></p>
+  <p class="head">A rev04 chegou. O número fecha. <em>O que mais mudou?</em></p>
+  <p class="sub">Uma análise crítica de cronograma mostrada do começo ao fim, sobre uma rodovia inventada: o terminal, o relatório, a conversa com o agente e a lista do que cobrar.</p>
+  <figure><svg viewBox="0 0 688 316" aria-hidden="true"><line x1="284" y1="6" x2="284" y2="294" stroke="#6B6E74" stroke-width="1" stroke-dasharray="2 4"/><line x1="318" y1="6" x2="318" y2="294" stroke="#B3261E" stroke-width="1" stroke-dasharray="2 4"/><text x="280.0" y="12.0" font-family="Source Code Pro" font-size="9.5" fill="#6B6E74" text-anchor="end" font-weight="400">rev03 · 30/09/2026</text><text x="322.0" y="12.0" font-family="Source Code Pro" font-size="9.5" fill="#B3261E" text-anchor="start" font-weight="400">rev04 · 30/10/2026</text><text x="0.0" y="45.0" font-family="Source Code Pro" font-size="11.0" fill="#6B6E74" text-anchor="start" font-weight="400">linha 157</text><rect x="340" y="30" width="72" height="11" fill="none" stroke="#6B6E74" stroke-width="1"/><rect x="340" y="44" width="120" height="11" fill="#17191C"/><rect x="412" y="44" width="48" height="11" fill="#B3261E"/><text x="472.0" y="49.0" font-family="Fraunces" font-size="15.0" fill="#17191C" text-anchor="start" font-weight="400" font-style="italic">duração 12 → 20 dias úteis</text><text x="0.0" y="97.0" font-family="Source Code Pro" font-size="11.0" fill="#6B6E74" text-anchor="start" font-weight="400">linha 29</text><rect x="124" y="82" width="96" height="11" fill="none" stroke="#6B6E74" stroke-width="1"/><rect x="124" y="96" width="84" height="11" fill="#17191C"/><line x1="208" y1="77" x2="208" y2="113" stroke="#B3261E" stroke-width="1.5"/><path d="M220 87.5 h-9 m3 -3 l-3 3 l3 3" fill="none" stroke="#B3261E" stroke-width="1.2"/><text x="232.0" y="101.0" font-family="Fraunces" font-size="15.0" fill="#17191C" text-anchor="start" font-weight="400" font-style="italic">término real reescrito</text><text x="0.0" y="149.0" font-family="Source Code Pro" font-size="11.0" fill="#6B6E74" text-anchor="start" font-weight="400">linha 119</text><rect x="254" y="134" width="60" height="11" fill="#6B6E74"/><rect x="254" y="148" width="60" height="11" fill="none" stroke="#B3261E" stroke-width="1" stroke-dasharray="3 3"/><text x="326.0" y="153.0" font-family="Fraunces" font-size="15.0" fill="#17191C" text-anchor="start" font-weight="400" font-style="italic">removida, estava a 100%</text><text x="0.0" y="201.0" font-family="Source Code Pro" font-size="11.0" fill="#6B6E74" text-anchor="start" font-weight="400">linha 57</text><rect x="340" y="200" width="54" height="11" fill="#B3261E"/><text x="406.0" y="205.0" font-family="Fraunces" font-size="15.0" fill="#17191C" text-anchor="start" font-weight="400" font-style="italic">nova na rev04</text><text x="0.0" y="253.0" font-family="Source Code Pro" font-size="11.0" fill="#6B6E74" text-anchor="start" font-weight="400">linha 63</text><rect x="300" y="238" width="50" height="11" fill="none" stroke="#6B6E74" stroke-width="1"/><rect x="372" y="252" width="50" height="11" fill="#17191C"/><path d="M350 243.5 h18 m-4 -3 l4 3 l-4 3" fill="none" stroke="#B3261E" stroke-width="1.2"/><text x="434.0" y="257.0" font-family="Fraunces" font-size="15.0" fill="#17191C" text-anchor="start" font-weight="400" font-style="italic">término 53 dias depois</text><line x1="0" y1="294" x2="688" y2="294" stroke="#B3261E" stroke-width="2"/><text x="0.0" y="308.0" font-family="Source Code Pro" font-size="9.5" fill="#B3261E" text-anchor="start" font-weight="400">REV03 · REFERÊNCIA</text></svg></figure>
+  <div class="meta">
+    <span>Autor<b>Helton da Silva de Oliveira</b></span>
+    <span>Formato<b>Agent Skill · Apache 2.0</b></span>
+    <span>Dados<b>Só o exemplo fictício</b></span>
+    <span>Edição<b>Português</b></span>
+  </div>
+</div></section>
+
+<section class="page" id="intro"><div class="in">
+  <p class="kick">01 <b>· Por que existe</b></p>
+  <h1>Um cronograma errado não dá mensagem de erro.</h1>
+  <p class="lede">Ele abre, calcula e imprime. O número que sai é plausível, e é por isso que passa.</p>
+  <div class="cols c32">
+    <div>
+      <p>Quem recebe a revisão do mês confere o que dá para conferir a olho: a data final, o percentual, a curva. O que muda o resultado costuma estar em outro lugar. Uma data real corrigida depois do fato. Uma atividade concluída que sumiu. Uma linha de base que andou. Uma duração esticada em serviço que nem começou.</p>
+      <p>A cronoaudit é uma Agent Skill de código aberto que faz essa conferência. Um motor em Python lê o XML que o próprio MS Project exporta. Ele roda no seu computador e não usa a rede. No fim ele escreve um relatório que abre no navegador e, se você quiser, entrega os números medidos a um agente de IA para conversar sobre eles.</p>
+      <p>Este guia mostra a ferramenta trabalhando. Tudo aqui foi produzido sobre uma obra inventada, a rodovia fictícia RF-140, que vem junto com a instalação. Cada página pode ser repetida no seu computador.</p>
+    </div>
+    <div>
+      <div class="note">
+        <div class="k">Para quem é</div>
+        <p>Para quem planeja, para quem controla e para quem assina embaixo do relatório mensal.</p>
+        <p class="small">O manual técnico explica cada conceito e cada cálculo. Este guia só mostra o que acontece quando você roda.</p>
+      </div>
+    </div>
+  </div>
+  <h2>Como ler as páginas</h2>
+  <div class="legend3">
+    <div><b class="mark real">captura real</b><p>Saída do terminal ou tela do relatório, como o motor produziu. Os caminhos aparecem como <code>~</code>. Todo corte de linhas é marcado.</p></div>
+    <div><b class="mark eng">leitura do motor</b><p>Frase escrita pelo motor, por regra, copiada sem alteração. Os nomes de atividade vêm do arquivo de exemplo.</p></div>
+    <div><b class="mark ilus">ilustração</b><p>Conversa com agente montada para este guia. Os números dentro dela são os do motor, tirados das mesmas rodadas.</p></div>
+  </div>
+  <h2>O percurso</h2>
+  <ol class="toc"><li>A obra fictícia e as duas entregas<span>03</span></li><li>Instalar e rodar o exemplo<span>04</span></li><li>A rev04 chegou: uma linha no terminal<span>05</span></li><li>O relatório, na ordem em que se lê<span>06</span></li><li>Prazos: sete marcos e a margem de cada um<span>07</span></li><li>Antes do avanço: a medição é confiável?<span>08</span></li><li>O que o plano mudou sem a obra andar<span>09</span></li><li>Avanço: 4,57 pontos no cabeçalho, 4,90 de trabalho<span>10</span></li><li>De onde vem o atraso do viaduto<span>11</span></li><li>A rede: nove verificações e catorze métricas<span>12</span></li><li>Olhando para frente: ritmo, quatro semanas, chuva<span>13</span></li><li>O que cobrar da contratada<span>14</span></li><li>As 14 armadilhas plantadas e onde cada uma aparece<span>15</span></li><li>Conversar com um agente sobre os números<span>16</span></li><li>Três agentes, e o que foi testado em cada um<span>17</span></li><li>Modo secreto: o agente lê só uma cópia codificada<span>18</span></li><li>Uma rodada secreta, do comando à pasta de trabalho<span>19</span></li><li>A mesma leitura, real e codificada, lado a lado<span>20</span></li><li>A conversa em códigos e o caminho de volta<span>21</span></li><li>Três caminhos de uso, os dados e os limites<span>22</span></li><li>Cola de uma página<span>23</span></li></ol>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="obra" data-z="1.07" data-toc="A obra fictícia e as duas entregas"><div class="in" style="zoom:1.07">
+  <p class="kick">02 <b>· O exemplo</b></p>
+  <h1>Uma rodovia que não existe, com problemas que existem.</h1>
+  <p class="lede">A RF-140 é inventada: o trecho, o contratante, a contratada, as quantidades, os preços e as datas. O cronograma foi escrito para parecer uma obra rodoviária de verdade, quase toda saudável.</p>
+  <div class="plate"><svg viewBox="0 0 696 100" aria-hidden="true"><rect x="30.0" y="34" width="636.0" height="20" fill="#17191C"/><line x1="30.0" y1="44" x2="666.0" y2="44" stroke="#FBF9F4" stroke-width="1.2" stroke-dasharray="9 7"/><line x1="30.0" y1="28" x2="30.0" y2="64" stroke="#17191C" stroke-width="1"/><text x="30.0" y="76.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="600">km 12</text><text x="109.5" y="76.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="middle" font-weight="400">Segmento 1</text><line x1="189.0" y1="28" x2="189.0" y2="64" stroke="#17191C" stroke-width="1"/><text x="189.0" y="76.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="600">km 18</text><text x="268.5" y="76.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="middle" font-weight="400">Segmento 2</text><line x1="348.0" y1="28" x2="348.0" y2="64" stroke="#17191C" stroke-width="1"/><text x="348.0" y="76.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="600">km 24</text><text x="427.5" y="76.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="middle" font-weight="400">Segmento 3</text><line x1="507.0" y1="28" x2="507.0" y2="64" stroke="#17191C" stroke-width="1"/><text x="507.0" y="76.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="600">km 30</text><text x="586.5" y="76.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="middle" font-weight="400">Segmento 4</text><line x1="666.0" y1="28" x2="666.0" y2="64" stroke="#17191C" stroke-width="1"/><text x="666.0" y="76.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="600">km 36</text><rect x="425.09999999999997" y="31" width="26" height="26" fill="#FBF9F4" stroke="#B3261E" stroke-width="1.5"/><path d="M425.09999999999997 57 q13 -22 26 0" fill="none" stroke="#B3261E" stroke-width="1.5"/><rect x="425.09999999999997" y="39" width="26" height="6" fill="#B3261E"/><text x="438.1" y="92.0" font-family="Source Code Pro" font-size="10.3" fill="#B3261E" text-anchor="middle" font-weight="600">Viaduto V-01 · km 27+400</text></svg></div>
+  <div class="gap2"></div>
+  <div class="facts f5">
+    <div><div class="v">142</div><div class="t">atividades</div></div>
+    <div><div class="v">220</div><div class="t">vínculos</div></div>
+    <div><div class="v">9</div><div class="t">marcos, todos com data limite</div></div>
+    <div><div class="v">2</div><div class="t">calendários em uso, com feriados e reserva de chuva</div></div>
+    <div><div class="v">174.992.838</div><div class="t">de orçamento na conclusão, na rev04</div></div>
+  </div>
+  <div class="cols">
+    <div>
+      <h2>Duas entregas, um mês de diferença</h2>
+      <table>
+        <tr><th>Arquivo</th><th>Data de status</th><th>Papel</th></tr>
+        <tr><td class="k" style="white-space:nowrap">rodovia-ficticia-rev03.xml</td><td>30/09/2026</td><td>entrega anterior</td></tr>
+        <tr><td class="k" style="white-space:nowrap">rodovia-ficticia-rev04.xml</td><td>30/10/2026</td><td>entrega atual</td></tr>
+      </table>
+      <div class="gap"></div>
+      <p>A obra tem quatro segmentos de 6 km e um viaduto no km 27+400. Cada segmento passa por terraplenagem, drenagem, pavimentação, sinalização e iluminação.</p>
+      <p>A rev03, sozinha, é limpa. A rev04 traz um mês de avanço real e catorze alterações plantadas de propósito. A lista está na página 15.</p>
+    </div>
+    <div>
+      <div class="note">
+        <div class="k">O que a entrega diz</div>
+        <p>Avanço de 23,44% para 28,01%. Término do projeto em 25/10/2027. Todos os marcos dentro da data limite.</p>
+        <p class="small">As três frases estão certas. Nenhuma delas conta o que foi alterado no cronograma para o número fechar.</p>
+      </div>
+      <p class="small">O gerador do exemplo é determinístico e está em <code>examples/make_exemplo.py</code>. Cada problema plantado é declarado no topo do script.</p>
+    </div>
+  </div>
+  <div class="gap2"></div>
+  <h2>O que o motor encontra nela</h2>
+  <div class="facts f3">
+    <div><div class="v">14 de 14</div><div class="t">problemas plantados no exemplo aparecem no relatório. Um teste automático confere isso a cada versão.</div></div>
+    <div><div class="v">12</div><div class="t">itens prontos para cobrar da contratada, um por evidência, na comparação das duas entregas.</div></div>
+    <div><div class="v">43 de 43</div><div class="t">atividades com valor agregado batem ao centavo com o que o próprio arquivo calculou.</div></div>
+  </div>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="instalar" data-z="1.07" data-toc="Instalar e rodar o exemplo"><div class="in" style="zoom:1.07">
+  <p class="kick">03 <b>· Instalar</b></p>
+  <h1>Um comando. O exemplo já roda no fim.</h1>
+  <div class="cols c32">
+    <div>
+      <p class="lede">O instalador copia a skill para as pastas que os agentes leem, traz o exemplo fictício e confere a própria instalação.</p>
+    </div>
+    <div>
+      <p class="small">A captura ao lado foi feita a partir de uma cópia local do repositório, numa pasta de usuário vazia. Na instalação pública, a primeira linha é o comando da cola, na página 23, e o resto é igual.</p>
+    </div>
+  </div>
+  <div class="term"><div class="bar"><i></i><i></i><i></i><span>terminal · instalação</span><b class="mark">captura real</b></div><pre><span class="l cmd">CRONOAUDIT_EXAMPLE=1 bash install.sh --from .</span><span class="l">instalada em ~/.claude/skills/cronoaudit</span><span class="l">instalada em ~/.agents/skills/cronoaudit</span><span class="l">exemplo fictício em ~/cronoaudit-exemplo</span><span class="l">Conferindo...</span><span class="l">Autoteste: tudo certo.</span><span class="l">  report   ~/cronoaudit-exemplo/rodovia-ficticia-rev04-review.html</span><span class="l">  data     ~/cronoaudit-exemplo/rodovia-ficticia-rev04-review.json</span><span class="l">  report   ~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html</span><span class="l">  data     ~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.json</span><span class="l">O relatório do exemplo abriu no navegador. Ele também está em:</span><span class="l">  ~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html</span><span class="l"> </span><span class="l hl">Pronto: cronoaudit 1.0.0 instalada.</span><span class="l"> </span><span class="l">Com um agente de IA (Claude Code, Copilot ou Codex): abra o agente na pasta do cronograma e</span><span class="l">peça, por exemplo, &quot;analise o Rev04.xml&quot;. Se ele já estava aberto, feche e abra de novo.</span><span class="l"> </span><span class="l">Sem agente, num terminal:</span><span class="l">    python3 ~/.claude/skills/cronoaudit/scripts/review.py cronograma.xml</span><span class="l">O cronograma vem do MS Project: Arquivo &gt; Salvar como &gt; Formato XML.</span><span class="l">Para ver o exemplo de novo:</span><span class="l">    python3 ~/.claude/skills/cronoaudit/scripts/review.py --example</span><span class="l"> </span><span class="l">Manual e ajuda: https://github.com/Holiv/cronoaudit</span></pre></div>
+  <div class="gap2"></div>
+  <div class="cols c3">
+    <div><h3>Duas pastas de skill</h3><p class="small">Uma para o Claude Code e outra para os agentes que leem <code>~/.agents</code>, como o Codex e o GitHub Copilot. O motor é o mesmo nas duas.</p></div>
+    <div><h3>Um autoteste</h3><p class="small">Antes de dizer que terminou, o instalador roda o motor sobre o exemplo e confere o resultado.</p></div>
+    <div><h3>Nada global</h3><p class="small">Só Python 3.9 ou mais novo. Nenhuma biblioteca é instalada. No Windows, o instalador traz o Python se o computador não tiver.</p></div>
+  </div>
+  <div class="gap2"></div>
+  <div class="cols">
+    <div>
+      <h2>O instalador só pergunta o que é escolha sua</h2>
+      <ul>
+        <li>Se achar o MS Project, pergunta se você quer também a aba Cronoaudit.</li>
+        <li>Pergunta se você quer ver o exemplo agora. Aqui a resposta foi dada antes, pela variável <code>CRONOAUDIT_EXAMPLE=1</code>.</li>
+        <li>No fim, mostra o comando certo para o seu computador.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Outras formas de instalar</h2>
+      <table>
+        <tr><td class="k">Qualquer cliente Agent Skills</td><td><code>npx skills add Holiv/cronoaudit -g</code></td></tr>
+        <tr><td class="k">Claude Code, como plugin</td><td><code>/plugin marketplace add Holiv/cronoaudit</code></td></tr>
+        <tr><td class="k">Uma equipe, pelo projeto</td><td>clonar o repositório em <code>.agents/skills/cronoaudit</code></td></tr>
+      </table>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="terminal" data-z="1.07" data-toc="A rev04 chegou: uma linha no terminal"><div class="in" style="zoom:1.07">
+  <p class="kick">04 <b>· A entrega</b></p>
+  <h1 class="wide">A rev04 chegou. Dois arquivos, uma linha.</h1>
+  <p class="lede">A entrega anterior vem primeiro. O motor analisa a rev04 sozinha e depois compara as duas.</p>
+  <div class="term"><div class="bar"><i></i><i></i><i></i><span>terminal · ~/cronoaudit-exemplo</span><b class="mark">captura real</b></div><pre><span class="l cmd">python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml --free --lang pt</span><span class="l">=== Análise da entrega atual ===</span><span class="l"> </span><span class="l">Análise crítica de cronograma -- rodovia-ficticia-rev04.xml</span><span class="l cut">⋯ 4 linhas cortadas ⋯</span><span class="l">Achados, na ordem em que o método os roda:</span><span class="l"> </span><span class="l hl">  A1       2 atividades  Execução fora de sequência  [como sucessoras 1, como predecessoras 1]</span><span class="l cut">⋯ 8 linhas cortadas ⋯</span><span class="l">Os achados de rede (A1, A2) condicionam todo o resto. Se não forem zero,</span><span class="l">toda data de tendência deste arquivo é calculada sobre lógica que a obra não segue.</span><span class="l cut">⋯ 2 linhas cortadas ⋯</span><span class="l">=== Comparação de ciclo ===</span><span class="l"> </span><span class="l">Comparação de ciclo</span><span class="l"> </span><span class="l">  anterior  rodovia-ficticia-rev03.xml  data de status 30/09/2026</span><span class="l">  atual     rodovia-ficticia-rev04.xml  data de status 30/10/2026</span><span class="l"> </span><span class="l">  avanço    23,44%  -&gt;  28,01%</span><span class="l">  movimento 4,57 pontos percentuais</span><span class="l">  a decomposição soma 4,90 pontos</span><span class="l hl">  resíduo não explicado  -0,33 pontos</span><span class="l"> </span><span class="l">  datas que mudaram:</span><span class="l">    12 com realizado por trás           -&gt; execução</span><span class="l">    89 sem realizado                    -&gt; replanejamento</span><span class="l hl">    1 com a LINHA DE BASE movida       -&gt; a referência mudou</span><span class="l"> </span><span class="l">  escopo: 1 inserida, 1 removida</span><span class="l"> </span><span class="l">  término do projeto: 04/10/2027 -&gt; 25/10/2027  (21 dias corridos)</span><span class="l">  caminho crítico: 0 entraram, 0 saíram, 71 perderam um dia de folga ou mais</span><span class="l">  lógica: 1 vínculo incluído, 1 removido, 0 defasagens alteradas e 0 tipos alterados; restrições: 1 incluída, 0 alteradas, 0 removidas</span><span class="l">  duração alterada em atividade não iniciada: 1</span><span class="l hl">  PASSADO REESCRITO: 0 inícios reais, 1 término real, 0 percentuais que caíram, 1 atividade com avanço removida</span><span class="l cut">⋯ 16 linhas cortadas ⋯</span><span class="l">  report   ~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html</span><span class="l">  data     ~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.json</span></pre></div>
+  <div class="gap2"></div>
+  <div class="cols c3">
+    <div><h3>Uma execução fora de sequência</h3><p class="small">A linha 36 começou com a predecessora, a linha 35, ainda aberta. O motor marca as duas pontas do vínculo, como o próprio MS Project faz.</p></div>
+    <div><h3>Um resíduo de −0,33</h3><p class="small">O cabeçalho andou 4,57 pontos. O trabalho feito soma 4,90. A diferença não é avanço, e o motor dá nome a cada parte dela.</p></div>
+    <div><h3>O passado mudou</h3><p class="small">Um término real foi alterado e uma atividade com avanço sumiu. É o que o relatório vai mostrar antes de qualquer percentual.</p></div>
+  </div>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="relatorio" data-toc="O relatório, na ordem em que se lê"><div class="in">
+  <p class="kick">05 <b>· O relatório</b></p>
+  <h1>O relatório abre no navegador, na língua do cronograma.</h1>
+  <p class="lede">É um arquivo HTML só, sem dependência. Abre igual num computador sem rede. Cada seção começa por uma leitura curta, escrita por regra.</p>
+  <div class="browser"><div class="bar"><i></i><i></i><i></i><span class="url">~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html</span><b class="mark real">captura real</b></div><div class="shot" style="max-height:108mm"><img src="img/cycle-top-pt.png" alt=""></div></div>
+  <p class="cap">O topo do relatório de comparação. Os quatro avisos aparecem antes do primeiro número.</p>
+  <div class="gap"></div>
+  <div class="cols">
+    <div>
+      <h2>A ordem de leitura</h2>
+      <ol class="steps">
+        <li><div><b>Prazos.</b> Cada marco contra a sua data limite.</div></li>
+        <li><div><b>Integridade da medição.</b> Dá para confiar no número?</div></li>
+        <li><div><b>Replanejamento.</b> O que o plano mudou sem a obra andar.</div></li>
+        <li><div><b>Avanço.</b> De onde veio o movimento.</div></li>
+        <li><div><b>Folga e caminho crítico.</b></div></li>
+        <li><div><b>Qualidade da rede,</b> antes e depois.</div></li>
+        <li><div><b>O que cobrar da contratada.</b></div></li>
+      </ol>
+    </div>
+    <div>
+      <div class="reading tight">
+        <b class="mark eng">leitura do motor</b>
+        <p>O passado foi reescrito em 2 atividades: 0 inícios reais e 1 término real mudaram, 0 percentuais concluídos caíram e 1 atividade com avanço registrado foi removida.</p>
+        <p>Todo número que o ciclo anterior informou sobre essas atividades se apoiava num registro que não existe mais. Peça que cada correção seja declarada.</p>
+      </div>
+      <p class="small">O avanço fica em quarto lugar de propósito. Um percentual só vale depois que se sabe se o registro por trás dele foi mexido.</p>
+    </div>
+  </div>
+  <p class="small">Toda afirmação do relatório é marcada como medida, inferida ou relatada. Cada seção traz o critério usado e o caminho para reproduzir a conta no MS Project.</p>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="prazos" data-toc="Prazos: sete marcos e a margem de cada um"><div class="in">
+  <p class="kick">06 <b>· Prazos</b></p>
+  <h1>Todos os marcos cabem no prazo. Três deles, por menos de uma semana.</h1>
+  <p class="lede">A tendência da rev04 respeita as sete datas limite futuras. A margem é que conta a história.</p>
+  <div class="plate"><svg viewBox="0 0 696 243" aria-hidden="true"><line x1="300.0" y1="26" x2="300.0" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="303.0" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">jan</text><line x1="335.9" y1="26" x2="335.9" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="338.9" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">fev</text><line x1="368.4" y1="26" x2="368.4" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="371.4" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">mar</text><line x1="404.3" y1="26" x2="404.3" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="407.3" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">abr</text><line x1="439.1" y1="26" x2="439.1" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="442.1" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">mai</text><line x1="475.0" y1="26" x2="475.0" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="478.0" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">jun</text><line x1="509.8" y1="26" x2="509.8" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="512.8" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">jul</text><line x1="545.7" y1="26" x2="545.7" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="548.7" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">ago</text><line x1="581.7" y1="26" x2="581.7" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="584.7" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">set</text><line x1="616.5" y1="26" x2="616.5" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="619.5" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">out</text><line x1="652.4" y1="26" x2="652.4" y2="217" stroke="#CFC9BC" stroke-width="1"/><text x="655.4" y="22.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">nov</text><text x="0.0" y="22.0" font-family="Source Code Pro" font-size="8.6" fill="#6B6E74" text-anchor="start" font-weight="400">MARCO</text><text x="232.0" y="22.0" font-family="Source Code Pro" font-size="8.6" fill="#6B6E74" text-anchor="end" font-weight="400">MARGEM</text><text x="288.0" y="22.0" font-family="Source Code Pro" font-size="8.6" fill="#6B6E74" text-anchor="end" font-weight="400">COM P80</text><text x="0.0" y="45.0" font-family="Source Code Pro" font-size="9.8" fill="#B3261E" text-anchor="start" font-weight="600"> 4</text><text x="20.0" y="45.5" font-family="Fraunces" font-size="12.1" fill="#17191C" text-anchor="start" font-weight="600">Terraplenagem concluída</text><text x="232.0" y="45.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="end" font-weight="600">+36 d</text><text x="288.0" y="45.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="end" font-weight="400">+29 d</text><line x1="311.6" y1="42" x2="319.7" y2="42" stroke="#17191C" stroke-width="1"/><line x1="353.3" y1="33" x2="353.3" y2="51" stroke="#B3261E" stroke-width="2"/><circle cx="319.7" cy="42" r="3.6" fill="#fff" stroke="#17191C" stroke-width="1.3"/><circle cx="311.6" cy="42" r="3.8" fill="#17191C"/><text x="0.0" y="72.0" font-family="Source Code Pro" font-size="9.8" fill="#B3261E" text-anchor="start" font-weight="600"> 5</text><text x="20.0" y="72.5" font-family="Fraunces" font-size="12.1" fill="#17191C" text-anchor="start" font-weight="600">Tráfego no Segmento 1</text><text x="232.0" y="72.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="end" font-weight="600">+15 d</text><text x="288.0" y="72.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="end" font-weight="400">+8 d</text><line x1="396.2" y1="69" x2="404.3" y2="69" stroke="#17191C" stroke-width="1"/><line x1="413.6" y1="60" x2="413.6" y2="78" stroke="#B3261E" stroke-width="2"/><circle cx="404.3" cy="69" r="3.6" fill="#fff" stroke="#17191C" stroke-width="1.3"/><circle cx="396.2" cy="69" r="3.8" fill="#17191C"/><text x="0.0" y="99.0" font-family="Source Code Pro" font-size="9.8" fill="#B3261E" text-anchor="start" font-weight="600"> 7</text><text x="20.0" y="99.5" font-family="Fraunces" font-size="12.1" fill="#17191C" text-anchor="start" font-weight="600">Tráfego no Segmento 3</text><text x="232.0" y="99.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="end" font-weight="600">+5 d</text><text x="288.0" y="99.0" font-family="Source Code Pro" font-size="10.3" fill="#B3261E" text-anchor="end" font-weight="600">−2 d</text><rect x="457.6" y="91" width="2.3" height="10" fill="#B3261E" opacity=".18"/><line x1="451.8" y1="96" x2="460.0" y2="96" stroke="#17191C" stroke-width="1"/><line x1="457.6" y1="87" x2="457.6" y2="105" stroke="#B3261E" stroke-width="2"/><circle cx="460.0" cy="96" r="3.6" fill="#fff" stroke="#B3261E" stroke-width="1.3"/><circle cx="451.8" cy="96" r="3.8" fill="#17191C"/><text x="0.0" y="126.0" font-family="Source Code Pro" font-size="9.8" fill="#B3261E" text-anchor="start" font-weight="600"> 6</text><text x="20.0" y="126.5" font-family="Fraunces" font-size="12.1" fill="#17191C" text-anchor="start" font-weight="600">Tráfego no Segmento 2</text><text x="232.0" y="126.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="end" font-weight="600">+11 d</text><text x="288.0" y="126.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="end" font-weight="400">+4 d</text><line x1="482.0" y1="123" x2="490.1" y2="123" stroke="#17191C" stroke-width="1"/><line x1="494.7" y1="114" x2="494.7" y2="132" stroke="#B3261E" stroke-width="2"/><circle cx="490.1" cy="123" r="3.6" fill="#fff" stroke="#17191C" stroke-width="1.3"/><circle cx="482.0" cy="123" r="3.8" fill="#17191C"/><text x="0.0" y="153.0" font-family="Source Code Pro" font-size="9.8" fill="#B3261E" text-anchor="start" font-weight="600"> 8</text><text x="20.0" y="153.5" font-family="Fraunces" font-size="12.1" fill="#17191C" text-anchor="start" font-weight="600">Tráfego no Segmento 4</text><text x="232.0" y="153.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="end" font-weight="600">+3 d</text><text x="288.0" y="153.0" font-family="Source Code Pro" font-size="10.3" fill="#B3261E" text-anchor="end" font-weight="600">−4 d</text><rect x="535.3" y="145" width="4.6" height="10" fill="#B3261E" opacity=".18"/><line x1="531.8" y1="150" x2="539.9" y2="150" stroke="#17191C" stroke-width="1"/><line x1="535.3" y1="141" x2="535.3" y2="159" stroke="#B3261E" stroke-width="2"/><circle cx="539.9" cy="150" r="3.6" fill="#fff" stroke="#B3261E" stroke-width="1.3"/><circle cx="531.8" cy="150" r="3.8" fill="#17191C"/><text x="0.0" y="180.0" font-family="Source Code Pro" font-size="9.8" fill="#B3261E" text-anchor="start" font-weight="600"> 9</text><text x="20.0" y="180.5" font-family="Fraunces" font-size="12.1" fill="#17191C" text-anchor="start" font-weight="600">Viaduto V-01 concluído</text><text x="232.0" y="180.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="end" font-weight="600">+1 d</text><text x="288.0" y="180.0" font-family="Source Code Pro" font-size="10.3" fill="#B3261E" text-anchor="end" font-weight="600">−6 d</text><rect x="575.9" y="172" width="7.0" height="10" fill="#B3261E" opacity=".18"/><line x1="574.7" y1="177" x2="582.8" y2="177" stroke="#17191C" stroke-width="1"/><line x1="575.9" y1="168" x2="575.9" y2="186" stroke="#B3261E" stroke-width="2"/><circle cx="582.8" cy="177" r="3.6" fill="#fff" stroke="#B3261E" stroke-width="1.3"/><circle cx="574.7" cy="177" r="3.8" fill="#17191C"/><text x="0.0" y="207.0" font-family="Source Code Pro" font-size="9.8" fill="#B3261E" text-anchor="start" font-weight="600">10</text><text x="20.0" y="207.5" font-family="Fraunces" font-size="12.1" fill="#17191C" text-anchor="start" font-weight="600">Recebimento provisório</text><text x="232.0" y="207.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="end" font-weight="600">+9 d</text><text x="288.0" y="207.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="end" font-weight="400">+2 d</text><line x1="644.3" y1="204" x2="652.4" y2="204" stroke="#17191C" stroke-width="1"/><line x1="654.7" y1="195" x2="654.7" y2="213" stroke="#B3261E" stroke-width="2"/><circle cx="652.4" cy="204" r="3.6" fill="#fff" stroke="#17191C" stroke-width="1.3"/><circle cx="644.3" cy="204" r="3.8" fill="#17191C"/><circle cx="304" cy="232" r="3.8" fill="#17191C"/><text x="312.0" y="235.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">tendência</text><line x1="392" y1="225" x2="392" y2="239" stroke="#B3261E" stroke-width="2"/><text x="398.0" y="235.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">data limite</text><circle cx="478" cy="232" r="3.6" fill="#fff" stroke="#17191C" stroke-width="1.3"/><text x="486.0" y="235.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">tendência com o escorregamento P80</text></svg></div>
+  <p class="cap">Desenhado a partir dos números do motor: tendência, data limite e margem em dias corridos de cada marco. P80 é o escorregamento que 80% das atividades já concluídas não ultrapassaram.</p>
+  <div class="gap"></div>
+  <div class="reading">
+    <b class="mark eng">leitura do motor</b>
+    <p>Os 7 marcos com data limite terminam dentro dela no cronograma atual. A menor margem é a da linha 9, Conclusão do Viaduto V-01 (km 27+400): 1 dia.</p>
+    <p>Com o escorregamento que 80% das atividades não ultrapassaram (7 dias), mais 3 marcos passam da data limite: linhas 7, 8, 9.</p>
+    <p>O atraso da linha 9 nasce na linha 148, Estacas escavadas — encontros (E1 e E2) (+11 dias contra a linha de base).</p>
+  </div>
+  <div class="cols">
+    <div>
+      <h2>O que fazer com isso</h2>
+      <p>Um marco com um dia de margem não está no prazo. Ele está a um imprevisto de sair dele. O relatório põe essa margem na primeira tela e diz em que atividade o atraso nasce. Entre as duas entregas, a folga do marco do Segmento 3 caiu de 13 para 3 dias.</p>
+    </div>
+    <div>
+      <h2>O que a faixa P80 não é</h2>
+      <p>Não é previsão. É a distribuição do que já aconteceu nesta obra, aplicada às datas que faltam. Serve para ordenar a atenção.</p>
+    </div>
+  </div>
+  <div class="gap"></div>
+  <div class="browser"><div class="bar"><i></i><i></i><i></i><span class="url">~/cronoaudit-exemplo/rodovia-ficticia-rev03--to--rodovia-ficticia-rev04-cycle.html</span><b class="mark real">captura real</b></div><div class="shot" style="max-height:37mm"><img src="img/cycle-prazo-pt.png" alt="" style="margin-top:-66mm"></div></div>
+  <p class="cap">A mesma seção no relatório: o término antes e agora, e a tabela de marcos contra a data limite.</p>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="medicao" data-z="1.14" data-toc="Antes do avanço: a medição é confiável?"><div class="in" style="zoom:1.14">
+  <p class="kick">07 <b>· Integridade da medição</b></p>
+  <h1>Três registros mudaram depois de informados.</h1>
+  <p class="lede">Data real é registro. Percentual é medição já informada. Linha de base é a régua. Quando um deles aparece diferente de um mês para o outro, o número do mês anterior perdeu o chão.</p>
+  <div class="ba"><div class="hd"><span class="row">linha 29</span><span class="nm">Bueiros tubulares de concreto — Seg. 1</span><span class="planted">plantado nº 7</span></div><div class="two"><div class="side"><div class="rv">rev03</div><div class="f">término real</div><div class="v">05/06/2026</div></div><div class="arrow">→</div><div class="side after"><div class="rv">rev04</div><div class="f">término real</div><div class="v">01/06/2026</div></div></div><div class="why"><b class="mark eng">leitura do motor</b>1 das datas reais alteradas passou a coincidir exatamente com a linha de base (linha 29, Bueiros tubulares de concreto — Seg. 1, <span style="white-space:nowrap">05/06/2026</span> → <span style="white-space:nowrap">01/06/2026</span>): o registro foi ajustado ao plano; peça a evidência.</div></div>
+  <div class="ba"><div class="hd"><span class="row">linha 119</span><span class="nm">Remanejamento de cercas da faixa de domínio — Seg. 4</span><span class="planted">plantado nº 11</span></div><div class="two"><div class="side"><div class="rv">rev03</div><div class="f">situação</div><div class="v">100% concluída</div></div><div class="arrow">→</div><div class="side after"><div class="rv">rev04</div><div class="f">situação</div><div class="v gone">não existe mais</div></div></div><div class="why"><b class="mark eng">leitura do motor</b>1 atividade com avanço registrado foi removida do cronograma, levando 473.600 de valor agregado; a maior é a linha 119 da entrega anterior, Remanejamento de cercas da faixa de domínio — Seg. 4, a 100%.</div></div>
+  <div class="ba"><div class="hd"><span class="row">linha 132</span><span class="nm">CBUQ — capa de rolamento (pista nova e existente) — Seg. 4</span><span class="planted">plantado nº 10</span></div><div class="two"><div class="side"><div class="rv">rev03</div><div class="f">término da linha de base</div><div class="v">como aprovada</div></div><div class="arrow">→</div><div class="side after"><div class="rv">rev04</div><div class="f">término da linha de base</div><div class="v">movido +28 dias</div></div></div><div class="why"><b class="mark eng">leitura do motor</b>Na cadeia condutora de Liberação ao tráfego — Segmento 4 — km 30+000 ao km 36+000, a linha 132, CBUQ — capa de rolamento (pista nova e existente) — Seg. 4, mostra variação de -9 dias úteis contra uma linha de base que se moveu +28 dias corridos neste ciclo: parte dessa variação é a referência se movendo, não a obra.</div></div>
+  <div class="cols">
+    <div>
+      <h2>Por que é o primeiro assunto</h2>
+      <p>Nenhum dos três casos gera erro no MS Project. O arquivo abre, a curva fecha e o percentual sobe. Só a comparação entre as duas entregas mostra o que foi editado.</p>
+    </div>
+    <div>
+      <h2>O que o motor não afirma</h2>
+      <p>Ele não diz que houve má-fé. Uma correção pode ser legítima. Ele diz que a correção existe, onde está, e pede que seja declarada.</p>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="plano" data-z="1.07" data-toc="O que o plano mudou sem a obra andar"><div class="in" style="zoom:1.07">
+  <p class="kick">08 <b>· Replanejamento e lógica</b></p>
+  <h1>O plano foi reescrito em cinco lugares.</h1>
+  <p class="lede">Das datas que mudaram, 12 têm execução por trás e 89 não têm nenhuma. As cinco edições abaixo são do segundo tipo: plano reescrito, sem obra por trás.</p>
+  <div class="cols">
+    <div>
+      <div class="ba"><div class="hd"><span class="row">linha 157</span><span class="nm">Lançamento das vigas pré-moldadas</span><span class="planted">plantado nº 9</span></div><div class="two"><div class="side"><div class="rv">rev03</div><div class="f">duração</div><div class="v">12 dias úteis</div></div><div class="arrow">→</div><div class="side after"><div class="rv">rev04</div><div class="f">duração</div><div class="v">20 dias úteis</div></div></div><div class="why"><b class="mark eng">leitura do motor</b>1 atividade sem início real em nenhuma das entregas teve a duração editada: 1 mais longa e 0 mais curtas, saldo de 8,0 dias úteis. Nada foi executado nelas; é o plano reescrito.</div></div>
+      <div class="ba"><div class="hd"><span class="row">linha 63</span><span class="nm">Sarjetas e valetas de proteção — Seg. 2</span><span class="planted">plantado nº 2</span></div><div class="two"><div class="side"><div class="rv">rev03</div><div class="f">término</div><div class="v">10/12/2026</div></div><div class="arrow">→</div><div class="side after"><div class="rv">rev04</div><div class="f">término</div><div class="v">01/02/2027</div></div></div><div class="why"><b class="mark eng">leitura do motor</b>Justificar o adiamento de 53 dias no término da linha 63, Sarjetas e valetas de proteção — Seg. 2, movido pelo plano sem avanço registrado. Justificar a restrição Não Iniciar Antes De incluída na linha 63, Sarjetas e valetas de proteção — Seg. 2.</div></div>
+      <div class="ba"><div class="hd"><span class="row">linha 57</span><span class="nm">Contenção em gabião — talude do km 21+300 — Seg. 2</span><span class="planted">plantado nº 11</span></div><div class="two"><div class="side"><div class="rv">rev03</div><div class="f">orçamento</div><div class="v">não existia</div></div><div class="arrow">→</div><div class="side after"><div class="rv">rev04</div><div class="f">orçamento</div><div class="v">936.000</div></div></div><div class="why"><b class="mark eng">leitura do motor</b>Justificar a nova linha 57, Contenção em gabião — talude do km 21+300 — Seg. 2, e de onde veio o seu orçamento.</div></div>
+    </div>
+    <div>
+      <div class="ba"><div class="hd"><span class="row">linha 127</span><span class="nm">Sub-base granular — Seg. 4</span><span class="planted">plantado nº 8</span></div><div class="two"><div class="side"><div class="rv">rev03</div><div class="f">vínculo</div><div class="v">123 → 127</div></div><div class="arrow">→</div><div class="side after"><div class="rv">rev04</div><div class="f">vínculo</div><div class="v gone">retirado</div></div></div><div class="why"><b class="mark eng">leitura do motor</b>Justificar a retirada do vínculo 123 → 127, Sub-base granular — Seg. 4.</div></div><div class="ba"><div class="hd"><span class="row">linha 106</span><span class="nm">Defensas metálicas e barreiras — Seg. 3</span><span class="planted">plantado nº 8</span></div><div class="two"><div class="side"><div class="rv">rev03</div><div class="f">vínculo</div><div class="v">nenhuma</div></div><div class="arrow">→</div><div class="side after"><div class="rv">rev04</div><div class="f">vínculo</div><div class="v">94 → 106</div></div></div><div class="why"><b class="mark eng">leitura do motor</b>Confirmar o novo vínculo 94 → 106, Defensas metálicas e barreiras — Seg. 3.</div></div>
+      <div class="reading tight">
+        <b class="mark eng">leitura do motor</b>
+        <p>1 vínculo incluído, 1 removido, 0 com a latência alterada e 0 com o tipo alterado, entre atividades presentes nas duas entregas.</p>
+        <p>Restrições em atividades não concluídas: 1 incluída, 0 alteradas e 0 removidas.</p>
+        <p>71 atividades não concluídas perderam um dia útil de folga ou mais; a maior perda é de 25,0 dias, na linha 63.</p>
+      </div>
+      <p class="small">A linha 63 recebeu uma restrição de data e ficou parada até 28/12/2026. Ela não está no caminho crítico, mas perdeu 25 dias úteis de folga, a maior perda do ciclo.</p>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="avanco" data-z="1.07" data-toc="Avanço: 4,57 pontos no cabeçalho, 4,90 de trabalho"><div class="in" style="zoom:1.07">
+  <p class="kick">09 <b>· Avanço</b></p>
+  <h1>O cabeçalho andou 4,57 pontos. A obra fez 4,90.</h1>
+  <p class="lede">A diferença é pequena e tem nome. É o tipo de número que some dentro de um percentual agregado.</p>
+  <div class="cols">
+    <div class="plate"><h3>De 23,44% a 28,01%, parte por parte</h3><svg viewBox="0 0 400 184" aria-hidden="true"><line x1="14" y1="127.6" x2="372" y2="127.6" stroke="#ECE7DB" stroke-width="1"/><text x="376.0" y="130.6" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="start" font-weight="400">24%</text><line x1="14" y1="105.2" x2="372" y2="105.2" stroke="#ECE7DB" stroke-width="1"/><text x="376.0" y="108.2" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="start" font-weight="400">25%</text><line x1="14" y1="82.8" x2="372" y2="82.8" stroke="#ECE7DB" stroke-width="1"/><text x="376.0" y="85.8" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="start" font-weight="400">26%</text><line x1="14" y1="60.3" x2="372" y2="60.3" stroke="#ECE7DB" stroke-width="1"/><text x="376.0" y="63.3" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="start" font-weight="400">27%</text><line x1="14" y1="37.9" x2="372" y2="37.9" stroke="#ECE7DB" stroke-width="1"/><text x="376.0" y="40.9" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="start" font-weight="400">28%</text><line x1="18" y1="140.1" x2="92" y2="140.1" stroke="#17191C" stroke-width="2"/><rect x="92" y="30.2" width="52" height="109.9" fill="#17191C"/><line x1="144" y1="30.2" x2="218" y2="30.2" stroke="#6B6E74" stroke-width="1" stroke-dasharray="2 3"/><rect x="166" y="30.2" width="52" height="6.1" fill="#B3261E"/><line x1="218" y1="36.3" x2="292" y2="36.3" stroke="#6B6E74" stroke-width="1" stroke-dasharray="2 3"/><rect x="240" y="36.3" width="52" height="1.5" fill="#B3261E"/><line x1="292" y1="37.7" x2="366" y2="37.7" stroke="#17191C" stroke-width="2"/><text x="44.0" y="132.1" font-family="Fraunces" font-size="16.5" fill="#17191C" text-anchor="middle" font-weight="600">23,44%</text><text x="44.0" y="168.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">rev03</text><text x="118.0" y="24.2" font-family="Fraunces" font-size="16.5" fill="#17191C" text-anchor="middle" font-weight="600">+4,90</text><text x="118.0" y="168.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">avanço por</text><text x="118.0" y="178.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">atividade</text><text x="192.0" y="24.2" font-family="Fraunces" font-size="16.5" fill="#B3261E" text-anchor="middle" font-weight="600">−0,27</text><text x="192.0" y="168.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">atividade</text><text x="192.0" y="178.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">removida</text><text x="266.0" y="24.2" font-family="Fraunces" font-size="16.5" fill="#B3261E" text-anchor="middle" font-weight="600">−0,06</text><text x="266.0" y="168.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">orçamento</text><text x="266.0" y="178.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">alterado</text><text x="340.0" y="58.7" font-family="Fraunces" font-size="16.5" fill="#17191C" text-anchor="middle" font-weight="600">28,01%</text><text x="340.0" y="168.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">rev04</text></svg></div>
+    <div class="plate"><h3>Curva S do próprio arquivo</h3><svg viewBox="0 0 384 170" aria-hidden="true"><line x1="40" y1="150.0" x2="368" y2="150.0" stroke="#ECE7DB" stroke-width="1"/><text x="36.0" y="153.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="end" font-weight="400">0%</text><line x1="40" y1="117.0" x2="368" y2="117.0" stroke="#ECE7DB" stroke-width="1"/><text x="36.0" y="120.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="end" font-weight="400">25%</text><line x1="40" y1="84.0" x2="368" y2="84.0" stroke="#ECE7DB" stroke-width="1"/><text x="36.0" y="87.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="end" font-weight="400">50%</text><line x1="40" y1="51.0" x2="368" y2="51.0" stroke="#ECE7DB" stroke-width="1"/><text x="36.0" y="54.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="end" font-weight="400">75%</text><line x1="40" y1="18.0" x2="368" y2="18.0" stroke="#ECE7DB" stroke-width="1"/><text x="36.0" y="21.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="end" font-weight="400">100%</text><text x="40.0" y="164.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">mar 26</text><text x="94.3" y="164.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">jun 26</text><text x="148.7" y="164.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">set 26</text><text x="203.0" y="164.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">dez 26</text><text x="257.3" y="164.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">mar 27</text><text x="311.7" y="164.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">jun 27</text><text x="366.0" y="164.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="middle" font-weight="400">set 27</text><line x1="166.8" y1="14" x2="166.8" y2="150" stroke="#6B6E74" stroke-width="1" stroke-dasharray="2 3"/><text x="162.8" y="22.0" font-family="Source Code Pro" font-size="11.2" fill="#6B6E74" text-anchor="end" font-weight="400">data de status</text><polyline points="40.0,149.4 58.1,148.0 76.2,145.4 94.3,139.4 112.4,131.8 130.6,124.0 148.7,118.2 166.8,108.9 184.9,92.2 203.0,81.9 221.1,71.8 239.2,58.7 257.3,47.9 275.4,34.0 293.6,28.6 311.7,18.7 329.8,18.3 347.9,18.1 366.0,18.0" fill="none" stroke="#17191C" stroke-width="1.4"/><polyline points="40.0,149.4 58.1,148.0 76.2,145.4 94.3,139.3 112.4,131.6 130.6,124.5 148.7,120.0 166.8,113.0" fill="none" stroke="#B3261E" stroke-width="2.4"/><circle cx="166.8" cy="113.0" r="3.4" fill="#B3261E"/><text x="158.8" y="93.0" font-family="Fraunces" font-size="13.5" fill="#17191C" text-anchor="end" font-weight="600">previsto 31,07%</text><text x="174.8" y="127.0" font-family="Fraunces" font-size="13.5" fill="#B3261E" text-anchor="start" font-weight="600">realizado 28,01%</text></svg></div>
+  </div>
+  <p class="cap">Desenhado a partir dos números do motor. A curva usa o custo de linha de base e o percentual físico que o próprio arquivo distribui no tempo.</p>
+  <div class="gap"></div>
+  <div class="cols">
+    <div class="reading tight">
+      <b class="mark eng">leitura do motor</b>
+      <p>O avanço ponderado foi de 23,44% para 28,01%: 4,57 pontos. O avanço por atividade soma 4,90, mais que o movimento: 0,33 pontos foram retirados por algo que não é trabalho feito.</p>
+      <p>A diferença tem nome: −0,27 pontos do valor agregado apagado com uma atividade removida (linha 119 da entrega anterior, Remanejamento de cercas da faixa de domínio — Seg. 4, a 100%: 473.600); −0,06 pontos do orçamento na conclusão, que foi de 174.530.438 para 174.992.838 (+936.000 de inseridas, −473.600 de removidas).</p>
+    </div>
+    <div class="reading tight">
+      <b class="mark eng">leitura do motor</b>
+      <p>O IDP acumulado é 0,902: a obra agregou 90,2% do que o plano esperava até agora.</p>
+      <p>O outro método de valor agregado leria 28,46% em vez de 28,01%, diferença de 0,44 pontos. Trocar o método muda a curva, não a obra.</p>
+      <p>100% dessa diferença vem da linha 55, Aterro compactado — Seg. 2: 95% concluída pela duração, 57% físico.</p>
+    </div>
+  </div>
+  <div class="cols">
+    <div>
+      <h2>Conferido contra o arquivo</h2>
+      <p>O motor não pede confiança. Ele recalcula o valor agregado atividade por atividade e compara com o que o MS Project gravou.</p>
+      <div class="reading tight"><b class="mark eng">leitura do motor</b><p>O valor agregado da skill bateu com o do arquivo em 43 de 43 folhas ao centavo, zero contra zero fica fora: nada difere.</p></div>
+    </div>
+    <div>
+      <h2>Dois percentuais na mesma atividade</h2>
+      <p>A linha 55 está 95% concluída pela duração e 57% pelo físico. Conforme o método escolhido, o avanço da obra inteira muda 0,44 ponto. O relatório mostra os dois e diz de qual atividade vem a diferença.</p>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="atraso" data-toc="De onde vem o atraso do viaduto"><div class="in">
+  <p class="kick">10 <b>· Forense do cenário</b></p>
+  <h1>O término escorregou 21 dias. O caminho passa pelo viaduto.</h1>
+  <p class="lede">O motor percorre a cadeia condutora de cada marco para trás e mostra onde o atraso entrou e onde cresceu.</p>
+  <div class="plate"><h3>Cadeia condutora do marco da linha 9, da origem ao marco</h3><svg viewBox="0 0 696 184" aria-hidden="true"><line x1="34" y1="150.0" x2="686" y2="150.0" stroke="#17191C" stroke-width="1"/><text x="28.0" y="153.0" font-family="Source Code Pro" font-size="8.6" fill="#6B6E74" text-anchor="end" font-weight="400">0</text><line x1="34" y1="110.0" x2="686" y2="110.0" stroke="#ECE7DB" stroke-width="1"/><text x="28.0" y="113.0" font-family="Source Code Pro" font-size="8.6" fill="#6B6E74" text-anchor="end" font-weight="400">+10</text><line x1="34" y1="70.0" x2="686" y2="70.0" stroke="#ECE7DB" stroke-width="1"/><text x="28.0" y="73.0" font-family="Source Code Pro" font-size="8.6" fill="#6B6E74" text-anchor="end" font-weight="400">+20</text><line x1="34" y1="30.0" x2="686" y2="30.0" stroke="#ECE7DB" stroke-width="1"/><text x="28.0" y="33.0" font-family="Source Code Pro" font-size="8.6" fill="#6B6E74" text-anchor="end" font-weight="400">+30</text><text x="34.0" y="18.0" font-family="Source Code Pro" font-size="8.6" fill="#6B6E74" text-anchor="start" font-weight="400">DIAS CONTRA A LINHA DE BASE</text><polyline points="46.0,106.0 94.0,106.0 94.0,82.0 142.0,82.0 142.0,82.0 190.0,82.0 190.0,82.0 238.0,82.0 238.0,82.0 286.0,82.0 286.0,50.0 334.0,50.0 334.0,50.0 382.0,50.0 382.0,50.0 430.0,50.0 430.0,50.0 478.0,50.0 478.0,50.0 526.0,50.0 526.0,50.0 574.0,50.0 574.0,50.0 622.0,50.0 622.0,50.0 670.0,50.0 670.0,50.0" fill="none" stroke="#B3261E" stroke-width="2"/><circle cx="46.0" cy="106.0" r="4.2" fill="#17191C" stroke="#17191C" stroke-width="1.4"/><text x="46.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#B3261E" text-anchor="middle" font-weight="600">148</text><text x="46.0" y="96.0" font-family="Fraunces" font-size="13.8" fill="#17191C" text-anchor="middle" font-weight="600">+11</text><circle cx="94.0" cy="82.0" r="4.2" fill="#17191C" stroke="#17191C" stroke-width="1.4"/><text x="94.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#B3261E" text-anchor="middle" font-weight="600">149</text><text x="88.0" y="72.0" font-family="Fraunces" font-size="13.8" fill="#17191C" text-anchor="end" font-weight="600">+17</text><circle cx="142.0" cy="82.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="142.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">151</text><circle cx="190.0" cy="82.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="190.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">152</text><circle cx="238.0" cy="82.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="238.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">154</text><circle cx="286.0" cy="50.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="286.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#B3261E" text-anchor="middle" font-weight="600">157</text><text x="280.0" y="40.0" font-family="Fraunces" font-size="13.8" fill="#17191C" text-anchor="end" font-weight="600">+25</text><circle cx="334.0" cy="50.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="334.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">158</text><circle cx="382.0" cy="50.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="382.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">159</text><circle cx="430.0" cy="50.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="430.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">161</text><circle cx="478.0" cy="50.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="478.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">162</text><circle cx="526.0" cy="50.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="526.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">165</text><circle cx="574.0" cy="50.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="574.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">166</text><circle cx="622.0" cy="50.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="622.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">167</text><circle cx="670.0" cy="50.0" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="670.0" y="166.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="400">9</text><text x="55.0" y="122.0" font-family="Fraunces" font-size="11.5" fill="#17191C" text-anchor="start" font-weight="400" font-style="italic">origem</text><text x="294.0" y="66.0" font-family="Fraunces" font-size="11.5" fill="#17191C" text-anchor="start" font-weight="400" font-style="italic">duração 12 → 20</text><text x="670.0" y="178.0" font-family="Source Code Pro" font-size="8.6" fill="#6B6E74" text-anchor="middle" font-weight="400">marco</text><circle cx="440" cy="15" r="4.2" fill="#17191C" stroke="#17191C" stroke-width="1.4"/><text x="450.0" y="18.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">iniciada</text><circle cx="530" cy="15" r="4.2" fill="#fff" stroke="#17191C" stroke-width="1.4"/><text x="540.0" y="18.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">não iniciada</text></svg></div>
+  <p class="cap">Desenhado a partir dos números do motor. Cada ponto é uma atividade da cadeia, pelo número da linha. A altura é o desvio de término contra a linha de base.</p>
+  <div class="gap"></div>
+  <div class="cols c32">
+    <div>
+      <table>
+        <tr><th>Linha</th><th>Atividade</th><th style="text-align:right">Término</th><th style="text-align:right">Desvio</th></tr>
+        <tr><td class="n">148</td><td>Estacas escavadas — encontros (E1 e E2)</td><td class="pg">21/09/2026</td><td class="pg">+11</td></tr><tr><td class="n">149</td><td>Blocos de coroamento</td><td class="pg">10/11/2026</td><td class="pg">+17</td></tr><tr><td class="n">151</td><td>Pilares</td><td class="pg">20/01/2027</td><td class="pg">+17</td></tr><tr><td class="n">152</td><td>Travessas</td><td class="pg">11/03/2027</td><td class="pg">+17</td></tr><tr><td class="n">154</td><td>Aparelhos de apoio</td><td class="pg">23/03/2027</td><td class="pg">+17</td></tr><tr><td class="n">157</td><td>Lançamento das vigas pré-moldadas</td><td class="pg">23/04/2027</td><td class="pg">+25</td></tr><tr><td class="n">158</td><td>Pré-lajes e armação do tabuleiro</td><td class="pg">03/06/2027</td><td class="pg">+25</td></tr><tr><td class="n">159</td><td>Concretagem do tabuleiro</td><td class="pg">29/06/2027</td><td class="pg">+25</td></tr><tr><td class="n">161</td><td>Barreiras New Jersey e guarda-corpos</td><td class="pg">20/07/2027</td><td class="pg">+25</td></tr><tr><td class="n">162</td><td>Juntas de dilatação</td><td class="pg">28/07/2027</td><td class="pg">+25</td></tr><tr><td class="n">165</td><td>Impermeabilização e pavimentação do tabuleiro</td><td class="pg">09/08/2027</td><td class="pg">+25</td></tr><tr><td class="n">166</td><td>Sinalização e iluminação do viaduto</td><td class="pg">19/08/2027</td><td class="pg">+25</td></tr><tr><td class="n">167</td><td>Prova de carga e inspeção final</td><td class="pg">26/08/2027</td><td class="pg">+25</td></tr><tr><td class="n">9</td><td>Conclusão do Viaduto V-01 (km 27+400)</td><td class="pg">26/08/2027</td><td class="pg">+25</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="reading tight">
+        <b class="mark eng">leitura do motor</b>
+        <p>O término do projeto foi de <span style="white-space:nowrap">04/10/2027</span> para <span style="white-space:nowrap">25/10/2027</span>: 21 dias corridos mais tarde.</p>
+        <p>7 de 7 marcos futuros têm origem nomeada; a atividade 148, Estacas escavadas — encontros (E1 e E2), origina atraso em 2 deles.</p>
+        <p>O que segura a data atual é a linha 174, Desmobilização do canteiro e da usina, com término em <span style="white-space:nowrap">25/10/2027</span>. É uma aproximação: a atividade em aberto que termina por último, percorrida para trás pela predecessora que chega mais tarde; a rede não foi recalculada.</p>
+      </div>
+      <h2>Execução e plano, separados</h2>
+      <p>O atraso nasce em serviço executado, nas estacas da linha 148. Depois cresce numa atividade que nem começou: a linha 157 ganhou oito dias úteis de duração nesta entrega.</p>
+      <p class="small">A forense mostra o mecanismo. Ela não é um pleito de prazo, que pede registros da época e um método formal.</p>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="rede" data-z="1.07" data-toc="A rede: nove verificações e catorze métricas"><div class="in" style="zoom:1.07">
+  <p class="kick">11 <b>· Qualidade da rede</b></p>
+  <h1>Catorze métricas no estilo DCMA, com o limiar de cada uma.</h1>
+  <p class="lede">A rede da rev04 está ligada e sem folga negativa. As duas métricas que ela não atende são as que medem execução contra a linha de base.</p>
+  <div class="q"><div class="pass"><div class="c">Q1</div><div class="t">Lógica ausente</div><div class="v">4 de 96</div><div class="s">4,17% · limite 5%</div><div class="st">atende</div></div><div class="pass"><div class="c">Q2</div><div class="t">Leads</div><div class="v">0 de 220</div><div class="s">0,00% · limite 0%</div><div class="st">atende</div></div><div class="pass"><div class="c">Q3</div><div class="t">Lags</div><div class="v">10 de 220</div><div class="s">4,55% · limite 5%</div><div class="st">atende</div></div><div class="pass"><div class="c">Q4</div><div class="t">Tipos de vínculo</div><div class="v">16 de 220</div><div class="s">7,27% · limite 10%</div><div class="st">atende</div></div><div class="pass"><div class="c">Q5</div><div class="t">Restrições rígidas</div><div class="v">0 de 103</div><div class="s">0,00% · limite 5%</div><div class="st">atende</div></div><div class="pass"><div class="c">Q6</div><div class="t">Folga alta</div><div class="v">5 de 103</div><div class="s">4,85% · limite 5%</div><div class="st">atende</div></div><div class="pass"><div class="c">Q7</div><div class="t">Folga negativa</div><div class="v">0 de 103</div><div class="s">0,00% · limite 0%</div><div class="st">atende</div></div><div class="pass"><div class="c">Q8</div><div class="t">Duração longa</div><div class="v">0 de 96</div><div class="s">0,00% · limite 5%</div><div class="st">atende</div></div><div class="pass"><div class="c">Q9</div><div class="t">Datas inválidas</div><div class="v">0 de 142</div><div class="s">0,00% · limite 0%</div><div class="st">atende</div></div><div class="na"><div class="c">Q10</div><div class="t">Sem recurso</div><div class="v">0 de 96</div><div class="s">0,00%</div><div class="st">sem limiar</div></div><div class="fail"><div class="c">Q11</div><div class="t">Atividades perdidas</div><div class="v">15 de 43</div><div class="s">34,88% · limite 5%</div><div class="st">não atende</div></div><div class="na"><div class="c">Q12</div><div class="t">Teste de caminho crítico</div><div class="v">n/c</div><div class="s"></div><div class="st">não calculável de um arquivo</div></div><div class="pass"><div class="c">Q13</div><div class="t">Índice de comprimento do caminho crítico</div><div class="v">1,025</div><div class="s">mínimo 0,95</div><div class="st">atende</div></div><div class="fail"><div class="c">Q14</div><div class="t">Índice de execução da linha de base</div><div class="v">0,65</div><div class="s">mínimo 0,95</div><div class="st">não atende</div></div></div>
+  <p class="cap">Montado a partir dos números do motor para a rev04. A cronoaudit calcula as catorze métricas e cita os limiares. Ela não certifica um cronograma contra a DCMA.</p>
+  <div class="gap"></div>
+  <div class="cols">
+    <div>
+      <div class="reading tight">
+        <b class="mark eng">leitura do motor</b>
+        <p>A rede não atende 2 das métricas quantitativas: Q11 Atividades perdidas, Q14 Índice de execução da linha de base.</p>
+        <p>De 43 atividades devidas até a data de status, 28 terminaram no prazo: índice de execução da linha de base de 0,65.</p>
+        <p>Das 13 métricas calculáveis nas duas entregas, 4 pioraram, 3 melhoraram e 6 não se moveram.</p>
+        <p>Índice de execução da linha de base: 0,80 antes, 0,65 agora.</p>
+      </div>
+      <h2>O que passa perto do limite</h2>
+      <p>Quatro atividades em aberto não têm sucessora: as linhas 77, 89, 136 e 170. São 4 de 96, abaixo dos 5%. As mesmas quatro e a linha 57, nova, carregam de 79 a 205 dias úteis de folga.</p>
+    </div>
+    <div>
+      <h2>Antes das métricas, nove verificações</h2>
+      <table>
+        <tr><th>Código</th><th>Verificação</th><th style="text-align:right">Na rev04</th></tr>
+        <tr><td class="n">A1</td><td>Execução fora de sequência</td><td class="pg">2</td></tr>
+        <tr><td class="n">A2</td><td>Inversão total</td><td class="pg">0</td></tr>
+        <tr><td class="n">H</td><td>Tendência vencida sem realização</td><td class="pg">0</td></tr>
+        <tr><td class="n">E</td><td>Antecipada e nunca iniciada</td><td class="pg">0</td></tr>
+        <tr><td class="n">C</td><td>Atrasada além do limiar</td><td class="pg">0</td></tr>
+        <tr><td class="n">G</td><td>Duração incompatível com a janela</td><td class="pg">0</td></tr>
+        <tr><td class="n">B</td><td>Marco sem data limite</td><td class="pg">0</td></tr>
+        <tr><td class="n">F</td><td>Em andamento com zero por cento</td><td class="pg">0</td></tr>
+        <tr><td class="n">P</td><td>Apontamento pendente</td><td class="pg">0</td></tr>
+      </table>
+      <p class="small">As duas atividades do A1 são as pontas de um único par: a linha 36 começou em outubro com a linha 35 ainda aberta. Como o par está fora do caminho crítico, o motor o nomeia em vez de tratar a rede como quebrada.</p>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="frente" data-z="1.14" data-toc="Olhando para frente: ritmo, quatro semanas, chuva"><div class="in" style="zoom:1.14">
+  <p class="kick">12 <b>· Olhando para frente</b></p>
+  <h1>O ritmo sustenta a data final. As próximas quatro semanas, não.</h1>
+  <p class="lede">O motor projeta com o que a obra já mostrou, e diz o limite de cada projeção.</p>
+  <div class="facts">
+    <div><div class="v">17/10/2026</div><div class="t">Earned Schedule: quando o plano previa o valor agregado de hoje</div></div>
+    <div><div class="v">0,947</div><div class="t">eficiência de prazo, SPI(t)</div></div>
+    <div><div class="v">22/10/2027</div><div class="t">término independente neste ritmo, contra 25/10/2027 no cronograma</div></div>
+    <div><div class="v red">1,040</div><div class="t">TSPI: o que o restante precisa render sobre o plano</div></div>
+  </div>
+  <div class="cols">
+    <div>
+      <div class="plate"><h3>Medição das próximas 4 semanas</h3><svg viewBox="0 0 330 86" aria-hidden="true"><text x="0.0" y="11.0" font-family="Source Code Pro" font-size="11.1" fill="#6B6E74" text-anchor="start" font-weight="400">o plano prevê</text><rect x="0" y="17" width="237.9" height="16" fill="none" stroke="#17191C" stroke-width="1.4"/><text x="245.9" y="30.0" font-family="Fraunces" font-size="16.9" fill="#17191C" text-anchor="start" font-weight="600">11,42%</text><text x="0.0" y="55.0" font-family="Source Code Pro" font-size="11.1" fill="#6B6E74" text-anchor="start" font-weight="400">o ritmo praticado entrega</text><rect x="0" y="61" width="83.1" height="16" fill="#B3261E"/><text x="91.1" y="74.0" font-family="Fraunces" font-size="16.9" fill="#B3261E" text-anchor="start" font-weight="600">3,99%</text></svg></div>
+      <div class="gap"></div>
+      <div class="reading tight">
+        <b class="mark eng">leitura do motor</b>
+        <p>As próximas 4 semanas preveem 11,42% de medição; o ritmo praticado entrega 3,99%. Não alcançável sem mudança de ritmo.</p>
+        <p>O TSPI é 1,040: o restante precisa rodar 4,0% acima do plano para terminar na data prevista. Modesto porque a maior parte da duração ainda está pela frente, não porque o atraso seja pequeno.</p>
+      </div>
+    </div>
+    <div>
+      <div class="plate"><h3>Onde cai o custo que falta</h3><svg viewBox="0 0 330 128" aria-hidden="true"><line x1="0" y1="96" x2="330" y2="96" stroke="#17191C" stroke-width="1"/><rect x="4.0" y="93.2" width="20" height="2.8" fill="#fff" stroke="#17191C" stroke-width="1"/><text x="14.0" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#6B6E74" text-anchor="middle" font-weight="400">out</text><rect x="28.8" y="33.8" width="20" height="62.2" fill="#fff" stroke="#17191C" stroke-width="1"/><text x="38.8" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#6B6E74" text-anchor="middle" font-weight="400">nov</text><rect x="53.5" y="34.5" width="20" height="61.5" fill="#B3261E"/><text x="63.5" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#B3261E" text-anchor="middle" font-weight="400">dez</text><rect x="78.3" y="17.0" width="20" height="79.0" fill="#B3261E"/><text x="88.3" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#B3261E" text-anchor="middle" font-weight="400">jan</text><rect x="103.1" y="28.6" width="20" height="67.4" fill="#B3261E"/><text x="113.1" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#B3261E" text-anchor="middle" font-weight="400">fev</text><rect x="127.8" y="38.6" width="20" height="57.4" fill="#B3261E"/><text x="137.8" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#B3261E" text-anchor="middle" font-weight="400">mar</text><rect x="152.6" y="16.0" width="20" height="80.0" fill="#fff" stroke="#17191C" stroke-width="1"/><text x="162.6" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#6B6E74" text-anchor="middle" font-weight="400">abr</text><rect x="177.4" y="45.0" width="20" height="51.0" fill="#fff" stroke="#17191C" stroke-width="1"/><text x="187.4" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#6B6E74" text-anchor="middle" font-weight="400">mai</text><rect x="202.2" y="49.9" width="20" height="46.1" fill="#fff" stroke="#17191C" stroke-width="1"/><text x="212.2" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#6B6E74" text-anchor="middle" font-weight="400">jun</text><rect x="226.9" y="80.8" width="20" height="15.2" fill="#fff" stroke="#17191C" stroke-width="1"/><text x="236.9" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#6B6E74" text-anchor="middle" font-weight="400">jul</text><rect x="251.7" y="94.9" width="20" height="1.1" fill="#fff" stroke="#17191C" stroke-width="1"/><text x="261.7" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#6B6E74" text-anchor="middle" font-weight="400">ago</text><rect x="276.5" y="95.2" width="20" height="0.8" fill="#fff" stroke="#17191C" stroke-width="1"/><text x="286.5" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#6B6E74" text-anchor="middle" font-weight="400">set</text><rect x="301.2" y="95.0" width="20" height="1.0" fill="#fff" stroke="#17191C" stroke-width="1"/><text x="311.2" y="107.0" font-family="Source Code Pro" font-size="9.5" fill="#6B6E74" text-anchor="middle" font-weight="400">out</text><rect x="0" y="116" width="9" height="9" fill="#B3261E"/><text x="14.0" y="124.0" font-family="Source Code Pro" font-size="10.8" fill="#6B6E74" text-anchor="start" font-weight="400">meses com reserva de chuva no calendário</text></svg></div>
+      <div class="gap"></div>
+      <div class="reading tight">
+        <b class="mark eng">leitura do motor</b>
+        <p>50% do custo remanescente cai em meses que os calendários reservam para tempo ruim, 52% se tudo escorregar trinta dias.</p>
+        <p>Nesta eficiência o término independente é <span style="white-space:nowrap">22/10/2027</span> e o término do próprio cronograma é <span style="white-space:nowrap">25/10/2027</span>: com até 7 dias de diferença, o ritmo realizado e o cronograma concordam na data.</p>
+      </div>
+    </div>
+  </div>
+  <p class="cap">Os dois gráficos foram desenhados a partir dos números do motor para a rev04.</p>
+  <div class="gap"></div>
+  <div class="cols">
+    <div>
+      <h2>Duas leituras que parecem brigar</h2>
+      <p>No agregado, o ritmo realizado e o cronograma concordam na data final. No curto prazo, de 31/10 a 27/11/2026, 11 atividades precisam começar e 8 precisam terminar, e o plano pede quase três vezes o que a obra tem entregado. As duas coisas são verdade, e a segunda é a que pede conversa agora.</p>
+    </div>
+    <div>
+      <h2>A chuva já está no calendário</h2>
+      <p>Os dois calendários reservam dias de dezembro a março. Metade do custo que falta cai nesses meses. Um escorregamento de trinta dias empurra mais serviço para dentro da reserva.</p>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="cobrar" data-z="1.07" data-toc="O que cobrar da contratada"><div class="in" style="zoom:1.07">
+  <p class="kick">13 <b>· O que cobrar</b></p>
+  <h1>Doze itens, um por evidência.</h1>
+  <p class="lede">A última seção do relatório transforma a comparação em pedidos. Cada item cita a linha, para ser achado no cronograma. A integridade da medição vem primeiro.</p>
+  <div class="cols c32">
+    <div>
+      <div class="dem"><h3>Integridade da medição</h3><ol><li><span>1</span><div>Justificar a alteração do término real da linha 29, Bueiros tubulares de concreto — Seg. 1: 05/06/2026 → 01/06/2026, que passou a coincidir com a data da linha de base.</div></li><li><span>2</span><div>Explicar a remoção da linha 119 da entrega anterior, Remanejamento de cercas da faixa de domínio — Seg. 4, que estava a 100%.</div></li><li><span>3</span><div>Apresentar a aprovação da mudança de linha de base da linha 132, CBUQ — capa de rolamento (pista nova e existente) — Seg. 4 (término da linha de base +28 dias).</div></li></ol><h3>Replanejamento</h3><ol><li><span>1</span><div>Justificar o aumento de duração da linha 157, Lançamento das vigas pré-moldadas: 12 → 20 dias úteis.</div></li><li><span>2</span><div>Justificar o adiamento de 53 dias no término da linha 63, Sarjetas e valetas de proteção — Seg. 2, movido pelo plano sem avanço registrado.</div></li><li><span>3</span><div>Justificar o adiamento de 25 dias no término da linha 66, Sub-base granular — Seg. 2, movido pelo plano sem avanço registrado.</div></li><li><span>4</span><div>Justificar o adiamento de 15 dias no término da linha 32, Meios-fios e descidas d&#x27;água — Seg. 1, movido pelo plano sem avanço registrado.</div></li><li><span>5</span><div>Justificar o adiamento de 15 dias no término da linha 38, Fresagem e reperfilagem da pista existente — Seg. 1, movido pelo plano sem avanço registrado.</div></li><li><span>6</span><div>Justificar a nova linha 57, Contenção em gabião — talude do km 21+300 — Seg. 2, e de onde veio o seu orçamento.</div></li></ol><h3>Lógica</h3><ol><li><span>1</span><div>Justificar a retirada do vínculo 123 → 127, Sub-base granular — Seg. 4.</div></li><li><span>2</span><div>Justificar a restrição Não Iniciar Antes De incluída na linha 63, Sarjetas e valetas de proteção — Seg. 2.</div></li><li><span>3</span><div>Confirmar o novo vínculo 94 → 106, Defensas metálicas e barreiras — Seg. 3.</div></li></ol></div>
+      <p class="cap"><b class="mark eng">leitura do motor</b>Os doze itens, como o motor os escreveu para o exemplo.</p>
+    </div>
+    <div>
+      <h2>Como usar</h2>
+      <p>A lista sai pronta para ir a uma ata ou a uma mensagem. Nenhum item é opinião. Cada um aponta uma diferença entre os dois arquivos que a contratada entregou.</p>
+      <h2>A ordem dos grupos</h2>
+      <ol class="steps">
+        <li><div><b>Integridade da medição.</b> O que mexe no registro do que já foi feito.</div></li>
+        <li><div><b>Replanejamento.</b> Datas e durações movidas pelo plano, sem avanço.</div></li>
+        <li><div><b>Lógica.</b> Vínculos e restrições editados.</div></li>
+      </ol>
+      <div class="note">
+        <div class="k">Com um agente</div>
+        <p>Peça a síntese executiva. O agente escreve o texto com estes números e o motor o insere no relatório, com a marca de quem escreveu.</p>
+      </div>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="plantados" data-toc="As 14 armadilhas plantadas e onde cada uma aparece"><div class="in">
+  <p class="kick">14 <b>· O gabarito</b></p>
+  <h1 class="wide">As 14 armadilhas plantadas, e onde cada uma aparece.</h1>
+  <div class="plate"><svg viewBox="0 0 696 162" aria-hidden="true"><rect x="30.0" y="96" width="636.0" height="20" fill="#17191C"/><line x1="30.0" y1="106" x2="666.0" y2="106" stroke="#FBF9F4" stroke-width="1.2" stroke-dasharray="9 7"/><line x1="30.0" y1="90" x2="30.0" y2="126" stroke="#17191C" stroke-width="1"/><text x="30.0" y="138.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="600">km 12</text><text x="109.5" y="138.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="middle" font-weight="400">Segmento 1</text><line x1="189.0" y1="90" x2="189.0" y2="126" stroke="#17191C" stroke-width="1"/><text x="189.0" y="138.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="600">km 18</text><text x="268.5" y="138.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="middle" font-weight="400">Segmento 2</text><line x1="348.0" y1="90" x2="348.0" y2="126" stroke="#17191C" stroke-width="1"/><text x="348.0" y="138.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="600">km 24</text><text x="427.5" y="138.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="middle" font-weight="400">Segmento 3</text><line x1="507.0" y1="90" x2="507.0" y2="126" stroke="#17191C" stroke-width="1"/><text x="507.0" y="138.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="600">km 30</text><text x="586.5" y="138.0" font-family="Source Code Pro" font-size="10.3" fill="#6B6E74" text-anchor="middle" font-weight="400">Segmento 4</text><line x1="666.0" y1="90" x2="666.0" y2="126" stroke="#17191C" stroke-width="1"/><text x="666.0" y="138.0" font-family="Source Code Pro" font-size="10.3" fill="#17191C" text-anchor="middle" font-weight="600">km 36</text><rect x="425.09999999999997" y="93" width="26" height="26" fill="#FBF9F4" stroke="#B3261E" stroke-width="1.5"/><path d="M425.09999999999997 119 q13 -22 26 0" fill="none" stroke="#B3261E" stroke-width="1.5"/><rect x="425.09999999999997" y="101" width="26" height="6" fill="#B3261E"/><text x="438.1" y="154.0" font-family="Source Code Pro" font-size="10.3" fill="#B3261E" text-anchor="middle" font-weight="600">Viaduto V-01 · km 27+400</text><line x1="72.39999999999999" y1="71" x2="72.39999999999999" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="72.39999999999999" cy="62" r="9.5" fill="#B3261E"/><text x="72.4" y="65.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">7</text><line x1="125.39999999999999" y1="71" x2="125.39999999999999" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="125.39999999999999" cy="62" r="9.5" fill="#B3261E"/><text x="125.4" y="65.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">3</text><line x1="226.09999999999994" y1="71" x2="226.09999999999994" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="226.09999999999994" cy="62" r="9.5" fill="#B3261E"/><text x="226.1" y="65.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">6</text><line x1="276.45000000000005" y1="71" x2="276.45000000000005" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="276.45000000000005" cy="62" r="9.5" fill="#B3261E"/><text x="276.5" y="65.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">11</text><line x1="318.84999999999997" y1="71" x2="318.84999999999997" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="318.84999999999997" cy="62" r="9.5" fill="#B3261E"/><text x="318.8" y="65.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">2</text><line x1="382.45000000000005" y1="71" x2="382.45000000000005" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="382.45000000000005" cy="62" r="9.5" fill="#B3261E"/><text x="382.5" y="65.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">8</text><line x1="488.45000000000005" y1="71" x2="488.45000000000005" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="488.45000000000005" cy="62" r="9.5" fill="#B3261E"/><text x="488.5" y="65.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">12</text><line x1="427.5" y1="41" x2="427.5" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="427.5" cy="32" r="9.5" fill="#B3261E"/><text x="427.5" y="35.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">9</text><line x1="451.34999999999997" y1="41" x2="451.34999999999997" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="451.34999999999997" cy="32" r="9.5" fill="#B3261E"/><text x="451.3" y="35.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">13</text><line x1="538.8" y1="71" x2="538.8" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="538.8" cy="62" r="9.5" fill="#B3261E"/><text x="538.8" y="65.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">8</text><line x1="575.9" y1="71" x2="575.9" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="575.9" cy="62" r="9.5" fill="#B3261E"/><text x="575.9" y="65.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">11</text><line x1="618.3000000000001" y1="71" x2="618.3000000000001" y2="96" stroke="#B3261E" stroke-width="1"/><circle cx="618.3000000000001" cy="62" r="9.5" fill="#B3261E"/><text x="618.3" y="65.4" font-family="Source Code Pro" font-size="10.9" fill="#fff" text-anchor="middle" font-weight="600">10</text><text x="30.0" y="16.0" font-family="Source Code Pro" font-size="9.2" fill="#6B6E74" text-anchor="start" font-weight="400">NA OBRA INTEIRA</text><circle cx="39.5" cy="34" r="9.5" fill="none" stroke="#B3261E" stroke-width="1.4"/><text x="39.5" y="37.4" font-family="Source Code Pro" font-size="10.9" fill="#B3261E" text-anchor="middle" font-weight="600">1</text><circle cx="63.5" cy="34" r="9.5" fill="none" stroke="#B3261E" stroke-width="1.4"/><text x="63.5" y="37.4" font-family="Source Code Pro" font-size="10.9" fill="#B3261E" text-anchor="middle" font-weight="600">4</text><circle cx="87.5" cy="34" r="9.5" fill="none" stroke="#B3261E" stroke-width="1.4"/><text x="87.5" y="37.4" font-family="Source Code Pro" font-size="10.9" fill="#B3261E" text-anchor="middle" font-weight="600">5</text><circle cx="111.5" cy="34" r="9.5" fill="none" stroke="#B3261E" stroke-width="1.4"/><text x="111.5" y="37.4" font-family="Source Code Pro" font-size="10.9" fill="#B3261E" text-anchor="middle" font-weight="600">14</text></svg></div>
+  <p class="cap">O número de cada pino é o da tabela. Os círculos vazados valem para a obra inteira.</p>
+  <div class="gap"></div>
+  <table>
+    <tr><th>Nº</th><th>O que foi plantado na rev04</th><th>Onde o relatório mostra</th><th style="text-align:right">Pág.</th></tr>
+    <tr><td class="n">1</td><td>Avanço real de outubro em uma dúzia de atividades</td><td>Datas movidas com realizado por trás: 12. Avanço de 23,44% para 28,01%</td><td class="pg">10</td></tr>
+    <tr><td class="n">2</td><td>Linha 63 presa por restrição até 28/12/2026, sem execução</td><td>Replanejamento: início 46 dias depois, término 53 dias depois. Uma restrição incluída</td><td class="pg">9</td></tr>
+    <tr><td class="n">3</td><td>Linha 36 iniciada com a linha 35 ainda aberta</td><td>Achado A1, fora de sequência, com as duas pontas marcadas</td><td class="pg">12</td></tr>
+    <tr><td class="n">4</td><td>Linhas 77, 89, 136 e 170 sem sucessora</td><td>Métrica Q1: 4 de 96, abaixo do limiar</td><td class="pg">12</td></tr>
+    <tr><td class="n">5</td><td>As mesmas quatro e a linha 57 com folga de 79 a 205 dias</td><td>Métrica Q6: 5 de 103</td><td class="pg">12</td></tr>
+    <tr><td class="n">6</td><td>Linha 55 com 95% pela duração e 57% físico</td><td>Curva S: o outro método leria 0,44 ponto a mais. Produtividade: medição inconsistente</td><td class="pg">10</td></tr>
+    <tr><td class="n">7</td><td>Término real da linha 29 trocado de 05/06/2026 para 01/06/2026</td><td>Passado reescrito: um término real, igual à data da linha de base</td><td class="pg">8</td></tr>
+    <tr><td class="n">8</td><td>Um vínculo incluído (94 → 106) e um retirado (123 → 127)</td><td>Lógica alterada</td><td class="pg">9</td></tr>
+    <tr><td class="n">9</td><td>Linha 157, não iniciada: 12 dias viraram 20</td><td>Duração alterada antes de qualquer início</td><td class="pg">9</td></tr>
+    <tr><td class="n">10</td><td>Linha de base da linha 132 movida em quatro semanas</td><td>A referência mudou: aviso sobre a base da comparação</td><td class="pg">8</td></tr>
+    <tr><td class="n">11</td><td>Linha 57 só existe na rev04. Uma atividade a 100% só existe na rev03</td><td>Escopo: 1 inserida e 1 removida. 0,33 ponto do movimento não é avanço</td><td class="pg">10</td></tr>
+    <tr><td class="n">12</td><td>Folga do marco do Segmento 3 caiu de 13 para 3 dias</td><td>Caminho crítico: folga perdida. A forense nomeia a origem</td><td class="pg">7</td></tr>
+    <tr><td class="n">13</td><td>Término do projeto de 04/10/2027 para 25/10/2027, pelo viaduto</td><td>Término do projeto e a cadeia que o conduz</td><td class="pg">11</td></tr>
+    <tr><td class="n">14</td><td>Metade do custo que falta cai entre dezembro e março</td><td>Exposição à chuva: 50% em meses reservados, 52% se tudo escorregar trinta dias</td><td class="pg">13</td></tr>
+  </table>
+  <p class="small" style="margin-top:2mm">O teste da ferramenta, <code>test_checks.py</code>, confere que os dois arquivos são o que o gerador escreve e que cada item acima é encontrado. Estes números valem para os arquivos <code>.xml</code>. Os <code>.mpp</code> do exemplo dão valores um pouco diferentes, porque o MS Project recalcula o cronograma ao abrir.</p>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="conversa" data-toc="Conversar com um agente sobre os números"><div class="in">
+  <p class="kick">15 <b>· Com um agente</b></p>
+  <h1>Você pergunta. O agente responde com os números do motor.</h1>
+  <p class="lede">A skill ensina o agente a rodar o motor e a citar o que ele mediu. O agente não calcula o cronograma de cabeça.</p>
+  <div class="chat">
+    <div class="bar">Claude Code <span class="where">· na pasta ~/cronoaudit-exemplo · modo livre</span><b class="mark ilus">ilustração</b></div>
+    <div class="body">
+      <div class="you"><div class="who">Você</div><p>Compare a rev03 com a rev04 e me diga o que mudou, por assunto.</p></div>
+      <div class="agent"><div class="who">Agente</div>
+        <p>Rodei o motor nas duas entregas. Começo pelo prazo e, antes do avanço, pelo que mexe na medição.</p>
+        <p class="e">O término do projeto foi de <span style="white-space:nowrap">04/10/2027</span> para <span style="white-space:nowrap">25/10/2027</span>: 21 dias corridos mais tarde.</p>
+        <p class="e">Os 7 marcos com data limite terminam dentro dela no cronograma atual. A menor margem é a da linha 9, Conclusão do Viaduto V-01 (km 27+400): 1 dia.</p>
+        <p>Três pontos precisam de resposta da contratada antes de qualquer percentual:</p>
+        <p class="e">1 das datas reais alteradas passou a coincidir exatamente com a linha de base (linha 29, Bueiros tubulares de concreto — Seg. 1, <span style="white-space:nowrap">05/06/2026</span> → <span style="white-space:nowrap">01/06/2026</span>): o registro foi ajustado ao plano; peça a evidência.</p>
+        <p class="e">1 atividade com avanço registrado foi removida do cronograma, levando 473.600 de valor agregado; a maior é a linha 119 da entrega anterior, Remanejamento de cercas da faixa de domínio — Seg. 4, a 100%.</p>
+        <p class="e">Na cadeia condutora de Liberação ao tráfego — Segmento 4 — km 30+000 ao km 36+000, a linha 132, CBUQ — capa de rolamento (pista nova e existente) — Seg. 4, mostra variação de -9 dias úteis contra uma linha de base que se moveu +28 dias corridos neste ciclo: parte dessa variação é a referência se movendo, não a obra.</p>
+        <p>Sobre o avanço:</p>
+        <p class="e">O avanço ponderado foi de 23,44% para 28,01%: 4,57 pontos. O avanço por atividade soma 4,90, mais que o movimento: 0,33 pontos foram retirados por algo que não é trabalho feito.</p>
+        <p>O relatório está aberto no navegador. Quer a lista do que cobrar?</p>
+      </div>
+      <div class="you"><div class="who">Você</div><p>De onde vem o atraso do viaduto?</p></div>
+      <div class="agent"><div class="who">Agente</div>
+        <p class="e">O atraso da linha 9 nasce na linha 148, Estacas escavadas — encontros (E1 e E2) (+11 dias contra a linha de base).</p>
+        <p class="e">1 atividade sem início real em nenhuma das entregas teve a duração editada: 1 mais longa e 0 mais curtas, saldo de 8,0 dias úteis. Nada foi executado nelas; é o plano reescrito.</p>
+        <p>É a linha 157. Esse aumento está na lista de cobrança:</p>
+        <p class="e">Justificar o aumento de duração da linha 157, Lançamento das vigas pré-moldadas: 12 → 20 dias úteis.</p>
+      </div>
+    </div>
+    <div class="legend"><b></b>Frase do motor, copiada da rodada deste guia. O restante do diálogo é ilustração.</div>
+  </div>
+  <div class="gap"></div>
+  <div class="cols">
+    <div><h2>O que dizer</h2><p class="small">Analise o Rev04.mpp. Compare o Rev03 com o Rev04 e diga o que mudou. Quais marcos correm risco? Escreva a síntese executiva e gere o relatório final.</p></div>
+    <div><h2>Para onde vai o que o agente lê</h2><p class="small">Para o fornecedor dele, nos termos da sua conta ou da sua empresa. O motor não envia nada. Se o cronograma não pode sair do computador, use o modo secreto, na página 18.</p></div>
+  </div>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="agentes" data-z="1.07" data-toc="Três agentes, e o que foi testado em cada um"><div class="in" style="zoom:1.07">
+  <p class="kick">16 <b>· Agentes</b></p>
+  <h1>Use o agente de sua preferência, ou o que a sua empresa permite.</h1>
+  <p class="lede">A cronoaudit segue o formato aberto Agent Skills. Este guia cobre três agentes. Ela também funciona sem agente nenhum.</p>
+  <div class="cols">
+    <div class="chat">
+      <div class="bar">GitHub Copilot CLI <span class="where">· modo livre</span><b class="mark ilus">ilustração</b></div>
+      <div class="body">
+        <div class="you"><div class="who">Você</div><p>Quais marcos correm risco de passar da data limite?</p></div>
+        <div class="agent"><div class="who">Agente</div>
+          <p class="e">Os 7 marcos com data limite terminam dentro dela no cronograma atual. A menor margem é a da linha 9, Conclusão do Viaduto V-01 (km 27+400): 1 dia.</p>
+          <p class="e">Com o escorregamento que 80% das atividades não ultrapassaram (7 dias), mais 3 marcos passam da data limite: linhas 7, 8, 9.</p>
+          <p>Margens de hoje, em dias corridos: linha 7, +5. Linha 8, +3. Linha 9, +1.</p>
+          <p class="e">As próximas 4 semanas preveem 11,42% de medição; o ritmo praticado entrega 3,99%. Não alcançável sem mudança de ritmo.</p>
+        </div>
+      </div>
+    </div>
+    <div class="chat">
+      <div class="bar">Codex <span class="where">· modo livre</span><b class="mark ilus">ilustração</b></div>
+      <div class="body">
+        <div class="you"><div class="who">Você</div><p>O que eu peço para a contratada primeiro?</p></div>
+        <div class="agent"><div class="who">Agente</div>
+          <p>São 12 itens em três grupos. Os de integridade da medição vêm primeiro:</p>
+          <p class="e">Justificar a alteração do término real da linha 29, Bueiros tubulares de concreto — Seg. 1: <span style="white-space:nowrap">05/06/2026</span> → <span style="white-space:nowrap">01/06/2026</span>, que passou a coincidir com a data da linha de base.</p>
+          <p class="e">Explicar a remoção da linha 119 da entrega anterior, Remanejamento de cercas da faixa de domínio — Seg. 4, que estava a 100%.</p>
+          <p class="e">Apresentar a aprovação da mudança de linha de base da linha 132, CBUQ — capa de rolamento (pista nova e existente) — Seg. 4 (término da linha de base +28 dias).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="cap">As duas conversas são ilustrações. As frases com a barra vermelha são do motor.</p>
+  <div class="gap2"></div>
+  <h2>O que foi testado, e quando</h2>
+  <table>
+    <tr><th>Agente</th><th>Modo livre</th><th>Modo secreto</th></tr>
+    <tr><td class="k">Claude Code</td><td>Testado de ponta a ponta.</td><td>Testado de ponta a ponta. A pasta traz regras e uma trava que mantém o agente dentro dela.</td></tr>
+    <tr><td class="k">GitHub Copilot CLI</td><td>Testado em 21/11/2026.</td><td>Testado em 25/11/2026. Sem a trava, seguiu as regras escritas da pasta.</td></tr>
+    <tr><td class="k">Codex</td><td colspan="2">Instalação e uso conforme a documentação do fornecedor.</td></tr>
+  </table>
+  <div class="gap"></div>
+  <div class="cols">
+    <div class="note">
+      <div class="k">A trava</div>
+      <p>A trava que mantém o agente dentro da pasta do modo secreto existe só no Claude Code. Nos outros agentes, as mesmas regras chegam como instrução escrita.</p>
+    </div>
+    <div class="note">
+      <div class="k">A política da empresa</div>
+      <p>Cada agente pede uma conta no fornecedor. Confira a política da sua empresa antes de usar um agente com cronograma de contrato.</p>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="secreto" data-z="1.07" data-toc="Modo secreto: o agente lê só uma cópia codificada"><div class="in" style="zoom:1.07">
+  <p class="kick">17 <b>· Modo secreto</b></p>
+  <h1>Conversar com o agente sem os nomes, os valores e as datas saírem do computador.</h1>
+  <div class="cols c3">
+    <div><h3>1. O motor roda aqui</h3><p class="small">Sobre o arquivo real, no seu computador, como sempre.</p></div>
+    <div><h3>2. O agente lê uma cópia</h3><p class="small">Numa pasta separada, com nomes trocados por códigos, datas por contagens de dias e dinheiro multiplicado por um fator secreto.</p></div>
+    <div><h3>3. A volta é local</h3><p class="small">O relatório com os dados reais é montado no seu computador, quando você pede.</p></div>
+  </div>
+  <div class="gap"></div>
+  <h2>A pergunta vem antes de qualquer leitura</h2>
+  <div class="term"><div class="bar"><i></i><i></i><i></i><span>terminal · a pergunta do modo</span><b class="mark">captura real</b></div><pre><span class="l cmd">python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev04.xml --lang pt</span><span class="l hl">Os resultados vão sair com os dados reais (modo livre). Se um agente de IA ler esses arquivos depois, o que ele ler vai para o fornecedor dele. Seguir? [s] sim / [secreto] cópia codificada para o agente / [nunca] sim, e não perguntar mais</span><span class="l">&gt; <span class="typed">s</span></span><span class="l">Análise crítica de cronograma -- rodovia-ficticia-rev04.xml</span><span class="l cut">⋯ 5 linhas cortadas ⋯</span><span class="l">  A1       2 atividades  Execução fora de sequência  [como sucessoras 1, como predecessoras 1]</span><span class="l cut">⋯ 10 linhas cortadas ⋯</span><span class="l">  report   ~/cronoaudit-exemplo/rodovia-ficticia-rev04-review.html</span><span class="l">  data     ~/cronoaudit-exemplo/rodovia-ficticia-rev04-review.json</span></pre></div>
+  <p class="cap">Num terminal, o motor pergunta o modo antes de abrir o cronograma. Aqui a resposta foi <code>s</code>. Responder <code>secreto</code> leva à página seguinte.</p>
+  <div class="gap"></div>
+  <h2>Pedido de dentro de uma sessão de agente, o motor para</h2>
+  <div class="term"><div class="bar"><i></i><i></i><i></i><span>terminal aberto por um agente</span><b class="mark">captura real</b></div><pre><span class="l cmd">python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml --secret --lang pt</span><span class="l">cronoaudit: o modo SECRETO foi pedido (por --secret), mas este processo foi iniciado por um agente (CLAUDE_CODE_CHILD_SESSION está definida), então a rodada parou aqui.</span><span class="l hl">  Nada foi lido e nada foi executado.</span><span class="l">  O modo secreto só protege se o agente nunca tiver o original. Rode este</span><span class="l">  mesmo comando no seu próprio terminal: ele mostra uma pasta de trabalho, e o</span><span class="l">  agente é aberto dentro dela. A cronoaudit não cai para o modo livre sozinha.</span></pre></div>
+  <p class="cap">O modo secreto só protege se o agente nunca tiver o original. Por isso é a pessoa quem roda o comando, no terminal dela, ou pelo botão da aba Cronoaudit no MS Project.</p>
+  <div class="gap"></div>
+  <table>
+    <tr><th>Vira código</th><th>Exemplo</th><th>Continua real</th></tr>
+    <tr><td>Nomes de projeto, atividade, recurso e calendário</td><td class="k"><span class="tok">T·3fa91c</span></td><td rowspan="3">Durações, percentuais, contagens, índices, números de linha e códigos da EAP.</td></tr>
+    <tr><td>Datas</td><td class="k"><span class="tok">D+0412</span>, dias desde uma origem secreta</td></tr>
+    <tr><td>Dinheiro</td><td class="k"><span class="tok">¤1.234.567</span>, multiplicado por um fator secreto</td></tr>
+  </table>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="secreto2" data-z="1.14" data-toc="Uma rodada secreta, do comando à pasta de trabalho"><div class="in" style="zoom:1.14">
+  <p class="kick">18 <b>· Modo secreto, no terminal</b></p>
+  <h1 class="wide">A mesma comparação, agora em códigos.</h1>
+  <div class="cols c32">
+    <div>
+      <div class="term"><div class="bar"><i></i><i></i><i></i><span>terminal da pessoa · modo secreto</span><b class="mark">captura real</b></div><pre><span class="l cmd">python3 ~/.claude/skills/cronoaudit/scripts/review.py rodovia-ficticia-rev03.xml rodovia-ficticia-rev04.xml --secret --lang pt --workdir ~/cronoaudit-work</span><span class="l hl">cronoaudit: modo SECRETO. O motor roda aqui, sobre o arquivo real; um agente vai ler só a cópia codificada.</span><span class="l cut">⋯ 1 linha cortada ⋯</span><span class="l">Análise crítica de cronograma -- <span class="tok">P·ed5c13</span></span><span class="l cut">⋯ 17 linhas cortadas ⋯</span><span class="l">Comparação de ciclo</span><span class="l"> </span><span class="l">  anterior  <span class="tok">P·c4668a</span>  data de status <span class="tok">d+0670</span></span><span class="l">  atual     <span class="tok">P·ed5c13</span>  data de status <span class="tok">d+0700</span></span><span class="l"> </span><span class="l">  avanço    23,44%  -&gt;  28,01%</span><span class="l">  movimento 4,57 pontos percentuais</span><span class="l">  a decomposição soma 4,90 pontos</span><span class="l">  resíduo não explicado  -0,33 pontos</span><span class="l cut">⋯ 5 linhas cortadas ⋯</span><span class="l">  término do projeto: <span class="tok">d+1039</span> -&gt; <span class="tok">d+1060</span>  (21 dias corridos)</span><span class="l cut">⋯ 9 linhas cortadas ⋯</span><span class="l">  maiores contribuições para o movimento:</span><span class="l">      +1,520 pts linha 35      6,0% -&gt;  85,0%  <span class="tok">T·43d81b</span></span><span class="l">      +0,941 pts linha 34     39,0% -&gt; 100,0%  <span class="tok">T·3f4796</span></span><span class="l">      +0,673 pts linha 149    25,0% -&gt;  82,0%  <span class="tok">T·22e1a1</span></span><span class="l">      +0,368 pts linha 31     39,0% -&gt; 100,0%  <span class="tok">T·0efc34</span></span><span class="l cut">⋯ 6 linhas cortadas ⋯</span><span class="l">Pronto. A cópia codificada, a única coisa que o agente deve ler, está em:</span><span class="l hl">  ~/cronoaudit-work/f572d5d191</span><span class="l">Agora abra o seu agente de IA dentro dessa pasta:</span><span class="l">  cd &quot;~/cronoaudit-work/f572d5d191&quot;</span><span class="l">  depois claude, copilot ou codex</span><span class="l">Fale das atividades pelo código ou pelo número da linha: o que você digitar com um nome real vai para o serviço de IA.</span><span class="l">No Claude Code, a pasta tem uma trava que impede o agente de sair dela. Quando ele perguntar se você confia na pasta, responda que sim: é isso que liga a trava, e a pergunta volta a cada pasta nova. Nos outros agentes, a pasta traz as regras por escrito.</span><span class="l">Quando você pedir, o agente monta o relatório com os dados reais neste computador.</span></pre></div>
+      <p class="cap">Captura feita só com o exemplo fictício, num terminal sem as variáveis de sessão de agente, como a suíte de testes faz.</p>
+    </div>
+    <div>
+      <div class="term"><div class="bar"><i></i><i></i><i></i><span>a pasta de trabalho</span><b class="mark">captura real</b></div><pre><span class="l cmd">ls -A1 ~/cronoaudit-work/f572d5d191</span><span class="l">.claude</span><span class="l">AGENTS.md</span><span class="l">CLAUDE.md</span><span class="l">cronoaudit-secret.json</span><span class="l">current-review-forecast.json</span><span class="l">current-review-forensics.json</span><span class="l">current-review-productivity.json</span><span class="l">current-review-quality.json</span><span class="l">current-review-readings.json</span><span class="l">current-review-scurve.json</span><span class="l">current-review.html</span><span class="l">current-review.json</span><span class="l">previous--to--current-cycle-readings.json</span><span class="l">previous--to--current-cycle.html</span><span class="l">previous--to--current-cycle.json</span></pre></div>
+      <div class="gap"></div>
+      <h2>O que mudou na saída</h2>
+      <p>Compare com a página 5. Os percentuais e as contagens são os mesmos. Os nomes de arquivo viraram <span class="tok">P·</span>, os de atividade viraram <span class="tok">T·</span> e as datas viraram <span class="tok">d+</span>.</p>
+      <h2>O que há na pasta</h2>
+      <p>As cópias codificadas dos relatórios e dos números, e as regras para o agente. O original não está lá. A tabela que desfaz os códigos fica num cofre, fora da pasta.</p>
+      <div class="note">
+        <div class="k">Regras da pasta</div>
+        <p class="small">Ler só os arquivos da pasta. Nunca pedir nem abrir o cronograma original. Citar os códigos como estão. Escrever a síntese só quando a pessoa pedir.</p>
+      </div>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="secreto3" data-z="1.07" data-toc="A mesma leitura, real e codificada, lado a lado"><div class="in" style="zoom:1.07">
+  <p class="kick">19 <b>· Modo secreto, lado a lado</b></p>
+  <h1 class="wide">O que você vê, e o que o agente vê.</h1>
+  <p class="lede">A mesma frase do motor, nas duas rodadas deste guia. À esquerda, o relatório real. À direita, a cópia que o agente lê.</p>
+  <div class="sbs"><div><div class="h">No seu computador</div><p>O término do projeto foi de <span style="white-space:nowrap">04/10/2027</span> para <span style="white-space:nowrap">25/10/2027</span>: 21 dias corridos mais tarde.</p></div><div><div class="h">Na pasta do agente</div><p>O término do projeto foi de <span class="tok">d+1039</span> para <span class="tok">d+1060</span>: 21 dias corridos mais tarde.</p></div></div>
+  <div class="sbs"><div><div class="h">No seu computador</div><p>1 das datas reais alteradas passou a coincidir exatamente com a linha de base (linha 29, Bueiros tubulares de concreto — Seg. 1, <span style="white-space:nowrap">05/06/2026</span> → <span style="white-space:nowrap">01/06/2026</span>): o registro foi ajustado ao plano; peça a evidência.</p></div><div><div class="h">Na pasta do agente</div><p>1 das datas reais alteradas passou a coincidir exatamente com a linha de base (linha 29, <span class="tok">T·840b1b</span>, <span class="tok">d+0553</span> → <span class="tok">d+0549</span>): o registro foi ajustado ao plano; peça a evidência.</p></div></div>
+  <div class="sbs"><div><div class="h">No seu computador</div><p>1 atividade com avanço registrado foi removida do cronograma, levando 473.600 de valor agregado; a maior é a linha 119 da entrega anterior, Remanejamento de cercas da faixa de domínio — Seg. 4, a 100%.</p></div><div><div class="h">Na pasta do agente</div><p>1 atividade com avanço registrado foi removida do cronograma, levando <span class="tok">¤805.819</span> de valor agregado; a maior é a linha 119 da entrega anterior, <span class="tok">T·0d8e3a</span>, a 100%.</p></div></div>
+  <p class="cap"><b class="mark eng">leitura do motor</b>Frases copiadas dos arquivos de leitura das duas rodadas. Os 21 dias, o 100% e o número da linha são os mesmos dos dois lados.</p>
+  <div class="gap"></div>
+  <div class="cols">
+    <div>
+      <div class="browser"><div class="bar"><i></i><i></i><i></i><span class="url">~/cronoaudit-exemplo/…-cycle.html</span><b class="mark real">captura real</b></div><div class="shot" style="max-height:92mm"><img src="img/cycle-cobrar-pt.png" alt=""></div></div>
+      <p class="cap">O que cobrar, no relatório real.</p>
+    </div>
+    <div>
+      <div class="browser"><div class="bar"><i></i><i></i><i></i><span class="url">~/cronoaudit-work/f572d5d191/previous--to--current-cycle.html</span><b class="mark real">captura real</b></div><div class="shot" style="max-height:92mm"><img src="img/coded-cobrar-pt.png" alt=""></div></div>
+      <p class="cap">A mesma seção, na cópia codificada.</p>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="secreto4" data-z="1.07" data-toc="A conversa em códigos e o caminho de volta"><div class="in" style="zoom:1.07">
+  <p class="kick">20 <b>· Modo secreto, a volta</b></p>
+  <h1 class="wide">A conversa acontece em códigos. A tradução, no seu computador.</h1>
+  <div class="chat">
+    <div class="bar">Seu agente <span class="where">· aberto dentro de ~/cronoaudit-work/f572d5d191</span><b class="mark ilus">ilustração</b></div>
+    <div class="body">
+      <div class="you"><div class="who">Você</div><p>O que mudou no término, e o que eu preciso cobrar primeiro?</p></div>
+      <div class="agent"><div class="who">Agente</div>
+        <p class="e">O término do projeto foi de <span class="tok">d+1039</span> para <span class="tok">d+1060</span>: 21 dias corridos mais tarde.</p>
+        <p class="e">1 das datas reais alteradas passou a coincidir exatamente com a linha de base (linha 29, <span class="tok">T·840b1b</span>, <span class="tok">d+0553</span> → <span class="tok">d+0549</span>): o registro foi ajustado ao plano; peça a evidência.</p>
+        <p class="e">O atraso da linha 9 nasce na linha 148, <span class="tok">T·600124</span> (+11 dias contra a linha de base).</p>
+        <p class="e">Justificar o aumento de duração da linha 157, <span class="tok">T·8e14aa</span>: 12 → 20 dias úteis.</p>
+        <p>Quer que eu escreva a síntese e monte o relatório final com os nomes reais? A montagem acontece no seu computador.</p>
+      </div>
+    </div>
+    <div class="legend"><b></b>Frase do motor, na forma codificada desta rodada. O restante do diálogo é ilustração.</div>
+  </div>
+  <div class="gap"></div>
+  <h2>Para ler a resposta com os nomes reais</h2>
+  <div class="term"><div class="bar"><i></i><i></i><i></i><span>terminal da pessoa · a volta</span><b class="mark">captura real</b></div><pre><span class="l cmd">python3 ~/.claude/skills/cronoaudit/scripts/secret_decode.py text ~/cronoaudit-work/f572d5d191 &lt; coded-answer-pt.txt</span><span class="l">O término do projeto foi de 04/10/2027 para 25/10/2027: 21 dias corridos mais tarde.</span><span class="l">1 das datas reais alteradas passou a coincidir exatamente com a linha de base (linha 29, Bueiros tubulares de concreto — Seg. 1, 05/06/2026 → 01/06/2026): o registro foi ajustado ao plano; peça a evidência.</span><span class="l">O atraso da linha 9 nasce na linha 148, Estacas escavadas — encontros (E1 e E2) (+11 dias contra a linha de base).</span><span class="l">Justificar o aumento de duração da linha 157, Lançamento das vigas pré-moldadas: 12 → 20 dias úteis.</span></pre></div>
+  <p class="cap">As quatro frases acima, salvas num arquivo e traduzidas pelo comando <code>text</code>. Só a pessoa roda esse comando, no terminal dela, fora do agente.</p>
+  <div class="gap"></div>
+  <h2>Para o relatório final</h2>
+  <div class="term"><div class="bar"><i></i><i></i><i></i><span>terminal · o relatório final</span><b class="mark">captura real</b></div><pre><span class="l cmd">python3 ~/.claude/skills/cronoaudit/scripts/secret_decode.py finish --no-open</span><span class="l hl">cronoaudit: 2 report(s) decoded on this machine; check passed, 7386 value(s) equal to the engine&#x27;s own output. Written beside the original.</span></pre></div>
+  <p class="cap">O comando <code>finish</code> decodifica os relatórios e confere cada valor contra a saída do próprio motor. A mensagem dele sai em inglês.</p>
+  <div class="gap"></div>
+  <div class="cols">
+    <div class="note"><div class="k">O que o modo secreto não faz</div><p class="small">Os códigos não tornam o cronograma anônimo: a estrutura e as durações continuam legíveis. Ele não substitui a política da sua empresa sobre serviços de IA.</p></div>
+    <div class="note"><div class="k">Fale por código ou por linha</div><p class="small">O que você digitar com um nome real vai para o serviço de IA. Refira-se às atividades pelo código ou pelo número da linha.</p></div>
+  </div>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page" id="caminhos" data-z="1.14" data-toc="Três caminhos de uso, os dados e os limites"><div class="in" style="zoom:1.14">
+  <p class="kick">21 <b>· Como usar no dia a dia</b></p>
+  <h1>Três caminhos. O motor é o mesmo.</h1>
+  <table>
+    <tr><th>Você prefere</th><th>Caminho</th><th>O que você faz</th></tr>
+    <tr><td>Conversar com uma IA e deixar que ela rode</td><td class="k">A. Pelo agente</td><td>Pede em palavras: analise o Rev04.mpp</td></tr>
+    <tr><td>Um botão, dentro do próprio MS Project</td><td class="k">B. A aba Cronoaudit (Windows)</td><td>Clica em Relatório ou em Analisar</td></tr>
+    <tr><td>Nenhuma IA, ou um computador sem agente</td><td class="k">C. O motor</td><td>Um comando, sobre o XML exportado</td></tr>
+  </table>
+  <div class="gap2"></div>
+  <div class="cols">
+    <div>
+      <h2>De onde vem o arquivo</h2>
+      <p>No MS Project: Arquivo, Salvar como, Formato XML. É o formato do próprio Project e nada do que a cronoaudit usa se perde. No Windows com o Project instalado, o motor também recebe o <code>.mpp</code> direto e pede ao Project que exporte. O arquivo é aberto só para leitura.</p>
+      <h2>Para onde vão os dados</h2>
+      <ul>
+        <li>O motor roda no seu computador e não envia nada.</li>
+        <li>Os instaladores baixam este repositório do GitHub e, no Windows, o Python, se faltar.</li>
+        <li>O que um agente lê vai para o fornecedor dele.</li>
+        <li>Se a política não permite agente, use o caminho C ou os botões sem IA da aba.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>O que a cronoaudit não faz</h2>
+      <ul>
+        <li>Não lê Primavera P6. Hoje a entrada é o MS Project.</li>
+        <li>Não certifica contra a DCMA. As catorze métricas são uma implementação, com os limiares citados.</li>
+        <li>Não produz pleito contratual de prazo. A forense mostra o mecanismo.</li>
+        <li>Não recalcula a rede. Ela lê as datas, as folgas e o campo Crítica que o arquivo traz.</li>
+      </ul>
+      <div class="note">
+        <div class="k">Para ir além deste guia</div>
+        <p class="small">O manual técnico explica cada conceito, cada seção do relatório e como reproduzir cada número. Código, licença e versão mais recente: github.com/Holiv/cronoaudit</p>
+      </div>
+    </div>
+  </div>
+  <h2>Com um arquivo só</h2>
+  <div class="cols">
+    <div>
+      <p>Sem a entrega anterior, o relatório é a análise daquela revisão: prazos, nove verificações, curva S, avanço por grupo, produtividade por recurso, catorze métricas, olhando para frente e forense.</p>
+      <p class="small">Para ponderar o avanço por disciplina em vez de segmento, acrescente <code>--group-by DISCIPLINA</code>. O exemplo traz dois campos personalizados, DISCIPLINA e SEGMENTO.</p>
+    </div>
+    <div class="reading tight">
+      <b class="mark eng">leitura do motor</b>
+      <p>O avanço ponderado é 28,01% contra 31,07% previsto: 3,06 pontos atrás.</p>
+      <p>Segmento 2 — km 18+000 ao km 24+000 carrega 24,0% do orçamento e está em 20,7% realizado contra 24,6% previsto.</p>
+      <p>1 grupo está mais de 5 pontos atrás do próprio previsto; o maior é Obras de Arte Especiais — Viaduto V-01 (km 27+400).</p>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+<section class="page sheet" id="cola" data-toc="Cola de uma página"><div class="in">
+  <p class="kick">22 <b>· Cola</b></p>
+  <h1 class="wide">cronoaudit 1.0.0 em uma página</h1>
+  <div class="box"><h2>Instalar</h2>
+  <p>macOS e Linux, no Terminal:</p>
+  <pre>curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash</pre>
+  <p>Windows, no PowerShell:</p>
+  <pre>irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex</pre>
+  <p>Para atualizar, rode o mesmo comando de novo.</p>
+  </div>
+  <div class="cols">
+    <div>
+      <div class="box"><h2>Rodar sem agente</h2>
+        <pre>R=~/.claude/skills/cronoaudit/scripts/review.py
+python3 $R --example             # o exemplo
+python3 $R Rev04.xml             # uma entrega
+python3 $R Rev03.xml Rev04.xml   # duas entregas</pre>
+        <table>
+          <tr><td class="k"><code>--free</code></td><td>modo livre, sem a pergunta</td></tr>
+          <tr><td class="k"><code>--secret</code></td><td>modo secreto: grava a pasta codificada</td></tr>
+          <tr><td class="k"><code>--group-by DISCIPLINA</code></td><td>pondera por um campo personalizado</td></tr>
+          <tr><td class="k"><code>--outdir pasta</code></td><td>onde gravar o relatório</td></tr>
+          <tr><td class="k"><code>--lang pt</code></td><td>força a língua do relatório</td></tr>
+        </table>
+        <p class="small" style="margin-top:1.4mm">Com dois arquivos, o anterior vem primeiro. No Windows, use a linha que o instalador mostra no fim: o Python que ele traz não fica no PATH.</p>
+      </div>
+      <div class="box"><h2>Modo secreto, em quatro passos</h2>
+        <ol class="steps">
+          <li><div>No seu terminal: <code>review.py Rev03.xml Rev04.xml --secret</code></div></li>
+          <li><div>Abra o agente dentro da pasta que o comando mostrar.</div></li>
+          <li><div>Converse por código ou por número de linha.</div></li>
+          <li><div>Peça o relatório final. Ele é montado no seu computador, com os nomes reais.</div></li>
+        </ol>
+      </div>
+      <div class="box"><h2>A aba Cronoaudit no MS Project (Windows)</h2>
+        <table>
+          <tr><td class="k">Analisar</td><td>pergunta o modo e abre o seu agente com o cronograma</td></tr>
+          <tr><td class="k">Comparar versões</td><td>o mesmo, com duas versões da mesma pasta</td></tr>
+          <tr><td class="k">Relatório, Comparar</td><td>sem IA: grava o relatório e abre no navegador</td></tr>
+          <tr><td class="k">Exportar XML</td><td>só exporta, para levar a outro computador</td></tr>
+        </table>
+      </div>
+      <div class="box"><h2>Onde está</h2>
+        <p>github.com/Holiv/cronoaudit<br>Licença Apache 2.0. Manual técnico em <code>docs/manual</code>. Exemplo em <code>examples</code>.</p>
+      </div>
+    </div>
+    <div>
+      <div class="box"><h2>A pergunta e a seção que responde</h2>
+        <table>
+          <tr><td>Algum marco passa da data limite?</td><td class="k">Prazos</td></tr>
+          <tr><td>Alguém mexeu no que já estava medido?</td><td class="k">Integridade da medição</td></tr>
+          <tr><td>A data mudou pela obra ou pelo plano?</td><td class="k">Replanejamento</td></tr>
+          <tr><td>O percentual é todo avanço?</td><td class="k">Avanço</td></tr>
+          <tr><td>Onde o atraso entrou?</td><td class="k">Forense do cenário</td></tr>
+          <tr><td>O que eu peço à contratada?</td><td class="k">O que cobrar</td></tr>
+        </table>
+      </div>
+      <div class="box"><h2>O que dizer ao agente</h2>
+        <p class="say">Analise o Rev04.mpp.</p>
+        <p class="say">Compare o Rev03 com o Rev04 e me diga o que mudou.</p>
+        <p class="say">Quais marcos correm risco de passar da data limite?</p>
+        <p class="say">De onde vem o atraso deste marco?</p>
+        <p class="say">Escreva a síntese executiva e gere o relatório final.</p>
+      </div>
+      <div class="box"><h2>A ordem de leitura do relatório</h2>
+        <p>1. Prazos. 2. Integridade da medição. 3. Replanejamento. 4. Avanço. 5. Folga e caminho crítico. 6. Qualidade da rede. Por fim, o que cobrar da contratada.</p>
+      </div>
+      <div class="box"><h2>Agentes</h2>
+        <table>
+          <tr><td class="k">Claude Code</td><td>testado de ponta a ponta</td></tr>
+          <tr><td class="k">GitHub Copilot CLI</td><td>modo livre em 21/11/2026, modo secreto em 25/11/2026</td></tr>
+          <tr><td class="k">Codex</td><td>conforme a documentação do fornecedor</td></tr>
+        </table>
+        <p class="small" style="margin-top:1.4mm">A trava do modo secreto existe só no Claude Code.</p>
+      </div>
+      <div class="box"><h2>Limites</h2>
+        <p>Lê MS Project (XML, ou <code>.mpp</code> no Windows com o Project). Não lê Primavera P6. Calcula as catorze métricas no estilo DCMA e não certifica contra a DCMA. Não produz pleito de prazo.</p>
+      </div>
+    </div>
+  </div>
+</div><div class="foot"><span>cronoaudit · guia ilustrado · 1.0.0</span><span class="n"></span></div></section>
+
+</body></html>

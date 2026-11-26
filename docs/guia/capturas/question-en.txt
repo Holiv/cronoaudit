@@ -1,0 +1,26 @@
+The results will carry the real data (free mode). If an AI agent reads them later, what it reads goes to its provider. Go on? [y] yes / [secret] a coded copy for the agent / [never] yes, and do not ask again
+> y
+Schedule integrity review -- rodovia-ficticia-rev04.xml
+
+Baseline used: baseline (the baseline with the widest leaf-cost coverage, ties to the higher-numbered one; summaries and external tasks excluded)
+Threshold: 30 working days of the activity's own calendar, between baseline finish and current finish
+Population: leaf, active, non-external activities only
+Counting: both ends of each violated link are marked, to agree with the scheduling tool's own routines
+
+Findings, in the order the method runs them:
+
+  A1       2 activities  Execution out of sequence  [as successors 1, as predecessors 1]
+  A2       0 activities  Total inversion
+  H        0 activities  Trend elapsed with no progress
+  E        0 activities  Pulled forward and never started
+  C        0 activities  Delayed beyond the threshold
+  G        0 activities  Duration incompatible with the window
+  B        0 activities  Milestone with no deadline
+  F        0 activities  In progress at zero percent
+  P        0 activities  Pending record
+
+Network findings (A1, A2) gate everything below them. If they are non-zero,
+every forecast date in this file is computed over logic the works does not follow.
+
+  report   ~/cronoaudit-exemplo/rodovia-ficticia-rev04-review.html
+  data     ~/cronoaudit-exemplo/rodovia-ficticia-rev04-review.json
