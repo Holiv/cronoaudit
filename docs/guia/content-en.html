@@ -1,12 +1,12 @@
 <section class="page cover">
   <p class="kick">Illustrated guide · version {{V}}</p>
   <p class="logo">crono<em>audit</em></p>
-  <p class="head">Rev04 has arrived. The number adds up. <em>What else changed?</em></p>
-  <p class="sub">A schedule review shown from start to finish, on an invented motorway: the terminal, the report, the conversation with the agent and the list of what to ask.</p>
+  <p class="head">Construction schedule audit. <em>An engine on your computer, a skill for your AI agent.</em></p>
+  <p class="sub">cronoaudit has two parts. The engine reviews the MS Project schedule on your computer and writes the report. The skill teaches your AI agent to run the engine and talk about what it measured. This guide shows both at work on an invented motorway.</p>
   <figure>{{svg cover}}</figure>
   <div class="meta">
     <span>Author<b>Helton da Silva de Oliveira</b></span>
-    <span>Format<b>Agent Skill · Apache 2.0</b></span>
+    <span>Format<b>Local engine + Agent Skill</b></span>
     <span>Data<b>The fictitious example only</b></span>
     <span>Edition<b>English</b></span>
   </div>
@@ -19,7 +19,7 @@
   <div class="cols c32">
     <div>
       <p>Whoever receives the month's revision checks what can be checked by eye: the finish date, the percentage, the curve. What changes the result usually sits somewhere else. An actual date corrected after the fact. A finished activity that vanished. A baseline that moved. A duration stretched on work that has not even started.</p>
-      <p>cronoaudit is an open-source Agent Skill that does that check. A Python engine reads the XML that MS Project itself exports. It runs on your computer and does not use the network. At the end it writes a report that opens in the browser and, if you want, hands the measured figures to an AI agent so you can talk about them.</p>
+      <p>cronoaudit does that check, and it is made of two open-source parts. The first is a Python engine that reads the MS Project schedule, runs on your computer without using the network, and writes a report that opens in the browser. The second is a skill, in the open Agent Skills format, that teaches the AI agent you prefer to run that engine and to talk with you about what it measured. With no agent, the engine works on its own.</p>
       <p>This guide shows the tool at work. Everything here was produced on an invented job, the fictitious motorway RF-140, which comes with the installation. Every page can be repeated on your computer.</p>
     </div>
     <div>
@@ -124,7 +124,7 @@
 
 <section class="page" id="terminal" data-z="1.07" data-toc="Rev04 has arrived: one line in the terminal">
   <p class="kick">04 <b>· The delivery</b></p>
-  <h1 class="wide">Rev04 has arrived. Two files, one line.</h1>
+  <h1 class="wide">Revision 4 has arrived. Two files, one line.</h1>
   <p class="lede">The previous delivery goes first. The engine reviews rev04 on its own and then compares the two.</p>
   {{term cycle}}
   <div class="gap2"></div>

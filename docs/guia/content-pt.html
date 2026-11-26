@@ -1,12 +1,12 @@
 <section class="page cover">
   <p class="kick">Guia ilustrado · versão {{V}}</p>
   <p class="logo">crono<em>audit</em></p>
-  <p class="head">A rev04 chegou. O número fecha. <em>O que mais mudou?</em></p>
-  <p class="sub">Uma análise crítica de cronograma mostrada do começo ao fim, sobre uma rodovia inventada: o terminal, o relatório, a conversa com o agente e a lista do que cobrar.</p>
+  <p class="head">Auditoria de cronograma de obra. <em>Um motor no seu computador, uma skill para o seu agente de IA.</em></p>
+  <p class="sub">A cronoaudit tem duas peças. O motor analisa o cronograma do MS Project no seu computador e escreve o relatório. A skill ensina o agente de IA a rodar o motor e a conversar sobre o que ele mediu. Este guia mostra as duas trabalhando, sobre uma rodovia inventada.</p>
   <figure>{{svg cover}}</figure>
   <div class="meta">
     <span>Autor<b>Helton da Silva de Oliveira</b></span>
-    <span>Formato<b>Agent Skill · Apache 2.0</b></span>
+    <span>Formato<b>Motor local + Agent Skill</b></span>
     <span>Dados<b>Só o exemplo fictício</b></span>
     <span>Edição<b>Português</b></span>
   </div>
@@ -19,7 +19,7 @@
   <div class="cols c32">
     <div>
       <p>Quem recebe a revisão do mês confere o que dá para conferir a olho: a data final, o percentual, a curva. O que muda o resultado costuma estar em outro lugar. Uma data real corrigida depois do fato. Uma atividade concluída que sumiu. Uma linha de base que andou. Uma duração esticada em serviço que nem começou.</p>
-      <p>A cronoaudit é uma Agent Skill de código aberto que faz essa conferência. Um motor em Python lê o XML que o próprio MS Project exporta. Ele roda no seu computador e não usa a rede. No fim ele escreve um relatório que abre no navegador e, se você quiser, entrega os números medidos a um agente de IA para conversar sobre eles.</p>
+      <p>A cronoaudit faz essa conferência, e é feita de duas peças de código aberto. A primeira é um motor em Python, que lê o cronograma do MS Project, roda no seu computador sem usar a rede e escreve um relatório que abre no navegador. A segunda é uma skill, no formato aberto Agent Skills, que ensina o agente de IA de sua preferência a rodar esse motor e a conversar com você sobre o que ele mediu. Sem agente, o motor funciona sozinho.</p>
       <p>Este guia mostra a ferramenta trabalhando. Tudo aqui foi produzido sobre uma obra inventada, a rodovia fictícia RF-140, que vem junto com a instalação. Cada página pode ser repetida no seu computador.</p>
     </div>
     <div>
@@ -124,7 +124,7 @@
 
 <section class="page" id="terminal" data-z="1.07" data-toc="A rev04 chegou: uma linha no terminal">
   <p class="kick">04 <b>· A entrega</b></p>
-  <h1 class="wide">A rev04 chegou. Dois arquivos, uma linha.</h1>
+  <h1 class="wide">A revisão 4 chegou. Dois arquivos, uma linha.</h1>
   <p class="lede">A entrega anterior vem primeiro. O motor analisa a rev04 sozinha e depois compara as duas.</p>
   {{term cycle}}
   <div class="gap2"></div>
