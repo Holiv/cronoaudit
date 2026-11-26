@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cronoaudit: auditoria de cronograma de obra, no seu computador</title>
+<meta name="description" content="Auditoria de código aberto para cronogramas de obra feitos no MS Project. Um motor local em Python e uma Agent Skill para o seu agente de IA. Roda no seu computador e não envia nada.">
+<link rel="canonical" href="https://holiv.github.io/cronoaudit/pt/">
+<link rel="alternate" hreflang="en" href="https://holiv.github.io/cronoaudit/">
+<link rel="alternate" hreflang="pt-BR" href="https://holiv.github.io/cronoaudit/pt/">
+<link rel="alternate" hreflang="x-default" href="https://holiv.github.io/cronoaudit/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="cronoaudit">
+<meta property="og:title" content="cronoaudit: auditoria de cronograma de obra, no seu computador">
+<meta property="og:description" content="Auditoria de código aberto para cronogramas de obra feitos no MS Project. Um motor local em Python e uma Agent Skill para o seu agente de IA. Roda no seu computador e não envia nada.">
+<meta property="og:url" content="https://holiv.github.io/cronoaudit/pt/">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:image" content="https://holiv.github.io/cronoaudit/img/pt/social-preview.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta property="og:image:alt" content="cronoaudit: auditoria de cronograma de obra, no seu computador">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="cronoaudit: auditoria de cronograma de obra, no seu computador">
+<meta name="twitter:description" content="Auditoria de código aberto para cronogramas de obra feitos no MS Project. Um motor local em Python e uma Agent Skill para o seu agente de IA. Roda no seu computador e não envia nada.">
+<meta name="twitter:image" content="https://holiv.github.io/cronoaudit/img/pt/social-preview.png">
+<meta name="theme-color" content="#B3261E">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../assets/fonts/fraunces-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Pular para o conteúdo</a>
+
+<header class="top">
+  <div class="wrap bar">
+    <a class="wm" href="#main" aria-label="cronoaudit">crono<em>audit</em></a>
+    <nav class="nav">
+      <a href="#catches">O que ela pega</a>
+      <a href="#how">Como funciona</a>
+      <a href="#install">Instalar</a>
+      <a href="#livro">O livro</a>
+    </nav>
+    <a class="lang" href="../" hreflang="en" lang="en">English</a>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero">
+  <div class="wrap">
+    <p class="kick">Código aberto · versão 1.0.0</p>
+    <h1>Auditoria de cronograma de obra, <em>no seu computador.</em></h1>
+    <div class="rule"></div>
+    <p class="lede">Um <strong>motor local em Python</strong> e uma <strong>Agent Skill</strong> para o seu agente de IA.</p>
+    <p class="sub">Ela revisa cronogramas feitos no MS Project e procura as falhas que produzem um número errado com cara de certo, e não uma mensagem de erro.</p>
+    <p class="btns">
+      <a class="btn primary" href="#install">Instalar</a>
+      <a class="btn" href="#demo">Ver funcionando</a>
+    </p>
+    <ul class="tags">
+      <li>Apache 2.0</li><li>Windows · macOS · Linux</li><li>motor: não usa a rede</li>
+    </ul>
+  </div>
+</section>
+
+<section id="demo" class="band">
+  <div class="wrap narrow">
+    <p class="kick">Ver funcionando</p>
+    <h2>Um comando, e o relatório <em>abre no navegador.</em></h2>
+    <figure class="video">
+      <video autoplay muted loop playsinline controls preload="metadata" width="720" height="900"
+             poster="../assets/video/poster-pt.jpg" aria-label="Vídeo: um comando compara duas revisões do exemplo fictício, o relatório abre com os alertas primeiro, e as duas partes da cronoaudit aparecem. As legendas fazem parte do vídeo.">
+        <source src="../assets/video/cronoaudit-pt.mp4" type="video/mp4">
+      </video>
+      <figcaption>A saída real do terminal e o relatório real do exemplo fictício, reproduzidos como animação. Tudo nele é inventado.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="nums" aria-label="Por que usar">
+  <div class="wrap">
+    <p class="kick">Por que usar</p>
+    <dl class="stats">
+      <div><dt>29 segundos</dt><dd>para analisar um cronograma real de 6.484 tarefas e 107 calendários, num notebook comum (Apple M1, medido em 22/11/2026).</dd></div>
+      <div><dt>Ao centavo</dt><dd>o valor agregado é conferido, atividade por atividade, com o que o próprio MS Project calculou. Quando não bate, o relatório diz onde.</dd></div>
+      <div><dt>14 de 14</dt><dd>problemas plantados no exemplo fictício aparecem no relatório. Um teste automático confere isso a cada versão.</dd></div>
+      <div><dt>12 cobranças prontas</dt><dd>ao comparar as duas revisões do exemplo, uma por evidência, a integridade da medição primeiro.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section id="catches">
+  <div class="wrap">
+    <p class="kick">O que ela pega</p>
+    <h2>Cronograma errado <em>não dá mensagem de erro.</em></h2>
+    <p class="intro">Todas as imagens de relatório aqui são saída real do exemplo fictício, uma rodovia entregue duas vezes, com um mês de intervalo (rev03 e rev04). O relatório sai no idioma do cronograma.</p>
+    <figure class="shot">
+      <img src="../img/pt/hero.png" alt="O topo de um relatório de comparação: quatro alertas e o término do projeto 21 dias depois" width="2000" height="2000" loading="lazy" decoding="async">
+      <figcaption>Saída real: duas revisões da rodovia fictícia, comparadas. Tudo nela é inventado.</figcaption>
+    </figure>
+    <article class="find">
+      <div class="txt"><span class="n">1</span><h3>Um registro reescrito depois do fato.</h3><p>O término real da linha 29 era 05/06/2026 na rev03 e aparece como 01/06/2026 na rev04, exatamente a data da linha de base. A linha 119, a 100%, foi removida, e 473.600 de valor agregado foram junto. Nenhum dos dois arquivos avisa.</p></div>
+      <img src="../img/pt/past-rewritten.png" alt="Passado reescrito: um término real alterado e uma atividade com avanço removida" width="2000" height="1414" loading="lazy" decoding="async">
+    </article>
+    <article class="find">
+      <div class="txt"><span class="n">2</span><h3>Avanço que não é só avanço.</h3><p>O número de cabeçalho andou 4,57 pontos, de 23,44% para 28,01%. Atividade por atividade, o trabalho soma 4,90. Os 0,33 pontos de diferença não são trabalho feito, e o relatório dá nome a cada parte.</p></div>
+      <img src="../img/pt/progress.png" alt="Avanço: anterior, atual, movimento, explicado e resíduo" width="2000" height="1746" loading="lazy" decoding="async">
+    </article>
+    <article class="find">
+      <div class="txt"><span class="n">3</span><h3>Um marco a um dia da data limite.</h3><p>Os 7 marcos com data limite ainda terminam dentro dela, o mais apertado com 1 dia de margem. Com o escorregamento que 80% das atividades não ultrapassaram (7 dias), 3 deles passam da data limite. O relatório também diz onde nasce cada atraso.</p></div>
+      <img src="../img/pt/deadlines.png" alt="Prazo e marcos: cada marco contra a sua data limite" width="2360" height="1750" loading="lazy" decoding="async">
+    </article>
+    <article class="find">
+      <div class="txt"><span class="n">4</span><h3>E no fim, o que cobrar da contratada.</h3><p>No exemplo são 12 cobranças, cada uma citando a sua linha, a integridade da medição primeiro.</p></div>
+      <img class="tall" src="../img/pt/ask.png" alt="O que cobrar da contratada: 12 cobranças em três grupos" width="1560" height="2074" loading="lazy" decoding="async">
+    </article>
+  </div>
+</section>
+
+<section id="how" class="band">
+  <div class="wrap">
+    <p class="kick">Como funciona</p>
+    <h2>Um motor que mede. <em>Três formas de usar.</em></h2>
+    <figure class="shot">
+      <img src="../img/pt/how-it-works.png" alt="Como funciona: o motor mede no seu computador e não envia nada. Você chega a ele conversando com um agente de IA por meio da skill, clicando num botão dentro do MS Project, ou sem IA nenhuma." width="2560" height="1280" loading="lazy" decoding="async">
+    </figure>
+    <div class="cards three">
+      <article class="card way"><span class="n">A</span><h3>Pelo agente</h3><p>Para conversar com uma IA e deixar ela fazer tudo. Você diz, por exemplo: <q>analise o Rev04.mpp</q>.</p></article>
+      <article class="card way"><span class="n">B</span><h3>Pela aba Cronoaudit</h3><p>Um botão, dentro do próprio Project, no Windows. Você clica em <strong>Relatório</strong> ou <strong>Analisar</strong>.</p></article>
+      <article class="card way"><span class="n">C</span><h3>Pelo motor</h3><p>Sem IA, ou num computador sem agente. Um comando, sobre o XML exportado.</p></article>
+    </div>
+    <p class="note">Nos três, o motor roda no seu computador e não envia nada. O que muda é quem conversa com você.</p>
+  </div>
+</section>
+
+<section id="privacy">
+  <div class="wrap">
+    <p class="kick">Privacidade</p>
+    <h2>O motor roda no seu computador <em>e não envia nada.</em></h2>
+    <div class="cards three">
+      <article class="card"><h3>Local por construção</h3><p>O motor só precisa de Python. Ele lê o XML que o próprio MS Project exporta e escreve um relatório que abre no navegador, com ou sem rede.</p></article>
+      <article class="card accent"><h3>Modo secreto</h3><p>Para conversar com um agente sem que os nomes, os valores e as datas saiam do seu computador. A cronoaudit analisa o arquivo real localmente e grava uma cópia codificada numa pasta separada: nomes viram códigos, datas viram contagens de dias e os valores são multiplicados por um fator secreto. O agente lê só a cópia. O relatório final é decodificado no seu computador, com os nomes reais.</p></article>
+      <article class="card"><h3>O que ele não faz</h3><p>O que um agente lê vai para o provedor dele. Os códigos não tornam o cronograma anônimo: a estrutura e as durações continuam legíveis. Nada disso substitui a política da sua empresa.</p></article>
+    </div>
+    <p class="note mono">Testado: Claude Code de ponta a ponta; GitHub Copilot CLI também testado no modo secreto; Codex conforme a documentação do provedor.</p>
+    <p class="note">Este site segue a mesma regra: sem rastreamento, sem analytics, sem cookies e sem requisições a terceiros. Até as fontes são servidas daqui.</p>
+  </div>
+</section>
+
+<section id="install" class="band">
+  <div class="wrap">
+    <p class="kick">Instalar</p>
+    <h2>Um comando, para todos os agentes <em>e para o uso sem agente.</em></h2>
+    <div class="cmds">
+      <div class="cmd">
+        <div class="cmdbar"><span>Windows (PowerShell)</span><button type="button" class="copy" data-copy="cmd-win" data-done="Copiado">Copiar</button></div>
+        <pre tabindex="0"><code id="cmd-win">irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex</code></pre>
+      </div>
+      <div class="cmd">
+        <div class="cmdbar"><span>macOS / Linux (Terminal)</span><button type="button" class="copy" data-copy="cmd-unix" data-done="Copiado">Copiar</button></div>
+        <pre tabindex="0"><code id="cmd-unix">curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash</code></pre>
+      </div>
+    </div>
+    <p class="note">O instalador só pergunta o que é escolha sua: se você quer a aba Cronoaudit, quando ele encontra o MS Project, e se quer ver o exemplo agora.</p>
+    <div class="cards two">
+      <article class="card accent">
+        <h3>Experimente primeiro no exemplo fictício</h3>
+        <p>Diga sim ao exemplo e o relatório abre no navegador. Para ver de novo depois:</p>
+        <div class="cmd small">
+          <div class="cmdbar"><span>--example</span><button type="button" class="copy" data-copy="cmd-example" data-done="Copiado">Copiar</button></div>
+          <pre tabindex="0"><code id="cmd-example">python3 ~/.claude/skills/cronoaudit/scripts/review.py --example</code></pre>
+        </div>
+        <p class="fine">No Windows, use a linha que o instalador mostrou no fim, a que termina em <code>--example</code>.</p>
+      </article>
+      <article class="card">
+        <h3>Depois, peça</h3>
+        <p>Abra o agente de sua preferência, ou o que a sua empresa permite, na pasta do cronograma e diga o que quer:</p>
+        <ul class="say"><li>Analise o Rev04.mpp.</li><li>Compare o Rev03.mpp com o Rev04.mpp e me diga o que mudou.</li><li>Quais marcos correm risco de passar da data limite?</li></ul>
+      </article>
+    </div>
+    <figure class="shot">
+      <img src="../img/pt/install.png" alt="Saída do instalador: onde a skill foi instalada, os relatórios do exemplo e como usar" width="1992" height="1436" loading="lazy" decoding="async">
+      <figcaption>Saída real do instalador no macOS, rodado de uma cópia local do repositório, com o exemplo aceito. Caminhos encurtados para ~.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="docs">
+  <div class="wrap">
+    <p class="kick">Para ler mais</p>
+    <h2>O guia e <em>o manual.</em></h2>
+    <div class="cards three">
+      <article class="card">
+        <h3>Guia ilustrado</h3><p>23 páginas: a revisão 4 da rodovia fictícia contada do começo ao fim, com o terminal, o relatório, o modo secreto lado a lado e uma folha de consulta.</p>
+        <p class="links"><a href="../guia/guia-pt.pdf">PDF em português</a><a href="../guia/guia-en.pdf">PDF em inglês</a></p>
+      </article>
+      <article class="card">
+        <h3>Manual</h3><p>Dezessete capítulos, da versão 1.0: conceitos, instalação, os três caminhos, a aba do Project, os modos livre e secreto, o relatório seção por seção e como reproduzir cada número.</p>
+        <p class="links"><a href="../manual/manual-pt.pdf">PDF em português</a><a href="../manual/manual-en.pdf">PDF em inglês</a></p>
+      </article>
+      <article class="card">
+        <h3>O exemplo fictício</h3><p>Duas entregas de uma rodovia inventada, e a lista do que foi plantado nelas.</p>
+        <p class="links"><a href="https://github.com/Holiv/cronoaudit/tree/main/examples">Abrir a pasta de exemplos no GitHub</a><a href="https://github.com/Holiv/cronoaudit">Código-fonte e LEIA-ME no GitHub</a></p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="livro" class="book">
+  <div class="wrap">
+    <p class="kick">O livro · em produção</p>
+    <h2>Como revisar a entrega de um cronograma, <em>do arquivo à reunião.</em></h2>
+    <div class="bookgrid">
+      <div>
+        <p class="lede">A ferramenta encontra. O livro é o método por trás dela: como revisar o cronograma que a contratada entrega.</p>
+        <ul class="toc"><li>Onde olhar, e em que ordem.</li><li>O que cada achado costuma significar na obra.</li><li>O que cobrar da contratada.</li><li>Como levar isso à gestão.</li></ul>
+        <p>Ele é construído sobre a rodovia fictícia que vem com a cronoaudit: padrões reais, dados inventados. Está sendo escrito agora, primeiro em português, depois em inglês.</p>
+      </div>
+      <aside class="cta">
+        <h3>Quer saber quando sair?</h3>
+        <a class="btn primary" href="https://www.linkedin.com/in/helton-so/" rel="noopener">Siga ou me escreva no LinkedIn</a>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section id="author">
+  <div class="wrap">
+    <p class="kick">Autor</p>
+    <h2>Helton Oliveira</h2>
+    <p class="intro">Engenheiro civil e engenheiro de planejamento em obras rodoviárias no Brasil. A cronoaudit é o método de revisão escrito como ferramenta de código aberto.</p>
+    <p class="links row"><a href="https://www.linkedin.com/in/helton-so/" rel="noopener">LinkedIn</a><a href="https://holiv.github.io/project-management-portfolio/">Portfólio</a><a href="https://github.com/Holiv/cronoaudit">Repositório no GitHub</a></p>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p class="wm">crono<em>audit</em></p>
+    <p class="meta"><span>Apache 2.0</span><span>versão 1.0.0</span><span>© 2026 Helton da Silva de Oliveira</span></p>
+    <p class="fine">Este site segue a mesma regra: sem rastreamento, sem analytics, sem cookies e sem requisições a terceiros. Até as fontes são servidas daqui.</p>
+    <p class="fine">Fontes: Fraunces, Source Sans 3 e Source Code Pro, sob a SIL Open Font License. <a href="../assets/fonts/OFL-Fraunces.txt">Fraunces</a> · <a href="../assets/fonts/OFL-SourceSans3.txt">Source Sans 3</a> · <a href="../assets/fonts/OFL-SourceCodePro.txt">Source Code Pro</a></p>
+  </div>
+</footer>
+
+<script src="../assets/site.js" defer></script>
+</body>
+</html>

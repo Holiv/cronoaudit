@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="{{html_lang}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{title}}</title>
+<meta name="description" content="{{description}}">
+<link rel="canonical" href="{{site_url}}{{page_path}}">
+<link rel="alternate" hreflang="en" href="{{site_url}}">
+<link rel="alternate" hreflang="pt-BR" href="{{site_url}}pt/">
+<link rel="alternate" hreflang="x-default" href="{{site_url}}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="cronoaudit">
+<meta property="og:title" content="{{title}}">
+<meta property="og:description" content="{{description}}">
+<meta property="og:url" content="{{site_url}}{{page_path}}">
+<meta property="og:locale" content="{{og_locale}}">
+<meta property="og:image" content="{{site_url}}img/{{lang}}/social-preview.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta property="og:image:alt" content="{{title}}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{title}}">
+<meta name="twitter:description" content="{{description}}">
+<meta name="twitter:image" content="{{site_url}}img/{{lang}}/social-preview.png">
+<meta name="theme-color" content="#B3261E">
+<link rel="icon" href="{{root}}assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="{{root}}assets/fonts/fraunces-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="{{root}}assets/site.css">
+</head>
+<body>
+<a class="skip" href="#main">{{skip}}</a>
+
+<header class="top">
+  <div class="wrap bar">
+    <a class="wm" href="#main" aria-label="cronoaudit">crono<em>audit</em></a>
+    <nav class="nav">
+      <a href="#catches">{{nav_catches}}</a>
+      <a href="#how">{{nav_how}}</a>
+      <a href="#install">{{nav_install}}</a>
+      <a href="#{{id_book}}">{{nav_book}}</a>
+    </nav>
+    <a class="lang" href="{{root}}{{other_path}}" hreflang="{{other_lang_code}}" lang="{{other_lang_code}}">{{other_lang_label}}</a>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero">
+  <div class="wrap">
+    <p class="kick">{{hero_kick}}</p>
+    <h1>{{hero_h1}}</h1>
+    <div class="rule"></div>
+    <p class="lede">{{hero_lede}}</p>
+    <p class="sub">{{hero_sub}}</p>
+    <p class="btns">
+      <a class="btn primary" href="#install">{{btn_install}}</a>
+      <a class="btn" href="#demo">{{btn_demo}}</a>
+    </p>
+    <ul class="tags">
+      <li>{{tag_licence}}</li><li>{{tag_os}}</li><li>{{tag_net}}</li>
+    </ul>
+  </div>
+</section>
+
+<section id="demo" class="band">
+  <div class="wrap narrow">
+    <p class="kick">{{demo_kick}}</p>
+    <h2>{{demo_h2}}</h2>
+    <figure class="video">
+      <video autoplay muted loop playsinline controls preload="metadata" width="720" height="900"
+             poster="{{root}}assets/video/poster-{{lang}}.jpg" aria-label="{{demo_label}}">
+        <source src="{{root}}assets/video/cronoaudit-{{lang}}.mp4" type="video/mp4">
+      </video>
+      <figcaption>{{demo_cap}}</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="nums" aria-label="{{nums_kick}}">
+  <div class="wrap">
+    <p class="kick">{{nums_kick}}</p>
+    <dl class="stats">
+      <div><dt>{{num1_v}}</dt><dd>{{num1_t}}</dd></div>
+      <div><dt>{{num2_v}}</dt><dd>{{num2_t}}</dd></div>
+      <div><dt>{{num3_v}}</dt><dd>{{num3_t}}</dd></div>
+      <div><dt>{{num4_v}}</dt><dd>{{num4_t}}</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section id="catches">
+  <div class="wrap">
+    <p class="kick">{{catch_kick}}</p>
+    <h2>{{catch_h2}}</h2>
+    <p class="intro">{{catch_intro}}</p>
+    <figure class="shot">
+      <img src="{{root}}img/{{lang}}/hero.png" alt="{{catch0_alt}}" width="{{w_hero}}" height="{{h_hero}}" loading="lazy" decoding="async">
+      <figcaption>{{catch0_cap}}</figcaption>
+    </figure>
+    <article class="find">
+      <div class="txt"><span class="n">1</span><h3>{{catch1_h3}}</h3><p>{{catch1_p}}</p></div>
+      <img src="{{root}}img/{{lang}}/past-rewritten.png" alt="{{catch1_alt}}" width="{{w_past-rewritten}}" height="{{h_past-rewritten}}" loading="lazy" decoding="async">
+    </article>
+    <article class="find">
+      <div class="txt"><span class="n">2</span><h3>{{catch2_h3}}</h3><p>{{catch2_p}}</p></div>
+      <img src="{{root}}img/{{lang}}/progress.png" alt="{{catch2_alt}}" width="{{w_progress}}" height="{{h_progress}}" loading="lazy" decoding="async">
+    </article>
+    <article class="find">
+      <div class="txt"><span class="n">3</span><h3>{{catch3_h3}}</h3><p>{{catch3_p}}</p></div>
+      <img src="{{root}}img/{{lang}}/deadlines.png" alt="{{catch3_alt}}" width="{{w_deadlines}}" height="{{h_deadlines}}" loading="lazy" decoding="async">
+    </article>
+    <article class="find">
+      <div class="txt"><span class="n">4</span><h3>{{catch4_h3}}</h3><p>{{catch4_p}}</p></div>
+      <img class="tall" src="{{root}}img/{{lang}}/ask.png" alt="{{catch4_alt}}" width="{{w_ask}}" height="{{h_ask}}" loading="lazy" decoding="async">
+    </article>
+  </div>
+</section>
+
+<section id="how" class="band">
+  <div class="wrap">
+    <p class="kick">{{how_kick}}</p>
+    <h2>{{how_h2}}</h2>
+    <figure class="shot">
+      <img src="{{root}}img/{{lang}}/how-it-works.png" alt="{{how_alt}}" width="{{w_how-it-works}}" height="{{h_how-it-works}}" loading="lazy" decoding="async">
+    </figure>
+    <div class="cards three">
+      <article class="card way"><span class="n">A</span><h3>{{way_a_h3}}</h3><p>{{way_a_p}}</p></article>
+      <article class="card way"><span class="n">B</span><h3>{{way_b_h3}}</h3><p>{{way_b_p}}</p></article>
+      <article class="card way"><span class="n">C</span><h3>{{way_c_h3}}</h3><p>{{way_c_p}}</p></article>
+    </div>
+    <p class="note">{{how_note}}</p>
+  </div>
+</section>
+
+<section id="privacy">
+  <div class="wrap">
+    <p class="kick">{{priv_kick}}</p>
+    <h2>{{priv_h2}}</h2>
+    <div class="cards three">
+      <article class="card"><h3>{{priv1_h3}}</h3><p>{{priv1_p}}</p></article>
+      <article class="card accent"><h3>{{priv2_h3}}</h3><p>{{priv2_p}}</p></article>
+      <article class="card"><h3>{{priv3_h3}}</h3><p>{{priv3_p}}</p></article>
+    </div>
+    <p class="note mono">{{priv_tested}}</p>
+    <p class="note">{{priv_site}}</p>
+  </div>
+</section>
+
+<section id="install" class="band">
+  <div class="wrap">
+    <p class="kick">{{inst_kick}}</p>
+    <h2>{{inst_h2}}</h2>
+    <div class="cmds">
+      <div class="cmd">
+        <div class="cmdbar"><span>{{inst_win}}</span><button type="button" class="copy" data-copy="cmd-win" data-done="{{copied}}">{{copy}}</button></div>
+        <pre tabindex="0"><code id="cmd-win">{{cmd_windows}}</code></pre>
+      </div>
+      <div class="cmd">
+        <div class="cmdbar"><span>{{inst_unix}}</span><button type="button" class="copy" data-copy="cmd-unix" data-done="{{copied}}">{{copy}}</button></div>
+        <pre tabindex="0"><code id="cmd-unix">{{cmd_unix}}</code></pre>
+      </div>
+    </div>
+    <p class="note">{{inst_note}}</p>
+    <div class="cards two">
+      <article class="card accent">
+        <h3>{{inst_try_h3}}</h3>
+        <p>{{inst_try_p}}</p>
+        <div class="cmd small">
+          <div class="cmdbar"><span>--example</span><button type="button" class="copy" data-copy="cmd-example" data-done="{{copied}}">{{copy}}</button></div>
+          <pre tabindex="0"><code id="cmd-example">{{cmd_example}}</code></pre>
+        </div>
+        <p class="fine">{{inst_try_win}}</p>
+      </article>
+      <article class="card">
+        <h3>{{inst_then_h3}}</h3>
+        <p>{{inst_then_p}}</p>
+        <ul class="say"><li>{{ask1}}</li><li>{{ask2}}</li><li>{{ask3}}</li></ul>
+      </article>
+    </div>
+    <figure class="shot">
+      <img src="{{root}}img/{{lang}}/install.png" alt="{{inst_alt}}" width="{{w_install}}" height="{{h_install}}" loading="lazy" decoding="async">
+      <figcaption>{{inst_cap}}</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="docs">
+  <div class="wrap">
+    <p class="kick">{{docs_kick}}</p>
+    <h2>{{docs_h2}}</h2>
+    <div class="cards three">
+      <article class="card">
+        <h3>{{guide_h3}}</h3><p>{{guide_p}}</p>
+        <p class="links">{{guide_links}}</p>
+      </article>
+      <article class="card">
+        <h3>{{manual_h3}}</h3><p>{{manual_p}}</p>
+        <p class="links">{{manual_links}}</p>
+      </article>
+      <article class="card">
+        <h3>{{example_h3}}</h3><p>{{example_p}}</p>
+        <p class="links"><a href="{{examples_url}}">{{example_link}}</a><a href="{{repo_url}}">{{repo_link}}</a></p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="{{id_book}}" class="book">
+  <div class="wrap">
+    <p class="kick">{{book_kick}}</p>
+    <h2>{{book_h2}}</h2>
+    <div class="bookgrid">
+      <div>
+        <p class="lede">{{book_lede}}</p>
+        <ul class="toc"><li>{{book_li1}}</li><li>{{book_li2}}</li><li>{{book_li3}}</li><li>{{book_li4}}</li></ul>
+        <p>{{book_p}}</p>
+      </div>
+      <aside class="cta">
+        <h3>{{book_cta_h3}}</h3>
+        <a class="btn primary" href="{{ebook_cta_url}}" rel="noopener">{{book_cta}}</a>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section id="author">
+  <div class="wrap">
+    <p class="kick">{{author_kick}}</p>
+    <h2>{{author_h2}}</h2>
+    <p class="intro">{{author_p}}</p>
+    <p class="links row"><a href="{{linkedin_url}}" rel="noopener">{{author_linkedin}}</a><a href="{{portfolio_url}}">{{author_portfolio}}</a><a href="{{repo_url}}">{{author_github}}</a></p>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p class="wm">crono<em>audit</em></p>
+    <p class="meta"><span>{{foot_licence}}</span><span>{{foot_version}}</span><span>{{foot_copy}}</span></p>
+    <p class="fine">{{priv_site}}</p>
+    <p class="fine">{{foot_fonts}} <a href="{{root}}assets/fonts/OFL-Fraunces.txt">Fraunces</a> · <a href="{{root}}assets/fonts/OFL-SourceSans3.txt">Source Sans 3</a> · <a href="{{root}}assets/fonts/OFL-SourceCodePro.txt">Source Code Pro</a></p>
+  </div>
+</footer>
+
+<script src="{{root}}assets/site.js" defer></script>
+</body>
+</html>

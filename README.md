@@ -9,6 +9,8 @@
 ![Windows · macOS · Linux](https://img.shields.io/badge/Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-runs-2ea043)
 ![data](https://img.shields.io/badge/engine-no%20network-2ea043)
 
+[Website](https://holiv.github.io/cronoaudit/) · [The book (in production)](https://holiv.github.io/cronoaudit/#book)
+
 **cronoaudit reviews construction and infrastructure schedules made in MS Project and tells you
 what deserves attention.** It looks for the failures that produce a believable wrong number rather
 than an error message:

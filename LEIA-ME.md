@@ -9,6 +9,8 @@
 ![Windows · macOS · Linux](https://img.shields.io/badge/Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-roda-2ea043)
 ![dados](https://img.shields.io/badge/motor-n%C3%A3o%20usa%20a%20rede-2ea043)
 
+[Site](https://holiv.github.io/cronoaudit/pt/) · [O livro (em produção)](https://holiv.github.io/cronoaudit/pt/#livro)
+
 **A cronoaudit revisa cronogramas de obras e de infraestrutura feitos no MS Project e diz o que
 merece atenção.** Ela procura as falhas que produzem um número errado com cara de certo, e não uma
 mensagem de erro:

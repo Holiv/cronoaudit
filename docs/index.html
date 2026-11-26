@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cronoaudit: an audit for construction schedules that runs on your computer</title>
+<meta name="description" content="Open-source audit for MS Project construction schedules. A local Python engine, plus an Agent Skill for your AI agent. It runs on your computer and sends nothing.">
+<link rel="canonical" href="https://holiv.github.io/cronoaudit/">
+<link rel="alternate" hreflang="en" href="https://holiv.github.io/cronoaudit/">
+<link rel="alternate" hreflang="pt-BR" href="https://holiv.github.io/cronoaudit/pt/">
+<link rel="alternate" hreflang="x-default" href="https://holiv.github.io/cronoaudit/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="cronoaudit">
+<meta property="og:title" content="cronoaudit: an audit for construction schedules that runs on your computer">
+<meta property="og:description" content="Open-source audit for MS Project construction schedules. A local Python engine, plus an Agent Skill for your AI agent. It runs on your computer and sends nothing.">
+<meta property="og:url" content="https://holiv.github.io/cronoaudit/">
+<meta property="og:locale" content="en_GB">
+<meta property="og:image" content="https://holiv.github.io/cronoaudit/img/en/social-preview.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta property="og:image:alt" content="cronoaudit: an audit for construction schedules that runs on your computer">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="cronoaudit: an audit for construction schedules that runs on your computer">
+<meta name="twitter:description" content="Open-source audit for MS Project construction schedules. A local Python engine, plus an Agent Skill for your AI agent. It runs on your computer and sends nothing.">
+<meta name="twitter:image" content="https://holiv.github.io/cronoaudit/img/en/social-preview.png">
+<meta name="theme-color" content="#B3261E">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/fraunces-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="wrap bar">
+    <a class="wm" href="#main" aria-label="cronoaudit">crono<em>audit</em></a>
+    <nav class="nav">
+      <a href="#catches">What it catches</a>
+      <a href="#how">How it works</a>
+      <a href="#install">Install</a>
+      <a href="#book">The book</a>
+    </nav>
+    <a class="lang" href="pt/" hreflang="pt-BR" lang="pt-BR">Português</a>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero">
+  <div class="wrap">
+    <p class="kick">Open source · version 1.0.0</p>
+    <h1>An audit for construction schedules that runs <em>on your computer.</em></h1>
+    <div class="rule"></div>
+    <p class="lede">A <strong>local Python engine</strong>, plus an <strong>Agent Skill</strong> for your AI agent.</p>
+    <p class="sub">It reviews schedules made in MS Project and looks for the failures that produce a believable wrong number rather than an error message.</p>
+    <p class="btns">
+      <a class="btn primary" href="#install">Install</a>
+      <a class="btn" href="#demo">See it work</a>
+    </p>
+    <ul class="tags">
+      <li>Apache 2.0</li><li>Windows · macOS · Linux</li><li>engine: no network</li>
+    </ul>
+  </div>
+</section>
+
+<section id="demo" class="band">
+  <div class="wrap narrow">
+    <p class="kick">See it work</p>
+    <h2>One command, then the report <em>opens in your browser.</em></h2>
+    <figure class="video">
+      <video autoplay muted loop playsinline controls preload="metadata" width="720" height="900"
+             poster="assets/video/poster-en.jpg" aria-label="Video: one command compares two revisions of the fictitious example, the report opens with its warnings first, and the two parts of cronoaudit are shown. The captions are part of the video.">
+        <source src="assets/video/cronoaudit-en.mp4" type="video/mp4">
+      </video>
+      <figcaption>The real terminal output and the real report for the fictitious example, replayed as an animation. Everything in it is invented.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="nums" aria-label="Why use it">
+  <div class="wrap">
+    <p class="kick">Why use it</p>
+    <dl class="stats">
+      <div><dt>29 seconds</dt><dd>to analyse a real schedule of 6,484 tasks and 107 calendars, on an ordinary laptop (Apple M1, measured on 22/11/2026).</dd></div>
+      <div><dt>To the cent</dt><dd>the earned value is checked, activity by activity, against what MS Project itself computed. When it does not match, the report says where.</dd></div>
+      <div><dt>14 of 14</dt><dd>problems planted in the fictitious example appear in the report. An automatic test checks it on every version.</dd></div>
+      <div><dt>12 ready questions</dt><dd>when comparing the example's two revisions, one per piece of evidence, the integrity of the measurement first.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section id="catches">
+  <div class="wrap">
+    <p class="kick">What it catches</p>
+    <h2>A wrong schedule gives <em>no error message.</em></h2>
+    <p class="intro">Every report image here is real output for the fictitious example, a road project delivered twice, one month apart (rev03 and rev04). The labels are in English and the activity names stay in Portuguese, as in the schedule.</p>
+    <figure class="shot">
+      <img src="img/en/hero.png" alt="The top of a comparison report: four warnings and the project finish 21 days later" width="2000" height="1914" loading="lazy" decoding="async">
+      <figcaption>Real output: two revisions of the fictitious road project, compared. Everything in it is invented.</figcaption>
+    </figure>
+    <article class="find">
+      <div class="txt"><span class="n">1</span><h3>A record rewritten after the fact.</h3><p>The actual finish of row 29 was 05/06/2026 in rev03 and reads 01/06/2026 in rev04, exactly its baseline date. Row 119, at 100%, was removed, and 473,600 of earned value went with it. Neither file says so.</p></div>
+      <img src="img/en/past-rewritten.png" alt="Past rewritten: one actual finish changed and one activity with progress removed" width="2000" height="1414" loading="lazy" decoding="async">
+    </article>
+    <article class="find">
+      <div class="txt"><span class="n">2</span><h3>Progress that is not all progress.</h3><p>The headline moved 4.57 points, from 23.44% to 28.01%. Activity by activity, the work adds up to 4.90. The 0.33 points in between are not work done, and the report names each part.</p></div>
+      <img src="img/en/progress.png" alt="Progress: previous, current, movement, explained and residue" width="2000" height="1746" loading="lazy" decoding="async">
+    </article>
+    <article class="find">
+      <div class="txt"><span class="n">3</span><h3>A milestone one day from its deadline.</h3><p>All 7 milestones with a deadline still finish within it, the tightest by 1 day. With the slippage that 80% of the activities have not exceeded (7 days), 3 of them pass the deadline. The report also says where each delay starts.</p></div>
+      <img src="img/en/deadlines.png" alt="Deadlines and milestones: each milestone against its deadline" width="2360" height="1750" loading="lazy" decoding="async">
+    </article>
+    <article class="find">
+      <div class="txt"><span class="n">4</span><h3>And at the end, what to ask the contractor.</h3><p>In the example that is 12 questions, each one citing its row, the integrity of the measurement first.</p></div>
+      <img class="tall" src="img/en/ask.png" alt="What to ask the contractor: 12 questions in three groups" width="1560" height="2028" loading="lazy" decoding="async">
+    </article>
+  </div>
+</section>
+
+<section id="how" class="band">
+  <div class="wrap">
+    <p class="kick">How it works</p>
+    <h2>An engine that measures. <em>Three ways to use it.</em></h2>
+    <figure class="shot">
+      <img src="img/en/how-it-works.png" alt="How it works: the engine measures on your computer and sends nothing. You reach it by talking to an AI agent through the skill, by clicking a button inside MS Project, or with no AI at all." width="2560" height="1280" loading="lazy" decoding="async">
+    </figure>
+    <div class="cards three">
+      <article class="card way"><span class="n">A</span><h3>Through the agent</h3><p>To talk to an AI and let it do everything. You say, for example: <q>analyse Rev04.mpp</q>.</p></article>
+      <article class="card way"><span class="n">B</span><h3>The Cronoaudit tab</h3><p>A button, inside Project itself, on Windows. You click <strong>Relatório</strong> or <strong>Analisar</strong>.</p></article>
+      <article class="card way"><span class="n">C</span><h3>The engine</h3><p>No AI, or a computer with no agent. One command, on the exported XML.</p></article>
+    </div>
+    <p class="note">In all three, the engine runs on your computer and sends nothing. What changes is who talks to you.</p>
+  </div>
+</section>
+
+<section id="privacy">
+  <div class="wrap">
+    <p class="kick">Privacy</p>
+    <h2>The engine runs on your computer <em>and sends nothing.</em></h2>
+    <div class="cards three">
+      <article class="card"><h3>Local by design</h3><p>The engine needs only Python. It reads the XML that MS Project itself exports and writes a report that opens in your browser, with or without a network.</p></article>
+      <article class="card accent"><h3>Secret mode</h3><p>To talk to an agent without the names, values and dates leaving your computer. cronoaudit analyses the real file locally and writes a coded copy in a separate folder: names become codes, dates become day counts and money is multiplied by a secret factor. The agent reads only the copy. The final report is decoded on your computer, with the real names.</p></article>
+      <article class="card"><h3>What it does not do</h3><p>What an agent reads goes to its provider. The codes do not make a schedule anonymous: structure and durations stay readable. None of this replaces your company's policy.</p></article>
+    </div>
+    <p class="note mono">Tested: Claude Code end to end; GitHub Copilot CLI also tested in secret mode; Codex per the provider's docs.</p>
+    <p class="note">This site follows the same rule: no tracking, no analytics, no cookies and no third-party requests. Even the fonts are served from here.</p>
+  </div>
+</section>
+
+<section id="install" class="band">
+  <div class="wrap">
+    <p class="kick">Install</p>
+    <h2>One command, for every agent <em>and for use without one.</em></h2>
+    <div class="cmds">
+      <div class="cmd">
+        <div class="cmdbar"><span>Windows (PowerShell)</span><button type="button" class="copy" data-copy="cmd-win" data-done="Copied">Copy</button></div>
+        <pre tabindex="0"><code id="cmd-win">irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex</code></pre>
+      </div>
+      <div class="cmd">
+        <div class="cmdbar"><span>macOS / Linux (Terminal)</span><button type="button" class="copy" data-copy="cmd-unix" data-done="Copied">Copy</button></div>
+        <pre tabindex="0"><code id="cmd-unix">curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash</code></pre>
+      </div>
+    </div>
+    <p class="note">The installer asks only what is your choice: whether you want the Cronoaudit tab, when it finds MS Project, and whether you want to see the example now.</p>
+    <div class="cards two">
+      <article class="card accent">
+        <h3>Try it on the fictitious example first</h3>
+        <p>Say yes to the example and the report opens in your browser. To see it again later:</p>
+        <div class="cmd small">
+          <div class="cmdbar"><span>--example</span><button type="button" class="copy" data-copy="cmd-example" data-done="Copied">Copy</button></div>
+          <pre tabindex="0"><code id="cmd-example">python3 ~/.claude/skills/cronoaudit/scripts/review.py --example</code></pre>
+        </div>
+        <p class="fine">On Windows, use the line the installer printed at the end, the one ending in <code>--example</code>.</p>
+      </article>
+      <article class="card">
+        <h3>Then ask</h3>
+        <p>Open the agent you prefer, or the one your company allows, in the folder of your schedule and say what you want:</p>
+        <ul class="say"><li>Analyse Rev04.mpp.</li><li>Compare Rev03.mpp with Rev04.mpp and tell me what changed.</li><li>Which milestones are at risk of missing their deadline?</li></ul>
+      </article>
+    </div>
+    <figure class="shot">
+      <img src="img/en/install.png" alt="Installer output: where the skill was installed, the example reports and how to use it" width="1992" height="1436" loading="lazy" decoding="async">
+      <figcaption>Real installer output on macOS, run from a local copy of the repository with the example accepted. Paths shortened to ~.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="docs">
+  <div class="wrap">
+    <p class="kick">Read more</p>
+    <h2>The guide and <em>the manual.</em></h2>
+    <div class="cards three">
+      <article class="card">
+        <h3>Illustrated guide</h3><p>23 pages: revision 4 of the fictitious motorway told from start to finish, with the terminal, the report, secret mode side by side and a one-page cheat sheet.</p>
+        <p class="links"><a href="guia/guia-en.pdf">PDF in English</a><a href="guia/guia-pt.pdf">PDF in Portuguese</a></p>
+      </article>
+      <article class="card">
+        <h3>Manual</h3><p>Seventeen chapters, for version 1.0: concepts, installation, the three paths, the Project tab, free and secret modes, the report section by section and how to reproduce every figure.</p>
+        <p class="links"><a href="manual/manual-en.pdf">PDF in English</a><a href="manual/manual-pt.pdf">PDF in Portuguese</a></p>
+      </article>
+      <article class="card">
+        <h3>The fictitious example</h3><p>Two deliveries of an invented road project, and the list of what was planted in them.</p>
+        <p class="links"><a href="https://github.com/Holiv/cronoaudit/tree/main/examples">Open the examples folder on GitHub</a><a href="https://github.com/Holiv/cronoaudit">Source code and README on GitHub</a></p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="book" class="book">
+  <div class="wrap">
+    <p class="kick">The book · in production</p>
+    <h2>Reviewing a schedule delivery, <em>from the file to the meeting.</em></h2>
+    <div class="bookgrid">
+      <div>
+        <p class="lede">The tool finds. The book is the method behind it: how to review the schedule a contractor delivers.</p>
+        <ul class="toc"><li>Where to look, and in what order.</li><li>What each finding usually means on site.</li><li>What to ask the contractor.</li><li>How to take it to management.</li></ul>
+        <p>It is built on the fictitious motorway that ships with cronoaudit: real patterns, invented data. It is being written now, in Portuguese first, then in English.</p>
+      </div>
+      <aside class="cta">
+        <h3>Want to know when it's out?</h3>
+        <a class="btn primary" href="https://www.linkedin.com/in/helton-so/" rel="noopener">Follow or message me on LinkedIn</a>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section id="author">
+  <div class="wrap">
+    <p class="kick">Author</p>
+    <h2>Helton Oliveira</h2>
+    <p class="intro">Civil engineer and planning engineer on highway projects in Brazil. cronoaudit is the review method written down as an open-source tool.</p>
+    <p class="links row"><a href="https://www.linkedin.com/in/helton-so/" rel="noopener">LinkedIn</a><a href="https://holiv.github.io/project-management-portfolio/">Portfolio</a><a href="https://github.com/Holiv/cronoaudit">GitHub repository</a></p>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p class="wm">crono<em>audit</em></p>
+    <p class="meta"><span>Apache 2.0</span><span>version 1.0.0</span><span>© 2026 Helton da Silva de Oliveira</span></p>
+    <p class="fine">This site follows the same rule: no tracking, no analytics, no cookies and no third-party requests. Even the fonts are served from here.</p>
+    <p class="fine">Fonts: Fraunces, Source Sans 3 and Source Code Pro, under the SIL Open Font License. <a href="assets/fonts/OFL-Fraunces.txt">Fraunces</a> · <a href="assets/fonts/OFL-SourceSans3.txt">Source Sans 3</a> · <a href="assets/fonts/OFL-SourceCodePro.txt">Source Code Pro</a></p>
+  </div>
+</footer>
+
+<script src="assets/site.js" defer></script>
+</body>
+</html>
