@@ -7,18 +7,84 @@
 ![Windows · macOS · Linux](https://img.shields.io/badge/Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-runs-2ea043)
 ![data](https://img.shields.io/badge/engine-no%20network-2ea043)
 
-**cronoaudit reviews construction and infrastructure schedules and tells you what deserves
-attention.** It looks for the failures that produce a believable wrong number rather than an
-error message:
+**cronoaudit reviews construction and infrastructure schedules made in MS Project and tells you
+what deserves attention.** It looks for the failures that produce a believable wrong number rather
+than an error message:
 - a milestone one day from its deadline;
 - an actual date rewritten after the fact;
 - an activity with progress that vanished from one revision to the next;
 - an activity that started before its predecessor finished.
 
-Use it the way you prefer: talking to an AI agent, clicking a button inside MS Project, or with
-no AI at all.
+It is an open-source Agent Skill with a local Python engine. Use it the way you prefer: talking to
+an AI agent, clicking a button inside MS Project, or with no AI at all. The engine runs on your
+computer and sends nothing.
 
-![Deadlines and milestones: each milestone against its deadline](docs/img/prazo.png)
+![The top of a comparison report: four warnings and the project finish 21 days later](docs/img/en/hero.png)
+
+*Real output: two revisions of the fictitious road project in [`examples/`](examples/README.md),
+compared. Everything in it is invented.*
+
+## What it catches
+
+Every report image in this guide is real output for the fictitious example, a road project delivered
+twice, one month apart (rev03 and rev04). The report follows the schedule's language. These were
+generated with `--lang en`, so the labels are in English and the activity names stay in Portuguese.
+
+**A record rewritten after the fact.** The actual finish of row 29 was 05/06/2026 in rev03 and
+reads 01/06/2026 in rev04, exactly its baseline date. Row 119, at 100%, was removed, and 473,600 of
+earned value went with it. Neither file says so.
+
+![Past rewritten: one actual finish changed and one activity with progress removed](docs/img/en/past-rewritten.png)
+
+**Progress that is not all progress.** The headline moved 4.57 points, from 23.44% to 28.01%.
+Activity by activity, the work adds up to 4.90. The 0.33 points in between are not work done, and
+the report names each part.
+
+![Progress: previous, current, movement, explained and residue](docs/img/en/progress.png)
+
+**A milestone one day from its deadline.** All 7 milestones with a deadline still finish within
+it, the tightest by 1 day. With the slippage that 80% of the activities have not exceeded (7 days),
+3 of them pass the deadline. The report also says where each delay starts.
+
+![Deadlines and milestones: each milestone against its deadline](docs/img/en/deadlines.png)
+
+## Quick start
+
+**1. Install.** One command, for every agent and for use without one.
+
+Windows (PowerShell):
+
+```
+irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex
+```
+
+macOS / Linux (Terminal):
+
+```
+curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash
+```
+
+The installer asks only what is your choice: whether you want the Cronoaudit tab, when it finds
+MS Project, and whether you want to see the example now. Say yes to the example and the report
+above opens in your browser.
+
+![Installer output: where the skill was installed, the example reports and how to use it](docs/img/en/install.png)
+
+*Real installer output on macOS, run from a local copy of this repository with the example
+accepted. Paths shortened to `~`.*
+
+**2. Ask.** Open the agent you prefer, or the one your company allows, in the folder of your
+schedule and say what you want:
+- *Analyse Rev04.mpp.*
+- *Compare Rev03.mpp with Rev04.mpp and tell me what changed.*
+- *Which milestones are at risk of missing their deadline?*
+
+On Windows with MS Project the agent takes the `.mpp` directly. Elsewhere, save the schedule as
+XML first (**File → Save As → XML Format**).
+
+**No agent?** Use the buttons of the Cronoaudit tab in Project, or one command on the exported
+XML. See [Choose how to use it](#choose-how-to-use-it). The details of each step, and how to
+install an agent, are in [Install](#install).
 
 ## Why use it
 
@@ -32,23 +98,28 @@ no AI at all.
 
 ## What you get
 
-A report that opens in the browser, in the schedule's own language (the screenshots are of a
-Portuguese schedule). Every section opens with a short reading written by rules.
+A report that opens in the browser, in the schedule's own language. Every section opens with a
+short reading written by rules.
 
 **One revision:** deadlines first (each milestone against its deadline, with the margin and where
 its delay starts); nine integrity checks; the S-curve from the file's own data; productivity by
 resource; fourteen network-quality metrics; Earned Schedule and the next weeks; forensics of where
 each milestone's delay entered.
 
-![Report of one revision](docs/img/review-top.png)
+![Report of one revision: progress, the reading and the nine checks](docs/img/en/review-top.png)
+
+The S-curve is drawn from the file's own time-phased data, and the reading says what the other
+earned-value method would report:
+
+![S-curve: planned and earned, SPI 0.902](docs/img/en/s-curve.png)
 
 **Two revisions compared, in the order you read them:** 1. deadlines; 2. whether the measurement
 can be trusted; 3. what the plan changed; 4. progress; 5. float and critical path; 6. network
-quality; and at the end, **what to ask the contractor**.
+quality; and at the end, **what to ask the contractor**. In the example that is 12 questions, each
+one citing its row:
 
-<p>
-<img src="docs/img/cycle-top.png" alt="Two revisions compared" width="49%">
-<img src="docs/img/cobrar.png" alt="What to ask the contractor" width="49%">
+<p align="center">
+<img src="docs/img/en/ask.png" alt="What to ask the contractor: 12 questions in three groups" width="640">
 </p>
 
 ## Choose how to use it
@@ -89,7 +160,8 @@ What to say, for example:
 Use the agent you prefer, or the one your company allows on your computer. This guide covers
 three: Claude Code, GitHub Copilot and Codex (OpenAI). See [Install](#install).
 
-**What a conversation looks like** (a test on the fictitious road project, 22/11/2026):
+**What a conversation looks like.** This is an example, from a test on the fictitious road project
+on 22/11/2026. The numbers are the engine's:
 
 > **You:** Compare rev03 and rev04 and tell me what changed, by topic.
 >
@@ -296,7 +368,7 @@ the coded copy, and the guard was checked by calling it directly, without the ag
   carries tasks, links, the eleven baselines, calendars and custom fields. When you pass a `.mpp`,
   cronoaudit asks the installed Project to do that export. The whole process:
   [`skills/cronoaudit/references/usage.md`](skills/cronoaudit/references/usage.md).
-- **Manual**, seventeen chapters, for version 0.9.4: [English](docs/manual/manual-en.pdf),
+- **Manual**, seventeen chapters, for version 1.0: [English](docs/manual/manual-en.pdf),
   [Português](docs/manual/manual-pt.pdf). Concepts, installation, the three paths, the Project tab,
   free and secret modes, the report section by section and how to reproduce every figure.
 - **The fictitious example**, to try first: [`examples/`](examples/). The figures in this guide come
