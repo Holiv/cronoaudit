@@ -25,12 +25,8 @@ computer and sends nothing.
 <img src="docs/img/en/demo.gif" alt="Demo: one command compares two revisions of the fictitious example in a terminal, then the report opens and scrolls from the warnings to the questions for the contractor" width="640">
 </p>
 
-*The real terminal output and the real report for the fictitious example, replayed as an animation.*
-
-![The top of a comparison report: four warnings and the project finish 21 days later](docs/img/en/hero.png)
-
-*Real output: two revisions of the fictitious road project in [`examples/`](examples/README.md),
-compared. Everything in it is invented.*
+*The real terminal output and the real report for two revisions of the fictitious road project in
+[`examples/`](examples/README.md), replayed as an animation. Everything in it is invented.*
 
 ## What it catches
 

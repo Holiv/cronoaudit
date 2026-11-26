@@ -25,12 +25,8 @@ nenhuma. O motor roda no seu computador e não envia nada.
 <img src="docs/img/pt/demo.gif" alt="Demonstração: um comando compara duas revisões do exemplo fictício no terminal, depois o relatório abre e rola dos alertas até as cobranças para a contratada" width="640">
 </p>
 
-*A saída real do terminal e o relatório real do exemplo fictício, reproduzidos como animação.*
-
-![O topo de um relatório de comparação: quatro alertas e o término do projeto 21 dias depois](docs/img/pt/hero.png)
-
-*Saída real: duas revisões da rodovia fictícia de [`examples/`](examples/LEIA-ME.md), comparadas.
-Tudo nela é inventado.*
+*A saída real do terminal e o relatório real de duas revisões da rodovia fictícia de
+[`examples/`](examples/LEIA-ME.md), reproduzidos como animação. Tudo nela é inventado.*
 
 ## O que ela pega
 
