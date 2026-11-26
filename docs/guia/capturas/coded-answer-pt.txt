@@ -1,0 +1,4 @@
+O término do projeto foi de d+1039 para d+1060: 21 dias corridos mais tarde.
+1 das datas reais alteradas passou a coincidir exatamente com a linha de base (linha 29, T·840b1b, d+0553 → d+0549): o registro foi ajustado ao plano; peça a evidência.
+O atraso da linha 9 nasce na linha 148, T·600124 (+11 dias contra a linha de base).
+Justificar o aumento de duração da linha 157, T·8e14aa: 12 → 20 dias úteis.

@@ -1,0 +1,109 @@
+{
+  "lang": "en",
+  "readings": {
+    "movement": [
+      "Weighted progress went from 23.44% to 28.01%: 4.57 points. Per-activity progress adds up to 4.90, more than the movement: 0.33 points were taken off by something other than work done.",
+      "The difference is named: −0.27 points from the earned value erased with a removed activity (row 119 of the previous delivery, T·dce2d4, at 100%: ¤4,473,458); −0.06 points from the budget at completion, which went from ¤1,648,552,908 to ¤1,652,920,575 (+¤8,841,126 inserted, −¤4,473,458 removed)."
+    ],
+    "trend": [
+      "12 activities moved their dates with actual dates behind them and 89 with none; the baseline itself moved on 1."
+    ],
+    "scope": [
+      "1 activity inserted and 1 removed."
+    ],
+    "c1": [
+      "All 7 milestones with a deadline finish within it in the current schedule. The smallest margin is row 9, T·e0c6ca: 1 day.",
+      "With the slippage that 80% of the activities have not exceeded (7 days), 3 more milestones pass the deadline: rows 7, 8, 9.",
+      "The delay of row 9 starts at row 148, T·d2d837 (+11 days against the baseline).",
+      "The project finish moved from D+1064 to D+1085: 21 calendar days later.",
+      "What holds the current date is row 174, T·8e69ad, finishing on D+1085. This is an approximation: the last-finishing open activity, walked back through the predecessor that lands latest; the network was not recalculated.",
+      "The same activity held the date in the previous delivery."
+    ],
+    "c2": [
+      "No activity entered or left the critical path. Critical now: 18, against 18 before.",
+      "71 unfinished activities lost a working day of float or more; the largest loss is 25.0 days, on row 63.",
+      "Read by the tool's own Critical flag."
+    ],
+    "c3": [
+      "1 link added, 1 removed, 0 with the lag changed and 0 with the type changed, between activities present in both deliveries.",
+      "A further 3 links hang on inserted or removed activities: scope, not edited logic.",
+      "Constraints on unfinished activities: 1 added, 0 changed and 0 removed."
+    ],
+    "c4": [
+      "1 activity with no actual start in either delivery had their duration edited: 1 longer and 0 shorter, a net 8.0 working days. Nothing was executed on them; this is the plan rewritten."
+    ],
+    "c5": [
+      "The past was rewritten on 2 activities: 0 actual starts and 1 actual finish changed, 0 percents complete went down, and 1 activity with recorded progress was removed.",
+      "1 activity with recorded progress was removed from the schedule altogether, taking ¤4,473,458 of earned value with it; the largest is row 119 of the previous delivery, T·dce2d4, at 100%.",
+      "1 of the changed actual dates now falls exactly on the baseline date (row 29, T·a6623d, D+0578 → D+0574): the record was made to agree with the plan; ask for the evidence behind it.",
+      "Every figure the previous cycle reported on these activities rested on a record that no longer exists. Ask for each correction to be stated."
+    ],
+    "c6": [
+      "Of the 13 metrics computable in both deliveries, 4 worsened, 3 improved and 6 did not move.",
+      "Went from fail to pass: Q6 High float.",
+      "Baseline execution index: 0.80 before, 0.65 now."
+    ]
+  },
+  "demands": [
+    {
+      "group": "Integrity of the measurement",
+      "id": 29,
+      "text": "Justify the change to the actual finish of row 29, T·a6623d: D+0578 → D+0574, which now equals the baseline date."
+    },
+    {
+      "group": "Integrity of the measurement",
+      "id": 119,
+      "text": "Explain the removal of row 119 of the previous delivery, T·dce2d4, which was at 100%."
+    },
+    {
+      "group": "Integrity of the measurement",
+      "id": 132,
+      "text": "Show the approval of the baseline change on row 132, T·ecd24e (baseline finish +28 days)."
+    },
+    {
+      "group": "Replanning",
+      "id": 157,
+      "text": "Justify the longer duration of row 157, T·3f8f8e: 12 → 20 working days."
+    },
+    {
+      "group": "Replanning",
+      "id": 63,
+      "text": "Justify the 53-day postponement of the finish of row 63, T·bd3c5b, moved by the plan with no progress recorded."
+    },
+    {
+      "group": "Replanning",
+      "id": 66,
+      "text": "Justify the 25-day postponement of the finish of row 66, T·ab453e, moved by the plan with no progress recorded."
+    },
+    {
+      "group": "Replanning",
+      "id": 32,
+      "text": "Justify the 15-day postponement of the finish of row 32, T·6a4b5f, moved by the plan with no progress recorded."
+    },
+    {
+      "group": "Replanning",
+      "id": 38,
+      "text": "Justify the 15-day postponement of the finish of row 38, T·cf2fcc, moved by the plan with no progress recorded."
+    },
+    {
+      "group": "Replanning",
+      "id": 57,
+      "text": "Justify the new row 57, T·00cfe8, and where its budget came from."
+    },
+    {
+      "group": "Logic",
+      "id": 127,
+      "text": "Justify removing the link 123 → 127, T·ba85d6."
+    },
+    {
+      "group": "Logic",
+      "id": 63,
+      "text": "Justify the Start No Earlier Than constraint added on row 63, T·bd3c5b."
+    },
+    {
+      "group": "Logic",
+      "id": 106,
+      "text": "Confirm the new link 94 → 106, T·303a68."
+    }
+  ]
+}

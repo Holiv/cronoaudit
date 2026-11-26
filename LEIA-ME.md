@@ -7,17 +7,83 @@
 ![Windows · macOS · Linux](https://img.shields.io/badge/Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-roda-2ea043)
 ![dados](https://img.shields.io/badge/motor-n%C3%A3o%20usa%20a%20rede-2ea043)
 
-**A cronoaudit revisa cronogramas de obras e de infraestrutura e diz o que merece atenção.** Ela
-procura as falhas que produzem um número errado com cara de certo, e não uma mensagem de erro:
+**A cronoaudit revisa cronogramas de obras e de infraestrutura feitos no MS Project e diz o que
+merece atenção.** Ela procura as falhas que produzem um número errado com cara de certo, e não uma
+mensagem de erro:
 - um marco a um dia da data limite;
 - uma data real reescrita depois do fato;
 - uma atividade com avanço que sumiu de uma revisão para a outra;
 - uma atividade que começou antes de a predecessora terminar.
 
-Você usa do jeito que preferir: conversando com um agente de IA, clicando num botão dentro do MS
-Project, ou rodando sem IA nenhuma.
+É uma Agent Skill de código aberto, com um motor local em Python. Você usa do jeito que preferir:
+conversando com um agente de IA, clicando num botão dentro do MS Project, ou rodando sem IA
+nenhuma. O motor roda no seu computador e não envia nada.
 
-![Prazo e marcos: cada marco contra a sua data limite](docs/img/prazo.png)
+![O topo de um relatório de comparação: quatro alertas e o término do projeto 21 dias depois](docs/img/pt/hero.png)
+
+*Saída real: duas revisões da rodovia fictícia de [`examples/`](examples/LEIA-ME.md), comparadas.
+Tudo nela é inventado.*
+
+## O que ela pega
+
+Todas as imagens de relatório deste guia são saída real do exemplo fictício, uma rodovia entregue duas
+vezes, com um mês de intervalo (rev03 e rev04). O relatório sai no idioma do cronograma.
+
+**Um registro reescrito depois do fato.** O término real da linha 29 era 05/06/2026 na rev03 e
+aparece como 01/06/2026 na rev04, exatamente a data da linha de base. A linha 119, a 100%, foi
+removida, e 473.600 de valor agregado foram junto. Nenhum dos dois arquivos avisa.
+
+![Passado reescrito: um término real alterado e uma atividade com avanço removida](docs/img/pt/past-rewritten.png)
+
+**Avanço que não é só avanço.** O número de cabeçalho andou 4,57 pontos, de 23,44% para 28,01%.
+Atividade por atividade, o trabalho soma 4,90. Os 0,33 pontos de diferença não são trabalho feito,
+e o relatório dá nome a cada parte.
+
+![Avanço: anterior, atual, movimento, explicado e resíduo](docs/img/pt/progress.png)
+
+**Um marco a um dia da data limite.** Os 7 marcos com data limite ainda terminam dentro dela, o
+mais apertado com 1 dia de margem. Com o escorregamento que 80% das atividades não ultrapassaram
+(7 dias), 3 deles passam da data limite. O relatório também diz onde nasce cada atraso.
+
+![Prazo e marcos: cada marco contra a sua data limite](docs/img/pt/deadlines.png)
+
+## Começo rápido
+
+**1. Instale.** Um comando, para todos os agentes e para o uso sem agente.
+
+Windows (PowerShell):
+
+```
+irm https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.ps1 | iex
+```
+
+macOS / Linux (Terminal):
+
+```
+curl -fsSL https://raw.githubusercontent.com/Holiv/cronoaudit/main/install.sh | bash
+```
+
+O instalador pergunta só o que é escolha sua: se você quer a aba Cronoaudit, quando ele encontra o
+MS Project, e se quer ver o exemplo agora. Responda sim ao exemplo e o relatório acima abre no seu
+navegador.
+
+![Saída do instalador: onde a skill foi instalada, os relatórios do exemplo e como usar](docs/img/pt/install.png)
+
+*Saída real do instalador no macOS, rodado de uma cópia local deste repositório, com o exemplo
+aceito. Caminhos abreviados para `~`.*
+
+**2. Peça.** Abra o agente de sua preferência, ou o que a sua empresa permite, na pasta do
+cronograma e diga o que você quer:
+- *Analise o Rev04.mpp.*
+- *Compare o Rev03.mpp com o Rev04.mpp e me diga o que mudou.*
+- *Quais marcos correm risco de passar da data limite?*
+
+No Windows com o MS Project, o agente recebe o `.mpp` direto. Nos outros casos, salve antes o
+cronograma como XML (**Arquivo → Salvar como → Formato XML**).
+
+**Sem agente?** Use os botões da aba Cronoaudit no Project, ou um comando sobre o XML exportado.
+Veja [Escolha como usar](#escolha-como-usar). Os detalhes de cada passo, e como instalar um
+agente, estão em [Instalar](#instalar).
 
 ## Por que usar
 
@@ -39,15 +105,19 @@ atraso); nove verificações de integridade; a curva S com os dados do próprio 
 produtividade por recurso; catorze métricas de qualidade da rede; Earned Schedule e as próximas
 semanas; a forense de onde entrou o atraso de cada marco.
 
-![Relatório de uma revisão](docs/img/review-top.png)
+![Relatório de uma revisão: o avanço, a leitura e as nove verificações](docs/img/pt/review-top.png)
+
+A curva S é desenhada com os dados distribuídos no tempo do próprio arquivo, e a leitura diz o que
+o outro método de valor agregado informaria:
+
+![Curva S: previsto e realizado, IDP 0,902](docs/img/pt/s-curve.png)
 
 **Duas revisões comparadas, na ordem em que se lê:** 1. prazo; 2. se a medição é confiável;
 3. o que o plano mudou; 4. avanço; 5. folga e caminho crítico; 6. qualidade da rede; e, no fim,
-**o que cobrar da contratada**.
+**o que cobrar da contratada**. No exemplo são 12 cobranças, cada uma citando a sua linha:
 
-<p>
-<img src="docs/img/cycle-top.png" alt="Comparação de duas revisões" width="49%">
-<img src="docs/img/cobrar.png" alt="O que cobrar da contratada" width="49%">
+<p align="center">
+<img src="docs/img/pt/ask.png" alt="O que cobrar da contratada: 12 cobranças em três grupos" width="640">
 </p>
 
 ## Escolha como usar
@@ -89,7 +159,8 @@ Use o agente de sua preferência, ou o que a sua empresa permite no seu computad
 mostra três: Claude Code, GitHub Copilot e Codex (OpenAI). Como instalar está em
 [Instalar](#instalar).
 
-**Como é uma conversa** (teste com a rodovia fictícia, em 22/11/2026):
+**Como é uma conversa.** Isto é um exemplo, de um teste com a rodovia fictícia em 22/11/2026. Os
+números são os do motor:
 
 > **Você:** Compare a rev03 com a rev04 e me diga o que mudou, por assunto.
 >
@@ -297,7 +368,10 @@ cópia codificada, e a trava foi conferida chamando-a direto, sem o agente.
   tarefas, vínculos, as onze linhas de base, calendários e campos personalizados. Quando você passa
   um `.mpp`, a cronoaudit pede ao Project instalado para fazer essa exportação. O processo completo,
   em inglês: [`skills/cronoaudit/references/usage.md`](skills/cronoaudit/references/usage.md).
-- **Manual**, dezessete capítulos, da versão 0.9.4: [português](docs/manual/manual-pt.pdf),
+- **Guia ilustrado**, 23 páginas: a revisão 4 da rodovia fictícia contada do começo ao fim, com o
+  terminal, o relatório, o modo secreto lado a lado e uma folha de consulta.
+  [Português](docs/guia/guia-pt.pdf), [inglês](docs/guia/guia-en.pdf).
+- **Manual**, dezessete capítulos, da versão 1.0: [português](docs/manual/manual-pt.pdf),
   [inglês](docs/manual/manual-en.pdf). Conceitos, instalação, os três caminhos, a aba do Project,
   os modos livre e secreto, o relatório seção por seção e como reproduzir cada número.
 - **O exemplo fictício**, para experimentar primeiro: [`examples/`](examples/LEIA-ME.md). Os

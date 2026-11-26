@@ -1,0 +1,722 @@
+{
+  "status_date": "2026-10-30T17:00:00",
+  "population": {
+    "leaves": 142,
+    "incomplete": 103,
+    "links": 220,
+    "critical_incomplete": 18
+  },
+  "metrics": [
+    {
+      "code": "Q1",
+      "count": 4,
+      "population": 96,
+      "share_pct": 4.17,
+      "threshold_pct": 5.0,
+      "status": "pass",
+      "direction": "max",
+      "items": [
+        {
+          "id": 77,
+          "uid": 76,
+          "name": "Tachas e dispositivos auxiliares — Seg. 2",
+          "missing": "sucessora",
+          "finish": "24/05/2027"
+        },
+        {
+          "id": 89,
+          "uid": 88,
+          "name": "Proteção vegetal de taludes (hidrossemeadura) — Seg. 3",
+          "missing": "sucessora",
+          "finish": "10/05/2027"
+        },
+        {
+          "id": 136,
+          "uid": 136,
+          "name": "Sinalização vertical e pórticos — Seg. 4",
+          "missing": "sucessora",
+          "finish": "02/07/2027"
+        },
+        {
+          "id": 170,
+          "uid": 170,
+          "name": "Recuperação ambiental de jazidas e caminhos de serviço",
+          "missing": "sucessora",
+          "finish": "04/02/2027"
+        }
+      ],
+      "title": "Lógica ausente",
+      "description": "Atividades incompletas sem predecessora ou sem sucessora. Ponta aberta é atraso que não propaga.",
+      "item_columns": [
+        {
+          "key": "id",
+          "label": "Linha"
+        },
+        {
+          "key": "name",
+          "label": "Atividade"
+        },
+        {
+          "key": "missing",
+          "label": "Falta"
+        },
+        {
+          "key": "finish",
+          "label": "Término"
+        }
+      ]
+    },
+    {
+      "code": "Q2",
+      "count": 0,
+      "population": 220,
+      "share_pct": 0.0,
+      "threshold_pct": 0.0,
+      "status": "pass",
+      "direction": "max",
+      "items": [],
+      "title": "Leads",
+      "description": "Vínculos com lag negativo. Lead esconde sobreposição que a lógica deveria modelar explicitamente.",
+      "item_columns": []
+    },
+    {
+      "code": "Q3",
+      "count": 10,
+      "population": 220,
+      "share_pct": 4.55,
+      "threshold_pct": 5.0,
+      "status": "pass",
+      "direction": "max",
+      "items": [
+        {
+          "id": 24,
+          "uid": 24,
+          "name": "Escavação em material de 2ª e 3ª categoria — Seg. 1",
+          "predecessor_id": 23,
+          "predecessor_name": "Escavação, carga e transporte — material de 1ª categoria — Seg. 1",
+          "link_type": "II",
+          "lag_days": 10.0
+        },
+        {
+          "id": 35,
+          "uid": 35,
+          "name": "Base de brita graduada simples (BGS) — Seg. 1",
+          "predecessor_id": 34,
+          "predecessor_name": "Sub-base granular — Seg. 1",
+          "link_type": "II",
+          "lag_days": 6.0
+        },
+        {
+          "id": 54,
+          "uid": 54,
+          "name": "Escavação em material de 2ª e 3ª categoria — Seg. 2",
+          "predecessor_id": 53,
+          "predecessor_name": "Escavação, carga e transporte — material de 1ª categoria — Seg. 2",
+          "link_type": "II",
+          "lag_days": 10.0
+        },
+        {
+          "id": 67,
+          "uid": 66,
+          "name": "Base de brita graduada simples (BGS) — Seg. 2",
+          "predecessor_id": 66,
+          "predecessor_name": "Sub-base granular — Seg. 2",
+          "link_type": "II",
+          "lag_days": 6.0
+        },
+        {
+          "id": 86,
+          "uid": 85,
+          "name": "Escavação em material de 2ª e 3ª categoria — Seg. 3",
+          "predecessor_id": 85,
+          "predecessor_name": "Escavação, carga e transporte — material de 1ª categoria — Seg. 3",
+          "link_type": "II",
+          "lag_days": 10.0
+        },
+        {
+          "id": 97,
+          "uid": 96,
+          "name": "Base de brita graduada simples (BGS) — Seg. 3",
+          "predecessor_id": 96,
+          "predecessor_name": "Sub-base granular — Seg. 3",
+          "link_type": "II",
+          "lag_days": 6.0
+        },
+        {
+          "id": 116,
+          "uid": 115,
+          "name": "Escavação em material de 2ª e 3ª categoria — Seg. 4",
+          "predecessor_id": 115,
+          "predecessor_name": "Escavação, carga e transporte — material de 1ª categoria — Seg. 4",
+          "link_type": "II",
+          "lag_days": 10.0
+        },
+        {
+          "id": 128,
+          "uid": 128,
+          "name": "Base de brita graduada simples (BGS) — Seg. 4",
+          "predecessor_id": 127,
+          "predecessor_name": "Sub-base granular — Seg. 4",
+          "link_type": "II",
+          "lag_days": 6.0
+        },
+        {
+          "id": 153,
+          "uid": 153,
+          "name": "Encontros e alas",
+          "predecessor_id": 151,
+          "predecessor_name": "Pilares",
+          "link_type": "II",
+          "lag_days": 10.0
+        },
+        {
+          "id": 160,
+          "uid": 160,
+          "name": "Lajes de transição",
+          "predecessor_id": 164,
+          "predecessor_name": "Aterros de acesso aos encontros",
+          "link_type": "TT",
+          "lag_days": 5.0
+        }
+      ],
+      "title": "Lags",
+      "description": "Vínculos com lag positivo. Lag é tempo sem dono; uma atividade de espera é honesta sobre isso.",
+      "item_columns": [
+        {
+          "key": "id",
+          "label": "Linha"
+        },
+        {
+          "key": "name",
+          "label": "Atividade"
+        },
+        {
+          "key": "predecessor_id",
+          "label": "Linha pred."
+        },
+        {
+          "key": "predecessor_name",
+          "label": "Predecessora"
+        },
+        {
+          "key": "link_type",
+          "label": "Vínculo"
+        },
+        {
+          "key": "lag_days",
+          "label": "Lag (dias úteis)"
+        }
+      ]
+    },
+    {
+      "code": "Q4",
+      "count": 16,
+      "population": 220,
+      "share_pct": 7.27,
+      "threshold_pct": 10.0,
+      "status": "pass",
+      "direction": "max",
+      "items": [
+        {
+          "id": 22,
+          "uid": 22,
+          "name": "Desmatamento, destocamento e limpeza — Seg. 1",
+          "predecessor_id": 15,
+          "predecessor_name": "Levantamento topográfico e locação do eixo",
+          "link_type": "II",
+          "lag_days": 0.0
+        },
+        {
+          "id": 24,
+          "uid": 24,
+          "name": "Escavação em material de 2ª e 3ª categoria — Seg. 1",
+          "predecessor_id": 23,
+          "predecessor_name": "Escavação, carga e transporte — material de 1ª categoria — Seg. 1",
+          "link_type": "II",
+          "lag_days": 10.0
+        },
+        {
+          "id": 35,
+          "uid": 35,
+          "name": "Base de brita graduada simples (BGS) — Seg. 1",
+          "predecessor_id": 34,
+          "predecessor_name": "Sub-base granular — Seg. 1",
+          "link_type": "II",
+          "lag_days": 6.0
+        },
+        {
+          "id": 43,
+          "uid": 43,
+          "name": "Sinalização vertical e pórticos — Seg. 1",
+          "predecessor_id": 42,
+          "predecessor_name": "Sinalização horizontal — Seg. 1",
+          "link_type": "II",
+          "lag_days": 0.0
+        },
+        {
+          "id": 54,
+          "uid": 54,
+          "name": "Escavação em material de 2ª e 3ª categoria — Seg. 2",
+          "predecessor_id": 53,
+          "predecessor_name": "Escavação, carga e transporte — material de 1ª categoria — Seg. 2",
+          "link_type": "II",
+          "lag_days": 10.0
+        },
+        {
+          "id": 67,
+          "uid": 66,
+          "name": "Base de brita graduada simples (BGS) — Seg. 2",
+          "predecessor_id": 66,
+          "predecessor_name": "Sub-base granular — Seg. 2",
+          "link_type": "II",
+          "lag_days": 6.0
+        },
+        {
+          "id": 75,
+          "uid": 74,
+          "name": "Sinalização vertical e pórticos — Seg. 2",
+          "predecessor_id": 74,
+          "predecessor_name": "Sinalização horizontal — Seg. 2",
+          "link_type": "II",
+          "lag_days": 0.0
+        },
+        {
+          "id": 86,
+          "uid": 85,
+          "name": "Escavação em material de 2ª e 3ª categoria — Seg. 3",
+          "predecessor_id": 85,
+          "predecessor_name": "Escavação, carga e transporte — material de 1ª categoria — Seg. 3",
+          "link_type": "II",
+          "lag_days": 10.0
+        },
+        {
+          "id": 97,
+          "uid": 96,
+          "name": "Base de brita graduada simples (BGS) — Seg. 3",
+          "predecessor_id": 96,
+          "predecessor_name": "Sub-base granular — Seg. 3",
+          "link_type": "II",
+          "lag_days": 6.0
+        },
+        {
+          "id": 105,
+          "uid": 104,
+          "name": "Sinalização vertical e pórticos — Seg. 3",
+          "predecessor_id": 104,
+          "predecessor_name": "Sinalização horizontal — Seg. 3",
+          "link_type": "II",
+          "lag_days": 0.0
+        },
+        {
+          "id": 116,
+          "uid": 115,
+          "name": "Escavação em material de 2ª e 3ª categoria — Seg. 4",
+          "predecessor_id": 115,
+          "predecessor_name": "Escavação, carga e transporte — material de 1ª categoria — Seg. 4",
+          "link_type": "II",
+          "lag_days": 10.0
+        },
+        {
+          "id": 128,
+          "uid": 128,
+          "name": "Base de brita graduada simples (BGS) — Seg. 4",
+          "predecessor_id": 127,
+          "predecessor_name": "Sub-base granular — Seg. 4",
+          "link_type": "II",
+          "lag_days": 6.0
+        },
+        {
+          "id": 136,
+          "uid": 136,
+          "name": "Sinalização vertical e pórticos — Seg. 4",
+          "predecessor_id": 135,
+          "predecessor_name": "Sinalização horizontal — Seg. 4",
+          "link_type": "II",
+          "lag_days": 0.0
+        },
+        {
+          "id": 153,
+          "uid": 153,
+          "name": "Encontros e alas",
+          "predecessor_id": 151,
+          "predecessor_name": "Pilares",
+          "link_type": "II",
+          "lag_days": 10.0
+        },
+        {
+          "id": 156,
+          "uid": 156,
+          "name": "Fabricação das vigas pré-moldadas protendidas",
+          "predecessor_id": 151,
+          "predecessor_name": "Pilares",
+          "link_type": "II",
+          "lag_days": 0.0
+        },
+        {
+          "id": 160,
+          "uid": 160,
+          "name": "Lajes de transição",
+          "predecessor_id": 164,
+          "predecessor_name": "Aterros de acesso aos encontros",
+          "link_type": "TT",
+          "lag_days": 5.0
+        }
+      ],
+      "title": "Tipos de vínculo",
+      "description": "Vínculos que não são término-início. Não é erro, mas cada um merece um motivo.",
+      "item_columns": [
+        {
+          "key": "id",
+          "label": "Linha"
+        },
+        {
+          "key": "name",
+          "label": "Atividade"
+        },
+        {
+          "key": "predecessor_id",
+          "label": "Linha pred."
+        },
+        {
+          "key": "predecessor_name",
+          "label": "Predecessora"
+        },
+        {
+          "key": "link_type",
+          "label": "Vínculo"
+        },
+        {
+          "key": "lag_days",
+          "label": "Lag (dias úteis)"
+        }
+      ]
+    },
+    {
+      "code": "Q5",
+      "count": 0,
+      "population": 103,
+      "share_pct": 0.0,
+      "threshold_pct": 5.0,
+      "status": "pass",
+      "direction": "max",
+      "items": [],
+      "title": "Restrições rígidas",
+      "description": "Atividades incompletas presas por restrição de deve iniciar, deve terminar ou não depois de. Data presa briga com a lógica.",
+      "item_columns": []
+    },
+    {
+      "code": "Q6",
+      "count": 5,
+      "population": 103,
+      "share_pct": 4.85,
+      "threshold_pct": 5.0,
+      "status": "pass",
+      "direction": "max",
+      "items": [
+        {
+          "id": 57,
+          "uid": 175,
+          "name": "Contenção em gabião — talude do km 21+300 — Seg. 2",
+          "float_days": 107.0
+        },
+        {
+          "id": 77,
+          "uid": 76,
+          "name": "Tachas e dispositivos auxiliares — Seg. 2",
+          "float_days": 107.0
+        },
+        {
+          "id": 89,
+          "uid": 88,
+          "name": "Proteção vegetal de taludes (hidrossemeadura) — Seg. 3",
+          "float_days": 117.0
+        },
+        {
+          "id": 136,
+          "uid": 136,
+          "name": "Sinalização vertical e pórticos — Seg. 4",
+          "float_days": 79.0
+        },
+        {
+          "id": 170,
+          "uid": 170,
+          "name": "Recuperação ambiental de jazidas e caminhos de serviço",
+          "float_days": 205.0
+        }
+      ],
+      "title": "Folga alta",
+      "description": "Atividades incompletas com mais de 44 dias úteis de folga total. Normalmente marco que ninguém restringiu.",
+      "item_columns": [
+        {
+          "key": "id",
+          "label": "Linha"
+        },
+        {
+          "key": "name",
+          "label": "Atividade"
+        },
+        {
+          "key": "float_days",
+          "label": "Folga total (dias úteis)"
+        }
+      ]
+    },
+    {
+      "code": "Q7",
+      "count": 0,
+      "population": 103,
+      "share_pct": 0.0,
+      "threshold_pct": 0.0,
+      "status": "pass",
+      "direction": "max",
+      "items": [],
+      "title": "Folga negativa",
+      "description": "Atividades incompletas com folga total abaixo de zero: data que a lógica não alcança.",
+      "item_columns": []
+    },
+    {
+      "code": "Q8",
+      "count": 0,
+      "population": 96,
+      "share_pct": 0.0,
+      "threshold_pct": 5.0,
+      "status": "pass",
+      "direction": "max",
+      "items": [],
+      "title": "Duração longa",
+      "description": "Atividades incompletas com mais de 44 dias úteis remanescentes. Grossas demais para controlar.",
+      "item_columns": []
+    },
+    {
+      "code": "Q9",
+      "count": 0,
+      "population": 142,
+      "share_pct": 0.0,
+      "threshold_pct": 0.0,
+      "status": "pass",
+      "direction": "max",
+      "items": [],
+      "title": "Datas inválidas",
+      "description": "Datas reais depois da data de status. Datas de tendência no passado são o achado H acima.",
+      "item_columns": []
+    },
+    {
+      "code": "Q10",
+      "count": 0,
+      "population": 96,
+      "share_pct": 0.0,
+      "threshold_pct": null,
+      "status": null,
+      "direction": "max",
+      "items": [],
+      "title": "Sem recurso",
+      "description": "Atividades incompletas com duração e nenhuma atribuição. Nada para tendenciar.",
+      "item_columns": []
+    },
+    {
+      "code": "Q11",
+      "count": 15,
+      "population": 43,
+      "share_pct": 34.88,
+      "threshold_pct": 5.0,
+      "status": "fail",
+      "direction": "max",
+      "items": [
+        {
+          "id": 3,
+          "uid": 3,
+          "name": "Usina de asfalto licenciada e em operação",
+          "baseline_finish": "03/06/2026",
+          "actual_finish": "10/06/2026"
+        },
+        {
+          "id": 17,
+          "uid": 17,
+          "name": "Instalação da usina de asfalto e da central de britagem",
+          "baseline_finish": "03/06/2026",
+          "actual_finish": "10/06/2026"
+        },
+        {
+          "id": 30,
+          "uid": 30,
+          "name": "Drenos profundos longitudinais — Seg. 1",
+          "baseline_finish": "18/09/2026",
+          "actual_finish": "21/09/2026"
+        },
+        {
+          "id": 31,
+          "uid": 31,
+          "name": "Sarjetas e valetas de proteção — Seg. 1",
+          "baseline_finish": "15/10/2026",
+          "actual_finish": "20/10/2026"
+        },
+        {
+          "id": 34,
+          "uid": 34,
+          "name": "Sub-base granular — Seg. 1",
+          "baseline_finish": "15/10/2026",
+          "actual_finish": "22/10/2026"
+        },
+        {
+          "id": 35,
+          "uid": 35,
+          "name": "Base de brita graduada simples (BGS) — Seg. 1",
+          "baseline_finish": "23/10/2026",
+          "actual_finish": null
+        },
+        {
+          "id": 55,
+          "uid": 55,
+          "name": "Aterro compactado — Seg. 2",
+          "baseline_finish": "20/10/2026",
+          "actual_finish": null
+        },
+        {
+          "id": 87,
+          "uid": 86,
+          "name": "Aterro compactado — Seg. 3",
+          "baseline_finish": "02/10/2026",
+          "actual_finish": "09/10/2026"
+        },
+        {
+          "id": 88,
+          "uid": 87,
+          "name": "Regularização e compactação do subleito — Seg. 3",
+          "baseline_finish": "17/10/2026",
+          "actual_finish": "27/10/2026"
+        },
+        {
+          "id": 92,
+          "uid": 91,
+          "name": "Drenos profundos longitudinais — Seg. 3",
+          "baseline_finish": "26/10/2026",
+          "actual_finish": null
+        },
+        {
+          "id": 122,
+          "uid": 122,
+          "name": "Bueiro celular de concreto — Seg. 4",
+          "baseline_finish": "15/10/2026",
+          "actual_finish": "20/10/2026"
+        },
+        {
+          "id": 146,
+          "uid": 146,
+          "name": "Projeto executivo da OAE — revisão e liberação para execução",
+          "baseline_finish": "18/06/2026",
+          "actual_finish": "24/06/2026"
+        },
+        {
+          "id": 147,
+          "uid": 147,
+          "name": "Estacas escavadas — apoios centrais (P1 a P3)",
+          "baseline_finish": "03/08/2026",
+          "actual_finish": "14/08/2026"
+        },
+        {
+          "id": 148,
+          "uid": 148,
+          "name": "Estacas escavadas — encontros (E1 e E2)",
+          "baseline_finish": "04/09/2026",
+          "actual_finish": "21/09/2026"
+        },
+        {
+          "id": 149,
+          "uid": 149,
+          "name": "Blocos de coroamento",
+          "baseline_finish": "16/10/2026",
+          "actual_finish": null
+        }
+      ],
+      "title": "Atividades perdidas",
+      "description": "Deviam terminar até a data de status pela linha de base e não terminaram no prazo.",
+      "item_columns": [
+        {
+          "key": "id",
+          "label": "Linha"
+        },
+        {
+          "key": "name",
+          "label": "Atividade"
+        },
+        {
+          "key": "baseline_finish",
+          "label": "Término LB"
+        },
+        {
+          "key": "actual_finish",
+          "label": "Término real"
+        }
+      ]
+    },
+    {
+      "code": "Q12",
+      "count": 0,
+      "population": 0,
+      "share_pct": null,
+      "threshold_pct": null,
+      "status": null,
+      "direction": "max",
+      "items": [],
+      "title": "Teste de caminho crítico",
+      "description": "Exige perturbar o cronograma e ver o término mover. Não é computável de um arquivo.",
+      "item_columns": []
+    },
+    {
+      "code": "Q13",
+      "count": 1,
+      "population": 1,
+      "share_pct": 102.5,
+      "threshold_pct": 95.0,
+      "status": "pass",
+      "direction": "min",
+      "items": [],
+      "title": "Índice de comprimento do caminho crítico",
+      "description": "Só faz sentido com data limite no marco final; sem ela é 1,0 por construção.",
+      "item_columns": []
+    },
+    {
+      "code": "Q14",
+      "count": 28,
+      "population": 43,
+      "share_pct": 65.1,
+      "threshold_pct": 95.0,
+      "status": "fail",
+      "direction": "min",
+      "items": [],
+      "title": "Índice de execução da linha de base",
+      "description": "Atividades terminadas no prazo divididas pelas devidas até a data de status.",
+      "item_columns": []
+    }
+  ],
+  "soft_constraints": {
+    "count": 1,
+    "items": [
+      {
+        "id": 63,
+        "uid": 62,
+        "name": "Sarjetas e valetas de proteção — Seg. 2",
+        "constraint": "SNET"
+      }
+    ]
+  },
+  "indices": {
+    "bei": 0.651,
+    "bei_due": 43,
+    "bei_on_time": 28,
+    "cpli": 1.025,
+    "cpl_days": 360,
+    "cpli_meaningful": true,
+    "critical_activities": 18,
+    "critical_reaches_final_milestone": true,
+    "final_milestone_id": 10,
+    "final_milestone_finish": "2027-10-25T17:00:00"
+  },
+  "qualitative": {
+    "summaries_with_links": [],
+    "summaries_with_links_count": 0,
+    "milestones_without_deadline": 0,
+    "milestones": 9
+  },
+  "provenance": "implementation of the DCMA 14-point metrics with quoted thresholds; not a certification. Q12 needs the schedule perturbed and Q13 needs a deadline on the finish milestone; both reported as not computable when so."
+}

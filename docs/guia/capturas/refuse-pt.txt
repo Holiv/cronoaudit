@@ -1,0 +1,5 @@
+cronoaudit: o modo SECRETO foi pedido (por --secret), mas este processo foi iniciado por um agente (CLAUDE_CODE_CHILD_SESSION está definida), então a rodada parou aqui.
+  Nada foi lido e nada foi executado.
+  O modo secreto só protege se o agente nunca tiver o original. Rode este
+  mesmo comando no seu próprio terminal: ele mostra uma pasta de trabalho, e o
+  agente é aberto dentro dela. A cronoaudit não cai para o modo livre sozinha.

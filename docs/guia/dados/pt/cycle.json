@@ -1,0 +1,2285 @@
+{
+  "previous": {
+    "source": "rodovia-ficticia-rev03.xml",
+    "title": "RF-140 — Duplicação e Restauração — km 12+000 ao km 36+000 (exemplo fictício) — Rev. 03",
+    "baseline_slot": "0",
+    "baseline_name": "Baseline",
+    "budget_at_completion": 174530438.0,
+    "earned": 40915026.6,
+    "percent_earned": 23.4429,
+    "leaves_with_baseline_cost": 133,
+    "status_date": "2026-09-30T17:00:00",
+    "percent_source": "physical percent complete, falling back to percent complete"
+  },
+  "current": {
+    "source": "rodovia-ficticia-rev04.xml",
+    "title": "RF-140 — Duplicação e Restauração — km 12+000 ao km 36+000 (exemplo fictício) — Rev. 04",
+    "baseline_slot": "0",
+    "baseline_name": "Baseline",
+    "budget_at_completion": 174992838.0,
+    "earned": 49019259.6,
+    "percent_earned": 28.0122,
+    "leaves_with_baseline_cost": 133,
+    "status_date": "2026-10-30T17:00:00",
+    "percent_source": "physical percent complete, falling back to percent complete"
+  },
+  "movement_points": 4.5693,
+  "decomposition_sums_to_points": 4.9018,
+  "movement_unexplained_points": -0.3325,
+  "conventions": {
+    "matching": "stable UID, then name plus WBS path; two classes only",
+    "population": "leaf, active, non-external, non-milestone",
+    "denominator": "current snapshot budget at completion",
+    "aggregates": "both snapshots computed by one function called twice",
+    "logic_population": "leaf, active, non-external; milestones included",
+    "critical": "the tool's Critical flag when the file carries it, otherwise total float at or below zero; finished activities are on no path",
+    "links": "a link is its two ends, each matched like the activities; links touching inserted or removed activities are counted as scope",
+    "finish_delta": "calendar days between the two project finish dates",
+    "float_and_duration": "working days of each activity's own calendar"
+  },
+  "warnings": [
+    "The baseline moved on 1 activities between these two snapshots. Your comparison basis changed underneath the comparison: every deviation straddling the change is measured against two references. Report this as a finding about the report, not as performance.",
+    "1 activities inserted and 1 removed. Scope changed, so the aggregate movement is not purely progress.",
+    "The past was rewritten on 2 activities: an actual date changed or disappeared, a percent complete went down, or an activity with recorded progress was removed, between these two snapshots. Whatever the previous cycle reported on those activities rested on a record that no longer exists. Ask for the correction to be stated.",
+    "-0.33 percentage points of the movement are NOT per-activity progress, and they are named: earned value of removed activities -0.27; budget at completion changed -0.06. Report the explained part as progress and each term as what it is, never the headline as progress."
+  ],
+  "warning_codes": [
+    {
+      "code": "baseline_moved",
+      "n": 1
+    },
+    {
+      "code": "scope",
+      "i": 1,
+      "r": 1
+    },
+    {
+      "code": "past_rewritten",
+      "n": 2
+    },
+    {
+      "code": "residue_named",
+      "gap": -0.3325
+    }
+  ],
+  "project_finish": {
+    "previous": {
+      "finish": "2027-10-04T17:00:00",
+      "finish_basis": "project header",
+      "latest_activity_finish": "2027-10-04T17:00:00",
+      "end": {
+        "uid": 10,
+        "id": 10,
+        "name": "Termo de Recebimento Provisório (TRP)",
+        "finish": "2027-10-04T17:00:00",
+        "critical": true,
+        "milestone": true,
+        "total_float_days": 0.0
+      },
+      "driver": {
+        "uid": 174,
+        "id": 174,
+        "name": "Desmobilização do canteiro e da usina",
+        "finish": "2027-10-04T17:00:00",
+        "critical": true,
+        "milestone": false,
+        "total_float_days": 0.0
+      },
+      "chain": [
+        {
+          "uid": 10,
+          "id": 10,
+          "name": "Termo de Recebimento Provisório (TRP)",
+          "finish": "2027-10-04",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 174,
+          "id": 174,
+          "name": "Desmobilização do canteiro e da usina",
+          "finish": "2027-10-04",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 173,
+          "id": 173,
+          "name": "Correção de pendências da vistoria",
+          "finish": "2027-09-13",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 172,
+          "id": 172,
+          "name": "Vistoria final com a fiscalização",
+          "finish": "2027-08-27",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 169,
+          "id": 169,
+          "name": "Limpeza final e recomposição das áreas de apoio",
+          "finish": "2027-08-20",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 9,
+          "id": 9,
+          "name": "Conclusão do Viaduto V-01 (km 27+400)",
+          "finish": "2027-08-06",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 167,
+          "id": 167,
+          "name": "Prova de carga e inspeção final",
+          "finish": "2027-08-06",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 166,
+          "id": 166,
+          "name": "Sinalização e iluminação do viaduto",
+          "finish": "2027-07-30",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 165,
+          "id": 165,
+          "name": "Impermeabilização e pavimentação do tabuleiro",
+          "finish": "2027-07-20",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 162,
+          "id": 162,
+          "name": "Juntas de dilatação",
+          "finish": "2027-07-08",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 161,
+          "id": 161,
+          "name": "Barreiras New Jersey e guarda-corpos",
+          "finish": "2027-06-30",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 159,
+          "id": 159,
+          "name": "Concretagem do tabuleiro",
+          "finish": "2027-06-09",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 158,
+          "id": 158,
+          "name": "Pré-lajes e armação do tabuleiro",
+          "finish": "2027-05-13",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 157,
+          "id": 157,
+          "name": "Lançamento das vigas pré-moldadas",
+          "finish": "2027-04-02",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 154,
+          "id": 154,
+          "name": "Aparelhos de apoio",
+          "finish": "2027-03-11",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        }
+      ],
+      "driver_basis": "approximated: last-finishing open activity, walked back through the predecessor whose link lands latest; no network recalculation",
+      "driver_linked": true
+    },
+    "current": {
+      "finish": "2027-10-25T17:00:00",
+      "finish_basis": "project header",
+      "latest_activity_finish": "2027-10-25T17:00:00",
+      "end": {
+        "uid": 10,
+        "id": 10,
+        "name": "Termo de Recebimento Provisório (TRP)",
+        "finish": "2027-10-25T17:00:00",
+        "critical": true,
+        "milestone": true,
+        "total_float_days": 0.0
+      },
+      "driver": {
+        "uid": 174,
+        "id": 174,
+        "name": "Desmobilização do canteiro e da usina",
+        "finish": "2027-10-25T17:00:00",
+        "critical": true,
+        "milestone": false,
+        "total_float_days": 0.0
+      },
+      "chain": [
+        {
+          "uid": 10,
+          "id": 10,
+          "name": "Termo de Recebimento Provisório (TRP)",
+          "finish": "2027-10-25",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 174,
+          "id": 174,
+          "name": "Desmobilização do canteiro e da usina",
+          "finish": "2027-10-25",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 173,
+          "id": 173,
+          "name": "Correção de pendências da vistoria",
+          "finish": "2027-10-01",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 172,
+          "id": 172,
+          "name": "Vistoria final com a fiscalização",
+          "finish": "2027-09-17",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 169,
+          "id": 169,
+          "name": "Limpeza final e recomposição das áreas de apoio",
+          "finish": "2027-09-10",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 9,
+          "id": 9,
+          "name": "Conclusão do Viaduto V-01 (km 27+400)",
+          "finish": "2027-08-26",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 167,
+          "id": 167,
+          "name": "Prova de carga e inspeção final",
+          "finish": "2027-08-26",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 166,
+          "id": 166,
+          "name": "Sinalização e iluminação do viaduto",
+          "finish": "2027-08-19",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 165,
+          "id": 165,
+          "name": "Impermeabilização e pavimentação do tabuleiro",
+          "finish": "2027-08-09",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 162,
+          "id": 162,
+          "name": "Juntas de dilatação",
+          "finish": "2027-07-28",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 161,
+          "id": 161,
+          "name": "Barreiras New Jersey e guarda-corpos",
+          "finish": "2027-07-20",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 159,
+          "id": 159,
+          "name": "Concretagem do tabuleiro",
+          "finish": "2027-06-29",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 158,
+          "id": 158,
+          "name": "Pré-lajes e armação do tabuleiro",
+          "finish": "2027-06-03",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 157,
+          "id": 157,
+          "name": "Lançamento das vigas pré-moldadas",
+          "finish": "2027-04-23",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        },
+        {
+          "uid": 154,
+          "id": 154,
+          "name": "Aparelhos de apoio",
+          "finish": "2027-03-23",
+          "critical": true,
+          "via": "FS",
+          "started": false
+        }
+      ],
+      "driver_basis": "approximated: last-finishing open activity, walked back through the predecessor whose link lands latest; no network recalculation",
+      "driver_linked": true
+    },
+    "delta_days": 21.0,
+    "delta_unit": "calendar days",
+    "driver_changed": false
+  },
+  "critical_path": {
+    "criterion_previous": "flag",
+    "criterion_current": "flag",
+    "critical_previous": 18,
+    "critical_current": 18,
+    "entered": [],
+    "left": [],
+    "left_completed": 0,
+    "inserted_critical": 0,
+    "float_fell_count": 71,
+    "float_fell_top": [
+      {
+        "uid": 62,
+        "id": 63,
+        "name": "Sarjetas e valetas de proteção — Seg. 2",
+        "float_before_days": 54.0,
+        "float_after_days": 29.0,
+        "finish_before": "2026-12-10T17:00:00",
+        "finish_after": "2027-02-01T17:00:00",
+        "float_fell_days": 25.0
+      },
+      {
+        "uid": 55,
+        "id": 55,
+        "name": "Aterro compactado — Seg. 2",
+        "float_before_days": 33.0,
+        "float_after_days": 21.0,
+        "finish_before": "2026-10-20T17:00:00",
+        "finish_after": "2026-11-04T17:00:00",
+        "float_fell_days": 12.0
+      },
+      {
+        "uid": 56,
+        "id": 56,
+        "name": "Regularização e compactação do subleito — Seg. 2",
+        "float_before_days": 39.0,
+        "float_after_days": 27.0,
+        "finish_before": "2026-11-04T17:00:00",
+        "finish_after": "2026-11-18T17:00:00",
+        "float_fell_days": 12.0
+      },
+      {
+        "uid": 7,
+        "id": 7,
+        "name": "Liberação ao tráfego — Segmento 3 — km 24+000 ao km 30+000",
+        "float_before_days": 13.0,
+        "float_after_days": 3.0,
+        "finish_before": "2027-04-28T17:00:00",
+        "finish_after": "2027-05-12T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 8,
+        "id": 8,
+        "name": "Liberação ao tráfego — Segmento 4 — km 30+000 ao km 36+000",
+        "float_before_days": 13.0,
+        "float_after_days": 3.0,
+        "finish_before": "2027-07-06T17:00:00",
+        "finish_after": "2027-07-20T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 61,
+        "id": 62,
+        "name": "Drenos profundos longitudinais — Seg. 2",
+        "float_before_days": 27.0,
+        "float_after_days": 17.0,
+        "finish_before": "2026-11-11T17:00:00",
+        "finish_after": "2026-11-26T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 65,
+        "id": 66,
+        "name": "Sub-base granular — Seg. 2",
+        "float_before_days": 27.0,
+        "float_after_days": 17.0,
+        "finish_before": "2026-12-10T17:00:00",
+        "finish_after": "2027-01-04T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 66,
+        "id": 67,
+        "name": "Base de brita graduada simples (BGS) — Seg. 2",
+        "float_before_days": 27.0,
+        "float_after_days": 17.0,
+        "finish_before": "2026-12-22T17:00:00",
+        "finish_after": "2027-01-14T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 67,
+        "id": 68,
+        "name": "Imprimação — Seg. 2",
+        "float_before_days": 27.0,
+        "float_after_days": 17.0,
+        "finish_before": "2027-01-07T17:00:00",
+        "finish_after": "2027-01-26T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 91,
+        "id": 92,
+        "name": "Drenos profundos longitudinais — Seg. 3",
+        "float_before_days": 13.0,
+        "float_after_days": 3.0,
+        "finish_before": "2026-10-28T17:00:00",
+        "finish_after": "2026-11-12T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 92,
+        "id": 93,
+        "name": "Sarjetas e valetas de proteção — Seg. 3",
+        "float_before_days": 40.0,
+        "float_after_days": 30.0,
+        "finish_before": "2026-11-25T17:00:00",
+        "finish_after": "2026-12-11T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 93,
+        "id": 94,
+        "name": "Meios-fios e descidas d'água — Seg. 3",
+        "float_before_days": 13.0,
+        "float_after_days": 3.0,
+        "finish_before": "2027-02-19T17:00:00",
+        "finish_after": "2027-03-10T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 95,
+        "id": 96,
+        "name": "Sub-base granular — Seg. 3",
+        "float_before_days": 13.0,
+        "float_after_days": 3.0,
+        "finish_before": "2026-11-25T17:00:00",
+        "finish_after": "2026-12-11T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 96,
+        "id": 97,
+        "name": "Base de brita graduada simples (BGS) — Seg. 3",
+        "float_before_days": 13.0,
+        "float_after_days": 3.0,
+        "finish_before": "2026-12-04T17:00:00",
+        "finish_after": "2026-12-23T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 97,
+        "id": 98,
+        "name": "Imprimação — Seg. 3",
+        "float_before_days": 13.0,
+        "float_after_days": 3.0,
+        "finish_before": "2026-12-16T17:00:00",
+        "finish_after": "2027-01-08T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 98,
+        "id": 99,
+        "name": "CBUQ — camada de ligação (binder) — Seg. 3",
+        "float_before_days": 13.0,
+        "float_after_days": 3.0,
+        "finish_before": "2027-01-19T17:00:00",
+        "finish_after": "2027-02-10T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 99,
+        "id": 100,
+        "name": "Fresagem e reperfilagem da pista existente — Seg. 3",
+        "float_before_days": 13.0,
+        "float_after_days": 3.0,
+        "finish_before": "2027-02-19T17:00:00",
+        "finish_after": "2027-03-10T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 100,
+        "id": 101,
+        "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 3",
+        "float_before_days": 13.0,
+        "float_after_days": 3.0,
+        "finish_before": "2027-03-24T17:00:00",
+        "finish_after": "2027-04-09T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 101,
+        "id": 102,
+        "name": "Acostamentos e acabamento de bordos — Seg. 3",
+        "float_before_days": 13.0,
+        "float_after_days": 3.0,
+        "finish_before": "2027-04-09T17:00:00",
+        "finish_after": "2027-04-26T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 103,
+        "id": 104,
+        "name": "Sinalização horizontal — Seg. 3",
+        "float_before_days": 22.0,
+        "float_after_days": 12.0,
+        "finish_before": "2027-04-07T17:00:00",
+        "finish_after": "2027-04-22T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 104,
+        "id": 105,
+        "name": "Sinalização vertical e pórticos — Seg. 3",
+        "float_before_days": 25.0,
+        "float_after_days": 15.0,
+        "finish_before": "2027-04-09T17:00:00",
+        "finish_after": "2027-04-26T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 105,
+        "id": 106,
+        "name": "Defensas metálicas e barreiras — Seg. 3",
+        "float_before_days": 13.0,
+        "float_after_days": 3.0,
+        "finish_before": "2027-04-28T17:00:00",
+        "finish_after": "2027-05-12T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 106,
+        "id": 107,
+        "name": "Tachas e dispositivos auxiliares — Seg. 3",
+        "float_before_days": 22.0,
+        "float_after_days": 12.0,
+        "finish_before": "2027-04-14T17:00:00",
+        "finish_after": "2027-04-29T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 108,
+        "id": 109,
+        "name": "Dutos, caixas de passagem e bases — Seg. 3",
+        "float_before_days": 23.0,
+        "float_after_days": 13.0,
+        "finish_before": "2027-03-12T17:00:00",
+        "finish_after": "2027-04-01T17:00:00",
+        "float_fell_days": 10.0
+      },
+      {
+        "uid": 109,
+        "id": 110,
+        "name": "Postes e luminárias LED — Seg. 3",
+        "float_before_days": 17.0,
+        "float_after_days": 7.0,
+        "finish_before": "2027-04-09T17:00:00",
+        "finish_after": "2027-04-26T17:00:00",
+        "float_fell_days": 10.0
+      }
+    ],
+    "float_fell_min_days": 1
+  },
+  "logic": {
+    "links_added": [
+      {
+        "uid": 105,
+        "id": 106,
+        "name": "Defensas metálicas e barreiras — Seg. 3",
+        "predecessor_uid": 93,
+        "predecessor_id": 94,
+        "predecessor_name": "Meios-fios e descidas d'água — Seg. 3",
+        "type_before": null,
+        "type_after": "FS",
+        "lag_before": null,
+        "lag_after": {
+          "value": 0.0,
+          "unit": "days"
+        }
+      }
+    ],
+    "links_removed": [
+      {
+        "uid": 127,
+        "id": 127,
+        "name": "Sub-base granular — Seg. 4",
+        "predecessor_uid": 123,
+        "predecessor_id": 123,
+        "predecessor_name": "Drenos profundos longitudinais — Seg. 4",
+        "type_before": "FS",
+        "type_after": null,
+        "lag_before": {
+          "value": 0.0,
+          "unit": "days"
+        },
+        "lag_after": null
+      }
+    ],
+    "lag_changed": [],
+    "type_changed": [],
+    "links_from_scope": 3,
+    "constraints_added": [
+      {
+        "uid": 62,
+        "id": 63,
+        "name": "Sarjetas e valetas de proteção — Seg. 2",
+        "type_before": "ASAP",
+        "type_after": "SNET",
+        "date_before": null,
+        "date_after": "2026-12-28T08:00:00"
+      }
+    ],
+    "constraints_removed": [],
+    "constraints_changed": [],
+    "constraint_population": "leaf, active, non-external, not finished in the current snapshot"
+  },
+  "duration_changed": [
+    {
+      "uid": 157,
+      "id": 157,
+      "name": "Lançamento das vigas pré-moldadas",
+      "duration_before_days": 12.0,
+      "duration_after_days": 20.0,
+      "delta_days": 8.0,
+      "finish_before": "2027-04-02T17:00:00",
+      "finish_after": "2027-04-23T17:00:00"
+    }
+  ],
+  "past_rewritten": {
+    "activities": 2,
+    "actual_start": [],
+    "actual_finish": [
+      {
+        "uid": 29,
+        "id": 29,
+        "name": "Bueiros tubulares de concreto — Seg. 1",
+        "before": "2026-06-05T17:00:00",
+        "after": "2026-06-01T17:00:00",
+        "removed": false,
+        "moved_days": -4.0,
+        "same_day": false,
+        "matches_baseline": true
+      }
+    ],
+    "percent_decreased": [],
+    "removed_with_progress": [
+      {
+        "uid": 119,
+        "id": 119,
+        "name": "Remanejamento de cercas da faixa de domínio — Seg. 4",
+        "percent": 100.0,
+        "completed": true,
+        "baseline_cost": 473600.0,
+        "earned_erased": 473600.0
+      }
+    ],
+    "actual_removed": 0,
+    "time_of_day_only": 0,
+    "matches_baseline": 1,
+    "population": "leaf, active, non-external, matched in both snapshots; milestones included; plus removed activities that carried progress (row number of the previous delivery)"
+  },
+  "quality": {
+    "metrics": [
+      {
+        "code": "Q1",
+        "threshold_pct": 5.0,
+        "direction": "max",
+        "previous": {
+          "count": 4,
+          "population": 100,
+          "share_pct": 4.0,
+          "status": "pass"
+        },
+        "current": {
+          "count": 4,
+          "population": 96,
+          "share_pct": 4.17,
+          "status": "pass"
+        },
+        "count_delta": 0,
+        "share_delta_points": 0.17,
+        "change": "worsened",
+        "crossed": null
+      },
+      {
+        "code": "Q2",
+        "threshold_pct": 0.0,
+        "direction": "max",
+        "previous": {
+          "count": 0,
+          "population": 219,
+          "share_pct": 0.0,
+          "status": "pass"
+        },
+        "current": {
+          "count": 0,
+          "population": 220,
+          "share_pct": 0.0,
+          "status": "pass"
+        },
+        "count_delta": 0,
+        "share_delta_points": 0.0,
+        "change": "unchanged",
+        "crossed": null
+      },
+      {
+        "code": "Q3",
+        "threshold_pct": 5.0,
+        "direction": "max",
+        "previous": {
+          "count": 10,
+          "population": 219,
+          "share_pct": 4.57,
+          "status": "pass"
+        },
+        "current": {
+          "count": 10,
+          "population": 220,
+          "share_pct": 4.55,
+          "status": "pass"
+        },
+        "count_delta": 0,
+        "share_delta_points": -0.02,
+        "change": "improved",
+        "crossed": null
+      },
+      {
+        "code": "Q4",
+        "threshold_pct": 10.0,
+        "direction": "max",
+        "previous": {
+          "count": 16,
+          "population": 219,
+          "share_pct": 7.31,
+          "status": "pass"
+        },
+        "current": {
+          "count": 16,
+          "population": 220,
+          "share_pct": 7.27,
+          "status": "pass"
+        },
+        "count_delta": 0,
+        "share_delta_points": -0.04,
+        "change": "improved",
+        "crossed": null
+      },
+      {
+        "code": "Q5",
+        "threshold_pct": 5.0,
+        "direction": "max",
+        "previous": {
+          "count": 0,
+          "population": 107,
+          "share_pct": 0.0,
+          "status": "pass"
+        },
+        "current": {
+          "count": 0,
+          "population": 103,
+          "share_pct": 0.0,
+          "status": "pass"
+        },
+        "count_delta": 0,
+        "share_delta_points": 0.0,
+        "change": "unchanged",
+        "crossed": null
+      },
+      {
+        "code": "Q6",
+        "threshold_pct": 5.0,
+        "direction": "max",
+        "previous": {
+          "count": 6,
+          "population": 107,
+          "share_pct": 5.61,
+          "status": "fail"
+        },
+        "current": {
+          "count": 5,
+          "population": 103,
+          "share_pct": 4.85,
+          "status": "pass"
+        },
+        "count_delta": -1,
+        "share_delta_points": -0.76,
+        "change": "improved",
+        "crossed": "fail->pass"
+      },
+      {
+        "code": "Q7",
+        "threshold_pct": 0.0,
+        "direction": "max",
+        "previous": {
+          "count": 0,
+          "population": 107,
+          "share_pct": 0.0,
+          "status": "pass"
+        },
+        "current": {
+          "count": 0,
+          "population": 103,
+          "share_pct": 0.0,
+          "status": "pass"
+        },
+        "count_delta": 0,
+        "share_delta_points": 0.0,
+        "change": "unchanged",
+        "crossed": null
+      },
+      {
+        "code": "Q8",
+        "threshold_pct": 5.0,
+        "direction": "max",
+        "previous": {
+          "count": 0,
+          "population": 100,
+          "share_pct": 0.0,
+          "status": "pass"
+        },
+        "current": {
+          "count": 0,
+          "population": 96,
+          "share_pct": 0.0,
+          "status": "pass"
+        },
+        "count_delta": 0,
+        "share_delta_points": 0.0,
+        "change": "unchanged",
+        "crossed": null
+      },
+      {
+        "code": "Q9",
+        "threshold_pct": 0.0,
+        "direction": "max",
+        "previous": {
+          "count": 0,
+          "population": 142,
+          "share_pct": 0.0,
+          "status": "pass"
+        },
+        "current": {
+          "count": 0,
+          "population": 142,
+          "share_pct": 0.0,
+          "status": "pass"
+        },
+        "count_delta": 0,
+        "share_delta_points": 0.0,
+        "change": "unchanged",
+        "crossed": null
+      },
+      {
+        "code": "Q10",
+        "threshold_pct": null,
+        "direction": "max",
+        "previous": {
+          "count": 0,
+          "population": 100,
+          "share_pct": 0.0,
+          "status": null
+        },
+        "current": {
+          "count": 0,
+          "population": 96,
+          "share_pct": 0.0,
+          "status": null
+        },
+        "count_delta": 0,
+        "share_delta_points": 0.0,
+        "change": "unchanged",
+        "crossed": null
+      },
+      {
+        "code": "Q11",
+        "threshold_pct": 5.0,
+        "direction": "max",
+        "previous": {
+          "count": 7,
+          "population": 35,
+          "share_pct": 20.0,
+          "status": "fail"
+        },
+        "current": {
+          "count": 15,
+          "population": 43,
+          "share_pct": 34.88,
+          "status": "fail"
+        },
+        "count_delta": 8,
+        "share_delta_points": 14.88,
+        "change": "worsened",
+        "crossed": null
+      },
+      {
+        "code": "Q12",
+        "threshold_pct": null,
+        "direction": "max",
+        "previous": {
+          "count": 0,
+          "population": 0,
+          "share_pct": null,
+          "status": null
+        },
+        "current": {
+          "count": 0,
+          "population": 0,
+          "share_pct": null,
+          "status": null
+        },
+        "count_delta": 0,
+        "share_delta_points": null,
+        "change": null,
+        "crossed": null
+      },
+      {
+        "code": "Q13",
+        "threshold_pct": 95.0,
+        "direction": "min",
+        "previous": {
+          "count": 1,
+          "population": 1,
+          "share_pct": 108.1,
+          "status": "pass"
+        },
+        "current": {
+          "count": 1,
+          "population": 1,
+          "share_pct": 102.5,
+          "status": "pass"
+        },
+        "count_delta": 0,
+        "share_delta_points": -5.6,
+        "change": "worsened",
+        "crossed": null
+      },
+      {
+        "code": "Q14",
+        "threshold_pct": 95.0,
+        "direction": "min",
+        "previous": {
+          "count": 28,
+          "population": 35,
+          "share_pct": 80.0,
+          "status": "fail"
+        },
+        "current": {
+          "count": 28,
+          "population": 43,
+          "share_pct": 65.1,
+          "status": "fail"
+        },
+        "count_delta": 0,
+        "share_delta_points": -14.9,
+        "change": "worsened",
+        "crossed": null
+      }
+    ],
+    "indices": {
+      "previous": {
+        "bei": 0.8,
+        "bei_due": 35,
+        "cpli": 1.081,
+        "cpli_meaningful": true,
+        "critical_activities": 18
+      },
+      "current": {
+        "bei": 0.651,
+        "bei_due": 43,
+        "cpli": 1.025,
+        "cpli_meaningful": true,
+        "critical_activities": 18
+      }
+    },
+    "population": {
+      "previous": {
+        "leaves": 142,
+        "incomplete": 107,
+        "links": 219,
+        "critical_incomplete": 18
+      },
+      "current": {
+        "leaves": 142,
+        "incomplete": 103,
+        "links": 220,
+        "critical_incomplete": 18
+      }
+    },
+    "provenance": "implementation of the DCMA 14-point metrics with quoted thresholds; not a certification. Q12 needs the schedule perturbed and Q13 needs a deadline on the finish milestone; both reported as not computable when so."
+  },
+  "trend": [
+    {
+      "uid": 27,
+      "id": 27,
+      "name": "Proteção vegetal de taludes (hidrossemeadura) — Seg. 1",
+      "matched_by": "uid",
+      "start_moved_days": 8.0,
+      "finish_moved_days": 11.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 29,
+      "id": 29,
+      "name": "Bueiros tubulares de concreto — Seg. 1",
+      "matched_by": "uid",
+      "start_moved_days": 0.0,
+      "finish_moved_days": -4.0,
+      "actuals_present": true,
+      "reading": "execution"
+    },
+    {
+      "uid": 31,
+      "id": 31,
+      "name": "Sarjetas e valetas de proteção — Seg. 1",
+      "matched_by": "uid",
+      "start_moved_days": 0.0,
+      "finish_moved_days": 4.0,
+      "actuals_present": true,
+      "reading": "execution"
+    },
+    {
+      "uid": 32,
+      "id": 32,
+      "name": "Meios-fios e descidas d'água — Seg. 1",
+      "matched_by": "uid",
+      "start_moved_days": 10.0,
+      "finish_moved_days": 15.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 34,
+      "id": 34,
+      "name": "Sub-base granular — Seg. 1",
+      "matched_by": "uid",
+      "start_moved_days": 0.0,
+      "finish_moved_days": 6.0,
+      "actuals_present": true,
+      "reading": "execution"
+    },
+    {
+      "uid": 35,
+      "id": 35,
+      "name": "Base de brita graduada simples (BGS) — Seg. 1",
+      "matched_by": "uid",
+      "start_moved_days": 0.0,
+      "finish_moved_days": 11.0,
+      "actuals_present": true,
+      "reading": "execution"
+    },
+    {
+      "uid": 36,
+      "id": 36,
+      "name": "Imprimação — Seg. 1",
+      "matched_by": "uid",
+      "start_moved_days": 2.0,
+      "finish_moved_days": 7.0,
+      "actuals_present": true,
+      "reading": "execution"
+    },
+    {
+      "uid": 37,
+      "id": 37,
+      "name": "CBUQ — camada de ligação (binder) — Seg. 1",
+      "matched_by": "uid",
+      "start_moved_days": 7.0,
+      "finish_moved_days": 8.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 38,
+      "id": 38,
+      "name": "Fresagem e reperfilagem da pista existente — Seg. 1",
+      "matched_by": "uid",
+      "start_moved_days": 10.0,
+      "finish_moved_days": 15.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 39,
+      "id": 39,
+      "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 1",
+      "matched_by": "uid",
+      "start_moved_days": 11.0,
+      "finish_moved_days": 11.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 40,
+      "id": 40,
+      "name": "Acostamentos e acabamento de bordos — Seg. 1",
+      "matched_by": "uid",
+      "start_moved_days": 13.0,
+      "finish_moved_days": 9.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 42,
+      "id": 42,
+      "name": "Sinalização horizontal — Seg. 1",
+      "matched_by": "uid",
+      "start_moved_days": 13.0,
+      "finish_moved_days": 10.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 43,
+      "id": 43,
+      "name": "Sinalização vertical e pórticos — Seg. 1",
+      "matched_by": "uid",
+      "start_moved_days": 13.0,
+      "finish_moved_days": 9.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 44,
+      "id": 44,
+      "name": "Defensas metálicas e barreiras — Seg. 1",
+      "matched_by": "uid",
+      "start_moved_days": 8.0,
+      "finish_moved_days": 8.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 45,
+      "id": 45,
+      "name": "Tachas e dispositivos auxiliares — Seg. 1",
+      "matched_by": "uid",
+      "start_moved_days": 8.0,
+      "finish_moved_days": 9.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 47,
+      "id": 47,
+      "name": "Dutos, caixas de passagem e bases — Seg. 1",
+      "matched_by": "uid",
+      "start_moved_days": 11.0,
+      "finish_moved_days": 9.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 48,
+      "id": 48,
+      "name": "Postes e luminárias LED — Seg. 1",
+      "matched_by": "uid",
+      "start_moved_days": 13.0,
+      "finish_moved_days": 9.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 49,
+      "id": 49,
+      "name": "Cabeamento, quadros de comando e energização — Seg. 1",
+      "matched_by": "uid",
+      "start_moved_days": 8.0,
+      "finish_moved_days": 8.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 55,
+      "id": 55,
+      "name": "Aterro compactado — Seg. 2",
+      "matched_by": "uid",
+      "start_moved_days": 0.0,
+      "finish_moved_days": 15.0,
+      "actuals_present": true,
+      "reading": "execution"
+    },
+    {
+      "uid": 56,
+      "id": 56,
+      "name": "Regularização e compactação do subleito — Seg. 2",
+      "matched_by": "uid",
+      "start_moved_days": 15.0,
+      "finish_moved_days": 14.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 57,
+      "id": 58,
+      "name": "Proteção vegetal de taludes (hidrossemeadura) — Seg. 2",
+      "matched_by": "uid",
+      "start_moved_days": 7.0,
+      "finish_moved_days": 8.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 61,
+      "id": 62,
+      "name": "Drenos profundos longitudinais — Seg. 2",
+      "matched_by": "uid",
+      "start_moved_days": 15.0,
+      "finish_moved_days": 15.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 62,
+      "id": 63,
+      "name": "Sarjetas e valetas de proteção — Seg. 2",
+      "matched_by": "uid",
+      "start_moved_days": 46.0,
+      "finish_moved_days": 53.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 63,
+      "id": 64,
+      "name": "Meios-fios e descidas d'água — Seg. 2",
+      "matched_by": "uid",
+      "start_moved_days": 11.0,
+      "finish_moved_days": 7.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 65,
+      "id": 66,
+      "name": "Sub-base granular — Seg. 2",
+      "matched_by": "uid",
+      "start_moved_days": 15.0,
+      "finish_moved_days": 25.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 66,
+      "id": 67,
+      "name": "Base de brita graduada simples (BGS) — Seg. 2",
+      "matched_by": "uid",
+      "start_moved_days": 15.0,
+      "finish_moved_days": 23.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 67,
+      "id": 68,
+      "name": "Imprimação — Seg. 2",
+      "matched_by": "uid",
+      "start_moved_days": 23.0,
+      "finish_moved_days": 19.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 68,
+      "id": 69,
+      "name": "CBUQ — camada de ligação (binder) — Seg. 2",
+      "matched_by": "uid",
+      "start_moved_days": 13.0,
+      "finish_moved_days": 8.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 69,
+      "id": 70,
+      "name": "Fresagem e reperfilagem da pista existente — Seg. 2",
+      "matched_by": "uid",
+      "start_moved_days": 11.0,
+      "finish_moved_days": 7.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 70,
+      "id": 71,
+      "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 2",
+      "matched_by": "uid",
+      "start_moved_days": 7.0,
+      "finish_moved_days": 7.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 71,
+      "id": 72,
+      "name": "Acostamentos e acabamento de bordos — Seg. 2",
+      "matched_by": "uid",
+      "start_moved_days": 7.0,
+      "finish_moved_days": 7.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 73,
+      "id": 74,
+      "name": "Sinalização horizontal — Seg. 2",
+      "matched_by": "uid",
+      "start_moved_days": 7.0,
+      "finish_moved_days": 7.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 74,
+      "id": 75,
+      "name": "Sinalização vertical e pórticos — Seg. 2",
+      "matched_by": "uid",
+      "start_moved_days": 7.0,
+      "finish_moved_days": 7.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 75,
+      "id": 76,
+      "name": "Defensas metálicas e barreiras — Seg. 2",
+      "matched_by": "uid",
+      "start_moved_days": 7.0,
+      "finish_moved_days": 7.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 76,
+      "id": 77,
+      "name": "Tachas e dispositivos auxiliares — Seg. 2",
+      "matched_by": "uid",
+      "start_moved_days": 7.0,
+      "finish_moved_days": 7.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 78,
+      "id": 79,
+      "name": "Dutos, caixas de passagem e bases — Seg. 2",
+      "matched_by": "uid",
+      "start_moved_days": 7.0,
+      "finish_moved_days": 8.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 79,
+      "id": 80,
+      "name": "Postes e luminárias LED — Seg. 2",
+      "matched_by": "uid",
+      "start_moved_days": 7.0,
+      "finish_moved_days": 7.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 80,
+      "id": 81,
+      "name": "Cabeamento, quadros de comando e energização — Seg. 2",
+      "matched_by": "uid",
+      "start_moved_days": 7.0,
+      "finish_moved_days": 8.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 86,
+      "id": 87,
+      "name": "Aterro compactado — Seg. 3",
+      "matched_by": "uid",
+      "start_moved_days": 0.0,
+      "finish_moved_days": 3.0,
+      "actuals_present": true,
+      "reading": "execution"
+    },
+    {
+      "uid": 87,
+      "id": 88,
+      "name": "Regularização e compactação do subleito — Seg. 3",
+      "matched_by": "uid",
+      "start_moved_days": 3.0,
+      "finish_moved_days": 6.0,
+      "actuals_present": true,
+      "reading": "execution"
+    },
+    {
+      "uid": 88,
+      "id": 89,
+      "name": "Proteção vegetal de taludes (hidrossemeadura) — Seg. 3",
+      "matched_by": "uid",
+      "start_moved_days": 15.0,
+      "finish_moved_days": 14.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 91,
+      "id": 92,
+      "name": "Drenos profundos longitudinais — Seg. 3",
+      "matched_by": "uid",
+      "start_moved_days": 6.0,
+      "finish_moved_days": 15.0,
+      "actuals_present": true,
+      "reading": "execution"
+    },
+    {
+      "uid": 92,
+      "id": 93,
+      "name": "Sarjetas e valetas de proteção — Seg. 3",
+      "matched_by": "uid",
+      "start_moved_days": 15.0,
+      "finish_moved_days": 16.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 93,
+      "id": 94,
+      "name": "Meios-fios e descidas d'água — Seg. 3",
+      "matched_by": "uid",
+      "start_moved_days": 22.0,
+      "finish_moved_days": 19.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 95,
+      "id": 96,
+      "name": "Sub-base granular — Seg. 3",
+      "matched_by": "uid",
+      "start_moved_days": 15.0,
+      "finish_moved_days": 16.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 96,
+      "id": 97,
+      "name": "Base de brita graduada simples (BGS) — Seg. 3",
+      "matched_by": "uid",
+      "start_moved_days": 15.0,
+      "finish_moved_days": 19.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 97,
+      "id": 98,
+      "name": "Imprimação — Seg. 3",
+      "matched_by": "uid",
+      "start_moved_days": 21.0,
+      "finish_moved_days": 23.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 98,
+      "id": 99,
+      "name": "CBUQ — camada de ligação (binder) — Seg. 3",
+      "matched_by": "uid",
+      "start_moved_days": 25.0,
+      "finish_moved_days": 22.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 99,
+      "id": 100,
+      "name": "Fresagem e reperfilagem da pista existente — Seg. 3",
+      "matched_by": "uid",
+      "start_moved_days": 22.0,
+      "finish_moved_days": 19.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 100,
+      "id": 101,
+      "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 3",
+      "matched_by": "uid",
+      "start_moved_days": 17.0,
+      "finish_moved_days": 16.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 101,
+      "id": 102,
+      "name": "Acostamentos e acabamento de bordos — Seg. 3",
+      "matched_by": "uid",
+      "start_moved_days": 18.0,
+      "finish_moved_days": 17.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 103,
+      "id": 104,
+      "name": "Sinalização horizontal — Seg. 3",
+      "matched_by": "uid",
+      "start_moved_days": 18.0,
+      "finish_moved_days": 15.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 104,
+      "id": 105,
+      "name": "Sinalização vertical e pórticos — Seg. 3",
+      "matched_by": "uid",
+      "start_moved_days": 18.0,
+      "finish_moved_days": 17.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 105,
+      "id": 106,
+      "name": "Defensas metálicas e barreiras — Seg. 3",
+      "matched_by": "uid",
+      "start_moved_days": 15.0,
+      "finish_moved_days": 14.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 106,
+      "id": 107,
+      "name": "Tachas e dispositivos auxiliares — Seg. 3",
+      "matched_by": "uid",
+      "start_moved_days": 15.0,
+      "finish_moved_days": 15.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 108,
+      "id": 109,
+      "name": "Dutos, caixas de passagem e bases — Seg. 3",
+      "matched_by": "uid",
+      "start_moved_days": 17.0,
+      "finish_moved_days": 20.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 109,
+      "id": 110,
+      "name": "Postes e luminárias LED — Seg. 3",
+      "matched_by": "uid",
+      "start_moved_days": 18.0,
+      "finish_moved_days": 17.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 110,
+      "id": 111,
+      "name": "Cabeamento, quadros de comando e energização — Seg. 3",
+      "matched_by": "uid",
+      "start_moved_days": 15.0,
+      "finish_moved_days": 14.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 116,
+      "id": 117,
+      "name": "Aterro compactado — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": 5.0,
+      "finish_moved_days": 7.0,
+      "actuals_present": true,
+      "reading": "execution"
+    },
+    {
+      "uid": 117,
+      "id": 118,
+      "name": "Regularização e compactação do subleito — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": 7.0,
+      "finish_moved_days": 6.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 118,
+      "id": 119,
+      "name": "Proteção vegetal de taludes (hidrossemeadura) — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": 14.0,
+      "finish_moved_days": 14.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 122,
+      "id": 122,
+      "name": "Bueiro celular de concreto — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": 0.0,
+      "finish_moved_days": 5.0,
+      "actuals_present": true,
+      "reading": "execution"
+    },
+    {
+      "uid": 123,
+      "id": 123,
+      "name": "Drenos profundos longitudinais — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": 8.0,
+      "finish_moved_days": 7.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 124,
+      "id": 124,
+      "name": "Sarjetas e valetas de proteção — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": 10.0,
+      "finish_moved_days": 7.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 125,
+      "id": 125,
+      "name": "Meios-fios e descidas d'água — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": 15.0,
+      "finish_moved_days": 14.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 127,
+      "id": 127,
+      "name": "Sub-base granular — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": -2.0,
+      "finish_moved_days": -5.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 128,
+      "id": 128,
+      "name": "Base de brita graduada simples (BGS) — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": -2.0,
+      "finish_moved_days": -3.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 129,
+      "id": 129,
+      "name": "Imprimação — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": -3.0,
+      "finish_moved_days": -5.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 130,
+      "id": 130,
+      "name": "CBUQ — camada de ligação (binder) — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": 18.0,
+      "finish_moved_days": 17.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 131,
+      "id": 131,
+      "name": "Fresagem e reperfilagem da pista existente — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": 15.0,
+      "finish_moved_days": 14.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 132,
+      "id": 132,
+      "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": 14.0,
+      "finish_moved_days": 14.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 133,
+      "id": 133,
+      "name": "Acostamentos e acabamento de bordos — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": 14.0,
+      "finish_moved_days": 14.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 135,
+      "id": 135,
+      "name": "Sinalização horizontal — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": 14.0,
+      "finish_moved_days": 14.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 136,
+      "id": 136,
+      "name": "Sinalização vertical e pórticos — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": 14.0,
+      "finish_moved_days": 14.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 137,
+      "id": 137,
+      "name": "Defensas metálicas e barreiras — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": 14.0,
+      "finish_moved_days": 14.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 138,
+      "id": 138,
+      "name": "Tachas e dispositivos auxiliares — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": 14.0,
+      "finish_moved_days": 14.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 140,
+      "id": 140,
+      "name": "Dutos, caixas de passagem e bases — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": 14.0,
+      "finish_moved_days": 15.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 141,
+      "id": 141,
+      "name": "Postes e luminárias LED — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": 14.0,
+      "finish_moved_days": 14.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 142,
+      "id": 142,
+      "name": "Cabeamento, quadros de comando e energização — Seg. 4",
+      "matched_by": "uid",
+      "start_moved_days": 14.0,
+      "finish_moved_days": 14.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 149,
+      "id": 149,
+      "name": "Blocos de coroamento",
+      "matched_by": "uid",
+      "start_moved_days": 0.0,
+      "finish_moved_days": 11.0,
+      "actuals_present": true,
+      "reading": "execution"
+    },
+    {
+      "uid": 151,
+      "id": 151,
+      "name": "Pilares",
+      "matched_by": "uid",
+      "start_moved_days": 8.0,
+      "finish_moved_days": 12.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 152,
+      "id": 152,
+      "name": "Travessas",
+      "matched_by": "uid",
+      "start_moved_days": 10.0,
+      "finish_moved_days": 10.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 153,
+      "id": 153,
+      "name": "Encontros e alas",
+      "matched_by": "uid",
+      "start_moved_days": 9.0,
+      "finish_moved_days": 12.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 154,
+      "id": 154,
+      "name": "Aparelhos de apoio",
+      "matched_by": "uid",
+      "start_moved_days": 10.0,
+      "finish_moved_days": 12.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 156,
+      "id": 156,
+      "name": "Fabricação das vigas pré-moldadas protendidas",
+      "matched_by": "uid",
+      "start_moved_days": 8.0,
+      "finish_moved_days": 12.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 157,
+      "id": 157,
+      "name": "Lançamento das vigas pré-moldadas",
+      "matched_by": "uid",
+      "start_moved_days": 12.0,
+      "finish_moved_days": 21.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 158,
+      "id": 158,
+      "name": "Pré-lajes e armação do tabuleiro",
+      "matched_by": "uid",
+      "start_moved_days": 21.0,
+      "finish_moved_days": 21.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 159,
+      "id": 159,
+      "name": "Concretagem do tabuleiro",
+      "matched_by": "uid",
+      "start_moved_days": 21.0,
+      "finish_moved_days": 20.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 160,
+      "id": 160,
+      "name": "Lajes de transição",
+      "matched_by": "uid",
+      "start_moved_days": 20.0,
+      "finish_moved_days": 20.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 161,
+      "id": 161,
+      "name": "Barreiras New Jersey e guarda-corpos",
+      "matched_by": "uid",
+      "start_moved_days": 20.0,
+      "finish_moved_days": 20.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 162,
+      "id": 162,
+      "name": "Juntas de dilatação",
+      "matched_by": "uid",
+      "start_moved_days": 20.0,
+      "finish_moved_days": 20.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 164,
+      "id": 164,
+      "name": "Aterros de acesso aos encontros",
+      "matched_by": "uid",
+      "start_moved_days": 21.0,
+      "finish_moved_days": 19.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 165,
+      "id": 165,
+      "name": "Impermeabilização e pavimentação do tabuleiro",
+      "matched_by": "uid",
+      "start_moved_days": 20.0,
+      "finish_moved_days": 20.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 166,
+      "id": 166,
+      "name": "Sinalização e iluminação do viaduto",
+      "matched_by": "uid",
+      "start_moved_days": 20.0,
+      "finish_moved_days": 20.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 167,
+      "id": 167,
+      "name": "Prova de carga e inspeção final",
+      "matched_by": "uid",
+      "start_moved_days": 18.0,
+      "finish_moved_days": 20.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 169,
+      "id": 169,
+      "name": "Limpeza final e recomposição das áreas de apoio",
+      "matched_by": "uid",
+      "start_moved_days": 18.0,
+      "finish_moved_days": 21.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 170,
+      "id": 170,
+      "name": "Recuperação ambiental de jazidas e caminhos de serviço",
+      "matched_by": "uid",
+      "start_moved_days": 7.0,
+      "finish_moved_days": 6.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 171,
+      "id": 171,
+      "name": "Projeto as built e data book",
+      "matched_by": "uid",
+      "start_moved_days": 20.0,
+      "finish_moved_days": 20.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 172,
+      "id": 172,
+      "name": "Vistoria final com a fiscalização",
+      "matched_by": "uid",
+      "start_moved_days": 21.0,
+      "finish_moved_days": 21.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 173,
+      "id": 173,
+      "name": "Correção de pendências da vistoria",
+      "matched_by": "uid",
+      "start_moved_days": 21.0,
+      "finish_moved_days": 18.0,
+      "actuals_present": false,
+      "reading": "replan"
+    },
+    {
+      "uid": 174,
+      "id": 174,
+      "name": "Desmobilização do canteiro e da usina",
+      "matched_by": "uid",
+      "start_moved_days": 20.0,
+      "finish_moved_days": 21.0,
+      "actuals_present": false,
+      "reading": "replan"
+    }
+  ],
+  "baseline_moved": [
+    {
+      "uid": 132,
+      "id": 132,
+      "name": "CBUQ — capa de rolamento (pista nova e existente) — Seg. 4",
+      "baseline_start_moved_days": 31.0,
+      "baseline_finish_moved_days": 28.0,
+      "slot": "0"
+    }
+  ],
+  "unmatched": {
+    "inserted": [
+      {
+        "uid": 175,
+        "id": 57,
+        "name": "Contenção em gabião — talude do km 21+300 — Seg. 2",
+        "percent": 0.0,
+        "baseline_cost": 936000.0
+      }
+    ],
+    "removed": [
+      {
+        "uid": 119,
+        "id": 119,
+        "name": "Remanejamento de cercas da faixa de domínio — Seg. 4",
+        "percent": 100.0,
+        "baseline_cost": 473600.0
+      }
+    ]
+  },
+  "decomposition": [
+    {
+      "uid": 35,
+      "id": 35,
+      "name": "Base de brita graduada simples (BGS) — Seg. 1",
+      "wbs": "3.3.2",
+      "percent_previous": 6.0,
+      "percent_current": 85.0,
+      "baseline_cost": 3366000.0,
+      "contribution_points": 1.5196
+    },
+    {
+      "uid": 34,
+      "id": 34,
+      "name": "Sub-base granular — Seg. 1",
+      "wbs": "3.3.1",
+      "percent_previous": 39.0,
+      "percent_current": 100.0,
+      "baseline_cost": 2698000.0,
+      "contribution_points": 0.9405
+    },
+    {
+      "uid": 149,
+      "id": 149,
+      "name": "Blocos de coroamento",
+      "wbs": "7.1.5",
+      "percent_previous": 25.0,
+      "percent_current": 82.0,
+      "baseline_cost": 2067000.0,
+      "contribution_points": 0.6733
+    },
+    {
+      "uid": 31,
+      "id": 31,
+      "name": "Sarjetas e valetas de proteção — Seg. 1",
+      "wbs": "3.2.3",
+      "percent_previous": 39.0,
+      "percent_current": 100.0,
+      "baseline_cost": 1056000.0,
+      "contribution_points": 0.3681
+    },
+    {
+      "uid": 122,
+      "id": 122,
+      "name": "Bueiro celular de concreto — Seg. 4",
+      "wbs": "6.2.2",
+      "percent_previous": 50.0,
+      "percent_current": 100.0,
+      "baseline_cost": 1168650.0,
+      "contribution_points": 0.3339
+    },
+    {
+      "uid": 91,
+      "id": 92,
+      "name": "Drenos profundos longitudinais — Seg. 3",
+      "wbs": "5.2.2",
+      "percent_previous": 0.0,
+      "percent_current": 64.0,
+      "baseline_cost": 885040.0,
+      "contribution_points": 0.3237
+    },
+    {
+      "uid": 116,
+      "id": 117,
+      "name": "Aterro compactado — Seg. 4",
+      "wbs": "6.1.4",
+      "percent_previous": 0.0,
+      "percent_current": 20.0,
+      "baseline_cost": 1955100.0,
+      "contribution_points": 0.2234
+    },
+    {
+      "uid": 55,
+      "id": 55,
+      "name": "Aterro compactado — Seg. 2",
+      "wbs": "4.1.4",
+      "percent_previous": 38.0,
+      "percent_current": 57.0,
+      "baseline_cost": 2048200.0,
+      "contribution_points": 0.2224
+    },
+    {
+      "uid": 86,
+      "id": 87,
+      "name": "Aterro compactado — Seg. 3",
+      "wbs": "5.1.4",
+      "percent_previous": 89.0,
+      "percent_current": 100.0,
+      "baseline_cost": 1713040.0,
+      "contribution_points": 0.1077
+    },
+    {
+      "uid": 87,
+      "id": 88,
+      "name": "Regularização e compactação do subleito — Seg. 3",
+      "wbs": "5.1.5",
+      "percent_previous": 0.0,
+      "percent_current": 100.0,
+      "baseline_cost": 185472.0,
+      "contribution_points": 0.106
+    },
+    {
+      "uid": 36,
+      "id": 36,
+      "name": "Imprimação — Seg. 1",
+      "wbs": "3.3.3",
+      "percent_previous": 0.0,
+      "percent_current": 22.0,
+      "baseline_cost": 662400.0,
+      "contribution_points": 0.0833
+    }
+  ],
+  "residual_terms": {
+    "inserted_earned": {
+      "points": 0.0,
+      "earned": 0.0,
+      "rows": [
+        {
+          "uid": 175,
+          "id": 57,
+          "name": "Contenção em gabião — talude do km 21+300 — Seg. 2",
+          "baseline_cost": 936000.0,
+          "percent": 0.0,
+          "earned": 0.0
+        }
+      ]
+    },
+    "removed_earned": {
+      "points": -0.2714,
+      "earned_erased": 473600.0,
+      "rows": [
+        {
+          "uid": 119,
+          "id": 119,
+          "name": "Remanejamento de cercas da faixa de domínio — Seg. 4",
+          "baseline_cost": 473600.0,
+          "percent": 100.0,
+          "earned_erased": 473600.0
+        }
+      ]
+    },
+    "baseline_cost_changed": {
+      "points": 0.0,
+      "rows": [],
+      "count": 0
+    },
+    "bac_change": {
+      "points": -0.0612,
+      "bac_before": 174530438.0,
+      "bac_after": 174992838.0,
+      "bac_delta": 462400.0,
+      "inserted_cost": 936000.0,
+      "removed_cost": 473600.0,
+      "changed_cost": 0.0
+    },
+    "basis": "exact identity over the weighted population of each snapshot (considered, its own baseline, cost above zero); the BAC term is the net change, its parts listed"
+  },
+  "residual_remainder_points": 0.0001
+}
